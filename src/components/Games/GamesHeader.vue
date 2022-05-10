@@ -1,7 +1,7 @@
 <template>
   <div class="headerTop">
     <div class="headerTop_logo">
-      <img alt="" src="../assets/img/upbet.png" />
+      <img alt="" src="@/assets/img/upbet.png" />
     </div>
     <div class="headerTop_nav">
       <el-menu
@@ -37,11 +37,12 @@
       };
     },
     created() {
+      this.callUserInfoAbout();
       this.callGetUserInfoCash();
     },
     computed: {
       userName() {
-        return this.$store.state.User.UserData.Name;
+        return this.$store.state.User.UserData?.Name;
       },
       userCredit() {
         return this.$store.state.User.UserCredit;
@@ -50,6 +51,9 @@
     methods: {
       callGetUserInfoCash() {
         this.$store.dispatch('User/GetUserInfoCash');
+      },
+      callUserInfoAbout() {
+        this.$store.dispatch('User/UserInfoAbout');
       },
       OpenPopupCenter() {
         var width = document.documentElement.clientWidth;

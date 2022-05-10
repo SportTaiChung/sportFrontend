@@ -7,8 +7,8 @@
       <GamesSetup></GamesSetup>
     </div>
     <div class="main">
-      <!-- <nav-menu></nav-menu>
-      <router-view /> -->
+      <GamesNavMenu></GamesNavMenu>
+      <router-view />
     </div>
 
     <div class="test">123trs</div>
@@ -16,11 +16,12 @@
 </template>
 
 <script>
-  import GamesHeader from '@/components/GamesHeader.vue';
-  import GamesSetup from '@/components/GamesSetup.vue';
+  import GamesHeader from '@/components/Games/GamesHeader.vue';
+  import GamesSetup from '@/components/Games/GamesSetup.vue';
+  import GamesNavMenu from '@/components/Games/GamesNavMenu.vue';
   export default {
     name: 'Games',
-    components: { GamesHeader, GamesSetup },
+    components: { GamesHeader, GamesSetup, GamesNavMenu },
   };
 </script>
 

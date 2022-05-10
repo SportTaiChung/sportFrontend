@@ -1,8 +1,3 @@
-const path = require('path');
-function resolve(dir) {
-  return path.join(__dirname, './', dir);
-}
-
 module.exports = {
   // eslint錯誤,不會使得編譯失敗
   lintOnSave: false,
@@ -30,20 +25,6 @@ module.exports = {
       },
     },
   },
-
-  chainWebpack(config) {
-    config.module.rule('svg').exclude.add(resolve('src/icons')).end();
-    config.module
-      .rule('icons')
-      .test(/\.svg$/)
-      .include.add(resolve('src/icons'))
-      .end()
-      .use('svg-sprite-loader')
-      .loader('svg-sprite-loader')
-      .options({
-        symbolId: 'icon-[name]',
-      })
-      .end();
-  },
-  outputDir: '../web_pages',
+  // 打包路徑
+  // outputDir: '../web_pages',
 };

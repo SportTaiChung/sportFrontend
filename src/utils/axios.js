@@ -4,27 +4,30 @@ import store from '@/store';
 import * as message from '@/utils/messageHandler.js';
 import API_ERROR_CODE from '@/Config/API_ERROR_CODE';
 
+console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
+console.log('process.env.VUE_APP_BASE_API:', process.env.VUE_APP_BASE_API);
 const instance = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '/data/API' : '/API',
+  baseURL: process.env.NODE_ENV === 'development' ? '/data/API' : process.env.VUE_APP_BASE_API,
   timeout: 15000,
   withCredentials: true,
 });
 
-// Add a request interceptor
+// 發送API前的劫持
 instance.interceptors.request.use(
-  async (config) => {
+  async (config, data) => {
+    // 根據API 參數有沒有 AddRVfToken,來決定是否要在header加上RVfToken
     if (config.url !== '/datafresh/token' && config?.param?.AddRVfToken) {
       await store.dispatch('getDataFresh').then((res) => {
         config.headers.RVfToken = res.token;
       });
     }
+    // 根據API 參數有沒有AddMemberToken,來決定是否要在header加上 SSSMBID 和 SSSToken
     if (config?.param?.AddMemberToken) {
       config.headers.SSSMBID = store.state.User.MBID;
       config.headers.SSSToken = store.state.User.Token;
     }
     return config;
   },
-  // Handle error
   (err) => {
     return Promise.reject(err);
   }
@@ -46,9 +49,6 @@ instance.interceptors.response.use(
     }
   },
   (err, data) => {
-    // if (err.response.status === 401) {
-    //   router.replace({ name: 'Login' });
-    // }
     return Promise.reject(err);
   }
 );

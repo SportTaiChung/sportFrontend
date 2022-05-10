@@ -1,5 +1,5 @@
 import { login, getUserInfoAbout, getUserInfoCash } from '@/api/User';
-import { autoAPI } from '@/api/promiseApiHandler';
+// import { autoAPI } from '@/api/promiseApiHandler';
 
 export default {
   namespaced: true,

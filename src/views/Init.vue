@@ -8,18 +8,32 @@
     created() {
       this.$store.commit('SetLoading', true);
       this.$store
-        .dispatch('User/UserInfoAbout')
-        .then(() => {
+        .dispatch('User/GetUserInfoCash')
+        .then(async () => {
           this.$store.commit('SetIsInit', true);
-          if (this.$store.state.FirstInWebSiteURL === '') {
-            this.$router.replace({ name: 'Games' });
-          } else {
-            location.href = this.$store.state.FirstInWebSiteURL;
-          }
+          await this.callGetAllMenuData();
+          this.$router.replace({ name: 'Games', query: { gameType: this.gameTypeID } });
         })
         .finally(() => {
           this.$store.commit('SetLoading', false);
         });
+    },
+    computed: {
+      gameTypeID() {
+        if (this.$route.query?.gameType) {
+          return parseInt(this.$route.query.gameType);
+        } else {
+          return 0;
+        }
+      },
+    },
+    methods: {
+      callGetAllMenuData() {
+        return Promise.all([
+          this.$store.dispatch('Game/GetMenuGameType'),
+          this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }),
+        ]);
+      },
     },
   };
 </script>
