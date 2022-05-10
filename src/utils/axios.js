@@ -2,17 +2,26 @@ import axios from 'axios';
 import router from '../router';
 import store from '@/store';
 import * as message from '@/utils/messageHandler.js';
+import API_ERROR_CODE from '@/Config/API_ERROR_CODE';
 
 const instance = axios.create({
-  // Api base url
-  baseURL: process.env.NODE_ENV === 'development' ? '/data' : '/',
+  baseURL: process.env.NODE_ENV === 'development' ? '/data/API' : '/API',
   timeout: 15000,
   withCredentials: true,
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    if (config.url !== '/datafresh/token' && config?.param?.AddRVfToken) {
+      await store.dispatch('getDataFresh').then((res) => {
+        config.headers.RVfToken = res.token;
+      });
+    }
+    if (config?.param?.AddMemberToken) {
+      config.headers.SSSMBID = store.state.User.MBID;
+      config.headers.SSSToken = store.state.User.Token;
+    }
     return config;
   },
   // Handle error
@@ -21,25 +30,21 @@ instance.interceptors.request.use(
   }
 );
 
-// Add a response interceptor
 instance.interceptors.response.use(
   (res) => {
-    // if (res?.data.status === '1004') {
-    //   if (res.config.url !== '/api/shopping_cart') {
-    //     store.commit('SetLoading', false);
-    //     router.replace({ name: 'Login' });
-    //   }
-    // } else if (res?.data.status === '1005') {
-    //   store.commit('SetLoading', false);
-    //   router.replace({ name: 'ConsoleLogin' });
-    // } else {
-    //   if (res?.data.status !== '0000') {
-    //     store.commit('SetLoading', false);
-    //   }
-    // }
-    return res?.data;
+    const resCode = res?.data?.code;
+    if (resCode && resCode !== 200) {
+      if (resCode === -101) {
+        // token驗證失敗(已登入模式)
+        router.replace({ name: 'Login' });
+      }
+      message.error(API_ERROR_CODE[resCode]);
+      store.commit('SetLoading', false);
+      return Promise.reject(res);
+    } else {
+      return res?.data;
+    }
   },
-  // Handle error
   (err, data) => {
     // if (err.response.status === 401) {
     //   router.replace({ name: 'Login' });

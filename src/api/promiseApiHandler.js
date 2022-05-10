@@ -5,7 +5,7 @@ export const autoAPI = function (callFunc, val, isShowApiErrorByMessage = true) 
   return new Promise((resolve, reject) => {
     callFunc(val)
       .then((res) => {
-        if (res.status === '0000') {
+        if (res.code === 200) {
           resolve(res);
         } else {
           if (isShowApiErrorByMessage) {

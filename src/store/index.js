@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-// import Admin from './modules/Admin/Admin';
-// import Front from './modules/Front/Front';
+import User from './modules/User';
+import { dataFresh } from '@/api/Common';
+import { autoAPI } from '@/api/promiseApiHandler';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  // modules: { Admin, Front },
+  modules: { User },
   state: {
     // 儲存第一次進網站時的網址,
     // 因為網站初始化時會先強制把網站跳轉到init頁面,
@@ -35,5 +36,9 @@ export default new Vuex.Store({
       state.isInit = newVal;
     },
   },
-  actions: {},
+  actions: {
+    getDataFresh() {
+      return dataFresh();
+    },
+  },
 });

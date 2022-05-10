@@ -19,8 +19,8 @@
     </div>
     <div class="headerTop_userinfo">
       <ul>
-        <li>UZ1244</li>
-        <li>$ 123456</li>
+        <li>{{ userName }}</li>
+        <li v-if="userCredit">$ {{ userCredit }}</li>
         <li><i class="el-icon-phone-outline"></i></li>
         <li></li>
       </ul>
@@ -36,7 +36,21 @@
         activeIndex: '4',
       };
     },
+    created() {
+      this.callGetUserInfoCash();
+    },
+    computed: {
+      userName() {
+        return this.$store.state.User.UserData.Name;
+      },
+      userCredit() {
+        return this.$store.state.User.UserCredit;
+      },
+    },
     methods: {
+      callGetUserInfoCash() {
+        this.$store.dispatch('User/GetUserInfoCash');
+      },
       OpenPopupCenter() {
         var width = document.documentElement.clientWidth;
         var height = document.documentElement.clientHeight;
