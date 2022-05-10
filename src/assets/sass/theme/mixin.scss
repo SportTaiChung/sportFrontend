@@ -1,0 +1,161 @@
+@import "./themeVariable.scss"; //导入颜色列表
+//背景颜色
+@mixin base-background() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: bg_color);
+    }
+  }
+}
+//右下按钮字体颜色颜色
+@mixin font_color() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: font_color);
+    }
+  }
+}
+//头部栏字体颜色
+@mixin base-fontColor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: herd_color);
+    }
+  }
+}
+//左侧导航栏头部字体颜色
+@mixin nav-headrtcolor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: nav_headrtcolor);
+    }
+  }
+}
+//左侧导航栏头部背景颜色
+@mixin nav-headrtBgcolor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: nav-headrtBgcolor);
+    }
+  }
+}
+//左侧导航栏下方背景颜色
+@mixin nav-TopBgcolor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: nav-TopBgcolor);
+    }
+  }
+}
+//第二层头部栏背景色
+@mixin background-color-hederTop() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: background-color-hederTop);
+    }
+  }
+}
+//左侧导航栏下方字体颜色
+@mixin nav-TopTextcolor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: nav-TopTextcolor);
+    }
+  }
+}
+//左侧导航栏下方数字字体颜色
+@mixin nav-TopTextNumbercolor() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: nav-TopTextNumbercolor);
+    }
+  }
+}
+//内容切换背景色
+@mixin betInfo_SubT() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: betInfo_SubT);
+    }
+  }
+}
+// 下注可赢颜色
+@mixin betInfo_MainStruc() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: betInfo_MainStruc);
+    }
+  }
+}
+// 下注可赢颜色左边
+@mixin betInfo_MainLfet() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: betInfo_MainLfet);
+    }
+  }
+}
+// 下注可赢颜色左边数字
+@mixin betInfo_MainRight() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: betInfo_MainRight);
+    }
+  }
+}
+// 最新注单颜色右边数字
+@mixin betInfo_t_change() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: betInfo_t_change);
+    }
+  }
+}
+//查看更多时导航栏背景色
+@mixin GDView_T() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: GDView_T);
+    }
+  }
+}
+//左侧导航选项移入背景颜色
+@mixin hover_color() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: hover_color);
+    }
+  }
+}
+//左侧导航子选项背景颜色
+@mixin menu_item_bg() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: menu_item_bg);
+    }
+  }
+}
+//更多时表格背景颜色
+@mixin betInfo_MainRightTable() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: betInfo_MainRightTable);
+    }
+  }
+}
+//更多时表格背景颜色
+@mixin font-color-theme() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      color: map-get($map: $theme, $key: font-color-theme);
+    }
+  }
+}
+//中间表格背景颜色
+@mixin main-bg-color() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: main-bg-color);
+    }
+  }
+}

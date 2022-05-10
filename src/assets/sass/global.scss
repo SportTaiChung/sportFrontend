@@ -1,0 +1,84 @@
+
+html {
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  height: 100%;
+  margin: 0;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+.font_size{
+  font-size: 14px;
+  font-weight: bold;
+}
+#app {
+  height: 100%;
+  overflow: auto;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  -webkit-touch-callout:none; /*系统默认菜单被禁用*/
+  -webkit-user-select:none; /*webkit浏览器*/
+  -khtml-user-select:none; /*早期浏览器*/
+  -moz-user-select:none;/*火狐*/
+  -ms-user-select:none; /*IE10*/
+  user-select:none;
+}
+*
+img {
+  -webkit-user-drag: none;
+}
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+input,textarea{
+  user-select: auto;
+}
+input:focus{
+  border:none!important;
+}
+.el-submenu.is-opened>.el-submenu__title .el-submenu__icon-arrow{
+  display: none;
+}
+.el-submenu>.el-submenu__title .el-submenu__icon-arrow{
+  display:none;
+}
+.center{
+  margin: 0 auto;
+  text-align: center;
+}
+.flex{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+table,tr,td,th,{
+  padding: 0;
+}
+.yellow_color{
+ color:#ffea01;
+}
+li{ 
+  list-style: none;
+}
+ul{
+  margin:0;
+  padding:0;
+}

@@ -1,0 +1,55 @@
+{
+	"loadingTrue": {
+		"prefix": "lt",
+		"body": [
+			"this.\\$store.commit('SetLoading',true)"
+		]
+	},
+	"loadingFalse": {
+		"prefix": "lf",
+		"body": [
+			"this.\\$store.commit('SetLoading',false)"
+		]
+	},
+	"FinallyLoadingFalse": {
+		"prefix": "flf",
+		"body": [
+			".finally(() => {",
+			"\tthis.\\$store.commit('SetLoading', false);",
+			"});"
+		]
+	},
+	"CatchLoadingFalse": {
+		"prefix": "clf",
+		"body": [
+			".catch(() => {",
+			"\tthis.\\$store.commit('SetLoading', false);",
+			"});"
+		]
+	},
+	"dispatch": {
+		"prefix": "dp",
+		"body": [
+			"this.\\$store.dispatch('$0',)"
+		]
+	},
+	"autoCatch": {
+		"prefix": "ac",
+		"body": [
+			".catch(this.\\$autoCatch)"
+		]
+	},
+	"mediaScreen": {
+		"prefix": "ms",
+		"body": [
+			"@media screen and(max-width:$0px) {",
+			"}"
+		]
+	},
+	"deep copy": {
+		"prefix": "jj",
+		"body": [
+			"JSON.parse(JSON.stringify($0))",
+		]
+	},
+}

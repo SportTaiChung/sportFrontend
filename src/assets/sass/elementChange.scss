@@ -1,0 +1,93 @@
+@import './theme/mixin.scss';
+@import './global.scss';
+
+.el-menu-vertical-demo {
+  @include nav-TopBgcolor();
+}
+
+.el-menu-item-group .el-menu-item-group__title{
+  padding: 0!important;
+}
+
+.el-menu-item,.el-submenu__title{
+  height: 36px!important;
+  line-height: 36px!important;
+}
+.el-menu-item:hover{
+  color: #409EFF;
+}
+.el-collapse-item__wrap{
+  border: none;
+}
+.el-collapse-item__header{
+  @include nav-TopTextcolor();
+  @include hover_color();
+  border-bottom: 1px solid #d5d5d5;
+  padding: 0px 10px;
+}
+.el-collapse-item__content{
+  @include nav-TopTextcolor();
+  @include betInfo_MainRightTable();
+  padding: 0px 10px;
+}
+.el-submenu .el-menu-item {
+  height: 36px;
+  line-height: 36px;
+  padding: 0;
+  border-right: 1px solid #d5d5d5;
+  @include menu_item_bg();
+}
+.el-menu-item:hover {
+  background: #fff;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  height:calc(100% - 35px) ;
+}
+.el-menu--collapse{
+  height: calc(100% - 35px) ;
+}
+
+
+.collapse_GameType,{
+  @include nav-headrtcolor();
+  @include nav-headrtBgcolor();
+
+}
+.el-submenu__title:hover{
+  @include hover_color();
+}
+.collapse_GameType  .el-submenu__title:hover{
+  background:#085239;
+}
+
+[data-theme=dark] .collapse_GameType .el-submenu__title:hover{
+  background: #343434;
+}
+.el-collapse-item__header{
+  height: 35px;
+  line-height: 35px;
+  padding: 0;
+}
+.el-collapse-item__content{
+  padding: 0;
+}
+.el-menu .is-opened{
+  background: #bababa;
+}
+
+.el-input__inner{
+  height: 28px;
+  line-height: 28px;
+}
+.el-input__icon{
+  line-height: 28px;
+}
+.el-select>.el-input{
+  width: 150px;
+  margin-right: 20px;
+}
+
+.el-link--inner{
+  text-decoration:underline;
+}
