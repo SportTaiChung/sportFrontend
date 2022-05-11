@@ -1,14 +1,14 @@
 <template>
-  <div id="Home"> </div>
+  <div id="mobileHeader"> this is mobile Header </div>
 </template>
 
 <script>
   export default {
-    name: 'Home',
+    name: 'mobileHeader',
   };
 </script>
 
 <style lang="scss" scoped>
-  #Home {
+  #mobileHeader {
   }
 </style>

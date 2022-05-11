@@ -1,5 +1,4 @@
 import { getMenuGameType, getMenuGameCatList } from '@/api/Game';
-// import { autoAPI } from '@/api/promiseApiHandler';
 
 export default {
   namespaced: true,

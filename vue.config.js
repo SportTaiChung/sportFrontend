@@ -20,7 +20,6 @@ module.exports = {
       sass: {
         prependData: `
            @import "@/style/index.scss";
-           @import "@/style/animateOverWrite.scss";
         `,
       },
     },
