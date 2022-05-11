@@ -44,6 +44,7 @@ export default async () => {
 
   // 動態靜態路由合併
   const finalRoute = [...routes, ...dynamicRouteRes];
+  console.log('finalRoute:', finalRoute);
 
   const router = new VueRouter({
     routes: finalRoute,

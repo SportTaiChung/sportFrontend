@@ -1,7 +1,7 @@
 <template>
   <div class="headerTop">
     <div class="headerTop_logo">
-      <img alt="" src="@/assets/img/upbet.png" />
+      <img alt="" src="@/assets/img/pc/upbet.png" />
     </div>
     <div class="headerTop_nav">
       <el-menu
@@ -87,7 +87,6 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  @import '@/assets/sass/global.scss';
   .headerTop {
     width: 100%;
     height: 100%;

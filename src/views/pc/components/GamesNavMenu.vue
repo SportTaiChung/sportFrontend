@@ -130,7 +130,6 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  @import '@/assets/sass/global.scss';
   .activeState {
     border-bottom: 3px solid #ffffff;
   }
