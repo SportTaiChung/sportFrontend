@@ -3,8 +3,8 @@
     <div class="setUp_L">
       <span class="setUp_color">02-20 18:45:00</span>
       <div>
-        <img alt="" class="icon" src="@/assets/img/sun1.svg" @click="changeTheme('light')" />
-        <img alt="" class="icon" src="@/assets/img/yue.svg" @click="changeTheme('dark')" />
+        <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" />
+        <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" />
       </div>
     </div>
     <div class="setUp_C">
@@ -79,7 +79,6 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  @import '@/assets/sass/global.scss';
 
   .setUp_color {
     margin-right: 10px;

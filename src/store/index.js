@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import User from './modules/User';
 import Game from './modules/Game';
 import { dataFresh } from '@/api/Common';
-// import { autoAPI } from '@/api/promiseApiHandler';
 
 Vue.use(Vuex);
 

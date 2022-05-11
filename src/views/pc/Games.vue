@@ -1,5 +1,5 @@
 <template>
-  <div id="Games">
+  <div id="PCGames">
     <div class="head">
       <GamesHeader></GamesHeader>
     </div>
@@ -16,18 +16,18 @@
 </template>
 
 <script>
-  import GamesHeader from '@/components/Games/GamesHeader.vue';
-  import GamesSetup from '@/components/Games/GamesSetup.vue';
-  import GamesNavMenu from '@/components/Games/GamesNavMenu.vue';
+  import GamesHeader from './components/GamesHeader.vue';
+  import GamesSetup from './components/GamesSetup.vue';
+  import GamesNavMenu from './components/GamesNavMenu.vue';
   export default {
-    name: 'Games',
+    name: 'PCGames',
     components: { GamesHeader, GamesSetup, GamesNavMenu },
   };
 </script>
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  #Games {
+  #PCGames {
     height: 100%;
     .head {
       width: 100%;
@@ -51,8 +51,6 @@
         width: 100%;
         height: 100%;
         display: flex;
-        // @include background-color-hederTop();
-        // background: #ffb5b5;
       }
     }
   }

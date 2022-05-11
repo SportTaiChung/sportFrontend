@@ -1,4 +1,28 @@
 {
+	"Vue init": {
+		"prefix": "vinit",
+		"body": [
+			"<template>",
+			"\t<div id='$TM_FILENAME_BASE'>",
+			"",
+			"\t</div>",
+			"</template>",
+			"",
+			"<script>",
+			"export default {",
+			"\tname:'$TM_FILENAME_BASE',",
+			"\t$0",
+			"}",
+			"</script>",
+			"",
+			"<style lang=\"scss\" scoped>",
+			"#$TM_FILENAME_BASE{",
+			"",
+			"}",
+			"</style>"
+		],
+		"description": "Vue default"
+	},
 	"loadingTrue": {
 		"prefix": "lt",
 		"body": [
