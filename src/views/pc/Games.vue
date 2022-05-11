@@ -8,10 +8,8 @@
     </div>
     <div class="main">
       <GamesNavMenu></GamesNavMenu>
-      <router-view />
+      <GamesTableList></GamesTableList>
     </div>
-
-    <div class="test">123trs</div>
   </div>
 </template>
 
@@ -19,9 +17,10 @@
   import GamesHeader from './components/GamesHeader.vue';
   import GamesSetup from './components/GamesSetup.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
+  import GamesTableList from './components/GamesTableList.vue';
   export default {
     name: 'PCGames',
-    components: { GamesHeader, GamesSetup, GamesNavMenu },
+    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList },
   };
 </script>
 
@@ -44,14 +43,6 @@
       width: 100%;
       height: calc(100% - 108px);
       display: flex;
-      nav-menu {
-        height: 100%;
-      }
-      .main_body {
-        width: 100%;
-        height: 100%;
-        display: flex;
-      }
     }
   }
 </style>

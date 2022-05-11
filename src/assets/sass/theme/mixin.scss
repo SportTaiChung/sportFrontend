@@ -7,7 +7,7 @@
     }
   }
 }
-//右下按钮字体颜色颜色
+// 主要按鈕字體顏色
 @mixin font_color() {
   @each $themename, $theme in $themes {
     [data-theme="#{$themename}"] & {
@@ -135,6 +135,16 @@
     }
   }
 }
+
+//左侧导航子选项背景颜色
+@mixin nav_menu_active_bg() {
+  @each $themename, $theme in $themes {
+    [data-theme="#{$themename}"] & {
+      background: map-get($map: $theme, $key: nav_menu_active_bg);
+    }
+  }
+}
+
 //更多时表格背景颜色
 @mixin betInfo_MainRightTable() {
   @each $themename, $theme in $themes {
@@ -151,11 +161,12 @@
     }
   }
 }
-//中间表格背景颜色
-@mixin main-bg-color() {
+
+//中间表格 border 颜色
+@mixin main_bg_border_color() {
   @each $themename, $theme in $themes {
     [data-theme="#{$themename}"] & {
-      background: map-get($map: $theme, $key: main-bg-color);
+      border-color: map-get($map: $theme, $key: main_bg_border_color);
     }
   }
 }

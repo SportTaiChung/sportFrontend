@@ -1,5 +1,5 @@
 <template>
-  <div id="GamesNavMenu">
+  <div id="GamesNavMenu" :style="navHeaderStyleJudge">
     <div class="nav_header" v-show="!isCollapse">
       <ul>
         <li
@@ -51,7 +51,8 @@
           >
             <template slot="title">
               <div class="nav_bottom_item">
-                <span>{{ Items.WagerTypeName }}</span>
+                <!-- <span class="subMenuItemText">{{ Items.WagerTypeName }}</span> -->
+                <span class="nav_text">{{ Items.WagerTypeName }}</span>
                 <span class="nav_number">{{ Items.count }}</span>
               </div>
             </template>
@@ -67,9 +68,16 @@
     name: 'GamesNavMenu',
     data() {
       return {
+        // 是否縮起選單
         isCollapse: false,
         defaultActive: '',
       };
+    },
+    mounted() {
+      if (this.gameStore.BallTypeList.length !== 0) {
+        // 一進入頁面預設選取第一個
+        this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
+      }
     },
     computed: {
       gameStore() {
@@ -84,13 +92,33 @@
       showHiddenCollapseText() {
         return this.showGameTypeList.find((it) => it.key === this.gameTypeID).value;
       },
+      navHeaderStyleJudge() {
+        if (this.isCollapse) {
+          return 'width:64px;min-width:64px';
+        } else {
+          return 'width:200px;min-width:200px';
+        }
+      },
     },
     methods: {
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
+          // 手動切換gameType時,預設要選取第一個
+          this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
           this.$store.commit('SetLoading', false);
         });
+      },
+      callGetGameDetail(CatID, WagerTypeKey) {
+        this.$store
+          .dispatch('Game/GetGameDetail', {
+            GameType: this.gameTypeID,
+            CatID,
+            WagerTypeKey,
+          })
+          .then((res) => {
+            console.log('getGameDetail done:', CatID, WagerTypeKey);
+          });
       },
       gameTypeClickHandler(key) {
         this.$router.replace({
@@ -114,16 +142,72 @@
         } else {
           clickWagerTypeKey = WagerTypeKey;
         }
-        console.log(clickCatID, clickWagerTypeKey);
+
+        // 獲取遊戲detail
+        this.callGetGameDetail(clickCatID, clickWagerTypeKey);
       },
     },
   };
 </script>
 
 <style lang="scss">
+  @import '@/assets/sass/theme/mixin.scss';
+  @import '@/assets/sass/theme/themeVariable.scss';
+  //覆蓋主題
+  #app[data-theme='light'] {
+    #GamesNavMenu {
+      background: $GamesNavMenu_BG_COLOR;
+      .el-menu-item.is-active {
+        .nav_text {
+          color: $nav_submenu_active_text !important;
+        }
+      }
+      .el-submenu {
+        border-bottom: 1px solid $GamesNavMenu_submenu_border_bottom_color;
+      }
+    }
+  }
+  #app[data-theme='dark'] {
+    #GamesNavMenu {
+      background: $GamesNavMenu_BG_COLOR1;
+      .el-menu-item.is-active {
+        .nav_text {
+          color: $nav_submenu_active_text1 !important;
+        }
+      }
+      .el-submenu {
+        border-bottom: 1px solid $GamesNavMenu_submenu_border_bottom_color1;
+      }
+    }
+  }
+
   #GamesNavMenu {
-    .el-menu-item {
-      padding-right: 0px !important;
+    .el-menu {
+      border: 0px;
+
+      .el-menu-item {
+        padding-right: 0px !important;
+      }
+      .el-menu-item-group__title {
+        padding: 0px;
+      }
+      .el-submenu {
+        .el-submenu__title {
+          height: 35px;
+          line-height: 35px;
+          &:hover {
+            @include hover_color();
+          }
+        }
+        .el-menu-item {
+          height: 35px;
+          line-height: 35px;
+          @include menu_item_bg();
+        }
+        &.is-active {
+          @include nav_menu_active_bg();
+        }
+      }
     }
   }
 </style>
@@ -139,7 +223,6 @@
     display: flex;
     align-items: center;
     padding: 0 10px;
-    border-right: 1px solid #fff;
     @include nav-headrtcolor();
     @include nav-headrtBgcolor();
 
