@@ -40,7 +40,7 @@
 
 <style lang="scss" scoped>
   #Init {
-    background-color: white;
+    background-color: #1a2b3c;
     width: 100%;
     height: 100%;
   }

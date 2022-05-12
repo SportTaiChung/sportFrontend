@@ -7,8 +7,9 @@
       <GamesSetup></GamesSetup>
     </div>
     <div class="main">
-      <GamesNavMenu></GamesNavMenu>
-      <GamesTableList></GamesTableList>
+      <GamesNavMenu :isNavMenuCollapse.sync="isNavMenuCollapse"></GamesNavMenu>
+      <GamesTableList :isNavMenuCollapse="isNavMenuCollapse"></GamesTableList>
+      <GamesBetInfo />
     </div>
   </div>
 </template>
@@ -18,9 +19,17 @@
   import GamesSetup from './components/GamesSetup.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTableList.vue';
+  import GamesBetInfo from './components/GamesBetInfo.vue';
   export default {
     name: 'PCGames',
-    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList },
+    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList, GamesBetInfo },
+    data() {
+      return {
+        // 左側選單是否縮起選單
+        isNavMenuCollapse: false,
+      };
+    },
+    methods: {},
   };
 </script>
 

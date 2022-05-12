@@ -1,5 +1,4 @@
 import axios from 'axios';
-import router from '../router';
 import store from '@/store';
 import * as message from '@/utils/messageHandler.js';
 import API_ERROR_CODE from '@/Config/API_ERROR_CODE';
@@ -39,7 +38,7 @@ instance.interceptors.response.use(
     if (resCode && resCode !== 200) {
       if (resCode === -101) {
         // token驗證失敗(已登入模式)
-        router.replace({ name: 'Login' });
+        window.router.replace({ name: 'Login' });
       }
       message.error(API_ERROR_CODE[resCode]);
       store.commit('SetLoading', false);

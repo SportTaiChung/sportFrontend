@@ -1,6 +1,6 @@
 <template>
   <div id="GamesNavMenu" :style="navHeaderStyleJudge">
-    <div class="nav_header" v-show="!isCollapse">
+    <div class="nav_header" v-show="!isNavMenuCollapse">
       <ul>
         <li
           v-for="(item, i) in showGameTypeList"
@@ -12,21 +12,21 @@
         </li>
       </ul>
       <div class="Collapse C_show">
-        <i class="el-icon-arrow-left" @click="isCollapse = !isCollapse"></i>
+        <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
-    <div class="nav_header nav_header1" v-show="isCollapse">
+    <div class="nav_header nav_header1" v-show="isNavMenuCollapse">
       <div class="Collapse C_hide">
-        <i class="el-icon-arrow-left" @click="isCollapse = !isCollapse"></i>
+        <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
     <el-menu
       class="el-menu-vertical-demo color_text"
       :default-active="defaultActive"
-      :collapse="isCollapse"
+      :collapse="isNavMenuCollapse"
       :unique-opened="true"
     >
-      <el-submenu index="状态" class="collapse_GameType" v-show="isCollapse">
+      <el-submenu index="状态" class="collapse_GameType" v-show="isNavMenuCollapse">
         <template slot="title">
           <i class="Collapse_i">{{ showHiddenCollapseText }}</i>
         </template>
@@ -66,10 +66,14 @@
 <script>
   export default {
     name: 'GamesNavMenu',
+    props: {
+      isNavMenuCollapse: {
+        type: Boolean,
+        require: true,
+      },
+    },
     data() {
       return {
-        // 是否縮起選單
-        isCollapse: false,
         defaultActive: '',
       };
     },
@@ -84,7 +88,7 @@
         return this.$store.state.Game;
       },
       showGameTypeList() {
-        return this.gameStore.GameTypeList.filter((it, index) => index <= 2);
+        return this.$store.getters['Game/showGameTypeList'];
       },
       gameTypeID() {
         return parseInt(this.$route.query.gameType);
@@ -93,7 +97,7 @@
         return this.showGameTypeList.find((it) => it.key === this.gameTypeID).value;
       },
       navHeaderStyleJudge() {
-        if (this.isCollapse) {
+        if (this.isNavMenuCollapse) {
           return 'width:64px;min-width:64px';
         } else {
           return 'width:200px;min-width:200px';
@@ -101,6 +105,9 @@
       },
     },
     methods: {
+      setNavMenuCollapse(val) {
+        this.$emit('update:isNavMenuCollapse', val);
+      },
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {

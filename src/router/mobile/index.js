@@ -2,6 +2,6 @@ export default [
   {
     path: '/Games',
     name: 'Games',
-    component: () => import(/* webpackChunkName: "MobileGames" */ '../../views/mobile/Games.vue'),
+    component: () => import(/* webpackChunkName: "Games" */ '../../views/mobile/Games.vue'),
   },
 ];

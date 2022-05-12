@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import User from './modules/User';
-import Game from './modules/Game';
+import Game from './modules/Game/Game';
 import { dataFresh } from '@/api/Common';
 
 Vue.use(Vuex);

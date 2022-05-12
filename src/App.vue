@@ -1,5 +1,10 @@
 <template>
-  <div id="app" v-loading.fullscreen.lock="isLoading" :data-theme="nowThemeInfo">
+  <div
+    id="app"
+    v-loading.fullscreen.lock="isLoading"
+    :data-theme="nowThemeInfo"
+    :style="appStyleJudge()"
+  >
     <router-view />
   </div>
 </template>
@@ -32,6 +37,13 @@
           this.$store.commit('SetIsMobile', true);
         } else {
           this.$store.commit('SetIsMobile', false);
+        }
+      },
+      appStyleJudge() {
+        if (process.env.VUE_APP_UI === 'pc') {
+          return 'min-width:1200px;';
+        } else {
+          return '';
         }
       },
     },

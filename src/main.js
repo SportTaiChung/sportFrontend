@@ -8,14 +8,21 @@ import axios from 'axios';
 import * as message from '@/utils/messageHandler.js';
 import * as common from '@/utils/common';
 import * as utils from '@/utils/utils';
+import * as filters from '@/utils/filters';
 import '@/assets/sass/global.scss';
 import '@/assets/sass/elementChange.scss';
 
 import 'element-ui/lib/theme-chalk/index.css';
 import 'normalize.css';
 
+Object.keys(filters).forEach((key) => {
+  Vue.filter(key, filters[key]);
+});
+
 Promise.all([router()]).then(async (res) => {
-  const router = res[0];
+  // 將router注入到全域 方便axios等使用
+  window.router = res[0];
+
   Vue.prototype.$common = common;
   Vue.prototype.$URL = URL;
   Vue.prototype.$axios = axios;
@@ -27,7 +34,7 @@ Promise.all([router()]).then(async (res) => {
   Vue.config.productionTip = false;
 
   new Vue({
-    router,
+    router: window.router,
     store,
     render: (h) => h(App),
   }).$mount('#app');
