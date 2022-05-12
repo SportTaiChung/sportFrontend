@@ -13,5 +13,7 @@
     width: 300px;
     height: 100%;
     background-color: #d5d5d5;
+    text-align: center;
+    line-height: 100px;
   }
 </style>

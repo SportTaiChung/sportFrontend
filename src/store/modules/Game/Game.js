@@ -15,6 +15,8 @@ export default {
     selectGameType: null,
     // 當前選擇的球種
     selectCatID: null,
+    // 當前選擇的WagerType
+    selectWagerTypeKey: null,
   },
   getters: {
     ...GameTypeListGetters,
@@ -30,9 +32,10 @@ export default {
     setGameList(state, val) {
       state.GameList = val;
     },
-    setCatIDAndGameType(state, { selectGameType, selectCatID }) {
+    setCatIDAndGameType(state, { selectGameType, selectCatID, selectWagerTypeKey }) {
       state.selectGameType = selectGameType;
       state.selectCatID = selectCatID;
+      state.selectWagerTypeKey = selectWagerTypeKey;
     },
   },
   actions: {
@@ -66,12 +69,14 @@ export default {
         store.commit('setCatIDAndGameType', {
           selectGameType: null,
           selectCatID: null,
+          selectWagerTypeKey: null,
         });
         return getGameDetail(postData)
           .then(async (res) => {
             store.commit('setCatIDAndGameType', {
               selectGameType: postData.GameType,
               selectCatID: postData.CatID,
+              selectWagerTypeKey: postData.WagerTypeKey,
             });
             store.commit('setGameList', res.data);
             resolve(res);

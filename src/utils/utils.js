@@ -73,3 +73,20 @@ export function timeFormat(time) {
     (s.toString().length === 1 ? '0' + s : s)
   );
 }
+
+// MMDD
+export function timeFormatMMDD(time) {
+  const date = new Date(time);
+  const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
+  const D = date.getDate().toString().padStart(2, '0');
+
+  return M + D;
+}
+
+// HH:mm
+export function timeFormatHHmm(time) {
+  const date = new Date(time);
+  const h = date.getHours() + ':';
+  const m = date.getMinutes();
+  return (h.toString().length === 2 ? '0' + h : h) + (m.toString().length === 1 ? '0' + m : m);
+}

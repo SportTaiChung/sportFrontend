@@ -76,4 +76,11 @@
 			"JSON.parse(JSON.stringify($0))",
 		]
 	},
+	"data-theme": {
+		"prefix": "datatheme",
+		"body": [
+			"#app[data-theme='$0'] {",
+			"}"
+		]
+	}
 }

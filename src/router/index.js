@@ -32,7 +32,6 @@ export default async () => {
   // 動態路由注入
   const dynamicRoute = [];
   if (process.env.VUE_APP_UI === 'pc') {
-    console.log('add pc route');
     dynamicRoute.push(import('./pc/index'));
   } else {
     console.log('add mobile route');

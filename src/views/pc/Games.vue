@@ -18,7 +18,7 @@
   import GamesHeader from './components/GamesHeader.vue';
   import GamesSetup from './components/GamesSetup.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
-  import GamesTableList from './components/GamesTableList.vue';
+  import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import GamesBetInfo from './components/GamesBetInfo.vue';
   export default {
     name: 'PCGames',
