@@ -9,7 +9,7 @@ export function getMenuGameType(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { Lang: store.state.Lang },
+    data: { lang: store.state.Lang },
   });
 }
 
@@ -22,7 +22,7 @@ export function getMenuGameCatList(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { Lang: store.state.Lang, ...postData },
+    data: { lang: store.state.Lang, ...postData },
   });
 }
 
@@ -35,6 +35,6 @@ export function getGameDetail(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { Lang: store.state.Lang, ...postData },
+    data: { lang: store.state.Lang, ...postData },
   });
 }

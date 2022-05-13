@@ -117,15 +117,30 @@
         });
       },
       callGetGameDetail(CatID, WagerTypeKey) {
-        this.$store
-          .dispatch('Game/GetGameDetail', {
+        let postData = null;
+
+        if (false) {
+          // TODO 測試CODE
+          postData = {
+            GameType: 1,
+            CatID: 102,
+            WagerTypeKey: 1,
+          };
+        } else {
+          postData = {
             GameType: this.gameTypeID,
             CatID,
             WagerTypeKey,
-          })
-          .then((res) => {
-            console.log('getGameDetail done:', CatID, WagerTypeKey);
-          });
+          };
+        }
+        this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
+          console.log(
+            'getGameDetail done GameType CatID WagerTypeKey',
+            this.gameTypeID,
+            CatID,
+            WagerTypeKey
+          );
+        });
       },
       gameTypeClickHandler(key) {
         this.$router.replace({

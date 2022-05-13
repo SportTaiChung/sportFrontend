@@ -65,13 +65,14 @@
         return this.$store.getters['Game/showTableHeaderList'];
       },
       GameList() {
-        if (this.gameStore.GameList.length === 0) {
-          return [];
-        } else {
-          return this.gameStore.GameList.List.map((it, index) => {
-            return { uid: index, ...it };
-          });
-        }
+        return this.$store.getters['Game/gameListFinalData'];
+        // if (this.gameStore.GameList.length === 0) {
+        //   return [];
+        // } else {
+        //   return this.gameStore.GameList.List.map((it, index) => {
+        //     return { uid: index, ...it };
+        //   });
+        // }
       },
       arrowIconJudge() {
         if (this.activeCollapse.length === 0) {

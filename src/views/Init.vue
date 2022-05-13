@@ -6,17 +6,22 @@
   export default {
     name: 'Init',
     created() {
-      this.$store.commit('SetLoading', true);
-      this.$store
-        .dispatch('User/GetUserInfoCash')
-        .then(async () => {
-          this.$store.commit('SetIsInit', true);
-          await this.callGetAllMenuData();
-          this.$router.replace({ name: 'Games', query: { gameType: this.gameTypeID } });
-        })
-        .finally(() => {
-          this.$store.commit('SetLoading', false);
-        });
+      // 從未登入過,導回login頁面
+      if (localStorage.getItem('Token') === null && localStorage.getItem('MBID') === null) {
+        this.$router.replace({ name: 'Login' });
+      } else {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('User/GetUserInfoCash')
+          .then(async () => {
+            this.$store.commit('SetIsInit', true);
+            await this.callGetAllMenuData();
+            this.$router.replace({ name: 'Games', query: { gameType: this.gameTypeID } });
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      }
     },
     computed: {
       gameTypeID() {

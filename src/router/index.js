@@ -27,6 +27,11 @@ export default async () => {
       name: 'Login',
       component: () => import(/* webpackChunkName: "Login" */ '../views/Login.vue'),
     },
+    {
+      path: '/Test',
+      name: 'Test',
+      component: () => import(/* webpackChunkName: "test" */ '../views/Test.vue'),
+    },
   ];
 
   // 動態路由注入
@@ -58,7 +63,7 @@ export default async () => {
 
   // 路由跳轉前劫持
   router.beforeEach((to, from, next) => {
-    if (store.state.isInit || to.name === 'Init' || to.name === 'Login') {
+    if (store.state.isInit || to.name === 'Init' || to.name === 'Login' || to.name === 'Test') {
       next();
     } else {
       next({ name: 'Init', query: to.query });
