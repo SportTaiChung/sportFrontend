@@ -9,7 +9,7 @@
     name: 'Odd',
     props: {
       OddValue: {
-        type: Number,
+        type: [Number, String],
       },
     },
     data() {

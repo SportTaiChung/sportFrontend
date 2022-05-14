@@ -17,8 +17,18 @@
                 </div>
               </div>
               <div class="centerTeamBlock">
-                <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
-                <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                <!-- 主客場對調 -->
+                <template v-if="$SportLib.isHomeAwayReverse(source.CatID)">
+                  <div>
+                    <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                    <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                  <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                </template>
+
                 <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
               </div>
               <div class="rightFavoriteBlock">
@@ -31,16 +41,10 @@
               v-for="(wagerData, wagerIndex) in teamData.Wager"
               :key="wagerIndex"
             >
-              <!-- <div
-                class="WagerList"
-                v-html="WagerListItemHTML(teamData, wagerData, rowIndex)"
-              >
-              </div> -->
-
               <div
                 class="WagerList"
                 :set="
-                  ((sportData = $SportLib.WagerDataToShowData(wagerData, rowIndex)),
+                  ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
                   (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
                 "
               >

@@ -54,6 +54,15 @@ export function WagerTypeIDandWagerGrpIDtoString(typeid, grpid) {
 }
 
 /**
+ * @param {Number} catID 球種ID
+ * @returns {Boolean} 是否需要主客場對調
+ */
+export function isHomeAwayReverse(catID) {
+  const intCatID = parseInt(catID);
+  return intCatID === 4;
+}
+
+/**
  * WagerData 轉 成畫面需要組成的資料格式
  * @param {Object} wagerData team底下的wager
  * @param {Object} rowIndex  team底下的第幾個row
@@ -66,13 +75,14 @@ export function WagerTypeIDandWagerGrpIDtoString(typeid, grpid) {
  *     > normal: 預設版型
  *     > single: 只顯示一個Odd
  */
-export function WagerDataToShowData(wagerData, rowIndex) {
+export function WagerDataToShowData(catID, wagerData, rowIndex) {
   try {
     let topPlayMethod = '';
     let topPlayOdd = '';
     let bottomPlayMethod = '';
     let bottomPlayOdd = '';
     let layoutType = 'normal';
+    const bigSmallTypeIDs = [102, 104, 109];
     if (!wagerData?.isNoData) {
       // TODO 將來要抽成function
       if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
@@ -83,11 +93,7 @@ export function WagerDataToShowData(wagerData, rowIndex) {
         topPlayOdd = wagerData.Odds[rowIndex].HomeHdpOdds;
         bottomPlayMethod = wagerData.Odds[rowIndex].AwayHdp;
         bottomPlayOdd = wagerData.Odds[rowIndex].AwayHdpOdds;
-      } else if (
-        wagerData.WagerTypeID === 102 ||
-        wagerData.WagerTypeID === 104 ||
-        wagerData.WagerTypeID === 109
-      ) {
+      } else if (bigSmallTypeIDs.indexOf(wagerData.WagerTypeID) !== -1) {
         // 大小
         topPlayMethod = wagerData.Odds[rowIndex].OULine;
         topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
@@ -110,6 +116,13 @@ export function WagerDataToShowData(wagerData, rowIndex) {
         bottomPlayMethod = '雙';
         bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
       }
+
+      // 處理主客場對調
+      //  ps.大小玩法不能對調
+      if (isHomeAwayReverse(catID) && bigSmallTypeIDs.indexOf(wagerData.WagerTypeID) === -1) {
+        [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
+        [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
+      }
     }
 
     return {
@@ -119,7 +132,8 @@ export function WagerDataToShowData(wagerData, rowIndex) {
       bottomPlayOdd,
       layoutType,
     };
-  } catch (cap) {
+  } catch (error) {
+    console.error('error:', error);
     debugger;
   }
 }
