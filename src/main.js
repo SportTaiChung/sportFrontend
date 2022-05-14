@@ -6,7 +6,7 @@ import ElementUI from 'element-ui';
 import VueCarousel from 'vue-carousel';
 import axios from 'axios';
 import * as message from '@/utils/messageHandler.js';
-import * as common from '@/utils/common';
+import * as SportLib from '@/utils/SportLib';
 import * as utils from '@/utils/utils';
 import * as filters from '@/utils/filters';
 import '@/assets/sass/global.scss';
@@ -23,7 +23,7 @@ Promise.all([router()]).then(async (res) => {
   // 將router注入到全域 方便axios等使用
   window.router = res[0];
 
-  Vue.prototype.$common = common;
+  Vue.prototype.$SportLib = SportLib;
   Vue.prototype.$URL = URL;
   Vue.prototype.$axios = axios;
   Vue.prototype.$MSG = message;

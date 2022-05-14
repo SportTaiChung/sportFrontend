@@ -6,25 +6,20 @@
     <table>
       <tbody>
         <template v-for="(teamData, teamIndex) in source.Team">
-          <tr
-            v-for="(teamDataRowNum, teamDataRowIndex) in teamData.Row"
-            :key="`${teamIndex}-${teamDataRowIndex}`"
-          >
+          <tr v-for="(teamDataRowNum, rowIndex) in teamData.Row" :key="`${teamIndex}-${rowIndex}`">
             <td class="FirstCatNameBlock">
               <div class="leftTimeBlock">
-                <div class="timeRow" v-if="teamDataRowIndex === 0">
+                <div class="timeRow" v-if="rowIndex === 0">
                   {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
                 </div>
-                <div class="timeRow" v-if="teamDataRowIndex === 0">
+                <div class="timeRow" v-if="rowIndex === 0">
                   {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
                 </div>
               </div>
               <div class="centerTeamBlock">
                 <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                 <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
-                <div class="teamRow" v-if="teamData.hasDrewOdds && teamDataRowIndex === 0">
-                  和局
-                </div>
+                <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
               </div>
               <div class="rightFavoriteBlock">
                 <div class="star"></div>
@@ -36,10 +31,76 @@
               v-for="(wagerData, wagerIndex) in teamData.Wager"
               :key="wagerIndex"
             >
+              <!-- <div
+                class="WagerList"
+                v-html="WagerListItemHTML(teamData, wagerData, rowIndex)"
+              >
+              </div> -->
+
               <div
                 class="WagerList"
-                v-html="WagerListItemHTML(teamData, wagerData, teamDataRowIndex)"
+                :set="
+                  ((sportData = $SportLib.WagerDataToShowData(wagerData, rowIndex)),
+                  (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
+                "
               >
+                <template v-if="wagerData.isNoData">
+                  <!-- 如果有和 -->
+                  <template v-if="isShowDrewOdd">
+                    <div class="WagerRow"> </div>
+                    <div class="WagerRow"> </div>
+                    <div class="WagerRow"> </div>
+                  </template>
+                  <template v-else>
+                    <div class="WagerRow"> </div>
+                    <div class="WagerRow"> </div>
+                  </template>
+                </template>
+
+                <template v-else>
+                  <!-- 只有單一個Odd Layout -->
+                  <template v-if="sportData.layoutType === 'single'">
+                    <div class="WagerRow">
+                      <div class="WagerCenterItem">
+                        <Odd :OddValue="sportData.topPlayOdd" />
+                      </div>
+                    </div>
+                    <div class="WagerRow">
+                      <div class="WagerCenterItem">
+                        <Odd :OddValue="sportData.bottomPlayOdd" />
+                      </div>
+                    </div>
+                  </template>
+                  <!-- 其他正常Layout -->
+                  <template v-else>
+                    <div class="WagerRow">
+                      <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
+                      <div class="WagerItem"> <Odd :OddValue="sportData.topPlayOdd" /> </div>
+                    </div>
+                    <div class="WagerRow">
+                      <div class="WagerItem"> {{ sportData.bottomPlayMethod }} </div>
+                      <div class="WagerItem"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
+                    </div>
+                  </template>
+
+                  <!-- '和' 玩法顯示 -->
+                  <template v-if="isShowDrewOdd">
+                    <template
+                      v-if="
+                        wagerData.Odds[0].DrewOdds === '0' || wagerData.Odds[0].DrewOdds === '0.00'
+                      "
+                    >
+                      <div class="WagerRow"> </div>
+                    </template>
+                    <template v-else>
+                      <div class="WagerRow">
+                        <div class="WagerCenterItem">
+                          <Odd :OddValue="wagerData.Odds[0].DrewOdds"
+                        /></div>
+                      </div>
+                    </template>
+                  </template>
+                </template>
               </div>
             </td>
             <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
@@ -56,10 +117,13 @@
 
 <script>
   import mixin from './GamesTableMixin';
-
+  import Odd from '@/components/Odd';
   export default {
     mixins: [mixin],
     name: 'GameCollapse',
+    components: {
+      Odd,
+    },
     props: {
       index: {
         // index of current item
@@ -73,110 +137,7 @@
         },
       },
     },
-    methods: {
-      WagerListItemHTML(teamData, wagerData, rowIndex) {
-        // 是否顯示和
-        const isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0;
-        // 如果為空資料
-        if (wagerData.isNoData) {
-          if (isShowDrewOdd) {
-            return `
-            <div class="WagerRow">
-            </div>
-            <div class="WagerRow">
-            </div>
-            <div class="WagerRow">
-            </div>
-          `;
-          } else {
-            return `
-            <div class="WagerRow">
-            </div>
-            <div class="WagerRow">
-            </div>
-          `;
-          }
-        } else {
-          let topPlayMethod = '';
-          let topPlayOdd = '';
-          let bottomPlayMethod = '';
-          let bottomPlayOdd = '';
-          let isSingleOdd = false;
-          // TODO 將來要抽成function
-          if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
-            // 關閉狀態
-          } else if (wagerData.WagerTypeID === 101 || wagerData.WagerTypeID === 103) {
-            // 讓分
-            topPlayMethod = wagerData.Odds[rowIndex].HomeHdp;
-            topPlayOdd = wagerData.Odds[rowIndex].HomeHdpOdds;
-            bottomPlayMethod = wagerData.Odds[rowIndex].AwayHdp;
-            bottomPlayOdd = wagerData.Odds[rowIndex].AwayHdpOdds;
-          } else if (
-            wagerData.WagerTypeID === 102 ||
-            wagerData.WagerTypeID === 104 ||
-            wagerData.WagerTypeID === 109
-          ) {
-            // 大小
-            topPlayMethod = wagerData.Odds[rowIndex].OULine;
-            topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
-            bottomPlayMethod = '小';
-            bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
-          } else if (wagerData.WagerTypeID === 110 || wagerData.WagerTypeID === 111) {
-            // 獨贏
-            topPlayOdd = wagerData.Odds[rowIndex].HomeOdds;
-            bottomPlayOdd = wagerData.Odds[rowIndex].AwayOdds;
-            isSingleOdd = true;
-          } else if (
-            wagerData.WagerTypeID === 105 ||
-            wagerData.WagerTypeID === 113 ||
-            wagerData.WagerTypeID === 126 ||
-            wagerData.WagerTypeID === 129
-          ) {
-            // 單雙
-            topPlayMethod = '單';
-            topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
-            bottomPlayMethod = '雙';
-            bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
-          }
-
-          let resStr = ``;
-          // 只有單一Odd(Ex.獨贏)
-          if (isSingleOdd) {
-            resStr = `
-              <div class="WagerRow">
-                <div class="WagerCenterItem"> ${topPlayOdd} </div>
-              </div>
-              <div class="WagerRow">
-                <div class="WagerCenterItem"> ${bottomPlayOdd} </div>
-              </div>
-            `;
-          } else {
-            resStr = `
-              <div class="WagerRow">
-                <div class="WagerItem"> ${topPlayMethod} </div>
-                <div class="WagerItem"> ${topPlayOdd} </div>
-              </div>
-              <div class="WagerRow">
-                <div class="WagerItem"> ${bottomPlayMethod} </div>
-                <div class="WagerItem"> ${bottomPlayOdd} </div>
-              </div>
-            `;
-          }
-          // 和 顯示
-          if (isShowDrewOdd) {
-            if (wagerData.Odds[0].DrewOdds === '0' || wagerData.Odds[0].DrewOdds === '0.00') {
-              resStr += `<div class="WagerRow"> </div>`;
-            } else {
-              resStr += `
-               <div class="WagerRow">
-                <div class="WagerCenterItem"> ${wagerData.Odds[0].DrewOdds} </div>
-               </div>`;
-            }
-          }
-          return resStr;
-        }
-      },
-    },
+    methods: {},
   };
 </script>
 

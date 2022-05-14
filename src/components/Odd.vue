@@ -59,7 +59,6 @@
 <style lang="scss" scoped>
   .Odd {
     color: #3fa381;
-    font-size: 20px;
   }
   .biggerColor {
     color: red;

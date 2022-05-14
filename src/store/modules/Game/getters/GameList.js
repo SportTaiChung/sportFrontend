@@ -1,4 +1,4 @@
-import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/common';
+import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 export function showTableHeaderList(state) {
   return state.GameList.BestHead.map((it) => {
     return {
