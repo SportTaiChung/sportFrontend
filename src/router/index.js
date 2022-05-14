@@ -28,9 +28,16 @@ export default async () => {
       component: () => import(/* webpackChunkName: "Login" */ '../views/Login.vue'),
     },
     {
-      path: '/Test',
-      name: 'Test',
-      component: () => import(/* webpackChunkName: "test" */ '../views/Test.vue'),
+      path: '/TestTableData',
+      name: 'TestTableData',
+      component: () =>
+        import(/* webpackChunkName: "TestTableData" */ '../views/Test/TestTableData.vue'),
+    },
+    {
+      path: '/TestOddData',
+      name: 'TestOddData',
+      component: () =>
+        import(/* webpackChunkName: "TestTableData" */ '../views/Test/TestOddData.vue'),
     },
   ];
 
@@ -63,7 +70,13 @@ export default async () => {
 
   // 路由跳轉前劫持
   router.beforeEach((to, from, next) => {
-    if (store.state.isInit || to.name === 'Init' || to.name === 'Login' || to.name === 'Test') {
+    if (
+      store.state.isInit ||
+      to.name === 'Init' ||
+      to.name === 'Login' ||
+      to.name === 'TestOddData' ||
+      to.name === 'TestTableData'
+    ) {
       next();
     } else {
       next({ name: 'Init', query: to.query });

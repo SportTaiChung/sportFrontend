@@ -1,5 +1,5 @@
 <template>
-  <el-collapse-item title="效率 Efficiency" class="GameCollapse" :name="index">
+  <el-collapse-item class="GameCollapse" :name="index">
     <template slot="title">
       <div>{{ source.LeagueNameStr }}</div>
     </template>
@@ -72,10 +72,6 @@
           return {};
         },
       },
-    },
-    created() {},
-    data() {
-      return {};
     },
     methods: {
       WagerListItemHTML(teamData, wagerData, rowIndex) {
@@ -189,6 +185,7 @@
   @import './GameTable.scss';
   #app[data-theme='light'] {
     .GameCollapse {
+      border-bottom-color: #d0d0d0;
       table {
         background-color: white;
         color: black;
@@ -210,6 +207,7 @@
   }
   #app[data-theme='dark'] {
     .GameCollapse {
+      border-bottom: 1px solid #4f4f4f;
       table {
         background-color: #585858;
         color: white;
@@ -237,6 +235,9 @@
     border-bottom: 1px solid #f3f3f3;
   }
   .GameCollapse {
+    &:last-child {
+      margin-bottom: 0px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;

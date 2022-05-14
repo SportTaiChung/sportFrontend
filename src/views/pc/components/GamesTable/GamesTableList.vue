@@ -29,6 +29,7 @@
           :data-key="'uid'"
           :data-sources="GameList"
           :data-component="itemComponent"
+          :keeps="40"
         />
       </el-collapse>
     </template>
@@ -185,6 +186,7 @@
       .virtual-list {
         height: 100%;
         overflow-y: auto;
+        background-color: #e8e8e8;
         &::-webkit-scrollbar {
           /*隱藏滾輪*/
           display: none;
