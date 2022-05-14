@@ -148,7 +148,6 @@
         display: flex;
         .FirstCatNameBlock {
           display: flex;
-          min-width: $FirstCatNameBlockMinWidth;
           .leftArrowBlock {
             width: 50px;
             margin-right: 5px;

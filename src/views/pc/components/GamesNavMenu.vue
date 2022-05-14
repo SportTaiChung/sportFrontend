@@ -21,10 +21,12 @@
       </div>
     </div>
     <el-menu
+      ref="elMenu"
       class="el-menu-vertical-demo color_text"
       :default-active="defaultActive"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"
+      :collapse-transition="false"
     >
       <el-submenu index="状态" class="collapse_GameType" v-show="isNavMenuCollapse">
         <template slot="title">
@@ -46,8 +48,8 @@
           <el-menu-item
             v-for="(Items, y) in catData.Items"
             :key="y"
-            @click="menuItemClickHandler(catData, Items.WagerTypeKey, i)"
             :index="i + '-' + y"
+            @click="menuItemClickHandler(catData, Items.WagerTypeKey, i)"
           >
             <template slot="title">
               <div class="nav_bottom_item">
@@ -155,6 +157,12 @@
         clickCatID = catData.catid;
         // 父親層級被點
         if (WagerTypeKey === null) {
+          // 當只有點父層時,需要關閉其他球類已展開的兒子
+          if (this.$refs.elMenu.openedMenus?.length) {
+            this.$refs.elMenu.openedMenus.length = 0;
+            this.$refs.elMenu.openedMenus = [];
+          }
+
           this.defaultActive = `${catIndex}-0`;
           if (catData.Items.length === 0) {
             clickWagerTypeKey = 1;

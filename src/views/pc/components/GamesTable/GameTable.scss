@@ -1,1 +1,8 @@
-$FirstCatNameBlockMinWidth: 235px;
+.FirstCatNameBlock {
+  min-width: 400px;
+}
+@media screen and(max-width:1500px) {
+  .FirstCatNameBlock {
+    min-width: 235px;
+  }
+}

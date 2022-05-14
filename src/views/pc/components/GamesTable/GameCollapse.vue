@@ -12,20 +12,19 @@
           >
             <td class="FirstCatNameBlock">
               <div class="leftTimeBlock">
-                <div class="timeRow" v-if="teamDataRowIndex === 0">{{
-                  $lib.timeFormatMMDD(teamData.ScheduleTimeStr)
-                }}</div>
-                <div class="timeRow" v-if="teamDataRowIndex === 0">{{
-                  $lib.timeFormatHHmm(teamData.ScheduleTimeStr)
-                }}</div>
+                <div class="timeRow" v-if="teamDataRowIndex === 0">
+                  {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                </div>
+                <div class="timeRow" v-if="teamDataRowIndex === 0">
+                  {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                </div>
               </div>
               <div class="centerTeamBlock">
                 <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                 <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
-
-                <div class="teamRow" v-if="teamData.hasDrewOdds && teamDataRowIndex === 0"
-                  >和局</div
-                >
+                <div class="teamRow" v-if="teamData.hasDrewOdds && teamDataRowIndex === 0">
+                  和局
+                </div>
               </div>
               <div class="rightFavoriteBlock">
                 <div class="star"></div>
@@ -37,39 +36,10 @@
               v-for="(wagerData, wagerIndex) in teamData.Wager"
               :key="wagerIndex"
             >
-              <!-- 測試樣式時 拿掉備份 -->
-              <!-- v-html="WagerListItemHTML(teamData, wagerData, teamDataRowIndex)" -->
               <div
                 class="WagerList"
                 v-html="WagerListItemHTML(teamData, wagerData, teamDataRowIndex)"
               >
-                <!-- <div class="WagerRow">
-                  <div class="WagerCenterItem">123</div>
-                </div> -->
-                <!-- <div class="WagerRow">
-                  <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].AwayHdp }}</div>
-                  <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].AwayHdpOdds }}</div>
-                </div>
-                <div class="WagerRow">
-                  <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].HomeHdp }}</div>
-                  <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].HomeHdpOdds }}</div>
-                </div>
-                <div class="WagerRow"> </div> -->
-
-                <!-- <div class="WagerRow">
-                  <div class="WagerItem"></div>
-                  <div class="WagerItem"> </div>
-                </div>
-
-                <div class="WagerRow">
-                  <div class="WagerItem"> </div>
-                  <div class="WagerItem"> </div>
-                </div>
-
-                <div class="WagerRow">
-                  <div class="WagerItem"> </div>
-                  <div class="WagerItem"> </div>
-                </div> -->
               </div>
             </td>
             <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
@@ -109,25 +79,38 @@
     },
     methods: {
       WagerListItemHTML(teamData, wagerData, rowIndex) {
+        // 是否顯示和
+        const isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0;
+        // 如果為空資料
         if (wagerData.isNoData) {
-          return `
-          <div class="WagerRow">
-
-          </div>
-          <div class="WagerRow">
-
-          </div>
+          if (isShowDrewOdd) {
+            return `
+            <div class="WagerRow">
+            </div>
+            <div class="WagerRow">
+            </div>
+            <div class="WagerRow">
+            </div>
           `;
+          } else {
+            return `
+            <div class="WagerRow">
+            </div>
+            <div class="WagerRow">
+            </div>
+          `;
+          }
         } else {
           let topPlayMethod = '';
           let topPlayOdd = '';
           let bottomPlayMethod = '';
           let bottomPlayOdd = '';
           let isSingleOdd = false;
-          console.log(wagerData.Odds, rowIndex, wagerData.Odds[rowIndex]);
           // TODO 將來要抽成function
-          if (wagerData.Odds[rowIndex] === undefined) {
+          if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
+            // 關閉狀態
           } else if (wagerData.WagerTypeID === 101 || wagerData.WagerTypeID === 103) {
+            // 讓分
             topPlayMethod = wagerData.Odds[rowIndex].HomeHdp;
             topPlayOdd = wagerData.Odds[rowIndex].HomeHdpOdds;
             bottomPlayMethod = wagerData.Odds[rowIndex].AwayHdp;
@@ -137,14 +120,27 @@
             wagerData.WagerTypeID === 104 ||
             wagerData.WagerTypeID === 109
           ) {
+            // 大小
             topPlayMethod = wagerData.Odds[rowIndex].OULine;
             topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
             bottomPlayMethod = '小';
             bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
           } else if (wagerData.WagerTypeID === 110 || wagerData.WagerTypeID === 111) {
+            // 獨贏
             topPlayOdd = wagerData.Odds[rowIndex].HomeOdds;
             bottomPlayOdd = wagerData.Odds[rowIndex].AwayOdds;
             isSingleOdd = true;
+          } else if (
+            wagerData.WagerTypeID === 105 ||
+            wagerData.WagerTypeID === 113 ||
+            wagerData.WagerTypeID === 126 ||
+            wagerData.WagerTypeID === 129
+          ) {
+            // 單雙
+            topPlayMethod = '單';
+            topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
+            bottomPlayMethod = '雙';
+            bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
           }
 
           let resStr = ``;
@@ -171,7 +167,7 @@
             `;
           }
           // 和 顯示
-          if (teamData.hasDrewOdds && rowIndex === 0) {
+          if (isShowDrewOdd) {
             if (wagerData.Odds[0].DrewOdds === '0' || wagerData.Odds[0].DrewOdds === '0.00') {
               resStr += `<div class="WagerRow"> </div>`;
             } else {
@@ -183,17 +179,6 @@
           }
           return resStr;
         }
-
-        // `<div class="WagerRow">
-        //           <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].AwayHdp }}</div>
-        //           <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].AwayHdpOdds }}</div>
-        //         </div>
-        //         <div class="WagerRow">
-        //           <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].HomeHdp }}</div>
-        //           <div class="WagerItem">{{ wagerData.Odds[teamDataRowIndex].HomeHdpOdds }}</div>
-        //         </div>
-        //         <div class="WagerRow"> </div>
-        //         `;
       },
     },
   };
@@ -208,9 +193,6 @@
         background-color: white;
         color: black;
         tbody {
-          tr {
-            border-bottom: 1px solid #eee;
-          }
           .FirstCatNameBlock {
             .leftTimeBlock {
               .timeRow {
@@ -232,9 +214,6 @@
         background-color: #585858;
         color: white;
         tbody {
-          tr {
-            border-bottom: 1px solid #666;
-          }
           .FirstCatNameBlock {
             .leftTimeBlock {
               .timeRow {
@@ -254,6 +233,9 @@
     padding-top: 8px;
     padding-bottom: 8px;
   }
+  @mixin rowBorderBottom() {
+    border-bottom: 1px solid #f3f3f3;
+  }
   .GameCollapse {
     table {
       width: 100%;
@@ -269,7 +251,6 @@
         }
         .FirstCatNameBlock {
           display: flex;
-          min-width: $FirstCatNameBlockMinWidth;
           @include paddingTopAndBottom();
           .leftTimeBlock {
             width: 50px;
@@ -287,9 +268,13 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
+            padding-left: 5px;
             .teamRow {
               width: 100%;
               height: fit-content;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
           .rightFavoriteBlock {
@@ -317,6 +302,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-grow: 1;
           .borderWhiteBlock {
             background-color: rgba(255, 255, 255, 0.25);
             height: 15px;
@@ -329,9 +315,13 @@
             width: 100%;
             height: 100%;
             border-left: 1px solid #f3f3f3;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
 
             .WagerRow {
               display: flex;
+              width: 100%;
               height: 30px;
               border-bottom: 1px solid #f3f3f3;
               .WagerItem {
@@ -357,6 +347,7 @@
           width: 60px;
           min-width: 60px;
           white-space: nowrap;
+          @include rowBorderBottom();
         }
       }
     }

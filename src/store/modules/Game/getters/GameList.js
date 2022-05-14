@@ -2,7 +2,7 @@ import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/common';
 export function showTableHeaderList(state) {
   return state.GameList.BestHead.map((it) => {
     return {
-      originName: it.name,
+      originName: it.Name,
       showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeID, it.WagerGrpID),
       WagerGrpID: it.WagerGrpID,
       WagerTypeID: it.WagerTypeID,
@@ -38,10 +38,11 @@ export function gameListFinalData(state) {
           isNoData: true,
         });
         BestHeadData.forEach((headData, headIndex) => {
-          oldWagerDatas.forEach((oldWagerData, oldWagerDataIndex) => {
+          oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
             if (headData.WagerTypeID.indexOf(oldWagerData.WagerTypeID) !== -1) {
               newWagerData[headIndex] = oldWagerData;
               oldWagerDatas.splice(oldWagerDataIndex, 1);
+              return false;
             }
           });
         });
