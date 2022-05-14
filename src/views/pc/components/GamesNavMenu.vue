@@ -89,7 +89,7 @@
       // 10秒打一次
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('Game/GetGameDetailSmall');
-      }, 5000);
+      }, 10000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);

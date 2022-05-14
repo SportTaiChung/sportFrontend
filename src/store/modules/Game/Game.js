@@ -62,7 +62,7 @@ export default {
                       oddData.AwayOdds = updateData.AwayOdds;
                       oddData.DrewOdds = updateData.DrewOdds;
                       oddData.Status = updateData.Status;
-                      console.log('update!');
+                      teamData.EvtStatus = updateData.EvtStatus;
                       return false;
                     }
                   });
