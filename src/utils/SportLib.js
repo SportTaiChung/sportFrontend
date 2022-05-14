@@ -64,6 +64,7 @@ export function isHomeAwayReverse(catID) {
 
 /**
  * WagerData 轉 成畫面需要組成的資料格式
+ * @param {Number} catID     球種ID
  * @param {Object} wagerData team底下的wager
  * @param {Object} rowIndex  team底下的第幾個row
  * @returns {Object}

@@ -77,6 +77,7 @@
     data() {
       return {
         defaultActive: '',
+        intervalEvent: null,
       };
     },
     mounted() {
@@ -84,6 +85,14 @@
         // 一進入頁面預設選取第一個
         this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
       }
+
+      // 10秒打一次
+      this.intervalEvent = setInterval(() => {
+        this.$store.dispatch('Game/GetGameDetailSmall');
+      }, 5000);
+    },
+    beforeDestroy() {
+      clearInterval(this.intervalEvent);
     },
     computed: {
       gameStore() {
