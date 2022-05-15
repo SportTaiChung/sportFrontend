@@ -24,12 +24,15 @@ export default {
   },
   mutations: {
     setGameTypeList(state, val) {
+      state.GameTypeList.length = 0;
       state.GameTypeList = val;
     },
     setBallTypeList(state, val) {
+      state.BallTypeList.length = 0;
       state.BallTypeList = val;
     },
     setGameList(state, val) {
+      state.GameList.length = 0;
       state.GameList = val;
     },
     setCatIDAndGameType(state, { selectGameType, selectCatID, selectWagerTypeKey }) {
@@ -77,6 +80,15 @@ export default {
     },
   },
   actions: {
+    // 清除選擇的數據
+    ClearSelectData(store) {
+      store.commit('setGameList', []);
+      store.commit('setCatIDAndGameType', {
+        selectGameType: null,
+        selectCatID: null,
+        selectWagerTypeKey: null,
+      });
+    },
     // 16. 獲取左側菜單
     GetMenuGameType(store) {
       return new Promise((resolve, reject) => {

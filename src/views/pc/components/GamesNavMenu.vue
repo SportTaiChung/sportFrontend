@@ -121,11 +121,20 @@
       },
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
-        this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
-          // 手動切換gameType時,系統預設選擇第一個球種
-          this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0, true);
-          this.$store.commit('SetLoading', false);
-        });
+        this.$store
+          .dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID })
+          .then((res) => {
+            if (res.data.item.length !== 0) {
+              // 手動切換gameType時,系統預設選擇第一個球種
+              this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0, true);
+            } else {
+              // 如果選擇gameType,menu回傳陣列為空,那就清除gameList資料
+              this.$store.dispatch('Game/ClearSelectData');
+            }
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
       callGetGameDetail(CatID, WagerTypeKey) {
         let postData = null;

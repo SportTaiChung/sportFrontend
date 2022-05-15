@@ -1,5 +1,9 @@
 <template>
-  <div id="GameTableList" v-loading="selectCatID === null" :style="GameTableListStyleJudge()">
+  <div
+    id="GameTableList"
+    v-loading="selectCatID === null && gameStore.BallTypeList.length !== 0"
+    :style="GameTableListStyleJudge()"
+  >
     <template v-if="selectCatID !== null">
       <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()">
         <tbody class="GameTableBody">
@@ -33,6 +37,14 @@
           :keeps="40"
         />
       </el-collapse>
+    </template>
+    <template v-if="gameStore.BallTypeList.length === 0">
+      <div class="EmptyGameTable">
+        <div class="EmptyCenterItemBlock">
+          <img alt="" src="@/assets/img/pc/icon_noGame.svg" />
+          <p>暫無賽事</p>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -87,7 +99,9 @@
     },
     watch: {
       GameList(newValue, oldValue) {
-        this.activeAllCollapse();
+        if (newValue.length !== 0) {
+          this.activeAllCollapse();
+        }
       },
     },
     methods: {
@@ -201,6 +215,13 @@
           display: none;
         }
       }
+    }
+    .EmptyGameTable {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 </style>

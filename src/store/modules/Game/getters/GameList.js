@@ -1,5 +1,8 @@
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 export function showTableHeaderList(state) {
+  if (state.GameList.length === 0) {
+    return [];
+  }
   return state.GameList.BestHead.map((it) => {
     return {
       originName: it.Name,
