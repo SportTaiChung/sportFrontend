@@ -19,6 +19,7 @@
     created() {
       this.resizeEvent();
       window.addEventListener('resize', this.resizeEvent);
+      window.lib = this.$lib;
     },
     watch: {
       $route: {

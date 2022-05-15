@@ -90,3 +90,9 @@ export function timeFormatHHmm(time) {
   const m = date.getMinutes();
   return (h.toString().length === 2 ? '0' + h : h) + (m.toString().length === 1 ? '0' + m : m);
 }
+
+// 處理浮點數運算
+export function trunc(num, decimal) {
+  const base = 10 ** decimal;
+  return Math.trunc((num * base).toFixed(decimal)) / base;
+}

@@ -7,7 +7,7 @@ import VueCarousel from 'vue-carousel';
 import axios from 'axios';
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';
-import * as utils from '@/utils/utils';
+import * as lib from '@/utils/lib';
 import * as filters from '@/utils/filters';
 import '@/assets/sass/global.scss';
 import '@/assets/sass/elementChange.scss';
@@ -27,7 +27,7 @@ Promise.all([router()]).then(async (res) => {
   Vue.prototype.$URL = URL;
   Vue.prototype.$axios = axios;
   Vue.prototype.$MSG = message;
-  Vue.prototype.$lib = utils;
+  Vue.prototype.$lib = lib;
 
   Vue.use(ElementUI);
   Vue.use(VueCarousel);
