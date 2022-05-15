@@ -24,6 +24,7 @@
 
       <el-collapse v-model="activeCollapse">
         <virtual-list
+          ref="virtualList"
           class="virtual-list"
           :style="GameTableHeaderStyleJudge()"
           :data-key="'uid'"
@@ -56,6 +57,7 @@
       return {
         itemComponent: GameCollapse,
         activeCollapse: [],
+        timeoutEvent: null,
       };
     },
     computed: {
@@ -118,6 +120,13 @@
         }
       },
       clickArrow() {
+        // 開關大折疊面板時,scroll重新回到最上方
+        if (this.$refs?.virtualList) {
+          clearTimeout(this.timeoutEvent);
+          this.timeoutEvent = setTimeout(() => {
+            this.$refs.virtualList.$el.scrollTop = 0;
+          }, 500);
+        }
         if (this.activeCollapse.length === 0) {
           this.activeAllCollapse();
         } else {

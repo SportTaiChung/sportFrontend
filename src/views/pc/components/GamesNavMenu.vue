@@ -122,16 +122,16 @@
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
-          // 手動切換gameType時,預設要選取第一個
-          this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
+          // 手動切換gameType時,系統預設選擇第一個球種
+          this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0, true);
           this.$store.commit('SetLoading', false);
         });
       },
       callGetGameDetail(CatID, WagerTypeKey) {
         let postData = null;
 
+        //* Test 測試CODE 指定數據
         if (false) {
-          // TODO 測試CODE
           postData = {
             GameType: 1,
             CatID: 102,
@@ -160,14 +160,14 @@
         });
         this.callGetMenuGameCatList();
       },
-      menuItemClickHandler(catData, WagerTypeKey, catIndex) {
+      menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
         let clickCatID = null;
         let clickWagerTypeKey = null;
         clickCatID = catData.catid;
         // 父親層級被點
         if (WagerTypeKey === null) {
-          // 當只有點父層時,需要關閉其他球類已展開的兒子
-          if (this.$refs.elMenu.openedMenus?.length) {
+          // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
+          if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
             this.$refs.elMenu.openedMenus.length = 0;
             this.$refs.elMenu.openedMenus = [];
           }

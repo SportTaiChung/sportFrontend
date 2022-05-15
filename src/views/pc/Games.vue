@@ -29,7 +29,35 @@
         isNavMenuCollapse: false,
       };
     },
-    methods: {},
+    created() {
+      //* Test 可在控制台下這個,來測試更新賠率
+      //   game.setFakeUpdate({
+      //     "LeagueID": 7859,
+      //         "WagerTypeID": 101,
+      //         "WagerGrpID": 0,
+      //         "GameID": 100701236,
+      //         "HdpPos": 2,
+      //         "GameType": 1,
+      //         "HomeHdp": "",
+      //         "AwayHdp": "",
+      //         "HomeHdpOdds": "1.84",
+      //         "AwayHdpOdds": "",
+      //         "OULine": "",
+      //         "OverOdds": "0",
+      //         "UnderOdds": "0",
+      //         "HomeOdds": "0",
+      //         "AwayOdds": "0",
+      //         "DrewOdds": "0",
+      //         "Status": 0,
+      //         "EvtStatus": 0
+      // })
+      window.game = this;
+    },
+    methods: {
+      setFakeUpdate(data) {
+        this.$store.commit('Game/updateGameList', [data]);
+      },
+    },
   };
 </script>
 

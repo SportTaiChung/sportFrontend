@@ -69,7 +69,7 @@ export function isHomeAwayReverse(catID) {
  * @param {Object} rowIndex  team底下的第幾個row
  * @returns {Object}
  *?  topPlayMethod    {String} 上方玩法
- *?  topPlayMethod    {String} 上方賠率
+ *?  topPlayOdd       {String} 上方賠率
  *?  bottomPlayMethod {String} 下方玩法
  *?  bottomPlayOdd    {String} 下方賠率
  *?  layoutType       {Object} 版型分類
@@ -85,7 +85,6 @@ export function WagerDataToShowData(catID, wagerData, rowIndex) {
     let layoutType = 'normal';
     const bigSmallTypeIDs = [102, 104, 109];
     if (!wagerData?.isNoData) {
-      // TODO 將來要抽成function
       if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
         // 關閉狀態
       } else if (wagerData.WagerTypeID === 101 || wagerData.WagerTypeID === 103) {
