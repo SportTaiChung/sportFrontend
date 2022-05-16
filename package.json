@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode serve-pc",
-    "build": "NODE_ENV=production vue-cli-service build --mode pc",
+    "build": "cross-env NODE_ENV=production vue-cli-service build --mode pc",
     "lint": "vue-cli-service lint",
-    "serve:pc": "NODE_ENV=development vue-cli-service serve --mode serve-pc",
-    "serve:mobile": "NODE_ENV=development vue-cli-service serve --mode serve-mobile",
-    "build:pc": "NODE_ENV=production vue-cli-service build --mode pc",
-    "build:mobile": "NODE_ENV=production vue-cli-service build --mode mobile"
+    "serve:pc": "cross-env NODE_ENV=development vue-cli-service serve --mode serve-pc",
+    "serve:mobile": "cross-env NODE_ENV=development vue-cli-service serve --mode serve-mobile",
+    "build:pc": "cross-env NODE_ENV=production vue-cli-service build --mode pc",
+    "build:mobile": "cross-env NODE_ENV=production vue-cli-service build --mode mobile"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -30,6 +30,7 @@
     "@vue/cli-service": "~4.5.15",
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.3",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.20.2",
