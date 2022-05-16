@@ -44,14 +44,12 @@
                 class="GameTableHeaderOtherTD"
                 v-for="(wagerData, wagerIndex) in teamData.Wager"
                 :key="wagerIndex"
+                :set="
+                  ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
+                  (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
+                "
               >
-                <div
-                  class="WagerList"
-                  :set="
-                    ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
-                    (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
-                  "
-                >
+                <div class="WagerList">
                   <template v-if="wagerData.isNoData">
                     <!-- 如果有和 -->
                     <template v-if="isShowDrewOdd">
@@ -81,12 +79,38 @@
                     </template>
                     <!-- 其他正常Layout -->
                     <template v-else>
-                      <div class="WagerRow">
+                      <div
+                        class="WagerRow"
+                        :class="sportData.topPlayOdd !== '' ? 'WagerRowInteractive' : ''"
+                        :set="sportData"
+                        @click="
+                          goBet(
+                            { WagerPos: 1 },
+                            wagerData,
+                            $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)
+                          )
+                        "
+                      >
                         <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
-                        <div class="WagerItem"> <Odd :OddValue="sportData.topPlayOdd" /> </div>
+                        <div class="WagerItem">
+                          <Odd :OddValue="sportData.topPlayOdd" />
+                        </div>
                       </div>
-                      <div class="WagerRow">
-                        <div class="WagerItem"> {{ sportData.bottomPlayMethod }} </div>
+                      <div
+                        class="WagerRow"
+                        :class="sportData.bottomPlayOdd !== '' ? 'WagerRowInteractive' : ''"
+                        :set="sportData"
+                        @click="
+                          goBet(
+                            { WagerPos: 2 },
+                            wagerData,
+                            $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)
+                          )
+                        "
+                      >
+                        <div class="WagerItem">
+                          {{ sportData.bottomPlayMethod }}
+                        </div>
                         <div class="WagerItem"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
                       </div>
                     </template>
@@ -147,7 +171,25 @@
         },
       },
     },
-    methods: {},
+    methods: {
+      goBet(clickData, wagerData, sportData) {
+        const { WagerPos } = clickData;
+        if (WagerPos === 1) {
+          console.log(sportData.topPlayOdd);
+        } else if (WagerPos === 2) {
+          console.log(sportData.bottomPlayOdd);
+        }
+        // // 如果顯示賠率為空 不能下注
+        // if (odd === '') {
+        //   return;
+        // }
+        // console.log('odd:', sportData, odd);
+        // const { WagerPos } = clickData;
+        // console.log(WagerPos);
+        // console.log('wagerData:', wagerData);
+        // console.log('sportData:', sportData);
+      },
+    },
   };
 </script>
 
@@ -296,6 +338,7 @@
               width: 100%;
               height: 30px;
               border-bottom: 1px solid #f3f3f3;
+
               .WagerItem {
                 width: 50%;
                 text-align: left;
@@ -310,6 +353,12 @@
                 width: 100%;
                 text-align: center;
                 line-height: 30px;
+              }
+            }
+            .WagerRowInteractive {
+              cursor: pointer;
+              &:hover {
+                background-color: #ffe1ae;
               }
             }
           }
