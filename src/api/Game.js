@@ -51,3 +51,16 @@ export function getGameDetailSmall(postData = {}) {
     data: { lang: store.state.Lang, ...postData },
   });
 }
+
+// 22. 获取投注盘口详情
+export function getBetInfo(postData = {}) {
+  return request({
+    url: `/GameInfo/BetInfo`,
+    method: 'post',
+    param: {
+      AddRVfToken: true,
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}

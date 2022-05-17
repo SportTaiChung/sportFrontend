@@ -99,6 +99,91 @@ export function isHomeAwayReverse(catID) {
   return intCatID === 4 || intCatID === 11 || intCatID === 12 || intCatID === 101;
 }
 
+// bet WagerPos : 1主 2客 3和 4大 5小 1單 2雙
+const PlayMethodData = {
+  // 讓分
+  HandiCap: {
+    name: 'HandiCap',
+    typeIdList: [101, 103],
+    wagerPos: [1, 2, 3],
+  },
+  // 大小
+  BigSmall: {
+    name: 'BigSmall',
+    typeIdList: [102, 104, 109],
+    wagerPos: [4, 5, 3],
+  },
+  // 獨贏
+  SoloWin: {
+    name: 'SoloWin',
+    typeIdList: [110, 111],
+    wagerPos: [1, 2, 3],
+  },
+  // 單雙
+  OddEven: {
+    name: 'OddEven',
+    typeIdList: [105, 113, 126, 129],
+    wagerPos: [1, 2, 3],
+  },
+};
+
+export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = null) {
+  let topPlayMethod = '';
+  let topPlayOdd = '';
+  let bottomPlayMethod = '';
+  let bottomPlayOdd = '';
+  let layoutType = 'normal';
+  let playMethodData = null;
+  if (oddData !== null) {
+    if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 讓分
+      topPlayMethod = oddData.HomeHdp;
+      topPlayOdd = oddData.HomeHdpOdds;
+      bottomPlayMethod = oddData.AwayHdp;
+      bottomPlayOdd = oddData.AwayHdpOdds;
+      playMethodData = PlayMethodData.HandiCap;
+    } else if (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 大小
+      topPlayMethod = oddData.OULine;
+      topPlayOdd = oddData.OverOdds;
+      bottomPlayMethod = '小';
+      bottomPlayOdd = oddData.UnderOdds;
+      playMethodData = PlayMethodData.BigSmall;
+    } else if (PlayMethodData.SoloWin.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 獨贏
+      topPlayOdd = oddData.HomeOdds;
+      bottomPlayOdd = oddData.AwayOdds;
+      layoutType = 'single';
+      playMethodData = PlayMethodData.SoloWin;
+    } else if (PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 單雙
+      topPlayMethod = '單';
+      topPlayOdd = oddData.OverOdds;
+      bottomPlayMethod = '雙';
+      bottomPlayOdd = oddData.UnderOdds;
+      playMethodData = PlayMethodData.OddEven;
+    }
+
+    // 處理主客場對調
+    //  ps.大小玩法不能對調
+    if (
+      isHomeAwayReverse(catID) &&
+      PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1
+    ) {
+      [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
+      [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
+    }
+  }
+  return {
+    topPlayMethod,
+    topPlayOdd,
+    bottomPlayMethod,
+    bottomPlayOdd,
+    layoutType,
+    playMethodData,
+  };
+}
+
 /**
  * WagerData 轉 成畫面需要組成的資料格式
  * @param {Number} catID     球種ID
@@ -114,63 +199,14 @@ export function isHomeAwayReverse(catID) {
  *     > single: 只顯示一個Odd
  */
 export function WagerDataToShowData(catID, wagerData, rowIndex) {
-  try {
-    let topPlayMethod = '';
-    let topPlayOdd = '';
-    let bottomPlayMethod = '';
-    let bottomPlayOdd = '';
-    let layoutType = 'normal';
-    const bigSmallTypeIDs = [102, 104, 109];
-    if (!wagerData?.isNoData) {
-      if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
-        // 關閉狀態
-      } else if (wagerData.WagerTypeID === 101 || wagerData.WagerTypeID === 103) {
-        // 讓分
-        topPlayMethod = wagerData.Odds[rowIndex].HomeHdp;
-        topPlayOdd = wagerData.Odds[rowIndex].HomeHdpOdds;
-        bottomPlayMethod = wagerData.Odds[rowIndex].AwayHdp;
-        bottomPlayOdd = wagerData.Odds[rowIndex].AwayHdpOdds;
-      } else if (bigSmallTypeIDs.indexOf(wagerData.WagerTypeID) !== -1) {
-        // 大小
-        topPlayMethod = wagerData.Odds[rowIndex].OULine;
-        topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
-        bottomPlayMethod = '小';
-        bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
-      } else if (wagerData.WagerTypeID === 110 || wagerData.WagerTypeID === 111) {
-        // 獨贏
-        topPlayOdd = wagerData.Odds[rowIndex].HomeOdds;
-        bottomPlayOdd = wagerData.Odds[rowIndex].AwayOdds;
-        layoutType = 'single';
-      } else if (
-        wagerData.WagerTypeID === 105 ||
-        wagerData.WagerTypeID === 113 ||
-        wagerData.WagerTypeID === 126 ||
-        wagerData.WagerTypeID === 129
-      ) {
-        // 單雙
-        topPlayMethod = '單';
-        topPlayOdd = wagerData.Odds[rowIndex].OverOdds;
-        bottomPlayMethod = '雙';
-        bottomPlayOdd = wagerData.Odds[rowIndex].UnderOdds;
-      }
-
-      // 處理主客場對調
-      //  ps.大小玩法不能對調
-      if (isHomeAwayReverse(catID) && bigSmallTypeIDs.indexOf(wagerData.WagerTypeID) === -1) {
-        [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
-        [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
-      }
+  if (!wagerData?.isNoData) {
+    // 關閉狀態
+    if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
+      return oddDataToPlayData(null, null);
+    } else {
+      return oddDataToPlayData(catID, wagerData.WagerTypeID, wagerData.Odds[rowIndex]);
     }
-
-    return {
-      topPlayMethod,
-      topPlayOdd,
-      bottomPlayMethod,
-      bottomPlayOdd,
-      layoutType,
-    };
-  } catch (error) {
-    console.error('error:', error);
-    debugger;
+  } else {
+    return oddDataToPlayData(null, null);
   }
 }

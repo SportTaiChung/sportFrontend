@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="bottomContainer">
-      <template v-if="false">
+      <template v-if="showBetCartList.length !== 0">
         <div class="bottomHeaderRow">
           <div
             class="bottomHeaderRowItem"
@@ -48,6 +48,47 @@
             @click="selectChildIndex = 1"
           >
             {{ bottomHeaderRowItem(1) }}
+          </div>
+        </div>
+
+        <div class="bottomListView">
+          <div class="listCardItem" v-for="(cart, cartIndex) in showBetCartList" :key="cartIndex">
+            <div class="cardHeaderRow">
+              <div class="playMethodName"> 小</div>
+              <div class="playMethodNameSupport"> 2/2.5 </div>
+              <div class="at"> @ </div>
+              <div class="playBetOdd"> 3.099 </div>
+
+              <i class="el-icon-close"></i>
+            </div>
+            <div class="cardContentBlock">
+              <div class="cardContentBlockRow"> 玩法 - [全場] </div>
+              <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
+              <div class="cardContentBlockRow">
+                <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
+                <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
+                <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
+              </div>
+              <div class="cardContentBlockRow">
+                <div class="inputRow">
+                  <input
+                    class="input"
+                    v-model="cart.betAmount"
+                    :max="cart.BetMax"
+                    :min="cart.BetMin"
+                    :placeholder="cart.BetMin + '-' + cart.BetMax"
+                    type="Number"
+                  />
+                  <input
+                    class="input"
+                    v-model="cart.winAmount"
+                    placeholder="可赢金額"
+                    @input="wink_amount($event)"
+                  />
+                </div>
+              </div>
+              <div class="cardContentBlockRow limitText"> 本場上限 10000 </div>
+            </div>
           </div>
         </div>
       </template>
@@ -82,7 +123,11 @@
         selectChildIndex: 0,
       };
     },
-    computed: {},
+    computed: {
+      showBetCartList() {
+        return this.$store.getters['BetCart/showBetCartList'];
+      },
+    },
     methods: {
       bottomHeaderRowItem(index) {
         if (this.selectGroupIndex === 0) {
@@ -179,12 +224,13 @@
       margin-bottom: 5px;
       .bottomHeaderRow {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
+        margin-bottom: 5px;
         .bottomHeaderRowItem {
           background-color: #c5c5c5;
           color: #666;
-          width: 48%;
+          width: 49%;
           height: 30px;
           line-height: 30px;
           cursor: pointer;
@@ -192,6 +238,79 @@
         .bottomHeaderRowItemActive {
           background-color: #f3f3f3;
           color: #000;
+        }
+      }
+      .bottomListView {
+        .listCardItem {
+          background-color: #eaeaea;
+          margin-bottom: 5px;
+          .cardHeaderRow {
+            display: flex;
+            padding: 7px 10px;
+            border-bottom: 1px solid #cccccc;
+            position: relative;
+            @mixin common {
+              margin-right: 5px;
+              font-weight: bold;
+            }
+            .playMethodName {
+              color: #005aff;
+              @include common();
+            }
+            .playMethodNameSupport {
+              color: red;
+              @include common();
+            }
+            .at {
+              @include common();
+            }
+            .playBetOdd {
+              color: red;
+              @include common();
+            }
+            .el-icon-close {
+              font-weight: bold;
+              position: absolute;
+              right: 6px;
+              font-size: 18px;
+              opacity: 0.5;
+              margin-top: -3px;
+              cursor: pointer;
+            }
+          }
+          .cardContentBlock {
+            padding: 8px 10px;
+            .cardContentBlockRow {
+              display: flex;
+              flex-wrap: wrap;
+              margin-bottom: 6px;
+              &:last-child {
+                margin-bottom: 0px;
+              }
+              .inputRow {
+                display: flex;
+                justify-content: space-between;
+                .input {
+                  width: 49%;
+                  height: 30px;
+                  font-size: 15px;
+                  border-radius: 3px;
+                  padding: 5px;
+                  border: 1px solid transparent;
+                }
+              }
+              .cardContentBlockRowText {
+                margin-right: 5px;
+                text-align: left;
+              }
+              .HomeTeamSign {
+                color: #ff8800;
+              }
+            }
+            .limitText {
+              color: #006a8a;
+            }
+          }
         }
       }
       .noData {
