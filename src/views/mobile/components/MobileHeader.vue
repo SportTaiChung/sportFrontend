@@ -70,13 +70,14 @@
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
   #mobileHeader {
-    height: 45px;
+    height: 40px;
     width: 100%;
     padding: 0 10px;
     @include base-background();
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid #fff;
     .leftContainer {
       display: flex;
 
@@ -98,6 +99,7 @@
           margin-right: 8px;
           .text {
             margin-top: 2px;
+            font-size: 1.3rem;
           }
           &:last-child {
             margin-right: 0px;
