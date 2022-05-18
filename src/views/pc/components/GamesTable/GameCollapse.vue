@@ -123,7 +123,7 @@
                       <template v-else>
                         <div
                           class="WagerRow"
-                          :class="wagerData.Odds[0].DrewOdds !== '' ? 'WagerRowInteractive' : ''"
+                          :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
                           <div class="WagerCenterItem">
@@ -177,8 +177,8 @@
       WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
         let appendCSS = '';
         if (sportData.playMethodData !== null) {
-          const showOdd = sportData.playMethodData.showOdd[playIndex];
-          if (sportData[showOdd] !== '') {
+          const showOddKeyName = sportData.playMethodData.showOdd[playIndex];
+          if (sportData[showOddKeyName] !== '') {
             appendCSS = ' WagerRowInteractive';
           }
         }
@@ -205,16 +205,16 @@
           wagerData,
           rowIndex
         );
-        let clickOdd = '';
-        // TODO 先暫時這樣檢查 點擊賠率是否為空時 return,之後大部分的下注邏輯做完再回來看怎麼優化
-        if (clickPlayIndex === 0) {
-          clickOdd = sportData.topPlayOdd;
-        } else if (clickPlayIndex === 1) {
-          clickOdd = sportData.bottomPlayOdd;
-        } else if (clickPlayIndex === 2) {
-          clickOdd = wagerData.Odds[0].DrewOdds;
+
+        // 如果核心lib解析出來是null 也不能下注
+        if (sportData.playMethodData === null) {
+          return;
         }
-        if (clickOdd === '') {
+
+        // 如果點擊的選項顯示賠率是空的 代表這一格無法下注
+        const showOddKeyName = sportData.playMethodData.showOdd[clickPlayIndex];
+        const showOdd = sportData[showOddKeyName];
+        if (showOdd === '') {
           return;
         }
 
@@ -231,6 +231,7 @@
         )?.value;
 
         const betInfoData = {
+          OriginShowOdd: parseFloat(showOdd),
           clickPlayIndex,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
@@ -244,19 +245,8 @@
           EvtID: teamData.EvtID,
           ...wagerData.Odds[rowIndex],
         };
-        // console.log(wagerData, rowIndex);
-        // console.log('betInfoData:', betInfoData);
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
-        // // 如果顯示賠率為空 不能下注
-        // if (odd === '') {
-        //   return;
-        // }
-        // console.log('odd:', sportData, odd);
-        // const { WagerPos } = clickData;
-        // console.log(WagerPos);
-        // console.log('wagerData:', wagerData);
-        // console.log('sportData:', sportData);
       },
     },
   };
