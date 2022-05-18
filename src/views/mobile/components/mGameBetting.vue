@@ -117,6 +117,8 @@
 </script>
 
 <style lang="scss" scoped>
+  $row-height: 2.4rem;
+
   #mGameBetting {
     table.betting-table {
       width: 100%;
@@ -124,8 +126,8 @@
       font-size: 1.15rem;
 
       th {
-        min-width: 100px;
-        height: 33px;
+        min-width: 6.666rem;
+        height: $row-height;
         background-color: #e8e8e8;
         overflow: hidden;
         white-space: nowrap;
@@ -133,34 +135,36 @@
         font-weight: normal;
       }
       td {
-        min-width: 100px;
-        height: 33px;
+        min-width: 6.666rem;
+        height: $row-height;
       }
 
       td.wager-container {
-        .wager-cell {
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-          height: 35px;
-          border-style: solid;
-          border-color: #e8e8e8;
-          border-width: 0 1px 1px 0;
+        .wager-group {
+          .wager-cell {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: $row-height;
+            border-style: solid;
+            border-color: #e8e8e8;
+            border-width: 0 1px 1px 0;
 
-          .cell-left {
-            flex: 1;
-            text-align: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-          }
-          .cell-right {
-            flex: 1;
-            text-align: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            .cell-left {
+              flex: 1;
+              text-align: center;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+            .cell-right {
+              flex: 1;
+              text-align: center;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
           }
         }
       }

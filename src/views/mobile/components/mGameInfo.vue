@@ -73,6 +73,8 @@
 </script>
 
 <style lang="scss">
+  $row-height: 2.4rem;
+
   table.mGameInfo {
     table-layout: fixed;
     border-spacing: 0;
@@ -80,7 +82,8 @@
     font-size: 1.15rem;
 
     th {
-      height: 33px;
+      height: $row-height;
+      position: relative;
       background-color: #e8e8e8;
       text-align: left;
       padding-left: 0.5rem;
@@ -88,11 +91,19 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: normal;
-      border-right: 1px solid #000;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        height: 70%;
+        width: 1px;
+        background-color: #888;
+      }
     }
     td.round-block {
-      $row-height: 35px;
-      line-height: 25px;
       border-bottom: 1px solid #e8e8e8;
       border-right: 1px solid #e8e8e8;
       padding-left: 8px;
@@ -110,6 +121,7 @@
         .team {
           color: #000;
           font-size: 1.15rem;
+          line-height: 1.2;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
