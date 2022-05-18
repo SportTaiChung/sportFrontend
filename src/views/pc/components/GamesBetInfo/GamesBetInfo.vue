@@ -51,23 +51,47 @@
           </div>
         </div>
 
-        <div class="bottomListView">
-          <div class="listCardItem" v-for="(cart, cartIndex) in showBetCartList" :key="cartIndex">
+        <div class="bottomListView" :set="(displayData = [])">
+          <div
+            class="listCardItem"
+            v-for="(cart, cartIndex) in showBetCartList"
+            :key="cartIndex"
+            :set="(displayData[cartIndex] = cartDataToDisplayData(cart))"
+          >
             <div class="cardHeaderRow">
-              <div class="playMethodName"> 小</div>
-              <div class="playMethodNameSupport"> 2/2.5 </div>
+              <div class="playMethodName"> {{ displayData[cartIndex].showBetTitle }}</div>
+              <div class="playMethodNameSupport">
+                {{ displayData[cartIndex].showCutLine }}
+              </div>
               <div class="at"> @ </div>
-              <div class="playBetOdd"> 3.099 </div>
+              <div class="playBetOdd">
+                {{ displayData[cartIndex].showOdd }}
+              </div>
 
-              <i class="el-icon-close"></i>
+              <i
+                class="el-icon-close"
+                @click="$store.commit('BetCart/removeCartByGameID', cart.GameID)"
+              ></i>
             </div>
+
             <div class="cardContentBlock">
-              <div class="cardContentBlockRow"> 玩法 - [全場] </div>
+              <div class="cardContentBlockRow">
+                {{ displayData[cartIndex].gameTypeLabel }}
+              </div>
               <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
               <div class="cardContentBlockRow">
                 <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
-                <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
+                <div
+                  class="cardContentBlockRowText HomeTeamSign"
+                  v-if="!$SportLib.isHomeAwayReverse(cart.CatID)"
+                  >(主)</div
+                >
                 <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
+                <div
+                  class="cardContentBlockRowText HomeTeamSign"
+                  v-if="$SportLib.isHomeAwayReverse(cart.CatID)"
+                  >(主)</div
+                >
               </div>
               <div class="cardContentBlockRow">
                 <div class="inputRow">
@@ -76,7 +100,11 @@
                     v-model="cart.betAmount"
                     :max="cart.BetMax"
                     :min="cart.BetMin"
-                    :placeholder="cart.BetMin + '-' + cart.BetMax"
+                    :placeholder="
+                      cart.BetMin !== null && cart.BetMax !== null
+                        ? cart.BetMin + '-' + cart.BetMax
+                        : ''
+                    "
                     type="Number"
                   />
                   <input
@@ -88,6 +116,13 @@
                 </div>
               </div>
               <div class="cardContentBlockRow limitText"> 本場上限 10000 </div>
+            </div>
+          </div>
+
+          <div class="cardOptionBlock">
+            <div class="buttonRow">
+              <div class="clearBtn" @click="cancelHandler"> 取消</div>
+              <div class="submitBtn" @click="submitHandler">確認下注</div>
             </div>
           </div>
         </div>
@@ -129,6 +164,87 @@
       },
     },
     methods: {
+      cancelHandler() {
+        this.$store.commit('BetCart/clearCart');
+      },
+      submitHandler() {},
+      cartDataToDisplayData(cartData) {
+        let showBetTitle = '';
+        let showCutLine = '';
+        let showOdd = '';
+        const playData = cartData.playData;
+        if (playData.playMethodData.name === 'HandiCap') {
+          if (cartData.clickPlayIndex === 0) {
+            showBetTitle = cartData.HomeTeamStr;
+            if (playData.topPlayMethod === '') {
+              showCutLine = '+' + playData.bottomPlayMethod;
+            } else {
+              showCutLine = '-' + playData.topPlayMethod;
+            }
+            showOdd = playData.topPlayOdd;
+          } else if (cartData.clickPlayIndex === 1) {
+            showBetTitle = cartData.AwayTeamStr;
+            if (playData.topPlayMethod === '') {
+              showCutLine = '-' + playData.bottomPlayMethod;
+            } else {
+              showCutLine = '+' + playData.topPlayMethod;
+            }
+            showOdd = playData.bottomPlayOdd;
+          }
+          if (playData.topPlayMethod === '0' || playData.bottomPlayMethod === '0') {
+            showCutLine = '0';
+          }
+        } else if (playData.playMethodData.name === 'BigSmall') {
+          if (cartData.clickPlayIndex === 0) {
+            showBetTitle = '大';
+            showCutLine = playData.topPlayMethod;
+            showOdd = playData.topPlayOdd;
+          } else if (cartData.clickPlayIndex === 1) {
+            showBetTitle = '小';
+            showCutLine = playData.topPlayMethod;
+            showOdd = playData.bottomPlayOdd;
+          }
+        } else if (playData.playMethodData.name === 'SoloWin') {
+          if (cartData.clickPlayIndex === 0) {
+            showBetTitle = cartData.HomeTeamStr;
+            showOdd = playData.topPlayOdd;
+          } else if (cartData.clickPlayIndex === 1) {
+            showBetTitle = cartData.AwayTeamStr;
+            showOdd = playData.bottomPlayOdd;
+          } else {
+            showBetTitle = '和局';
+            showOdd = playData.drewPlayOdd;
+          }
+          showCutLine = 'PK';
+        } else if (playData.playMethodData.name === 'OddEven') {
+          if (cartData.clickPlayIndex === 0) {
+            showBetTitle = '單';
+            showOdd = playData.topPlayOdd;
+          } else if (cartData.clickPlayIndex === 1) {
+            showBetTitle = '雙';
+            showOdd = playData.bottomPlayOdd;
+          }
+        } else {
+          console.error('playData.playMethodData.name error:', playData.playMethodData.name);
+        }
+
+        const catIDLabel = this.$SportLib.CatIDtoShowLabel(cartData.CatID);
+        let wagerGrpLabel = '';
+
+        if (cartData.WagerGrpID === '10') {
+          wagerGrpLabel = '- [全場]';
+        } else if (cartData.WagerGrpID === '11') {
+          wagerGrpLabel = '- [上半]';
+        }
+        const showGameTypeLabel = `${catIDLabel}${cartData.GameTypeLabel}${wagerGrpLabel}`;
+
+        return {
+          showBetTitle,
+          showCutLine,
+          showOdd,
+          showGameTypeLabel,
+        };
+      },
       bottomHeaderRowItem(index) {
         if (this.selectGroupIndex === 0) {
           if (index === 0) {
@@ -241,6 +357,8 @@
         }
       }
       .bottomListView {
+        height: calc(100% - 35px);
+        overflow: auto;
         .listCardItem {
           background-color: #eaeaea;
           margin-bottom: 5px;
@@ -309,6 +427,34 @@
             }
             .limitText {
               color: #006a8a;
+            }
+          }
+        }
+        .cardOptionBlock {
+          .buttonRow {
+            display: flex;
+            justify-content: space-around;
+            .clearBtn,
+            .submitBtn {
+              width: 48%;
+              padding: 10px;
+              font-size: 14px;
+              cursor: pointer;
+              font-weight: bold;
+            }
+            .clearBtn {
+              background-color: #838383;
+              &:hover {
+                background-color: #9a9a9af6;
+              }
+              color: white;
+            }
+            .submitBtn {
+              background-color: #ffdf1b;
+              color: black;
+              &:hover {
+                background-color: #ffeb68f9;
+              }
             }
           }
         }

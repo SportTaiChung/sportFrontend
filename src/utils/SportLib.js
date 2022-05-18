@@ -96,7 +96,9 @@ export function WagerTypeIDandWagerGrpIDtoString(typeid, grpid) {
  */
 export function isHomeAwayReverse(catID) {
   const intCatID = parseInt(catID);
-  return intCatID === 4 || intCatID === 11 || intCatID === 12 || intCatID === 101;
+  return (
+    intCatID === 4 || intCatID === 11 || intCatID === 12 || intCatID === 14 || intCatID === 101
+  );
 }
 
 // bet WagerPos : 1主 2客 3和 4大 5小 1單 2雙
@@ -105,25 +107,33 @@ const PlayMethodData = {
   HandiCap: {
     name: 'HandiCap',
     typeIdList: [101, 103],
-    wagerPos: [1, 2, 3],
+    wagerPos: [1, 2],
+    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
+    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
   },
   // 大小
   BigSmall: {
     name: 'BigSmall',
     typeIdList: [102, 104, 109],
-    wagerPos: [4, 5, 3],
+    wagerPos: [4, 5],
+    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
+    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
   },
   // 獨贏
   SoloWin: {
     name: 'SoloWin',
     typeIdList: [110, 111],
     wagerPos: [1, 2, 3],
+    showMethod: [],
+    showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
   },
   // 單雙
   OddEven: {
     name: 'OddEven',
     typeIdList: [105, 113, 126, 129],
-    wagerPos: [1, 2, 3],
+    wagerPos: [1, 2],
+    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
+    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
   },
 };
 
@@ -132,6 +142,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
   let topPlayOdd = '';
   let bottomPlayMethod = '';
   let bottomPlayOdd = '';
+  let drewPlayOdd = '';
   let layoutType = 'normal';
   let playMethodData = null;
   if (oddData !== null) {
@@ -153,6 +164,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
       // 獨贏
       topPlayOdd = oddData.HomeOdds;
       bottomPlayOdd = oddData.AwayOdds;
+      drewPlayOdd = oddData.DrewOdds;
       layoutType = 'single';
       playMethodData = PlayMethodData.SoloWin;
     } else if (PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) !== -1) {
@@ -179,6 +191,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
     topPlayOdd,
     bottomPlayMethod,
     bottomPlayOdd,
+    drewPlayOdd,
     layoutType,
     playMethodData,
   };

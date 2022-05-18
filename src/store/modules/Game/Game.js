@@ -129,6 +129,7 @@ export default {
               selectWagerTypeKey: postData.WagerTypeKey,
             });
             store.commit('setGameList', res.data);
+            console.log('game detail load done');
             resolve(res);
           })
           .catch(reject);
