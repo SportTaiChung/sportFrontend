@@ -59,9 +59,6 @@
       gameStore() {
         return this.$store.state.Game;
       },
-      gameTypeID() {
-        return parseInt(this.$route.query.gameType);
-      },
     },
     methods: {},
   };

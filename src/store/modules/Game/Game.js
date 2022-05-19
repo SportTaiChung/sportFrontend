@@ -7,9 +7,9 @@ export default {
   state: {
     // 左邊側欄上方選單列表
     GameTypeList: [],
-    // 左邊側欄上方選單列表
-    BallTypeList: [],
-    // 遊戲大面板列表
+    // 側欄選單列表
+    MenuList: [],
+    // 遊戲盤口面板列表
     GameList: [],
     // 當前選擇的遊戲分類 (ex.早盤、今日)
     selectGameType: null,
@@ -27,15 +27,18 @@ export default {
       state.GameTypeList.length = 0;
       state.GameTypeList = val;
     },
-    setBallTypeList(state, val) {
-      state.BallTypeList.length = 0;
-      state.BallTypeList = val;
+    setMenuList(state, val) {
+      state.MenuList.length = 0;
+      state.MenuList = val;
     },
     setGameList(state, val) {
       state.GameList.length = 0;
       state.GameList = val;
     },
-    setCatIDAndGameType(state, { selectGameType, selectCatID, selectWagerTypeKey }) {
+    setGameType(state, val) {
+      state.selectGameType = val;
+    },
+    setCatIDAndGameTypeAndWagerType(state, { selectGameType, selectCatID, selectWagerTypeKey }) {
       state.selectGameType = selectGameType;
       state.selectCatID = selectCatID;
       state.selectWagerTypeKey = selectWagerTypeKey;
@@ -83,7 +86,7 @@ export default {
     // 清除選擇的數據
     ClearSelectData(store) {
       store.commit('setGameList', []);
-      store.commit('setCatIDAndGameType', {
+      store.commit('setCatIDAndGameTypeAndWagerType', {
         selectGameType: null,
         selectCatID: null,
         selectWagerTypeKey: null,
@@ -104,10 +107,27 @@ export default {
     // 17. 獲取左侧菜单球种(含赛事数量)
     GetMenuGameCatList(store, postData) {
       return new Promise((resolve, reject) => {
-        store.commit('setBallTypeList', []);
+        store.commit('setMenuList', []);
         return getMenuGameCatList(postData)
           .then(async (res) => {
-            store.commit('setBallTypeList', res.data);
+            if (
+              store.state.selectGameType === null &&
+              store.state.selectCatID === null &&
+              store.state.selectWagerTypeKey === null
+            ) {
+              store.commit('setCatIDAndGameTypeAndWagerType', {
+                selectGameType: res.data.Default.GameType,
+                selectCatID: res.data.Default.catid,
+                selectWagerTypeKey: res.data.Default.WagerTypeKey,
+              });
+            }
+            console.log('game:', store.state.selectGameType);
+            const listIndex = res.data.list.findIndex(
+              (listData) => listData.GameType === store.state.selectGameType
+            );
+            if (listIndex > -1) {
+              store.commit('setMenuList', res.data.list[listIndex].LeftMenu.item);
+            }
             resolve(res);
           })
           .catch(reject);
@@ -116,14 +136,14 @@ export default {
     // 18-a. (赔率)游戏玩法资讯
     GetGameDetail(store, postData) {
       return new Promise((resolve, reject) => {
-        store.commit('setCatIDAndGameType', {
+        store.commit('setCatIDAndGameTypeAndWagerType', {
           selectGameType: null,
           selectCatID: null,
           selectWagerTypeKey: null,
         });
         return getGameDetail(postData)
           .then(async (res) => {
-            store.commit('setCatIDAndGameType', {
+            store.commit('setCatIDAndGameTypeAndWagerType', {
               selectGameType: postData.GameType,
               selectCatID: postData.CatID,
               selectWagerTypeKey: postData.WagerTypeKey,

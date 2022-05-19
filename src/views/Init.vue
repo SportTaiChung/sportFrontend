@@ -16,21 +16,12 @@
           .then(async () => {
             this.$store.commit('SetIsInit', true);
             await this.callGetAllMenuData();
-            this.$router.replace({ name: 'Games', query: { gameType: this.gameTypeID } });
+            this.$router.replace({ name: 'Games' });
           })
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
       }
-    },
-    computed: {
-      gameTypeID() {
-        if (this.$route.query?.gameType) {
-          return parseInt(this.$route.query.gameType);
-        } else {
-          return 0;
-        }
-      },
     },
     methods: {
       callGetAllMenuData() {
