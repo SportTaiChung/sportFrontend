@@ -36,8 +36,8 @@ instance.interceptors.response.use(
   (res) => {
     const resCode = res?.data?.code;
     if (resCode && resCode !== 200) {
-      if (resCode === -101) {
-        // token驗證失敗(已登入模式)
+      const goLoginPageErrorCode = [-101, -105];
+      if (goLoginPageErrorCode.includes(resCode)) {
         window.router.replace({ name: 'Login' });
       }
       message.error(API_ERROR_CODE[resCode]);

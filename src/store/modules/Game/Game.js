@@ -141,6 +141,7 @@ export default {
           selectCatID: null,
           selectWagerTypeKey: null,
         });
+        store.commit('setGameList', []);
         return getGameDetail(postData)
           .then(async (res) => {
             store.commit('setCatIDAndGameTypeAndWagerType', {

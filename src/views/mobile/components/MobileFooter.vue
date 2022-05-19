@@ -37,16 +37,9 @@
       routerGoBack() {
         this.$router.push(-1);
       },
-      gameTypeClickHandler(key) {
-        this.$router.replace({
-          name: this.$route.name,
-          query: { ...this.$route.query, gameType: key },
-        });
-        this.callGetMenuGameCatList();
-      },
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
-        this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
+        this.$store.dispatch('Game/GetMenuGameCatList').finally(() => {
           // 手動切換gameType時,預設要選取第一個
           // this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
           this.$store.commit('SetLoading', false);
