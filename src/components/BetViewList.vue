@@ -27,7 +27,7 @@
 
       <div class="cardContentBlock">
         <div class="cardContentBlockRow">
-          {{ displayData[cartIndex].gameTypeLabel }}
+          {{ displayData[cartIndex].showGameTypeLabel }}
         </div>
         <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
         <div class="cardContentBlockRow">
@@ -55,6 +55,7 @@
                 cart.BetMin !== null && cart.BetMax !== null ? cart.BetMin + '-' + cart.BetMax : ''
               "
               type="Number"
+              @blur="BetAmountBlurEvent"
             />
             <input
               class="input"
@@ -69,6 +70,7 @@
     </div>
 
     <div class="cardOptionBlock">
+      <div class="buttonRow"> </div>
       <div class="buttonRow">
         <div class="clearBtn" @click="cancelHandler"> 取消</div>
         <div class="submitBtn" @click="submitHandler">確認下注</div>
@@ -123,6 +125,7 @@
       submitHandler() {
         this.$store.dispatch('BetCart/submitBet');
       },
+      BetAmountBlurEvent(cartData) {},
       cartDataToDisplayData(cartData) {
         let showBetTitle = '';
         let showCutLine = '';
@@ -198,6 +201,7 @@
           showCutLine,
           showOdd,
           showGameTypeLabel,
+          wagerGrpLabel,
         };
       },
     },

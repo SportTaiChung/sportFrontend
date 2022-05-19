@@ -1,4 +1,4 @@
-import { getBetInfo } from '@/api/Game';
+import { getBetInfo, play } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
 export default {
   namespaced: true,
@@ -99,6 +99,28 @@ export default {
     },
     submitBet(store) {
       // state.betCartList
+      const list = [];
+      store.state.betCartList.forEach((cartData) => {
+        console.log(cartData);
+        const CatId = cartData.CatID;
+        const GameID = cartData.GameID;
+        const WagerTypeID = cartData.WagerTypeID;
+        const WagerGrpID = cartData.WagerGrpID;
+        const WagerPos = cartData.playData.playMethodData.wagerPos[cartData.clickPlayIndex];
+        const HdpPos = cartData.HdpPos;
+        const cutLineKey = cartData.playData.playMethodData.cutLine[[cartData.clickPlayIndex]];
+        const CutLine = cartData[cutLineKey];
+        const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},,DE`;
+
+        const listItem = {
+          CatId,
+          WagerString: WagerString,
+          Amount: 10,
+          AcceptBetter: false,
+          BetType: 1,
+        };
+      });
+      // return playBet({ list: [] });
     },
   },
 };

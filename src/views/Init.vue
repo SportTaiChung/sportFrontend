@@ -36,7 +36,7 @@
       callGetAllMenuData() {
         return Promise.all([
           this.$store.dispatch('Game/GetMenuGameType'),
-          this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }),
+          this.$store.dispatch('Game/GetMenuGameCatList'),
         ]);
       },
     },

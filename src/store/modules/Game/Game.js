@@ -107,7 +107,7 @@ export default {
         store.commit('setBallTypeList', []);
         return getMenuGameCatList(postData)
           .then(async (res) => {
-            store.commit('setBallTypeList', res.data.item);
+            store.commit('setBallTypeList', res.data);
             resolve(res);
           })
           .catch(reject);
