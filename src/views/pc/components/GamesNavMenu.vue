@@ -134,20 +134,11 @@
       callGetGameDetail(CatID, WagerTypeKey) {
         let postData = null;
 
-        //* Test 測試CODE 指定數據
-        if (false) {
-          postData = {
-            GameType: 1,
-            CatID: 102,
-            WagerTypeKey: 1,
-          };
-        } else {
-          postData = {
-            GameType: this.gameTypeID,
-            CatID,
-            WagerTypeKey,
-          };
-        }
+        postData = {
+          GameType: this.gameTypeID,
+          CatID,
+          WagerTypeKey,
+        };
         this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',

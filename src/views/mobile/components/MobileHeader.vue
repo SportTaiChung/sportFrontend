@@ -30,7 +30,7 @@
     <!-- 遊戲類型 -->
     <ul class="gameTypeNav">
       <li
-        v-for="(catData, index) in gameStore.BallTypeList"
+        v-for="(catData, index) in gameStore.MenuList"
         :key="index"
         class="gameTypeItem"
         :class="gameStore.selectCatID == catData.catid ? 'active' : ''"
@@ -61,16 +61,16 @@
         return this.gameStore.GameTypeList.filter((it, index) => index <= 2);
       },
       gameTypeID() {
-        return parseInt(this.$route.query.gameType);
+        return this.$store.state.Game.selectGameType;
       },
       userCredit() {
         return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
       },
     },
     mounted() {
-      if (this.gameStore.BallTypeList.length !== 0) {
+      if (this.gameStore.MenuList.length !== 0) {
         // 一進入頁面預設選取第一個
-        this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
+        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
       }
 
       // 10秒打一次
@@ -93,7 +93,7 @@
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
           // 手動切換gameType時,預設要選取第一個
-          // this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
+          // this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
           this.$store.commit('SetLoading', false);
         });
       },
