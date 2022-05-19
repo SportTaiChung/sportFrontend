@@ -156,6 +156,7 @@ export default {
           .catch(reject);
       });
     },
+    // 更新GameDetail
     GetGameDetailSmall(store) {
       return new Promise((resolve, reject) => {
         const CatID = store.state.selectCatID;
@@ -167,7 +168,6 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
-            // console.log('res:', res.data);
             store.commit('updateGameList', res.data);
           });
         } else {

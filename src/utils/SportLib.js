@@ -110,7 +110,9 @@ const PlayMethodData = {
     wagerPos: [1, 2],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
-    cutLine: ['HomeHdpOdds', 'AwayHdpOdds'],
+    betCutLineDealFunc: function (oddData) {
+      return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
+    },
   },
   // 大小
   BigSmall: {
@@ -119,7 +121,9 @@ const PlayMethodData = {
     wagerPos: [4, 5],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
-    cutLine: ['OverOdds', 'UnderOdds'],
+    betCutLineDealFunc: function (oddData) {
+      return oddData.OULine;
+    },
   },
   // 獨贏
   SoloWin: {
@@ -128,7 +132,9 @@ const PlayMethodData = {
     wagerPos: [1, 2, 3],
     showMethod: [],
     showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
-    cutLine: ['HomeOdds', 'AwayOdds', 'DrewOdds'],
+    betCutLineDealFunc: function (oddData) {
+      return 0;
+    },
   },
   // 單雙
   OddEven: {
@@ -137,7 +143,9 @@ const PlayMethodData = {
     wagerPos: [1, 2],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
-    cutLine: ['OverOdds', 'UnderOdds'],
+    betCutLineDealFunc: function (oddData) {
+      return 0;
+    },
   },
 };
 

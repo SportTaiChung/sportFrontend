@@ -1,5 +1,6 @@
-import { getBetInfo, play } from '@/api/Game';
+import { getBetInfo, playBet, playState } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
+import { Notification } from 'element-ui';
 export default {
   namespaced: true,
   state: {
@@ -27,6 +28,7 @@ export default {
     },
   },
   actions: {
+    // 获取投注盘口详情
     callCartUpdateAPI(store, gameIDs) {
       return new Promise((resolve, reject) => {
         return getBetInfo({ GameIDs: JSON.stringify(gameIDs) })
@@ -70,12 +72,14 @@ export default {
           .catch(reject);
       });
     },
+    // 更新購物車內所有注單賠率資訊
     updateAllCartData(store) {
       if (store.state.betCartList.length !== 0) {
         const betCartListGameIDs = store.state.betCartList.map((cartData) => cartData.GameID);
         store.dispatch('callCartUpdateAPI', betCartListGameIDs);
       }
     },
+    // 加入到購物車
     addToCart(store, betData) {
       // 先移除相同的game id
       store.commit('removeCartByGameID', betData.GameID);
@@ -97,8 +101,8 @@ export default {
 
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },
+    // 執行投注
     submitBet(store) {
-      // state.betCartList
       const list = [];
       store.state.betCartList.forEach((cartData) => {
         console.log(cartData);
@@ -108,19 +112,50 @@ export default {
         const WagerGrpID = cartData.WagerGrpID;
         const WagerPos = cartData.playData.playMethodData.wagerPos[cartData.clickPlayIndex];
         const HdpPos = cartData.HdpPos;
-        const cutLineKey = cartData.playData.playMethodData.cutLine[[cartData.clickPlayIndex]];
-        const CutLine = cartData[cutLineKey];
-        const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},,DE`;
+        const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
+        const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
+        const OddValue = cartData.playData[oddKey];
+        const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
 
         const listItem = {
           CatId,
-          WagerString: WagerString,
+          WagerString,
           Amount: 10,
           AcceptBetter: false,
           BetType: 1,
         };
+        list.push(listItem);
       });
-      // return playBet({ list: [] });
+      console.log('list', list);
+      store.commit('SetLoading', true, { root: true });
+      return playBet(list).then((res) => {
+        if (res.data.traceCodeKey) {
+          store.dispatch('playState', res.data.traceCodeKey);
+        }
+      });
+    },
+    // 檢查投注狀態
+    playState(store, traceCodeKey) {
+      return playState(traceCodeKey).then((res) => {
+        if (res.data[0].code === 201) {
+          setTimeout(() => {
+            store.dispatch('playState', traceCodeKey);
+          }, 3000);
+          store.commit('SetLoading', true, { root: true });
+          this.loading = true;
+        } else if (res.data[0].code === 200) {
+          Notification.success({
+            message: res.data[0].Message,
+          });
+          store.commit('SetLoading', false, { root: true });
+        } else {
+          Notification.error({
+            message: res.data[0].Message,
+          });
+          this.loading = false;
+          store.commit('SetLoading', false, { root: true });
+        }
+      });
     },
   },
 };

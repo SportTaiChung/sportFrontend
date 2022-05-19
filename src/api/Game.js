@@ -53,7 +53,7 @@ export function getGameDetailSmall(postData = {}) {
 }
 
 // 20. 投注接口
-export function playBet(postData = {}) {
+export function playBet(postData = []) {
   return request({
     url: `/GameInfo/Play`,
     method: 'post',
@@ -61,7 +61,20 @@ export function playBet(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { lang: store.state.Lang, ...postData },
+    data: { lang: store.state.Lang, list: postData },
+  });
+}
+
+// 21. 投注-追踪注单处理状态
+export function playState(traceCodeKey) {
+  return request({
+    url: `/GameInfo/playState`,
+    method: 'post',
+    param: {
+      AddRVfToken: true,
+      AddMemberToken: true,
+    },
+    data: { traceCodeKey },
   });
 }
 
