@@ -36,20 +36,20 @@
           <el-menu-item v-for="(item, i) in []" :key="i">{{ item.value }}</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu v-for="(catData, i) in gameStore.BallTypeList" :key="i" :index="i + ''">
+      <el-submenu v-for="(menuData, i) in gameStore.MenuList" :key="i" :index="i + ''">
         <template slot="title">
           <i class="el-icon-basketball"></i>
-          <div class="flex nav_bottom" @click.stop="menuItemClickHandler(catData, null, i)">
-            <span class="nav_text">{{ catData.catName }}</span>
-            <span class="nav_number">{{ catData.count }}</span>
+          <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
+            <span class="nav_text">{{ menuData.catName }}</span>
+            <span class="nav_number">{{ menuData.count }}</span>
           </div>
         </template>
-        <el-menu-item-group v-show="catData.Items.length > 0">
+        <el-menu-item-group v-show="menuData.Items.length > 0">
           <el-menu-item
-            v-for="(Items, y) in catData.Items"
+            v-for="(Items, y) in menuData.Items"
             :key="y"
             :index="i + '-' + y"
-            @click="menuItemClickHandler(catData, Items.WagerTypeKey, i)"
+            @click="menuItemClickHandler(menuData, Items.WagerTypeKey, i)"
           >
             <template slot="title">
               <div class="nav_bottom_item">
@@ -81,10 +81,8 @@
       };
     },
     mounted() {
-      if (this.gameStore.BallTypeList.length !== 0) {
-        // 一進入頁面預設選取第一個
-        this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
-      }
+      // 一進入頁面預設選取第一個
+      this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
 
       // 10秒打一次
       // this.intervalEvent = setInterval(() => {
@@ -102,10 +100,10 @@
         return this.$store.getters['Game/showGameTypeList'];
       },
       gameTypeID() {
-        return parseInt(this.$route.query.gameType);
+        return this.$store.state.Game.selectGameType;
       },
       showHiddenCollapseText() {
-        return this.showGameTypeList.find((it) => it.key === this.gameTypeID).value;
+        return this.showGameTypeList.find((it) => it.key === this.gameTypeID)?.value;
       },
       navHeaderStyleJudge() {
         if (this.isNavMenuCollapse) {
@@ -122,14 +120,11 @@
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
         this.$store
-          .dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID })
+          .dispatch('Game/GetMenuGameCatList')
           .then((res) => {
-            if (res.data.item.length !== 0) {
+            if (this.gameStore.MenuList.length !== 0) {
               // 手動切換gameType時,系統預設選擇第一個球種
-              this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0, true);
-            } else {
-              // 如果選擇gameType,menu回傳陣列為空,那就清除gameList資料
-              this.$store.dispatch('Game/ClearSelectData');
+              this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0, true);
             }
           })
           .finally(() => {
@@ -139,20 +134,11 @@
       callGetGameDetail(CatID, WagerTypeKey) {
         let postData = null;
 
-        //* Test 測試CODE 指定數據
-        if (false) {
-          postData = {
-            GameType: 1,
-            CatID: 102,
-            WagerTypeKey: 1,
-          };
-        } else {
-          postData = {
-            GameType: this.gameTypeID,
-            CatID,
-            WagerTypeKey,
-          };
-        }
+        postData = {
+          GameType: this.gameTypeID,
+          CatID,
+          WagerTypeKey,
+        };
         this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
@@ -163,10 +149,7 @@
         });
       },
       gameTypeClickHandler(key) {
-        this.$router.replace({
-          name: this.$route.name,
-          query: { ...this.$route.query, gameType: key },
-        });
+        this.$store.commit('Game/setGameType', key);
         this.callGetMenuGameCatList();
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {

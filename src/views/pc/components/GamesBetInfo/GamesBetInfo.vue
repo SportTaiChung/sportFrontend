@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="bottomContainer">
-      <template v-if="false">
+      <template v-if="showBetCartList.length !== 0">
         <div class="bottomHeaderRow">
           <div
             class="bottomHeaderRowItem"
@@ -50,6 +50,8 @@
             {{ bottomHeaderRowItem(1) }}
           </div>
         </div>
+
+        <BetViewList> </BetViewList>
       </template>
 
       <template v-else>
@@ -74,15 +76,23 @@
 </template>
 
 <script>
+  import BetViewList from '@/components/BetViewList';
   export default {
     name: 'GamesBetInfo',
+    components: {
+      BetViewList,
+    },
     data() {
       return {
         selectGroupIndex: 0,
         selectChildIndex: 0,
       };
     },
-    computed: {},
+    computed: {
+      showBetCartList() {
+        return this.$store.getters['BetCart/showBetCartList'];
+      },
+    },
     methods: {
       bottomHeaderRowItem(index) {
         if (this.selectGroupIndex === 0) {
@@ -179,12 +189,13 @@
       margin-bottom: 5px;
       .bottomHeaderRow {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
+        margin-bottom: 5px;
         .bottomHeaderRowItem {
           background-color: #c5c5c5;
           color: #666;
-          width: 48%;
+          width: 49%;
           height: 30px;
           line-height: 30px;
           cursor: pointer;

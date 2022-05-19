@@ -14,7 +14,7 @@ export function getMenuGameType(postData = {}) {
 }
 
 // 17. 獲取左侧菜单球种(含赛事数量)
-export function getMenuGameCatList(postData = {}) {
+export function getMenuGameCatList() {
   return request({
     url: `/GameInfo/Menu`,
     method: 'post',
@@ -22,7 +22,7 @@ export function getMenuGameCatList(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { lang: store.state.Lang, ...postData },
+    data: { lang: store.state.Lang },
   });
 }
 
@@ -49,5 +49,31 @@ export function getGameDetailSmall(postData = {}) {
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
+  });
+}
+
+// 20. 投注接口
+export function playBet(postData = {}) {
+  return request({
+    url: `/GameInfo/Play`,
+    method: 'post',
+    param: {
+      AddRVfToken: true,
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang, ...postData },
+  });
+}
+
+// 22. 获取投注盘口详情
+export function getBetInfo(postData = {}) {
+  return request({
+    url: `/GameInfo/BetInfo`,
+    method: 'post',
+    param: {
+      AddRVfToken: true,
+      AddMemberToken: true,
+    },
+    data: postData,
   });
 }

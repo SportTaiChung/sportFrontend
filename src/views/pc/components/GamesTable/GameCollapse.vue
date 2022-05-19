@@ -46,7 +46,8 @@
                 :key="wagerIndex"
                 :set="
                   ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
-                  (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
+                  (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
+                  (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
                 "
               >
                 <div class="WagerList">
@@ -66,12 +67,20 @@
                   <template v-else>
                     <!-- 只有單一個Odd Layout -->
                     <template v-if="sportData.layoutType === 'single'">
-                      <div class="WagerRow">
+                      <div
+                        class="WagerRow"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                      >
                         <div class="WagerCenterItem">
                           <Odd :OddValue="sportData.topPlayOdd" />
                         </div>
                       </div>
-                      <div class="WagerRow">
+                      <div
+                        class="WagerRow"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                      >
                         <div class="WagerCenterItem">
                           <Odd :OddValue="sportData.bottomPlayOdd" />
                         </div>
@@ -81,15 +90,8 @@
                     <template v-else>
                       <div
                         class="WagerRow"
-                        :class="sportData.topPlayOdd !== '' ? 'WagerRowInteractive' : ''"
-                        :set="sportData"
-                        @click="
-                          goBet(
-                            { WagerPos: 1 },
-                            wagerData,
-                            $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)
-                          )
-                        "
+                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
                         <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
                         <div class="WagerItem">
@@ -98,15 +100,8 @@
                       </div>
                       <div
                         class="WagerRow"
-                        :class="sportData.bottomPlayOdd !== '' ? 'WagerRowInteractive' : ''"
-                        :set="sportData"
-                        @click="
-                          goBet(
-                            { WagerPos: 2 },
-                            wagerData,
-                            $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)
-                          )
-                        "
+                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
                         <div class="WagerItem">
                           {{ sportData.bottomPlayMethod }}
@@ -126,7 +121,11 @@
                         <div class="WagerRow"> </div>
                       </template>
                       <template v-else>
-                        <div class="WagerRow">
+                        <div
+                          class="WagerRow"
+                          :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
+                          @click="goBet(2, teamData, wagerData, rowIndex)"
+                        >
                           <div class="WagerCenterItem">
                             <Odd :OddValue="wagerData.Odds[0].DrewOdds"
                           /></div>
@@ -160,34 +159,94 @@
     },
     props: {
       index: {
-        // index of current item
         type: Number,
       },
       source: {
-        // here is: {uid: 'unique_1', text: 'abc'}
         type: Object,
         default() {
           return {};
         },
       },
     },
+    computed: {
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
+      },
+    },
     methods: {
-      goBet(clickData, wagerData, sportData) {
-        const { WagerPos } = clickData;
-        if (WagerPos === 1) {
-          console.log(sportData.topPlayOdd);
-        } else if (WagerPos === 2) {
-          console.log(sportData.bottomPlayOdd);
+      WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
+        let appendCSS = '';
+        if (sportData.playMethodData !== null) {
+          const showOddKeyName = sportData.playMethodData.showOdd[playIndex];
+          if (sportData[showOddKeyName] !== '') {
+            appendCSS = ' WagerRowInteractive';
+          }
         }
-        // // 如果顯示賠率為空 不能下注
-        // if (odd === '') {
-        //   return;
-        // }
-        // console.log('odd:', sportData, odd);
-        // const { WagerPos } = clickData;
-        // console.log(WagerPos);
-        // console.log('wagerData:', wagerData);
-        // console.log('sportData:', sportData);
+        const compareData = this.betCartList.find((cartData) => cartData.GameID === GameID);
+        if (compareData && compareData.clickPlayIndex === playIndex) {
+          appendCSS += ' WagerRowIsSelect';
+        }
+        return appendCSS;
+      },
+      wagerRoIndexToGameID(wagerData, rowIndex) {
+        if (
+          wagerData?.isNoData ||
+          wagerData.Odds[rowIndex] === undefined ||
+          wagerData.Odds[rowIndex].Status !== 1
+        ) {
+          return null;
+        } else {
+          return wagerData.Odds[rowIndex].GameID;
+        }
+      },
+      goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
+        const sportData = this.$SportLib.WagerDataToShowData(
+          this.source.CatID,
+          wagerData,
+          rowIndex
+        );
+
+        // 如果核心lib解析出來是null 也不能下注
+        if (sportData.playMethodData === null) {
+          return;
+        }
+
+        // 如果點擊的選項顯示賠率是空的 代表這一格無法下注
+        const showOddKeyName = sportData.playMethodData.showOdd[clickPlayIndex];
+        const showOdd = sportData[showOddKeyName];
+        if (showOdd === '') {
+          return;
+        }
+
+        let HomeTeamStr = teamData.HomeTeamStr;
+        let AwayTeamStr = teamData.AwayTeamStr;
+        if (this.$SportLib.isHomeAwayReverse(this.source.CatID)) {
+          HomeTeamStr = teamData.AwayTeamStr;
+          AwayTeamStr = teamData.HomeTeamStr;
+        }
+
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(showOdd),
+          clickPlayIndex,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: wagerData.Odds[rowIndex].GameID,
+          CatID: this.source.CatID,
+          LeagueNameStr: this.source.LeagueNameStr,
+          HomeTeamStr,
+          AwayTeamStr,
+          WagerTypeID: wagerData.WagerTypeID,
+          WagerGrpID: wagerData.WagerGrpID,
+          EvtID: teamData.EvtID,
+          ...wagerData.Odds[rowIndex],
+        };
+
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
     },
   };
@@ -360,6 +419,9 @@
               &:hover {
                 background-color: #ffe1ae;
               }
+            }
+            .WagerRowIsSelect {
+              background-color: #ffd5d5;
             }
           }
         }

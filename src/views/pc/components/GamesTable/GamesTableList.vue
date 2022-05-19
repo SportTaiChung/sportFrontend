@@ -1,7 +1,7 @@
 <template>
   <div
     id="GameTableList"
-    v-loading="selectCatID === null && gameStore.BallTypeList.length !== 0"
+    v-loading="selectCatID === null && gameStore.MenuList.length !== 0"
     :style="GameTableListStyleJudge()"
   >
     <template v-if="selectCatID !== null">
@@ -38,7 +38,7 @@
         />
       </el-collapse>
     </template>
-    <template v-if="gameStore.BallTypeList.length === 0">
+    <template v-if="gameStore.MenuList.length === 0">
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
           <img alt="" src="@/assets/img/pc/icon_noGame.svg" />

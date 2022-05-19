@@ -48,7 +48,7 @@
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList', { gtype: this.gameTypeID }).finally(() => {
           // 手動切換gameType時,預設要選取第一個
-          // this.menuItemClickHandler(this.gameStore.BallTypeList[0], null, 0);
+          // this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
           this.$store.commit('SetLoading', false);
         });
       },

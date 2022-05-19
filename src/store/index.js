@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import User from './modules/User';
+import BetCart from './modules/BetCart';
 import Game from './modules/Game/Game';
+
 import { dataFresh } from '@/api/Common';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { User, Game },
+  modules: { User, Game, BetCart },
   state: {
     isMobile: false,
     isLoading: false,
