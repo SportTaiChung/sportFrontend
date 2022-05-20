@@ -141,6 +141,7 @@ export default {
           BetType: 1,
         };
         list.push(listItem);
+        return true;
       });
       if (findError) {
         Notification.error({
