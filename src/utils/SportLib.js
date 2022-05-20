@@ -101,7 +101,22 @@ export function isHomeAwayReverse(catID) {
   );
 }
 
-// bet WagerPos : 1主 2客 3和 4大 5小 1單 2雙
+/**
+ * 所有玩法數據的資料
+ * WagerPos : 1主 2客 3和 4大 5小 1單 2雙
+ *  name: 'HandiCap',
+ *?  玩法名
+ *  typeIdList: [101, 103],
+ *?  有哪些typeIdList 是在此分類下
+ *  wagerPos: [1, 2],
+ *?  對應API的WagerPos
+ *  showMethod: ['topPlayMethod', 'bottomPlayMethod'],
+ *?  顯示method的key
+ *  showOdd: ['topPlayOdd', 'bottomPlayOdd'],
+ *?  顯示Odd的key
+ *  betCutLineDealFunc:
+ *?  下注送出時組成CutLine所需的資料
+ */
 const PlayMethodData = {
   // 讓分
   HandiCap: {
@@ -149,6 +164,7 @@ const PlayMethodData = {
   },
 };
 
+// 將oddData轉成用來顯示的資料
 export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = null) {
   let topPlayMethod = '';
   let topPlayOdd = '';
@@ -210,7 +226,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
 }
 
 /**
- * WagerData 轉 成畫面需要組成的資料格式
+ * WagerData 轉成 遊戲注格面板 的顯示格式
  * @param {Number} catID     球種ID
  * @param {Object} wagerData team底下的wager
  * @param {Object} rowIndex  team底下的第幾個row
@@ -219,6 +235,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
  *?  topPlayOdd       {String} 上方賠率
  *?  bottomPlayMethod {String} 下方玩法
  *?  bottomPlayOdd    {String} 下方賠率
+ *?  playMethodData   {Object} 參考 PlayMethodData
  *?  layoutType       {Object} 版型分類
  *     > normal: 預設版型
  *     > single: 只顯示一個Odd
@@ -234,4 +251,85 @@ export function WagerDataToShowData(catID, wagerData, rowIndex) {
   } else {
     return oddDataToPlayData(null, null);
   }
+}
+
+// 將購物車的資料 轉成 購物車內顯示的資料
+export function cartDataToDisplayData(cartData) {
+  console.log('cartData:', cartData);
+  let showBetTitle = '';
+  let showCutLine = '';
+  let showOdd = '';
+  const playData = cartData.playData;
+  if (playData.playMethodData.name === 'HandiCap') {
+    if (cartData.clickPlayIndex === 0) {
+      showBetTitle = cartData.HomeTeamStr;
+      if (playData.topPlayMethod === '') {
+        showCutLine = '+' + playData.bottomPlayMethod;
+      } else {
+        showCutLine = '-' + playData.topPlayMethod;
+      }
+      showOdd = playData.topPlayOdd;
+    } else if (cartData.clickPlayIndex === 1) {
+      showBetTitle = cartData.AwayTeamStr;
+      if (playData.topPlayMethod === '') {
+        showCutLine = '-' + playData.bottomPlayMethod;
+      } else {
+        showCutLine = '+' + playData.topPlayMethod;
+      }
+      showOdd = playData.bottomPlayOdd;
+    }
+    if (playData.topPlayMethod === '0' || playData.bottomPlayMethod === '0') {
+      showCutLine = '0';
+    }
+  } else if (playData.playMethodData.name === 'BigSmall') {
+    if (cartData.clickPlayIndex === 0) {
+      showBetTitle = '大';
+      showCutLine = playData.topPlayMethod;
+      showOdd = playData.topPlayOdd;
+    } else if (cartData.clickPlayIndex === 1) {
+      showBetTitle = '小';
+      showCutLine = playData.topPlayMethod;
+      showOdd = playData.bottomPlayOdd;
+    }
+  } else if (playData.playMethodData.name === 'SoloWin') {
+    if (cartData.clickPlayIndex === 0) {
+      showBetTitle = cartData.HomeTeamStr;
+      showOdd = playData.topPlayOdd;
+    } else if (cartData.clickPlayIndex === 1) {
+      showBetTitle = cartData.AwayTeamStr;
+      showOdd = playData.bottomPlayOdd;
+    } else {
+      showBetTitle = '和局';
+      showOdd = playData.drewPlayOdd;
+    }
+    showCutLine = 'PK';
+  } else if (playData.playMethodData.name === 'OddEven') {
+    if (cartData.clickPlayIndex === 0) {
+      showBetTitle = '單';
+      showOdd = playData.topPlayOdd;
+    } else if (cartData.clickPlayIndex === 1) {
+      showBetTitle = '雙';
+      showOdd = playData.bottomPlayOdd;
+    }
+  } else {
+    console.error('playData.playMethodData.name error:', playData.playMethodData.name);
+  }
+
+  const catIDLabel = CatIDtoShowLabel(cartData.CatID);
+  let wagerGrpLabel = '';
+
+  if (cartData.WagerGrpID === '10') {
+    wagerGrpLabel = '- [全場]';
+  } else if (cartData.WagerGrpID === '11') {
+    wagerGrpLabel = '- [上半]';
+  }
+  const showGameTypeLabel = `${catIDLabel}${cartData.GameTypeLabel}${wagerGrpLabel}`;
+
+  return {
+    showBetTitle,
+    showCutLine,
+    showOdd,
+    showGameTypeLabel,
+    wagerGrpLabel,
+  };
 }

@@ -210,7 +210,6 @@
         if (this.groupIndex === 0) {
           this.$store.dispatch('BetCart/updateAllCartData').then(() => {
             this.$nextTick(() => {
-              console.log('updateAllCartData done');
               this.reCalcBetChart();
             });
           });
@@ -306,7 +305,6 @@
         let newTotalBetAmount = 0;
         let newTotalWinAmount = 0;
         this.showBetCartList.forEach((cartData) => {
-          console.log('reCalcBetChart cartData', cartData);
           const displayData = this.cartDataToDisplayData(cartData);
           if (cartData.betAmount !== null) {
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
@@ -323,7 +321,6 @@
       },
       playBetOddClassJudge(OriginShowOdd, NowShowOdd) {
         if (parseFloat(OriginShowOdd) !== parseFloat(NowShowOdd)) {
-          console.log(OriginShowOdd, NowShowOdd);
           return 'oddChangeStyle';
         } else {
           return '';
@@ -346,82 +343,7 @@
         });
       },
       cartDataToDisplayData(cartData) {
-        let showBetTitle = '';
-        let showCutLine = '';
-        let showOdd = '';
-        const playData = cartData.playData;
-        if (playData.playMethodData.name === 'HandiCap') {
-          if (cartData.clickPlayIndex === 0) {
-            showBetTitle = cartData.HomeTeamStr;
-            if (playData.topPlayMethod === '') {
-              showCutLine = '+' + playData.bottomPlayMethod;
-            } else {
-              showCutLine = '-' + playData.topPlayMethod;
-            }
-            showOdd = playData.topPlayOdd;
-          } else if (cartData.clickPlayIndex === 1) {
-            showBetTitle = cartData.AwayTeamStr;
-            if (playData.topPlayMethod === '') {
-              showCutLine = '-' + playData.bottomPlayMethod;
-            } else {
-              showCutLine = '+' + playData.topPlayMethod;
-            }
-            showOdd = playData.bottomPlayOdd;
-          }
-          if (playData.topPlayMethod === '0' || playData.bottomPlayMethod === '0') {
-            showCutLine = '0';
-          }
-        } else if (playData.playMethodData.name === 'BigSmall') {
-          if (cartData.clickPlayIndex === 0) {
-            showBetTitle = '大';
-            showCutLine = playData.topPlayMethod;
-            showOdd = playData.topPlayOdd;
-          } else if (cartData.clickPlayIndex === 1) {
-            showBetTitle = '小';
-            showCutLine = playData.topPlayMethod;
-            showOdd = playData.bottomPlayOdd;
-          }
-        } else if (playData.playMethodData.name === 'SoloWin') {
-          if (cartData.clickPlayIndex === 0) {
-            showBetTitle = cartData.HomeTeamStr;
-            showOdd = playData.topPlayOdd;
-          } else if (cartData.clickPlayIndex === 1) {
-            showBetTitle = cartData.AwayTeamStr;
-            showOdd = playData.bottomPlayOdd;
-          } else {
-            showBetTitle = '和局';
-            showOdd = playData.drewPlayOdd;
-          }
-          showCutLine = 'PK';
-        } else if (playData.playMethodData.name === 'OddEven') {
-          if (cartData.clickPlayIndex === 0) {
-            showBetTitle = '單';
-            showOdd = playData.topPlayOdd;
-          } else if (cartData.clickPlayIndex === 1) {
-            showBetTitle = '雙';
-            showOdd = playData.bottomPlayOdd;
-          }
-        } else {
-          console.error('playData.playMethodData.name error:', playData.playMethodData.name);
-        }
-
-        const catIDLabel = this.$SportLib.CatIDtoShowLabel(cartData.CatID);
-        let wagerGrpLabel = '';
-
-        if (cartData.WagerGrpID === '10') {
-          wagerGrpLabel = '- [全場]';
-        } else if (cartData.WagerGrpID === '11') {
-          wagerGrpLabel = '- [上半]';
-        }
-        const showGameTypeLabel = `${catIDLabel}${cartData.GameTypeLabel}${wagerGrpLabel}`;
-
-        return {
-          showBetTitle,
-          showCutLine,
-          showOdd,
-          showGameTypeLabel,
-          wagerGrpLabel,
-        };
+        return this.$SportLib.cartDataToDisplayData(cartData);
       },
     },
   };
