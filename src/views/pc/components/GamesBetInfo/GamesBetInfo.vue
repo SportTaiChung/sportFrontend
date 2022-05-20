@@ -33,44 +33,27 @@
       </div>
     </div>
     <div class="bottomContainer">
-      <template v-if="showBetCartList.length !== 0">
-        <div class="bottomHeaderRow">
-          <div
-            class="bottomHeaderRowItem"
-            :class="selectChildIndex === 0 ? 'bottomHeaderRowItemActive' : ''"
-            @click="selectChildIndex = 0"
-          >
-            {{ bottomHeaderRowItem(0) }}
-          </div>
-          <div
-            class="bottomHeaderRowItem"
-            :class="selectChildIndex === 1 ? 'bottomHeaderRowItemActive' : ''"
-            @click="selectChildIndex = 1"
-          >
-            {{ bottomHeaderRowItem(1) }}
-          </div>
+      <div
+        class="bottomHeaderRow"
+        v-if="(selectGroupIndex === 0 && showBetCartList.length !== 0) || selectGroupIndex === 1"
+      >
+        <div
+          class="bottomHeaderRowItem"
+          :class="selectChildIndex === 0 ? 'bottomHeaderRowItemActive' : ''"
+          @click="selectChildIndex = 0"
+        >
+          {{ bottomHeaderRowItem(0) }}
         </div>
-
-        <BetViewList> </BetViewList>
-      </template>
-
-      <template v-else>
-        <div class="noData">
-          <div class="noDataItem" v-if="false">
-            <div class="noDataItemImgContainer">
-              <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
-            </div>
-            <div>暫無最新注單</div>
-          </div>
-
-          <div class="noDataItem" v-else>
-            <div class="noDataItemImgContainer">
-              <img src="@/assets/img/pc/icon_onInfo.svg" alt="" />
-            </div>
-            <div> 點擊賠率以添加選項 </div>
-          </div>
+        <div
+          class="bottomHeaderRowItem"
+          :class="selectChildIndex === 1 ? 'bottomHeaderRowItemActive' : ''"
+          @click="selectChildIndex = 1"
+        >
+          {{ bottomHeaderRowItem(1) }}
         </div>
-      </template>
+      </div>
+
+      <BetViewList :groupIndex="selectGroupIndex" :childIndex="selectChildIndex"> </BetViewList>
     </div>
   </div>
 </template>
@@ -91,6 +74,9 @@
     computed: {
       showBetCartList() {
         return this.$store.getters['BetCart/showBetCartList'];
+      },
+      showBetHistoryList() {
+        return this.$store.getters['BetCart/showBetHistoryList'];
       },
     },
     methods: {
@@ -203,21 +189,6 @@
         .bottomHeaderRowItemActive {
           background-color: #f3f3f3;
           color: #000;
-        }
-      }
-      .noData {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        .noDataItem {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          .noDataItemImgContainer {
-            width: 100%;
-          }
         }
       }
     }

@@ -1,15 +1,19 @@
-import { getBetInfo, playBet, playState } from '@/api/Game';
+import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
 import { Notification } from 'element-ui';
 export default {
   namespaced: true,
   state: {
     betCartList: [],
+    betHistoryList: [],
     isAddNewToChart: false,
   },
   getters: {
     showBetCartList(state) {
       return state.betCartList;
+    },
+    showBetHistoryList(state) {
+      return state.betHistoryList;
     },
   },
   mutations: {
@@ -26,9 +30,13 @@ export default {
         state.betCartList.splice(cartIndex, 1);
       }
     },
+    setBetHistoryList(state, list) {
+      state.betHistoryList.length = 0;
+      state.betHistoryList = list;
+    },
   },
   actions: {
-    // 获取投注盘口详情
+    // 获取投注盘口详情API
     callCartUpdateAPI(store, gameIDs) {
       return new Promise((resolve, reject) => {
         return getBetInfo({ GameIDs: JSON.stringify(gameIDs) })
@@ -72,7 +80,7 @@ export default {
           .catch(reject);
       });
     },
-    // 更新購物車內所有注單賠率資訊
+    // 更新購物車內所有注單賠率資訊 API
     updateAllCartData(store) {
       if (store.state.betCartList.length !== 0) {
         const betCartListGameIDs = store.state.betCartList.map((cartData) => cartData.GameID);
@@ -101,7 +109,7 @@ export default {
 
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },
-    // 執行投注
+    // 執行投注 API
     submitBet(store) {
       const list = [];
       store.state.betCartList.forEach((cartData) => {
@@ -155,6 +163,17 @@ export default {
           this.loading = false;
           store.commit('SetLoading', false, { root: true });
         }
+      });
+    },
+    getBetHistory(store, postData) {
+      return new Promise((resolve, reject) => {
+        return getBetHistory(postData)
+          .then((res) => {
+            if (res.data?.list) {
+              store.commit('setBetHistoryList', res.data.list);
+            }
+          })
+          .catch(reject);
       });
     },
   },

@@ -90,3 +90,16 @@ export function getBetInfo(postData = {}) {
     data: postData,
   });
 }
+
+// 24. 获取即时注单紀錄
+export function getBetHistory(postData = {}) {
+  return request({
+    url: `/GameInfo/Ticket/betHistory`,
+    method: 'post',
+    param: {
+      AddRVfToken: true,
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang, list: postData },
+  });
+}
