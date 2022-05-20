@@ -82,10 +82,14 @@ export default {
     },
     // 更新購物車內所有注單賠率資訊 API
     updateAllCartData(store) {
-      if (store.state.betCartList.length !== 0) {
-        const betCartListGameIDs = store.state.betCartList.map((cartData) => cartData.GameID);
-        store.dispatch('callCartUpdateAPI', betCartListGameIDs);
-      }
+      return new Promise((resolve, reject) => {
+        if (store.state.betCartList.length !== 0) {
+          const betCartListGameIDs = store.state.betCartList.map((cartData) => cartData.GameID);
+          return store.dispatch('callCartUpdateAPI', betCartListGameIDs);
+        } else {
+          resolve();
+        }
+      });
     },
     // 加入到購物車
     addToCart(store, betData) {
@@ -112,7 +116,8 @@ export default {
     // 執行投注 API
     submitBet(store) {
       const list = [];
-      store.state.betCartList.forEach((cartData) => {
+      let findError = false;
+      store.state.betCartList.every((cartData) => {
         console.log(cartData);
         const CatId = cartData.CatID;
         const GameID = cartData.GameID;
@@ -124,45 +129,54 @@ export default {
         const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
         const OddValue = cartData.playData[oddKey];
         const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-
+        if (cartData.betAmount === null || cartData.betAmount === '') {
+          findError = true;
+          return false;
+        }
         const listItem = {
           CatId,
           WagerString,
-          Amount: 10,
+          Amount: cartData.betAmount,
           AcceptBetter: false,
           BetType: 1,
         };
         list.push(listItem);
       });
-      console.log('list', list);
+      if (findError) {
+        Notification.error({
+          message: '請先輸入下注金額',
+        });
+        return;
+      }
       store.commit('SetLoading', true, { root: true });
       return playBet(list).then((res) => {
-        if (res.data.traceCodeKey) {
-          store.dispatch('playState', res.data.traceCodeKey);
-        }
+        return store.dispatch('playState', res.data.traceCodeKey);
       });
     },
     // 檢查投注狀態
     playState(store, traceCodeKey) {
-      return playState(traceCodeKey).then((res) => {
-        if (res.data[0].code === 201) {
-          setTimeout(() => {
-            store.dispatch('playState', traceCodeKey);
-          }, 3000);
-          store.commit('SetLoading', true, { root: true });
-          this.loading = true;
-        } else if (res.data[0].code === 200) {
-          Notification.success({
-            message: res.data[0].Message,
-          });
-          store.commit('SetLoading', false, { root: true });
-        } else {
-          Notification.error({
-            message: res.data[0].Message,
-          });
-          this.loading = false;
-          store.commit('SetLoading', false, { root: true });
-        }
+      return new Promise((resolve, reject) => {
+        return playState(traceCodeKey).then((res) => {
+          if (res.data[0].code === 201) {
+            setTimeout(() => {
+              return store.dispatch('playState', traceCodeKey);
+            }, 3000);
+            store.commit('SetLoading', true, { root: true });
+          } else if (res.data[0].code === 200) {
+            store.commit('clearCart');
+            Notification.success({
+              message: res.data[0].Message,
+            });
+            store.commit('SetLoading', false, { root: true });
+            resolve(res);
+          } else {
+            Notification.error({
+              message: res.data[0].Message,
+            });
+            store.commit('SetLoading', false, { root: true });
+            reject(res);
+          }
+        });
       });
     },
     getBetHistory(store, postData) {
@@ -172,6 +186,7 @@ export default {
             if (res.data?.list) {
               store.commit('setBetHistoryList', res.data.list);
             }
+            resolve(res);
           })
           .catch(reject);
       });

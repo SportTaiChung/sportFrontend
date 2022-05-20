@@ -49,8 +49,14 @@ input,
 textarea {
   user-select: auto;
 }
-input:focus {
-  border: none !important;
+input {
+  &:focus {
+    border: 1px solid #2682d5 !important;
+  }
+  &:focus-visible {
+    border: 0px;
+    outline: 0px;
+  }
 }
 .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
   display: none;

@@ -100,6 +100,6 @@ export function getBetHistory(postData = {}) {
       AddRVfToken: true,
       AddMemberToken: true,
     },
-    data: { lang: store.state.Lang, list: postData },
+    data: { lang: store.state.Lang, ...postData },
   });
 }

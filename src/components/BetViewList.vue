@@ -1,5 +1,5 @@
 <template>
-  <div id="BetViewList" :set="(displayData = [])" ref="BetViewList">
+  <div id="BetViewList" :set="(displayData = [])" ref="BetViewList" v-loading="isLoading">
     <!-- 購物車 -->
     <template v-if="groupIndex === 0">
       <div
@@ -21,10 +21,7 @@
             {{ displayData[cartIndex].showOdd }}
           </div>
 
-          <i
-            class="el-icon-close"
-            @click="$store.commit('BetCart/removeCartByGameID', cart.GameID)"
-          ></i>
+          <i class="el-icon-close" @click="cancelSingleHandler(cart.GameID)"></i>
         </div>
 
         <div class="cardContentBlock">
@@ -50,7 +47,7 @@
             <div class="inputRow">
               <input
                 class="input"
-                v-model="cart.betAmount"
+                v-model.number="cart.betAmount"
                 :max="cart.BetMax"
                 :min="cart.BetMin"
                 :placeholder="
@@ -59,17 +56,18 @@
                     : ''
                 "
                 type="Number"
-                @blur="BetAmountBlurEvent"
+                @blur="inputRowItemBlurHandler(0)"
               />
               <input
                 class="input"
-                v-model="cart.winAmount"
+                v-model.number="cart.winAmount"
                 placeholder="可赢金額"
-                @input="wink_amount($event)"
+                type="Number"
+                @blur="inputRowItemBlurHandler(1, true)"
               />
             </div>
           </div>
-          <div class="cardContentBlockRow limitText"> 本場上限 10000 </div>
+          <div class="cardContentBlockRow limitText"> 本場上限 尚未接 </div>
         </div>
       </div>
     </template>
@@ -108,7 +106,14 @@
             <div class="cardContentBlockRow"> 帳務日期: {{ historyItem.AccDateStr }} </div>
             <div class="cardContentBlockRow">
               <div class="cardContentBlockWithHalfRow">投注: {{ historyItem.Amount }}</div>
-              <div class="cardContentBlockWithHalfRow">最高返還: {{ historyItem.item }}</div>
+              <div class="cardContentBlockWithHalfRow">
+                最高返還:
+                {{
+                  $lib.truncFloor(
+                    historyItem.Amount * (parseFloat(historyItem.dataBet[0].PayoutOddsStr) + 1)
+                  )
+                }}
+              </div>
             </div>
             <div class="cardContentBlockRow">
               <div class="cardContentBlockRowText">StatusType: {{ historyItem.StatusType }}</div>
@@ -128,7 +133,20 @@
     </template>
 
     <div class="cardOptionBlock" v-if="groupIndex === 0 && showBetCartList.length !== 0">
-      <div class="buttonRow"> </div>
+      <div class="betInputRow">
+        <div class="betInputTitle"> 單注 </div>
+        <div class="betInputSymbol">:</div>
+        <input v-model.number="fillEachBetAmount" type="Number" @blur="fillEachBetAmountHandler" />
+      </div>
+      <div class="betInputRow">
+        <div class="betInputTitle"> 可贏金額 </div>
+        <div class="betInputSymbol">:</div>
+        <input v-model.number="fillEachWinAmount" type="Number" @blur="fillEachWinAmountHandler" />
+      </div>
+      <div class="totalRow">
+        <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
+        <div class="halfItem">可贏金額 : {{ totalWinAmount }}</div>
+      </div>
       <div class="buttonRow">
         <div class="clearBtn" @click="cancelHandler"> 取消</div>
         <div class="submitBtn" @click="submitHandler">確認下注</div>
@@ -144,7 +162,10 @@
       </div>
     </div>
 
-    <div class="noData" v-if="groupIndex === 1 && showBetHistoryList.length === 0">
+    <div
+      class="noData"
+      v-if="groupIndex === 1 && showBetHistoryList.length === 0 && isLoading === false"
+    >
       <div class="noDataItem">
         <div class="noDataItemImgContainer">
           <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
@@ -177,12 +198,22 @@
     data() {
       return {
         intervalEvent: null,
+        totalBetAmount: 0,
+        totalWinAmount: 0,
+        fillEachBetAmount: null,
+        fillEachWinAmount: null,
+        isLoading: false,
       };
     },
     mounted() {
       this.intervalEvent = setInterval(() => {
         if (this.groupIndex === 0) {
-          this.$store.dispatch('BetCart/updateAllCartData');
+          this.$store.dispatch('BetCart/updateAllCartData').then(() => {
+            this.$nextTick(() => {
+              console.log('updateAllCartData done');
+              this.reCalcBetChart();
+            });
+          });
         }
       }, 10000);
     },
@@ -194,13 +225,13 @@
       },
       groupIndex: {
         handler() {
-          if (this.groupIndex === 1) {
-            this.$store.dispatch('BetCart/getBetHistory', {
-              isset: this.childIndex === 1,
-            });
-          }
+          this.callBetHistoryAPI();
         },
-        deep: true,
+      },
+      childIndex: {
+        handler() {
+          this.callBetHistoryAPI();
+        },
       },
     },
     beforeDestroy() {
@@ -217,8 +248,79 @@
         return this.$store.state.BetCart.isAddNewToChart;
       },
     },
-
     methods: {
+      clearMemberData() {
+        this.totalBetAmount = 0;
+        this.totalWinAmount = 0;
+        this.fillEachBetAmount = null;
+        this.fillEachWinAmount = null;
+      },
+      callBetHistoryAPI() {
+        if (this.groupIndex === 1) {
+          this.isLoading = true;
+          this.$store
+            .dispatch('BetCart/getBetHistory', {
+              isset: this.childIndex === 1,
+            })
+            .then(() => {
+              this.isLoading = false;
+            });
+        }
+      },
+      fillEachBetAmountHandler() {
+        this.showBetCartList.forEach((cartData) => {
+          cartData.betAmount = this.fillEachBetAmount;
+        });
+        this.reCalcBetChart();
+      },
+      fillEachWinAmountHandler() {
+        this.showBetCartList.forEach((cartData) => {
+          cartData.winAmount = this.fillEachWinAmount;
+        });
+        this.reCalcBetChart(true);
+      },
+      inputRowItemBlurHandler(inputType, isDriveFromWinAmount = false) {
+        // 如果是每個item的下注金額 被輸入,則清除全局的下注金額輸入框
+        if (inputType === 0) {
+          this.fillEachBetAmount = null;
+        }
+        // 如果是每個item的可贏金額 被輸入,則清除全局的可贏金額輸入框
+        if (inputType === 1) {
+          this.fillEachWinAmount = null;
+        }
+        this.reCalcBetChart(isDriveFromWinAmount);
+      },
+      reCalcBetChart(isDriveFromWinAmount = false) {
+        // 如果是透過可贏金額輸入框驅動事件,則要先透過winAmount換算betAmount
+        if (isDriveFromWinAmount) {
+          this.showBetCartList.forEach((cartData) => {
+            const displayData = this.cartDataToDisplayData(cartData);
+            if (cartData.winAmount !== null) {
+              cartData.betAmount = this.$lib.truncFloor(
+                cartData.winAmount / (1 + parseFloat(displayData.showOdd))
+              );
+            }
+          });
+        }
+
+        let newTotalBetAmount = 0;
+        let newTotalWinAmount = 0;
+        this.showBetCartList.forEach((cartData) => {
+          console.log('reCalcBetChart cartData', cartData);
+          const displayData = this.cartDataToDisplayData(cartData);
+          if (cartData.betAmount !== null) {
+            cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
+            cartData.winAmount = this.$lib.truncFloor(
+              cartData.betAmount * (1 + parseFloat(displayData.showOdd))
+            );
+            newTotalBetAmount += cartData.betAmount;
+            newTotalWinAmount += cartData.winAmount;
+          }
+        });
+
+        this.totalBetAmount = newTotalBetAmount;
+        this.totalWinAmount = newTotalWinAmount;
+      },
       playBetOddClassJudge(OriginShowOdd, NowShowOdd) {
         if (parseFloat(OriginShowOdd) !== parseFloat(NowShowOdd)) {
           console.log(OriginShowOdd, NowShowOdd);
@@ -228,12 +330,21 @@
         }
       },
       cancelHandler() {
+        this.clearMemberData();
         this.$store.commit('BetCart/clearCart');
+        this.reCalcBetChart();
+      },
+      cancelSingleHandler(gameID) {
+        this.fillEachBetAmount = null;
+        this.fillEachWinAmount = null;
+        this.$store.commit('BetCart/removeCartByGameID', gameID);
+        this.reCalcBetChart();
       },
       submitHandler() {
-        this.$store.dispatch('BetCart/submitBet');
+        this.$store.dispatch('BetCart/submitBet').then((res) => {
+          this.clearMemberData();
+        });
       },
-      BetAmountBlurEvent(cartData) {},
       cartDataToDisplayData(cartData) {
         let showBetTitle = '';
         let showCutLine = '';
@@ -425,6 +536,37 @@
           &:hover {
             background-color: #ffeb68f9;
           }
+        }
+      }
+      .betInputRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        height: 40px;
+        .betInputTitle {
+          width: 20%;
+          text-align-last: justify;
+          text-align: justify;
+          text-justify: distribute-all-lines; // 这行必加，兼容ie浏览器
+        }
+        .betInputSymbol {
+          width: 5%;
+          text-align: center;
+        }
+        input {
+          width: 75%;
+          height: 30px;
+          border: 0px;
+          padding: 0 5px;
+        }
+      }
+      .totalRow {
+        padding: 12px 5px;
+        display: flex;
+        justify-content: space-around;
+        .halfItem {
+          width: 50%;
+          text-align: left;
         }
       }
     }

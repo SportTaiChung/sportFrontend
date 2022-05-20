@@ -92,7 +92,12 @@ export function timeFormatHHmm(time) {
 }
 
 // 處理浮點數運算
-export function trunc(num, decimal) {
+export function trunc(num, decimal = 2) {
   const base = 10 ** decimal;
   return Math.trunc((num * base).toFixed(decimal)) / base;
+}
+
+// 處理浮點數運算 並且floor去除小數點
+export function truncFloor(num, decimal = 2) {
+  return Math.floor(trunc(num, decimal));
 }
