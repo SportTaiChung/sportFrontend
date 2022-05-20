@@ -34,7 +34,7 @@
           :data-key="'uid'"
           :data-sources="GameList"
           :data-component="itemComponent"
-          :keeps="40"
+          :keeps="10"
         />
       </el-collapse>
     </template>
