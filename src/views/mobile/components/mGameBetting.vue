@@ -1,13 +1,13 @@
 <template>
-  <div class="mGameBetting">
-    <table class="betting-table" :class="isExpanded ? '' : 'isExpanded'">
-      <thead @click="$emit('toggleCollapse')">
+  <div ref="root" class="mGameBetting" :style="maxHeight" :class="isExpanded ? '' : 'closed'">
+    <table>
+      <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
           <th v-for="(it, i) in showTableHeaderList" :key="i"> {{ it.showName }}</th>
         </tr>
       </thead>
 
-      <tbody v-show="isExpanded">
+      <tbody ref="tbody">
         <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
             <tr
@@ -117,9 +117,6 @@
     components: {
       Odd,
     },
-    data() {
-      return {};
-    },
     props: {
       index: {
         type: Number,
@@ -137,12 +134,47 @@
         },
       },
     },
+    data() {
+      return {
+        isMounted: false,
+      };
+    },
     computed: {
       showTableHeaderList() {
         return this.$store.getters['Game/showTableHeaderList'];
       },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
+      },
+      maxHeight() {
+        if (!this.isMounted) return;
+        if (!this.isExpanded) return;
+        const { thead, tbody } = this.$refs;
+        return {
+          height: thead.offsetHeight + tbody.offsetHeight + 'px',
+        };
+      },
+    },
+    mounted() {
+      this.isMounted = true;
+      this.$refs.root.addEventListener(
+        'transitionend',
+        (e) => {
+          if (!this.isExpanded && e.propertyName === 'height') {
+            this.$refs.tbody.style.display = 'none';
+          }
+        },
+        { once: true }
+      );
+      if (!this.isExpanded) {
+        this.$refs.tbody.style.display = 'none';
+      }
+    },
+    watch: {
+      isExpanded(isExpanded) {
+        if (isExpanded) {
+          this.$refs.tbody.style.display = '';
+        }
       },
     },
     methods: {
@@ -229,24 +261,36 @@
   $font-size: 1rem;
 
   .mGameBetting {
-    table.betting-table {
+    position: relative;
+    overflow: hidden;
+    width: fit-content;
+    min-width: 100%;
+    transition: height 300ms ease-out;
+
+    &.closed {
+      height: $row-height !important;
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+      }
+
+      tbody {
+        transition: 350ms ease;
+        opacity: 0;
+      }
+    }
+
+    table {
       position: relative;
       width: 100%;
       border-spacing: 0;
       font-size: $font-size;
-
-      &.isExpanded {
-        &::after {
-          content: '';
-          display: block;
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          width: 100%;
-          height: 1px;
-          background-color: #ccc;
-        }
-      }
 
       th {
         min-width: 6.666rem;
@@ -259,6 +303,7 @@
         color: #444;
         cursor: pointer;
       }
+
       td {
         min-width: 6.666rem;
         height: $row-height;
