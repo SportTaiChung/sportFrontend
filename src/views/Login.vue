@@ -154,7 +154,7 @@
         display: flex;
         flex-direction: column;
         background-color: rgba(255, 255, 255, 0.3);
-        width: 72%;
+        width: calc(100vw - 50px);
         min-width: 250px;
         max-width: 480px;
         padding: 1.8rem;

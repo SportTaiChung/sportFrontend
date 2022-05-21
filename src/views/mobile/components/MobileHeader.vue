@@ -151,6 +151,50 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #fff;
+
+      .leftContainer {
+        display: flex;
+
+        .goBackIcon {
+          width: 1.5rem;
+          height: auto;
+          transform: rotate(90deg);
+          opacity: 0.7;
+        }
+        .navList {
+          display: flex;
+          align-items: center;
+          margin-left: 20px;
+          .navItem {
+            display: flex;
+            align-items: center;
+            height: 24px;
+            padding: 0px 10px;
+            color: white;
+            margin-right: 1.1rem;
+            border-radius: 2px;
+            .text {
+              margin-top: 2px;
+              font-size: 1.2rem;
+            }
+            &:last-child {
+              margin-right: 0px;
+            }
+          }
+          .navItemActive {
+            background-color: #fff;
+            color: #6da9e5;
+          }
+        }
+      }
+      .rightContainer {
+        .userCreditBlock {
+          .creditText {
+            color: #ffdf1a;
+            font-size: 1.2rem;
+          }
+        }
+      }
     }
 
     ul.gameTypeNav {
@@ -180,7 +224,7 @@
         width: fit-content;
         height: 100%;
         text-align: center;
-        font-size: 1.25rem;
+        font-size: 1.11rem;
         white-space: nowrap;
         color: rgba(255, 255, 255, 0.6);
 
@@ -189,7 +233,7 @@
         }
 
         i {
-          font-size: 125%;
+          font-size: 160%;
         }
       }
     }
@@ -201,7 +245,7 @@
       font-size: 0.8em;
       line-height: 1em;
       color: #fff;
-      padding: 5px;
+      padding: 3px 6px;
       position: -webkit-sticky;
       position: sticky;
       top: 0;
@@ -211,55 +255,10 @@
       .playTypeBtn {
         border: 1px solid #fff;
         border-radius: 45px;
-        padding: 2px 22px;
-        line-height: normal;
+        padding: 4px 22px;
+        line-height: 1;
         background-color: rgba(255, 255, 255, 0.15);
-        font-size: 1rem;
-      }
-    }
-
-    .leftContainer {
-      display: flex;
-
-      .goBackIcon {
-        width: 1.5rem;
-        height: auto;
-        transform: rotate(90deg);
-        margin-right: 10px;
-        opacity: 0.7;
-      }
-      .navList {
-        display: flex;
-        align-items: center;
-        .navItem {
-          display: flex;
-          align-items: center;
-          height: 24px;
-          padding: 0px 10px;
-          color: white;
-          font-size: 0.9rem;
-          margin-right: 8px;
-          border-radius: 4px;
-          .text {
-            margin-top: 2px;
-            font-size: 1.3rem;
-          }
-          &:last-child {
-            margin-right: 0px;
-          }
-        }
-        .navItemActive {
-          background-color: #fff;
-          color: #6da9e5;
-        }
-      }
-    }
-    .rightContainer {
-      .userCreditBlock {
-        .creditText {
-          color: #ffdf1a;
-          font-size: 1.2rem;
-        }
+        font-size: 1.1rem;
       }
     }
   }

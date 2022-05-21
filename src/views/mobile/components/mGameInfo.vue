@@ -1,11 +1,19 @@
 <template>
-  <table class="mGameInfo">
-    <thead>
+  <table class="mGameInfo" :class="isExpanded ? '' : 'isExpanded'">
+    <thead @click="$emit('toggleCollapse')">
       <tr>
-        <th>{{ source.LeagueNameStr }}</th>
+        <th>
+          {{ source.LeagueNameStr }}
+          <img
+            src="@/assets/img/mobile/btn_arrow_w.svg"
+            class="arrow"
+            :class="isExpanded ? 'isExpanded' : ''"
+          />
+        </th>
       </tr>
     </thead>
-    <tbody>
+
+    <tbody v-show="isExpanded">
       <template v-for="(teamData, teamIndex) in source.Team">
         <template v-if="teamData.EvtStatus === 1">
           <tr
@@ -66,31 +74,52 @@
           return {};
         },
       },
+      isExpanded: {
+        type: Boolean,
+        default() {
+          return false;
+        },
+      },
     },
-    methods: {},
-    mounted() {},
   };
 </script>
 
 <style lang="scss">
   $row-height: 2.4rem;
+  $font-size: 1rem;
 
   table.mGameInfo {
+    position: relative;
     table-layout: fixed;
     border-spacing: 0;
     width: 100%;
-    font-size: 1.15rem;
+    font-size: $font-size;
+
+    &.isExpanded {
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+      }
+    }
 
     th {
       height: $row-height;
       position: relative;
       background-color: #e8e8e8;
       text-align: left;
-      padding-left: 0.5rem;
+      padding-left: 0.8rem;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: normal;
+      color: #444;
+      cursor: pointer;
 
       &::after {
         content: '';
@@ -102,12 +131,25 @@
         width: 1px;
         background-color: #888;
       }
+
+      img.arrow {
+        width: 1.1rem;
+        float: right;
+        margin-right: 1rem;
+        filter: invert(30%);
+        transition: 300ms ease;
+        &.isExpanded {
+          transform: rotate(-90deg);
+        }
+      }
     }
     td.round-block {
+      display: flex;
+      flex-direction: column;
       border-bottom: 1px solid #e8e8e8;
       border-right: 1px solid #e8e8e8;
-      padding-left: 8px;
-      height: 70px;
+      padding-left: 0.8rem;
+      height: $row-height * 2;
 
       &.height-normal {
         height: $row-height * 2;
@@ -118,10 +160,13 @@
       }
 
       .team-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        flex: auto;
         .team {
           color: #000;
-          font-size: 1.15rem;
-          line-height: 1.2;
+          font-size: $font-size;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -129,11 +174,12 @@
       }
       .time {
         color: #888888;
-        font-size: 0.75rem;
-        line-height: 1.5;
+        font-size: $font-size * 0.75;
+        line-height: 1;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        margin: 0.2rem 0;
       }
     }
   }

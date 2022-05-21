@@ -1,14 +1,14 @@
 <template>
-  <div id="mGameBetting">
-    <table class="betting-table">
-      <thead>
+  <div class="mGameBetting">
+    <table class="betting-table" :class="isExpanded ? '' : 'isExpanded'">
+      <thead @click="$emit('toggleCollapse')">
         <tr>
           <th v-for="(it, i) in showTableHeaderList" :key="i"> {{ it.showName }}</th>
         </tr>
       </thead>
 
-      <tbody>
-        <template v-for="(teamData, teamIndex) in gameData.Team">
+      <tbody v-show="isExpanded">
+        <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
             <tr
               v-for="(teamDataRowNum, rowIndex) in teamData.Row"
@@ -22,12 +22,9 @@
                 <ul
                   class="wager-group"
                   :set="
-                    ((sportData = $SportLib.WagerDataToShowData(
-                      gameData.CatID,
-                      wagerData,
-                      rowIndex
-                    )),
-                    (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0))
+                    ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
+                    (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
+                    (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
                   "
                 >
                   <template v-if="wagerData.isNoData">
@@ -46,20 +43,36 @@
                   <template v-else>
                     <!-- 只有單一個Odd Layout -->
                     <template v-if="sportData.layoutType === 'single'">
-                      <li class="wager-cell">
+                      <li
+                        class="wager-cell"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                      >
                         <Odd :OddValue="sportData.topPlayOdd" />
                       </li>
-                      <li class="wager-cell">
+                      <li
+                        class="wager-cell"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                      >
                         <Odd :OddValue="sportData.bottomPlayOdd" />
                       </li>
                     </template>
                     <!-- 其他正常Layout -->
                     <template v-else>
-                      <li class="wager-cell">
+                      <li
+                        class="wager-cell"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                      >
                         <div class="cell-left"> {{ sportData.topPlayMethod }} </div>
                         <div class="cell-right"> <Odd :OddValue="sportData.topPlayOdd" /> </div>
                       </li>
-                      <li class="wager-cell">
+                      <li
+                        class="wager-cell"
+                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                      >
                         <div class="cell-left"> {{ sportData.bottomPlayMethod }} </div>
                         <div class="cell-right"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
                       </li>
@@ -76,7 +89,11 @@
                         <li class="wager-cell"> </li>
                       </template>
                       <template v-else>
-                        <li class="wager-cell">
+                        <li
+                          class="wager-cell"
+                          :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
+                          @click="goBet(2, teamData, wagerData, rowIndex)"
+                        >
                           <Odd :OddValue="wagerData.Odds[0].DrewOdds" />
                         </li>
                       </template>
@@ -100,11 +117,23 @@
     components: {
       Odd,
     },
+    data() {
+      return {};
+    },
     props: {
-      gameData: {
+      index: {
+        type: Number,
+      },
+      source: {
         type: Object,
         default() {
           return {};
+        },
+      },
+      isExpanded: {
+        type: Boolean,
+        default() {
+          return false;
         },
       },
     },
@@ -112,18 +141,112 @@
       showTableHeaderList() {
         return this.$store.getters['Game/showTableHeaderList'];
       },
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
+      },
+    },
+    methods: {
+      WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
+        let appendCSS = '';
+        if (sportData.playMethodData !== null) {
+          const showOddKeyName = sportData.playMethodData.showOdd[playIndex];
+          if (sportData[showOddKeyName] !== '') {
+            appendCSS = ' interactive';
+          }
+        }
+        const compareData = this.betCartList.find((cartData) => cartData.GameID === GameID);
+        if (compareData && compareData.clickPlayIndex === playIndex) {
+          appendCSS += ' isSelected';
+        }
+        return appendCSS;
+      },
+      wagerRoIndexToGameID(wagerData, rowIndex) {
+        if (
+          wagerData?.isNoData ||
+          wagerData.Odds[rowIndex] === undefined ||
+          wagerData.Odds[rowIndex].Status !== 1
+        ) {
+          return null;
+        } else {
+          return wagerData.Odds[rowIndex].GameID;
+        }
+      },
+      goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
+        const sportData = this.$SportLib.WagerDataToShowData(
+          this.source.CatID,
+          wagerData,
+          rowIndex
+        );
+
+        // 如果核心lib解析出來是null 也不能下注
+        if (sportData.playMethodData === null) {
+          return;
+        }
+
+        // 如果點擊的選項顯示賠率是空的 代表這一格無法下注
+        const showOddKeyName = sportData.playMethodData.showOdd[clickPlayIndex];
+        const showOdd = sportData[showOddKeyName];
+        if (showOdd === '') {
+          return;
+        }
+
+        let HomeTeamStr = teamData.HomeTeamStr;
+        let AwayTeamStr = teamData.AwayTeamStr;
+        if (this.$SportLib.isHomeAwayReverse(this.source.CatID)) {
+          HomeTeamStr = teamData.AwayTeamStr;
+          AwayTeamStr = teamData.HomeTeamStr;
+        }
+
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(showOdd),
+          clickPlayIndex,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: wagerData.Odds[rowIndex].GameID,
+          CatID: this.source.CatID,
+          LeagueNameStr: this.source.LeagueNameStr,
+          HomeTeamStr,
+          AwayTeamStr,
+          WagerTypeID: wagerData.WagerTypeID,
+          WagerGrpID: wagerData.WagerGrpID,
+          EvtID: teamData.EvtID,
+          ...wagerData.Odds[rowIndex],
+        };
+
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
+      },
     },
   };
 </script>
 
 <style lang="scss" scoped>
   $row-height: 2.4rem;
+  $font-size: 1rem;
 
-  #mGameBetting {
+  .mGameBetting {
     table.betting-table {
+      position: relative;
       width: 100%;
       border-spacing: 0;
-      font-size: 1.15rem;
+      font-size: $font-size;
+
+      &.isExpanded {
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: 1px;
+          background-color: #ccc;
+        }
+      }
 
       th {
         min-width: 6.666rem;
@@ -133,6 +256,8 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         font-weight: normal;
+        color: #444;
+        cursor: pointer;
       }
       td {
         min-width: 6.666rem;
@@ -146,24 +271,36 @@
             flex-direction: row;
             justify-content: center;
             align-items: center;
+            gap: 0.5rem;
             height: $row-height;
             border-style: solid;
             border-color: #e8e8e8;
             border-width: 0 1px 1px 0;
 
+            &.interactive {
+              cursor: pointer;
+              // &:hover {
+              //   background-color: #ffe1ae;
+              // }
+            }
+            &.isSelected {
+              background-color: #ffd5d5;
+            }
+
             .cell-left {
               flex: 1;
-              text-align: center;
+              text-align: right;
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
             }
             .cell-right {
               flex: 1;
-              text-align: center;
+              text-align: left;
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
+              font-weight: bold;
             }
           }
         }

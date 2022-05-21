@@ -2,23 +2,26 @@
   <div id="mobileFooter">
     <ul class="footer-container">
       <li class="footer-item">
-        <i class="el-icon-basketball"></i>
+        <i class="icon el-icon-basketball"></i>
         <span>快速轉帳</span>
       </li>
       <li class="footer-item">
-        <i class="el-icon-basketball"></i>
+        <i class="icon el-icon-basketball"></i>
         <span>其他聯盟</span>
       </li>
-      <li class="footer-item">
-        <i class="el-icon-basketball"></i>
+      <li class="footer-item" @click="onBetViewClick">
+        <!-- <i class="el-icon-basketball"></i> -->
+        <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
+          <span class="num">{{ this.betCartStore.betCartList.length }}</span>
+        </div>
         <span>點此投注</span>
       </li>
       <li class="footer-item">
-        <i class="el-icon-basketball"></i>
+        <i class="icon el-icon-basketball"></i>
         <span>投注紀錄</span>
       </li>
       <li class="footer-item">
-        <i class="el-icon-basketball"></i>
+        <i class="icon el-icon-basketball"></i>
         <span>更多</span>
       </li>
     </ul>
@@ -29,8 +32,11 @@
   export default {
     name: 'mobileFooter',
     computed: {
-      gameStore() {
-        return this.$store.state.Game;
+      betCartStore() {
+        return this.$store.state.BetCart;
+      },
+      hasBetItem() {
+        return this.betCartStore.betCartList.length > 0;
       },
     },
     methods: {
@@ -41,9 +47,11 @@
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('Game/GetMenuGameCatList').finally(() => {
           // 手動切換gameType時,預設要選取第一個
-          // this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
           this.$store.commit('SetLoading', false);
         });
+      },
+      onBetViewClick() {
+        this.hasBetItem && this.$emit('onOpenBetInfoPopup');
       },
     },
   };
@@ -66,18 +74,41 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
         height: 100%;
         font-size: 1.125rem;
         padding: 3px;
+        color: #5f5f5f;
 
         &:active {
           background-color: #ddd;
         }
-        i {
-          font-size: 180%;
+        .icon {
           margin-bottom: 5px;
+
+          font-size: 2.3rem;
+        }
+        .circle-bets {
+          width: 2.3rem;
+          height: 2.3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #5f5f5f;
+          border-radius: 50%;
+          text-align: center;
+          span.num {
+            color: #5f5f5f;
+            font-size: 1.45rem;
+            font-weight: bold;
+          }
+          &.hasBetItem {
+            border: 2px solid #ff9600;
+            span.num {
+              color: #ff9600;
+            }
+          }
         }
       }
     }

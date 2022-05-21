@@ -1,54 +1,68 @@
 <template>
   <div id="MobileGames">
-    <!-- HEADER -->
-    <MobileHeader></MobileHeader>
+    <div class="main-layout">
+      <!-- HEADER -->
+      <MobileHeader></MobileHeader>
 
-    <!-- 主遊戲 table 容器 -->
-    <div class="gameTableContainer">
-      <div style="display: flex">
-        <!-- 左半邊 - 隊伍資訊 -->
-        <div class="left-area">
-          <virtual-list
-            class="virtual-list"
-            :data-key="'uid'"
-            :data-sources="GameList"
-            :data-component="itemComponent"
-            :keeps="40"
-          />
-        </div>
-        <!-- 右半邊 - 下注資訊-->
-        <div class="right-area">
-          <mGameBetting
-            v-for="(gameData, index) in GameList"
-            :key="index"
-            :gameData="gameData"
-          ></mGameBetting>
+      <!-- 主遊戲 table 容器 -->
+      <div class="gameTableContainer">
+        <div style="display: flex">
+          <!-- 左半邊 - 隊伍資訊 -->
+          <div class="left-area">
+            <mGameInfo
+              v-for="(source, index) in GameList"
+              :key="index"
+              :source="source"
+              :isExpanded="isExpanded(index)"
+              @toggleCollapse="toggleCollapse(index)"
+            ></mGameInfo>
+          </div>
+          <!-- 右半邊 - 下注資訊-->
+          <div class="right-area">
+            <mGameBetting
+              v-for="(source, index) in GameList"
+              :key="index"
+              :source="source"
+              :isExpanded="isExpanded(index)"
+              @toggleCollapse="toggleCollapse(index)"
+            ></mGameBetting>
+          </div>
         </div>
       </div>
+
+      <!-- FOOTER -->
+      <MobileFooter @onOpenBetInfoPopup="isShowBetInfo = true"></MobileFooter>
     </div>
-    <MobileFooter></MobileFooter>
+
+    <div class="float-layout">
+      <mGamesBetInfoAll
+        v-if="isShowBetInfo"
+        @onCloseBetInfo="isShowBetInfo = false"
+      ></mGamesBetInfoAll>
+    </div>
   </div>
 </template>
 
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
-  import VirtualList from 'vue-virtual-scroll-list';
   import mGameInfo from './components/mGameInfo.vue';
   import mGameBetting from './components/mGameBetting.vue';
+  import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
 
   export default {
     name: 'MobileGames',
     components: {
       MobileHeader,
       MobileFooter,
-      VirtualList,
+      mGameInfo,
       mGameBetting,
+      mGamesBetInfoAll,
     },
     data() {
       return {
-        itemComponent: mGameInfo,
         activeCollapse: [],
+        isShowBetInfo: false,
       };
     },
 
@@ -60,72 +74,82 @@
         return this.$store.state.Game;
       },
     },
-    methods: {},
+    methods: {
+      toggleCollapse(index) {
+        if (this.activeCollapse.includes(index)) {
+          this.activeCollapse = this.activeCollapse.filter((it) => it !== index);
+        } else {
+          this.activeCollapse.push(index);
+        }
+      },
+      isExpanded(index) {
+        return this.activeCollapse.includes(index);
+      },
+    },
   };
 </script>
 
 <style lang="scss">
   html {
     font-size: 15px;
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 1000px) {
       font-size: 14px;
     }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 768px) {
       font-size: 12px;
     }
-    @media screen and (max-width: 300px) {
+    @media screen and (max-width: 350px) {
       font-size: 10px;
     }
   }
 
   html,
   body {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
   }
 
   #MobileGames {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 
-    .gameTableContainer {
-      overflow: auto;
-      flex: 1;
+    .main-layout {
+      position: fixed;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
 
-      .left-area {
-        width: 35%;
-        transition: width 600ms ease-out;
+      .gameTableContainer {
+        overflow: auto;
+        flex: 1;
 
-        @media screen and(max-width: 480px) {
-          width: calc(170px);
+        .left-area {
+          width: 35%;
+          transition: width 600ms ease-out;
+
+          @media screen and(max-width: 480px) {
+            width: calc(190px);
+          }
+        }
+        .right-area {
+          flex: 1;
+          overflow-x: overlay;
+          overflow-y: hidden;
+          box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
       }
-      .right-area {
-        flex: 1;
-        overflow-x: auto;
-        overflow-y: hidden;
-        box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
-      }
-    }
 
-    .el-collapse-item__header {
-      line-height: 200%;
-      height: auto;
-      background-color: #e8e8e8;
-      border-bottom: 2px solid #d0d0d0;
-    }
-
-    table.betting-table {
-      th {
-        height: 33px;
+      .el-collapse-item__header {
+        line-height: 200%;
+        height: auto;
         background-color: #e8e8e8;
+        border-bottom: 2px solid #d0d0d0;
       }
-      td {
-        height: 33px;
-        min-width: 100px;
-        text-align: center;
-      }
+    }
+    .float-layout {
     }
   }
 </style>

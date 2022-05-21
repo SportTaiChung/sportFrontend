@@ -320,9 +320,12 @@
           this.callBetHistoryAPI();
         },
       },
-      showBetCartList() {
-        // 驅動過關賠率計算
-        this.reCalcStrayBetChart();
+      showBetCartList: {
+        handler() {
+          // 驅動過關賠率計算
+          this.reCalcStrayBetChart();
+          this.$emit('betCartListChanged', this.showBetCartList);
+        },
       },
     },
     beforeDestroy() {
