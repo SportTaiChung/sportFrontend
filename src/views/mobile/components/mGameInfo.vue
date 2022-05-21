@@ -197,9 +197,10 @@
           float: right;
           margin-right: 1rem;
           filter: invert(30%);
+          transform: rotate(-90deg);
           transition: 350ms ease;
           &.isExpanded {
-            transform: rotate(-90deg);
+            transform: rotate(0);
           }
         }
       }

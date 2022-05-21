@@ -156,7 +156,7 @@
   @import '@/assets/sass/theme/mixin.scss';
   #mobileHeader {
     .header-container {
-      height: 40px;
+      height: 45px;
       width: 100%;
       padding: 0 10px;
       @include base-background();

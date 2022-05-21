@@ -805,10 +805,9 @@
       .noDataItem {
         display: flex;
         flex-wrap: wrap;
+        flex-direction: column;
         justify-content: center;
-        .noDataItemImgContainer {
-          width: 100%;
-        }
+        align-items: center;
       }
     }
   }

@@ -16,7 +16,7 @@
         </div>
         <span>點此投注</span>
       </li>
-      <li class="footer-item">
+      <li class="footer-item" @click="onBetRecordViewClick">
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
         <span>投注紀錄</span>
       </li>
@@ -52,6 +52,9 @@
       },
       onBetViewClick() {
         this.hasBetItem && this.$emit('onOpenBetInfoPopup');
+      },
+      onBetRecordViewClick() {
+        this.$emit('onOpenBetRecordView');
       },
     },
   };

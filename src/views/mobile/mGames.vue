@@ -34,7 +34,10 @@
       </div>
 
       <!-- FOOTER -->
-      <MobileFooter @onOpenBetInfoPopup="isShowBetInfo = true"></MobileFooter>
+      <MobileFooter
+        @onOpenBetInfoPopup="onOpenBetInfoPopup"
+        @onOpenBetRecordView="onOpenBetRecordView"
+      ></MobileFooter>
     </div>
 
     <div class="float-layout">
@@ -42,6 +45,11 @@
         v-if="isShowBetInfo"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
+
+      <mBetRecordView
+        v-if="isShowBetRecordView"
+        @onCloseBetRecordView="isShowBetRecordView = false"
+      ></mBetRecordView>
     </div>
   </div>
 </template>
@@ -52,6 +60,7 @@
   import mGameInfo from './components/mGameInfo.vue';
   import mGameBetting from './components/mGameBetting.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
+  import mBetRecordView from './components/mBetRecordView.vue';
 
   export default {
     name: 'MobileGames',
@@ -61,11 +70,13 @@
       mGameInfo,
       mGameBetting,
       mGamesBetInfoAll,
+      mBetRecordView,
     },
     data() {
       return {
         activeCollapse: [],
         isShowBetInfo: false,
+        isShowBetRecordView: false,
       };
     },
 
@@ -93,6 +104,12 @@
       },
       isExpanded(index) {
         return this.activeCollapse.includes(index);
+      },
+      onOpenBetInfoPopup() {
+        this.isShowBetInfo = true;
+      },
+      onOpenBetRecordView() {
+        this.isShowBetRecordView = true;
       },
     },
   };
