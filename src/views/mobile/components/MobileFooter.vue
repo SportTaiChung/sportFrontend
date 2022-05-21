@@ -2,11 +2,11 @@
   <div id="mobileFooter">
     <ul class="footer-container">
       <li class="footer-item">
-        <i class="icon el-icon-basketball"></i>
+        <img class="icon" src="@/assets/img/mobile/icon_footer_transfer.svg" alt="" />
         <span>快速轉帳</span>
       </li>
       <li class="footer-item">
-        <i class="icon el-icon-basketball"></i>
+        <img class="icon" src="@/assets/img/mobile/icon_footer_league.svg" alt="" />
         <span>其他聯盟</span>
       </li>
       <li class="footer-item" @click="onBetViewClick">
@@ -17,12 +17,12 @@
         <span>點此投注</span>
       </li>
       <li class="footer-item">
-        <i class="icon el-icon-basketball"></i>
+        <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
         <span>投注紀錄</span>
       </li>
       <li class="footer-item">
-        <i class="icon el-icon-basketball"></i>
-        <span>更多</span>
+        <img class="icon" src="@/assets/img/mobile/icon_footer_more.svg" alt="" />
+        <span>更 多</span>
       </li>
     </ul>
   </div>
@@ -86,12 +86,12 @@
         }
         .icon {
           margin-bottom: 5px;
-
-          font-size: 2.3rem;
+          width: 2.1rem;
+          height: auto;
         }
         .circle-bets {
-          width: 2.3rem;
-          height: 2.3rem;
+          width: 2.1rem;
+          height: 2.1rem;
           display: flex;
           align-items: center;
           justify-content: center;
