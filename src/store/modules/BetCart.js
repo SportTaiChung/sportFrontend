@@ -36,6 +36,13 @@ export default {
     },
   },
   actions: {
+    isCartListAlreadyHaveSelf(store, { GameID, clickPlayIndex }) {
+      return (
+        store.state.betCartList.findIndex(
+          (cartData) => cartData.GameID === GameID && cartData.clickPlayIndex === clickPlayIndex
+        ) > -1
+      );
+    },
     // 获取投注盘口详情API
     callCartUpdateAPI(store, gameIDs) {
       return new Promise((resolve, reject) => {
@@ -93,12 +100,23 @@ export default {
     },
     // 加入到購物車
     addToCart(store, betData) {
-      // 先移除相同的game id
+      // 是否在購物車內找到完全相同的自己
+      const isSelfJustRemove =
+        store.state.betCartList.findIndex(
+          (cartData) =>
+            cartData.GameID === betData.GameID && cartData.clickPlayIndex === betData.clickPlayIndex
+        ) > -1;
+
+      // 移除相同的game id
       store.commit('removeCartByGameID', betData.GameID);
+
+      // 如果購物車內找到相同的自己,移除後就直接結束function
+      if (isSelfJustRemove) {
+        return;
+      }
 
       // watch 此旗標就知道有新增投注到購物車
       store.state.isAddNewToChart = !store.state.isAddNewToChart;
-
       let newBetData = JSON.parse(JSON.stringify(betData));
       newBetData = {
         ...newBetData,
@@ -109,8 +127,6 @@ export default {
       };
       newBetData.playData = oddDataToPlayData(newBetData.CatID, newBetData.WagerTypeID, newBetData);
       store.commit('pushCart', newBetData);
-      console.log('newBetData:', newBetData);
-
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },
     // 執行投注 API ,
@@ -118,7 +134,7 @@ export default {
     // betType : 99 過關投注
     submitBet(store, { betType, strayBetAmount }) {
       const list = [];
-      let findError = false;
+      let errorMessage = null;
       store.state.betCartList.every((cartData) => {
         console.log(cartData);
         const CatId = cartData.CatID;
@@ -131,16 +147,21 @@ export default {
         const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
         const OddValue = cartData.playData[oddKey];
         const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
+        if (cartData.Status !== 1) {
+          errorMessage = '請先移除過期賽事';
+          return false;
+        }
         // 一班投注
-        if (betType === 0) {
+        if (betType === 1) {
           if (
             cartData.betAmount === null ||
             cartData.betAmount === '' ||
             cartData.betAmount === 0
           ) {
-            findError = true;
+            errorMessage = '請先輸入下注金額';
             return false;
           }
+
           const listItem = {
             CatId,
             WagerString,
@@ -163,12 +184,15 @@ export default {
           } else {
             list[0].WagerString += '|' + WagerString;
           }
+        } else {
+          errorMessage = `betType ${betType} not define`;
+          return false;
         }
         return true;
       });
-      if (findError) {
+      if (errorMessage !== null) {
         Notification.error({
-          message: '請先輸入下注金額',
+          message: errorMessage,
         });
         return;
       }

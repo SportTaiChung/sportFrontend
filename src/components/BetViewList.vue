@@ -2,79 +2,86 @@
   <div id="BetViewList" :set="(displayData = [])" ref="BetViewList" v-loading="isLoading">
     <!-- 購物車 -->
     <template v-if="groupIndex === 0">
-      <div
-        class="listCardItem"
-        v-for="(cart, cartIndex) in showBetCartList"
-        :class="listCardItemClassJudge(cart)"
-        :key="cartIndex"
-        :set="(displayData[cartIndex] = cartDataToDisplayData(cart))"
-      >
-        <div class="cardHeaderRow">
-          <div class="playMethodName"> {{ displayData[cartIndex].showBetTitle }}</div>
-          <div class="playMethodNameSupport">
-            {{ displayData[cartIndex].showCutLine }}
-          </div>
-          <div class="at"> @ </div>
-          <div
-            class="playBetOdd"
-            :class="playBetOddClassJudge(cart.OriginShowOdd, displayData[cartIndex].showOdd)"
-          >
-            {{ displayData[cartIndex].showOdd }}
-          </div>
-
-          <i class="el-icon-close" @click="cancelSingleHandler(cart.GameID)"></i>
-        </div>
-
-        <div class="cardContentBlock">
-          <div class="cardContentBlockRow">
-            {{ displayData[cartIndex].showGameTypeLabel }}
-          </div>
-          <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
-          <div class="cardContentBlockRow">
-            <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
-            <div
-              class="cardContentBlockRowText HomeTeamSign"
-              v-if="!$SportLib.isHomeAwayReverse(cart.CatID)"
-              >(主)</div
-            >
-            <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
-            <div
-              class="cardContentBlockRowText HomeTeamSign"
-              v-if="$SportLib.isHomeAwayReverse(cart.CatID)"
-              >(主)</div
-            >
-          </div>
-          <div class="cardContentBlockRow" v-if="childIndex === 0">
-            <div class="inputRow">
-              <input
-                class="input"
-                v-model.number="cart.betAmount"
-                :max="cart.BetMax"
-                :min="cart.BetMin"
-                :placeholder="
-                  cart.BetMin !== null && cart.BetMax !== null
-                    ? cart.BetMin + '-' + cart.BetMax
-                    : ''
-                "
-                type="Number"
-                @blur="inputRowItemBlurHandler(0)"
-              />
-              <input
-                class="input"
-                v-model.number="cart.winAmount"
-                placeholder="可赢金額"
-                type="Number"
-                @blur="inputRowItemBlurHandler(1, true)"
-              />
+      <template v-if="isShowChartList || isShowCharStrayList">
+        <div
+          class="listCardItem"
+          v-for="(cart, cartIndex) in showBetCartList"
+          :class="listCardItemClassJudge(cart)"
+          :key="cartIndex"
+          :set="(displayData[cartIndex] = cartDataToDisplayData(cart))"
+        >
+          <div class="cardHeaderRow">
+            <div class="playMethodName"> {{ displayData[cartIndex].showBetTitle }}</div>
+            <div class="playMethodNameSupport">
+              {{ displayData[cartIndex].showCutLine }}
             </div>
-          </div>
-          <div class="cardContentBlockRow limitText"> 本場上限 尚未接 </div>
-        </div>
+            <div class="at"> @ </div>
+            <div
+              class="playBetOdd"
+              :class="playBetOddClassJudge(cart.OriginShowOdd, displayData[cartIndex].showOdd)"
+            >
+              {{ displayData[cartIndex].showOdd }}
+            </div>
 
-        <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
-          <div class="blackMaskText"> 盤口關閉中，請移除再下注 </div>
+            <i
+              class="el-icon-close"
+              :style="isShowBlackMask(cart) ? 'color:white;' : ''"
+              @click="cancelSingleHandler(cart.GameID)"
+            ></i>
+          </div>
+
+          <div class="cardContentBlock">
+            <div class="cardContentBlockRow">
+              {{ displayData[cartIndex].showGameTypeLabel }}
+            </div>
+            <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
+            <div class="cardContentBlockRow">
+              <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
+              <div
+                class="cardContentBlockRowText HomeTeamSign"
+                v-if="!$SportLib.isHomeAwayReverse(cart.CatID)"
+                >(主)</div
+              >
+              <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
+              <div
+                class="cardContentBlockRowText HomeTeamSign"
+                v-if="$SportLib.isHomeAwayReverse(cart.CatID)"
+                >(主)</div
+              >
+            </div>
+            <!-- 一般投注每一個item的各自金額 -->
+            <div class="cardContentBlockRow" v-if="childIndex === 0">
+              <div class="inputRow">
+                <input
+                  class="input"
+                  v-model.number="cart.betAmount"
+                  :max="cart.BetMax"
+                  :min="cart.BetMin"
+                  :placeholder="
+                    cart.BetMin !== null && cart.BetMax !== null
+                      ? cart.BetMin + '-' + cart.BetMax
+                      : ''
+                  "
+                  type="Number"
+                  @blur="inputRowItemBlurHandler(0)"
+                />
+                <input
+                  class="input"
+                  v-model.number="cart.winAmount"
+                  placeholder="可赢金額"
+                  type="Number"
+                  @blur="inputRowItemBlurHandler(1, true, cartIndex)"
+                />
+              </div>
+            </div>
+            <div class="cardContentBlockRow limitText"> 本場上限 尚未接 </div>
+          </div>
+
+          <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
+            <div class="blackMaskText"> 盤口關閉中，請移除再下注 </div>
+          </div>
         </div>
-      </div>
+      </template>
     </template>
 
     <!-- 注單紀錄 -->
@@ -151,10 +158,7 @@
     </template>
 
     <!-- 單向投注下方面板 -->
-    <div
-      class="cardOptionBlock"
-      v-if="groupIndex === 0 && childIndex === 0 && showBetCartList.length !== 0"
-    >
+    <div class="cardOptionBlock" v-if="isShowChartList">
       <div class="betInputRow">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
@@ -178,10 +182,15 @@
     </div>
 
     <!-- 串關投注下方面板 -->
-    <div
-      class="cardOptionBlock"
-      v-if="groupIndex === 0 && childIndex === 1 && showBetCartList.length !== 0"
-    >
+    <div class="cardOptionBlock" v-if="isShowCharStrayList">
+      <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
+        <div class="topTextRow"> ※ 存在同場賽事 </div>
+        <div class="bottomTextRow">
+          <div>已選項目有</div>
+          <div class="goldTip">{{ EvtIdRepeatList.length }}</div>
+          <div>注無法串關</div>
+        </div>
+      </div>
       <div class="betInputRow">
         <div class="strayBlock">
           <div class="strayBlockTop">
@@ -238,6 +247,12 @@
           <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
         </div>
         <div>暫無最新注單</div>
+      </div>
+    </div>
+
+    <div class="noData" v-if="isShowStrayCantPlayTip">
+      <div class="noDataItem">
+        <div class="noDataItemImgContainer"> 通關投注至少選擇2場賽事 </div>
       </div>
     </div>
   </div>
@@ -323,6 +338,15 @@
       isAddNewToChart() {
         return this.$store.state.BetCart.isAddNewToChart;
       },
+      isShowChartList() {
+        return this.groupIndex === 0 && this.childIndex === 0 && this.showBetCartList.length > 0;
+      },
+      isShowCharStrayList() {
+        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length > 1;
+      },
+      isShowStrayCantPlayTip() {
+        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length <= 1;
+      },
     },
     methods: {
       listCardItemClassJudge(cart) {
@@ -366,7 +390,11 @@
         });
         this.reCalcBetChart(true);
       },
-      inputRowItemBlurHandler(inputType, isDriveFromWinAmount = false) {
+      inputRowItemBlurHandler(
+        inputType,
+        isDriveFromWinAmount = false,
+        winAmountSpecifyIndex = null
+      ) {
         // 如果是每個item的下注金額 被輸入,則清除全局的下注金額輸入框
         if (inputType === 0) {
           this.fillEachBetAmount = null;
@@ -375,17 +403,19 @@
         if (inputType === 1) {
           this.fillEachWinAmount = null;
         }
-        this.reCalcBetChart(isDriveFromWinAmount);
+        this.reCalcBetChart(isDriveFromWinAmount, winAmountSpecifyIndex);
       },
-      reCalcBetChart(isDriveFromWinAmount = false) {
+      reCalcBetChart(isDriveFromWinAmount = false, winAmountSpecifyIndex = null) {
         // 如果是透過可贏金額輸入框驅動事件,則要先透過winAmount換算betAmount
         if (isDriveFromWinAmount) {
-          this.showBetCartList.forEach((cartData) => {
-            const displayData = this.cartDataToDisplayData(cartData);
-            if (cartData.winAmount !== null) {
-              cartData.betAmount = this.$lib.truncFloor(
-                cartData.winAmount / this.$lib.trunc(1 + parseFloat(displayData.showOdd))
-              );
+          this.showBetCartList.forEach((cartData, cartIndex) => {
+            if (winAmountSpecifyIndex === null || cartIndex === winAmountSpecifyIndex) {
+              const displayData = this.cartDataToDisplayData(cartData);
+              if (cartData.winAmount !== null) {
+                cartData.betAmount = this.$lib.truncFloor(
+                  cartData.winAmount / this.$lib.trunc(1 + parseFloat(displayData.showOdd))
+                );
+              }
             }
           });
         }
@@ -411,7 +441,6 @@
         let strayOdd = null;
         this.EvtIdRepeatList.length = 0;
         this.showBetCartList.forEach((cartData, index) => {
-          console.log(cartData);
           const displayData = this.cartDataToDisplayData(cartData);
 
           const odd = this.$lib.trunc(1 + parseFloat(displayData.showOdd));
@@ -450,7 +479,9 @@
       },
       submitHandler() {
         this.$store.dispatch('BetCart/submitBet', { betType: 1 }).then((res) => {
-          this.clearMemberData();
+          if (res) {
+            this.clearMemberData();
+          }
         });
       },
       straySubmitHandler() {
@@ -627,6 +658,25 @@
     }
 
     .cardOptionBlock {
+      .StrayTipBlock {
+        background-color: #d66764;
+        width: 100%;
+        padding: 15px 0px;
+        .topTextRow {
+          color: white;
+          text-align: center;
+          margin-bottom: 12px;
+        }
+        .bottomTextRow {
+          color: white;
+          display: flex;
+          justify-content: center;
+          .goldTip {
+            color: #ffea01;
+            padding: 0 5px;
+          }
+        }
+      }
       .buttonRow {
         display: flex;
         justify-content: space-around;
