@@ -2,7 +2,10 @@
   <div id="MobileGames">
     <div class="main-layout">
       <!-- HEADER -->
-      <MobileHeader></MobileHeader>
+      <MobileHeader
+        :activeCollapse="activeCollapse"
+        @toggleAllCollapse="toggleAllCollapse"
+      ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
       <div class="gameTableContainer">
@@ -82,6 +85,12 @@
           this.activeCollapse.push(index);
         }
       },
+      toggleAllCollapse() {
+        this.activeCollapse =
+          this.activeCollapse.length > 0
+            ? []
+            : new Array(this.GameList.length).fill(0).map((it, index) => index);
+      },
       isExpanded(index) {
         return this.activeCollapse.includes(index);
       },
@@ -131,7 +140,7 @@
           transition: width 600ms ease-out;
 
           @media screen and(max-width: 480px) {
-            width: calc(190px);
+            width: calc(200px);
           }
         }
         .right-area {

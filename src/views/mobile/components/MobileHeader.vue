@@ -42,10 +42,12 @@
     </ul>
 
     <!-- 玩法類型 -->
-    <div class="playTypeBar">
+    <div class="playTypeBar" @click="onToggleAllCollapseClick">
       <div class="playTypeBtn">美足 - 全場 / 上半</div>
-
-      <i class="el-collapse-item__arrow el-icon-arrow-right is-active"></i>
+      <i
+        class="el-collapse-item__arrow el-icon-arrow-right"
+        :class="activeCollapse.length > 0 ? 'is-active' : ''"
+      ></i>
     </div>
   </div>
 </template>
@@ -53,6 +55,14 @@
 <script>
   export default {
     name: 'mobileHeader',
+    props: {
+      activeCollapse: {
+        type: Array,
+        default() {
+          return [];
+        },
+      },
+    },
     computed: {
       gameStore() {
         return this.$store.state.Game;
@@ -108,7 +118,6 @@
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, clickWagerTypeKey);
       },
-
       callGetGameDetail(CatID, WagerTypeKey) {
         let postData = null;
 
@@ -134,6 +143,10 @@
             WagerTypeKey
           );
         });
+      },
+      onToggleAllCollapseClick(e) {
+        if (e.target !== e.currentTarget) return;
+        this.$emit('toggleAllCollapse');
       },
     },
   };
@@ -259,6 +272,10 @@
         line-height: 1;
         background-color: rgba(255, 255, 255, 0.15);
         font-size: 1.1rem;
+
+        &:active {
+          background-color: rgba(0, 0, 0, 0.15);
+        }
       }
     }
   }

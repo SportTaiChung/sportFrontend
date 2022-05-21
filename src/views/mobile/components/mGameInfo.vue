@@ -4,7 +4,7 @@
       <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
           <th>
-            {{ source.LeagueNameStr }}
+            <span class="title">{{ source.LeagueNameStr }}</span>
             <img
               src="@/assets/img/mobile/btn_arrow_w.svg"
               class="arrow"
@@ -161,17 +161,25 @@
       font-size: $font-size;
 
       th {
+        display: flex;
+        align-items: center;
         height: $row-height;
         position: relative;
         background-color: #e8e8e8;
         text-align: left;
         padding-left: 0.8rem;
         overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
         font-weight: normal;
         color: #444;
         cursor: pointer;
+
+        .title {
+          width: calc(100% - 2.2rem);
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
         &::after {
           content: '';
