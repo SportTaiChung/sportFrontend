@@ -5,6 +5,7 @@
       <div
         class="listCardItem"
         v-for="(cart, cartIndex) in showBetCartList"
+        :class="listCardItemClassJudge(cart)"
         :key="cartIndex"
         :set="(displayData[cartIndex] = cartDataToDisplayData(cart))"
       >
@@ -43,7 +44,7 @@
               >(主)</div
             >
           </div>
-          <div class="cardContentBlockRow">
+          <div class="cardContentBlockRow" v-if="childIndex === 0">
             <div class="inputRow">
               <input
                 class="input"
@@ -68,6 +69,10 @@
             </div>
           </div>
           <div class="cardContentBlockRow limitText"> 本場上限 尚未接 </div>
+        </div>
+
+        <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
+          <div class="blackMaskText"> 盤口關閉中，請移除再下注 </div>
         </div>
       </div>
     </template>
@@ -129,19 +134,38 @@
             </div>
           </div>
         </template>
+
+        <template v-if="historyItem.BetType === 99">
+          <div class="strayContentBlock">
+            <div class="strayContentBlockRow">
+              <div>過關</div>
+              <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
+              <div class="strayTitleInfoTextTip">降量</div>
+            </div>
+            <div class="strayContentBlockRow">
+              {{ `(每組${historyItem.Amount}元 x 1組) = ${historyItem.Amount}` }}
+            </div>
+          </div>
+        </template>
       </div>
     </template>
 
-    <div class="cardOptionBlock" v-if="groupIndex === 0 && showBetCartList.length !== 0">
+    <!-- 單向投注下方面板 -->
+    <div
+      class="cardOptionBlock"
+      v-if="groupIndex === 0 && childIndex === 0 && showBetCartList.length !== 0"
+    >
       <div class="betInputRow">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
         <input v-model.number="fillEachBetAmount" type="Number" @blur="fillEachBetAmountHandler" />
+        <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
       <div class="betInputRow">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
         <input v-model.number="fillEachWinAmount" type="Number" @blur="fillEachWinAmountHandler" />
+        <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
@@ -150,6 +174,49 @@
       <div class="buttonRow">
         <div class="clearBtn" @click="cancelHandler"> 取消</div>
         <div class="submitBtn" @click="submitHandler">確認下注</div>
+      </div>
+    </div>
+
+    <!-- 串關投注下方面板 -->
+    <div
+      class="cardOptionBlock"
+      v-if="groupIndex === 0 && childIndex === 1 && showBetCartList.length !== 0"
+    >
+      <div class="betInputRow">
+        <div class="strayBlock">
+          <div class="strayBlockTop">
+            <div class="strayTopLeft">
+              {{ `${showBetCartList.length}串1` }}
+            </div>
+            <div class="strayTopRight">
+              <div class="num">1 </div>
+              <div class="x"> x</div>
+            </div>
+          </div>
+          <div class="strayBlockBottom">
+            <div class="strayOdd"> @ {{ strayOdd }} </div>
+          </div>
+        </div>
+        <div class="betInputSymbol">:</div>
+        <input
+          v-model.number="strayBetAmount"
+          type="Number"
+          @blur="reCalcStrayBetChart"
+          read="true"
+        />
+      </div>
+      <div class="betInputRow">
+        <div class="betInputTitle"> 可贏金額 </div>
+        <div class="betInputSymbol">:</div>
+        <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
+      </div>
+      <div class="totalRow">
+        <div class="halfItem">所有投注 : {{ strayBetAmount }}</div>
+        <div class="halfItem">可贏金額 : {{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
+      </div>
+      <div class="buttonRow">
+        <div class="clearBtn" @click="cancelHandler"> 取消</div>
+        <div class="submitBtn" @click="straySubmitHandler">確認下注</div>
       </div>
     </div>
 
@@ -197,12 +264,18 @@
     },
     data() {
       return {
-        intervalEvent: null,
+        // 一般投注相關數據
         totalBetAmount: 0,
         totalWinAmount: 0,
         fillEachBetAmount: null,
         fillEachWinAmount: null,
+        // 串關相關數據
+        strayOdd: null,
+        strayBetAmount: null,
+        EvtIdRepeatList: [],
+        // 其他
         isLoading: false,
+        intervalEvent: null,
       };
     },
     mounted() {
@@ -232,6 +305,10 @@
           this.callBetHistoryAPI();
         },
       },
+      showBetCartList() {
+        // 驅動過關賠率計算
+        this.reCalcStrayBetChart();
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -248,11 +325,22 @@
       },
     },
     methods: {
+      listCardItemClassJudge(cart) {
+        if (this.childIndex === 1 && this.EvtIdRepeatList.indexOf(cart.GameID) > -1) {
+          return 'redErrorStyle';
+        } else {
+          return '';
+        }
+      },
       clearMemberData() {
         this.totalBetAmount = 0;
         this.totalWinAmount = 0;
         this.fillEachBetAmount = null;
         this.fillEachWinAmount = null;
+        this.strayOdd = null;
+        this.strayBetAmount = null;
+        this.EvtIdRepeatList.length = 0;
+        this.EvtIdRepeatList = [];
       },
       callBetHistoryAPI() {
         if (this.groupIndex === 1) {
@@ -296,7 +384,7 @@
             const displayData = this.cartDataToDisplayData(cartData);
             if (cartData.winAmount !== null) {
               cartData.betAmount = this.$lib.truncFloor(
-                cartData.winAmount / (1 + parseFloat(displayData.showOdd))
+                cartData.winAmount / this.$lib.trunc(1 + parseFloat(displayData.showOdd))
               );
             }
           });
@@ -309,7 +397,7 @@
           if (cartData.betAmount !== null) {
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
             cartData.winAmount = this.$lib.truncFloor(
-              cartData.betAmount * (1 + parseFloat(displayData.showOdd))
+              cartData.betAmount * this.$lib.trunc(1 + parseFloat(displayData.showOdd))
             );
             newTotalBetAmount += cartData.betAmount;
             newTotalWinAmount += cartData.winAmount;
@@ -318,6 +406,29 @@
 
         this.totalBetAmount = newTotalBetAmount;
         this.totalWinAmount = newTotalWinAmount;
+      },
+      reCalcStrayBetChart() {
+        let strayOdd = null;
+        this.EvtIdRepeatList.length = 0;
+        this.showBetCartList.forEach((cartData, index) => {
+          console.log(cartData);
+          const displayData = this.cartDataToDisplayData(cartData);
+
+          const odd = this.$lib.trunc(1 + parseFloat(displayData.showOdd));
+          if (strayOdd === null) {
+            strayOdd = odd;
+          } else {
+            strayOdd = this.$lib.trunc(strayOdd * odd);
+          }
+
+          const EvtIDs = this.showBetCartList.map((value) => value.EvtID);
+          EvtIDs.splice(index, 1);
+          if (EvtIDs.indexOf(this.showBetCartList[index].EvtID) > -1) {
+            this.EvtIdRepeatList.push(cartData.GameID);
+          }
+        });
+        // 扣掉本金 就可以得到串關賠率
+        this.strayOdd = this.$lib.trunc(strayOdd - 1);
       },
       playBetOddClassJudge(OriginShowOdd, NowShowOdd) {
         if (parseFloat(OriginShowOdd) !== parseFloat(NowShowOdd)) {
@@ -338,12 +449,38 @@
         this.reCalcBetChart();
       },
       submitHandler() {
-        this.$store.dispatch('BetCart/submitBet').then((res) => {
+        this.$store.dispatch('BetCart/submitBet', { betType: 1 }).then((res) => {
           this.clearMemberData();
         });
       },
+      straySubmitHandler() {
+        if (this.EvtIdRepeatList.length === 0) {
+          if (
+            this.strayBetAmount === 0 ||
+            this.strayBetAmount === '' ||
+            this.strayBetAmount === null
+          ) {
+            this.$notify.error({
+              message: '請先輸入串關金額',
+            });
+            return;
+          }
+          this.$store
+            .dispatch('BetCart/submitBet', { betType: 99, strayBetAmount: this.strayBetAmount })
+            .then((res) => {
+              this.clearMemberData();
+            });
+        } else {
+          this.$notify.error({
+            message: '串關出現重複賽事',
+          });
+        }
+      },
       cartDataToDisplayData(cartData) {
         return this.$SportLib.cartDataToDisplayData(cartData);
+      },
+      isShowBlackMask(cart) {
+        return cart.Status !== 1;
       },
     },
   };
@@ -356,6 +493,7 @@
     .listCardItem {
       background-color: #eaeaea;
       margin-bottom: 5px;
+      position: relative;
       .cardHeaderRow {
         display: flex;
         padding: 7px 10px;
@@ -393,6 +531,7 @@
           opacity: 0.5;
           margin-top: -3px;
           cursor: pointer;
+          z-index: 9999;
         }
       }
       .cardContentBlock {
@@ -432,7 +571,61 @@
           color: #006a8a;
         }
       }
+      .strayContentBlock {
+        padding: 8px 10px;
+        .strayContentBlockRow {
+          display: flex;
+          flex-wrap: wrap;
+          margin-bottom: 6px;
+          &:last-child {
+            margin-bottom: 0px;
+          }
+          .strayTitleInfoText {
+            color: #005aff;
+            padding: 0px 5px;
+          }
+          .strayTitleInfoTextTip {
+            color: #f00;
+          }
+        }
+      }
+      .blackMaskErrorBlock {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.55);
+        width: 100%;
+        height: 100%;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        .blackMaskText {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          -webkit-transform: translate(-50%, -50%);
+          color: white;
+          font-size: 15px;
+          text-align: center;
+          background-color: rgba(0, 0, 0, 0.8);
+          white-space: nowrap;
+          border-radius: 20px;
+          padding: 8px 25px;
+        }
+      }
     }
+    .redErrorStyle {
+      background-color: #deb7b7;
+      .cardHeaderRow {
+        background-color: #d18d8c;
+        color: white;
+        .playMethodName,
+        .playMethodNameSupport,
+        .playBetOdd {
+          color: white;
+        }
+      }
+    }
+
     .cardOptionBlock {
       .buttonRow {
         display: flex;
@@ -465,6 +658,8 @@
         align-items: center;
         justify-content: space-around;
         height: 40px;
+        position: relative;
+
         .betInputTitle {
           width: 20%;
           text-align-last: justify;
@@ -474,12 +669,68 @@
         .betInputSymbol {
           width: 5%;
           text-align: center;
+          font-weight: bold;
         }
         input {
           width: 75%;
           height: 30px;
           border: 0px;
           padding: 0 5px;
+        }
+        .betReadInput {
+          width: 75%;
+          height: 30px;
+          line-height: 30px;
+          text-align: left;
+          padding: 0 5px;
+          background-color: #c0c0c0;
+        }
+        .strayBlock {
+          width: 20%;
+          display: flex;
+          flex-wrap: wrap;
+          padding: 3px 0px 0 3px;
+          .strayBlockTop {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            .strayTopLeft {
+            }
+            .strayTopRight {
+              display: flex;
+              justify-content: center;
+              .num {
+                color: #005aff;
+                padding-right: 3px;
+              }
+              .x {
+                color: #777;
+              }
+            }
+          }
+          .strayBlockBottom {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 2px;
+            .strayOdd {
+              width: 100%;
+              color: #f00;
+              text-align: left;
+              font-size: 12px;
+            }
+          }
+        }
+        .betInputRowAbsoluteBlock {
+          position: absolute;
+          width: 53px;
+          height: 28px;
+          border-left: 1px solid rgba(128, 128, 128, 0.653);
+          right: 0px;
+          color: #004eff;
+          line-height: 30px;
+          text-align: right;
+          padding-right: 10px;
         }
       }
       .totalRow {

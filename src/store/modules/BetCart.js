@@ -113,8 +113,10 @@ export default {
 
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },
-    // 執行投注 API
-    submitBet(store) {
+    // 執行投注 API ,
+    // betType : 1  一般投注
+    // betType : 99 過關投注
+    submitBet(store, { betType, strayBetAmount }) {
       const list = [];
       let findError = false;
       store.state.betCartList.every((cartData) => {
@@ -129,18 +131,39 @@ export default {
         const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
         const OddValue = cartData.playData[oddKey];
         const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-        if (cartData.betAmount === null || cartData.betAmount === '') {
-          findError = true;
-          return false;
+        // 一班投注
+        if (betType === 0) {
+          if (
+            cartData.betAmount === null ||
+            cartData.betAmount === '' ||
+            cartData.betAmount === 0
+          ) {
+            findError = true;
+            return false;
+          }
+          const listItem = {
+            CatId,
+            WagerString,
+            Amount: cartData.betAmount,
+            AcceptBetter: false,
+            BetType: 1,
+          };
+          list.push(listItem);
+        } // 串關投注
+        else if (betType === 99) {
+          if (list.length === 0) {
+            const listItem = {
+              CatId,
+              WagerString,
+              Amount: strayBetAmount,
+              AcceptBetter: false,
+              BetType: 1,
+            };
+            list.push(listItem);
+          } else {
+            list[0].WagerString += '|' + WagerString;
+          }
         }
-        const listItem = {
-          CatId,
-          WagerString,
-          Amount: cartData.betAmount,
-          AcceptBetter: false,
-          BetType: 1,
-        };
-        list.push(listItem);
         return true;
       });
       if (findError) {

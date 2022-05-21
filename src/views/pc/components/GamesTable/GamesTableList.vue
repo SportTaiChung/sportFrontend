@@ -4,7 +4,7 @@
     v-loading="selectCatID === null && gameStore.MenuList.length !== 0"
     :style="GameTableListStyleJudge()"
   >
-    <template v-if="selectCatID !== null">
+    <template v-if="selectCatID !== null && gameStore.MenuList.length !== 0">
       <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()">
         <tbody class="GameTableBody">
           <td class="FirstCatNameBlock">

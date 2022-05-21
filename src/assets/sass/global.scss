@@ -57,6 +57,13 @@ input {
     border: 0px;
     outline: 0px;
   }
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  &[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
 .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
   display: none;

@@ -81,8 +81,10 @@
       };
     },
     mounted() {
-      // 一進入頁面預設選取第一個
-      this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+      if (this.gameStore.MenuList.length !== 0) {
+        // 一進入頁面預設選取第一個
+        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+      }
 
       // 10秒打一次
       // this.intervalEvent = setInterval(() => {

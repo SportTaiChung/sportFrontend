@@ -255,7 +255,6 @@ export function WagerDataToShowData(catID, wagerData, rowIndex) {
 
 // 將購物車的資料 轉成 購物車內顯示的資料
 export function cartDataToDisplayData(cartData) {
-  console.log('cartData:', cartData);
   let showBetTitle = '';
   let showCutLine = '';
   let showOdd = '';
