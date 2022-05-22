@@ -18,6 +18,8 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'normalize.css';
 
+import '@/utils/OddDataList';
+
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
 });

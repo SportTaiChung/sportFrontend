@@ -40,19 +40,16 @@
           return '';
         }
       },
-      oddDataList() {
-        return this.$store.state.Odd.oddDataList;
-      },
     },
     watch: {
       OddValue: {
         handler(newOdd) {
-          if (this.oddDataList[this.UniqueID] === undefined) {
-            this.$store.commit('Odd/update', { key: this.UniqueID, value: newOdd });
+          if (window.OddData.OddDataList[this.UniqueID] === undefined) {
+            window.OddData.setOddData(this.UniqueID, newOdd);
           } else {
-            if (this.oddDataList[this.UniqueID] !== newOdd) {
-              this.changeColor(newOdd, this.oddDataList[this.UniqueID]);
-              this.$store.commit('Odd/update', { key: this.UniqueID, value: newOdd });
+            if (window.OddData.OddDataList[this.UniqueID] !== newOdd) {
+              this.changeColor(newOdd, window.OddData.OddDataList[this.UniqueID]);
+              window.OddData.setOddData(this.UniqueID, newOdd);
             }
           }
         },

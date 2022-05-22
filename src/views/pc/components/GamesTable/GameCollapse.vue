@@ -1,9 +1,14 @@
 <template>
-  <el-collapse-item class="GameCollapse" :name="index">
-    <template slot="title">
-      <div>{{ source.LeagueNameStr }}</div>
-    </template>
-    <table>
+  <div class="GameCollapse">
+    <div class="collapseTitleBlock" @click="clickArrow">
+      <div class="leftArrowBlock">
+        <i :class="arrowIconJudge" />
+      </div>
+      <div class="rightLeagueNameBlock">
+        {{ source.LeagueNameStr }}
+      </div>
+    </div>
+    <table v-if="!isCollapse">
       <tbody>
         <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
@@ -147,7 +152,7 @@
         </template>
       </tbody>
     </table>
-  </el-collapse-item>
+  </div>
 </template>
 
 <script>
@@ -169,13 +174,31 @@
           return {};
         },
       },
+      isCollapse: {
+        type: Boolean,
+      },
+    },
+    data() {
+      return {};
     },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
+      arrowIconJudge() {
+        if (this.isCollapse) {
+          return 'el-icon-arrow-down';
+        } else {
+          return 'el-icon-arrow-up';
+        }
+      },
     },
     methods: {
+      clickArrow() {
+        // this.isCollapse = !this.isCollapse;
+        console.log(this.source);
+        this.$emit('collapseChange', this.source.LeagueID);
+      },
       WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
         let appendCSS = '';
         if (sportData.playMethodData !== null) {
@@ -273,10 +296,6 @@
           }
         }
       }
-      .el-collapse-item__header {
-        background-color: #e8e8e8;
-        border-bottom: 1px solid #d0d0d0;
-      }
     }
   }
   #app[data-theme='dark'] {
@@ -295,10 +314,6 @@
           }
         }
       }
-      .el-collapse-item__header {
-        background-color: #696969;
-        border-bottom: 1px solid #4f4f4f;
-      }
     }
   }
   @mixin paddingTopAndBottom() {
@@ -311,6 +326,30 @@
   .GameCollapse {
     &:last-child {
       margin-bottom: 0px;
+    }
+    .collapseTitleBlock {
+      width: 100%;
+      height: 35px;
+      background-color: #e8e8e8;
+      color: #000;
+      display: flex;
+      cursor: pointer;
+      .leftArrowBlock {
+        width: 50px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        i {
+          font-size: 15px;
+          margin-top: -2px;
+        }
+      }
+      .rightLeagueNameBlock {
+        display: flex;
+        align-items: center;
+      }
     }
     table {
       width: 100%;
@@ -435,34 +474,6 @@
           @include rowBorderBottom();
         }
       }
-    }
-    .el-collapse-item__wrap {
-      border: none;
-    }
-    .el-collapse-item {
-      margin: 0;
-    }
-    .el-collapse-item__arrow {
-      font-size: 15px;
-      font-weight: bold;
-      margin: 0 3px 0 0;
-      padding: 0 18px;
-      transform: rotate(90deg);
-    }
-    .el-collapse-item__arrow.is-active {
-      transform: rotate(-90deg);
-    }
-    .el-collapse-item__header {
-      @include nav-TopTextcolor();
-      display: flex;
-      flex-direction: row-reverse;
-      justify-content: flex-end;
-      height: 35px;
-      line-height: 35px;
-      padding: 0;
-    }
-    .el-collapse-item__content {
-      padding: 0;
     }
   }
 </style>

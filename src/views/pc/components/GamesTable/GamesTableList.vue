@@ -26,21 +26,29 @@
         </tbody>
       </table>
 
-      <el-collapse v-model="activeCollapse">
-        <DynamicScroller :items="GameList" :min-item-size="10" class="DynamicScroller">
-          <template v-slot="{ item, index, active }">
-            <DynamicScrollerItem
-              :item="item"
-              :active="active"
-              :size-dependencies="[item]"
-              :data-index="index"
-              :data-active="active"
-            >
-              <GameCollapse :index="index" :source="item"></GameCollapse>
-            </DynamicScrollerItem>
-          </template>
-        </DynamicScroller>
-      </el-collapse>
+      <DynamicScroller
+        :items="GameList"
+        :min-item-size="10"
+        class="DynamicScroller"
+        ref="virtualList"
+      >
+        <template v-slot="{ item, index, active }">
+          <DynamicScrollerItem
+            :item="item"
+            :active="active"
+            :size-dependencies="[item.LeagueID]"
+            :data-index="index"
+            :data-active="active"
+          >
+            <GameCollapse
+              :index="index"
+              :source="item"
+              :isCollapse="activeCollapse.indexOf(item.LeagueID) > -1"
+              @collapseChange="collapseChangeHandler"
+            ></GameCollapse>
+          </DynamicScrollerItem>
+        </template>
+      </DynamicScroller>
     </template>
 
     <template v-if="gameStore.MenuList.length === 0">
@@ -77,13 +85,12 @@
         itemComponent: GameCollapse,
         activeCollapse: [],
         timeoutEvent: null,
-        testData: new Array(1000).fill().map((it, index) => {
-          return {
-            id: index,
-            num: Math.floor(Math.random() * 100),
-          };
-        }),
+        timeoutEvent2: null,
+        cool: false,
       };
+    },
+    created() {
+      window.tt = this;
     },
     computed: {
       selectCatID() {
@@ -94,33 +101,23 @@
       },
       GameList() {
         return this.$store.getters['Game/gameListFinalData'];
-        // if (this.gameStore.GameList.length === 0) {
-        //   return [];
-        // } else {
-        //   return this.gameStore.GameList.List.map((it, index) => {
-        //     return { uid: index, ...it };
-        //   });
-        // }
       },
       arrowIconJudge() {
-        if (this.activeCollapse.length === 0) {
+        if (this.activeCollapse.length === this.GameList.length) {
           return 'el-icon-arrow-down';
         } else {
           return 'el-icon-arrow-up';
         }
       },
     },
-    watch: {
-      GameList(newValue, oldValue) {
-        if (newValue.length !== 0) {
-          this.activeAllCollapse();
-        }
-      },
-    },
     methods: {
-      activeAllCollapse() {
-        this.activeCollapse.length = 0;
-        this.activeCollapse = new Array(this.GameList.length).fill(null).map((it, index) => index);
+      collapseChangeHandler(LeagueID) {
+        const collapseIndex = this.activeCollapse.findIndex((it) => it === LeagueID);
+        if (collapseIndex > -1) {
+          this.activeCollapse.splice(collapseIndex, 1);
+        } else {
+          this.activeCollapse.push(LeagueID);
+        }
       },
       GameTableListStyleJudge() {
         // 左側選單如果關閉時
@@ -147,19 +144,26 @@
         }
       },
       clickArrow() {
-        // 開關大折疊面板時,scroll重新回到最上方
+        // 開關大折疊面板時, scroll重新回到最上方;
         if (this.$refs?.virtualList) {
           clearTimeout(this.timeoutEvent);
-          this.timeoutEvent = setTimeout(() => {
+          this.$nextTick(() => {
             this.$refs.virtualList.$el.scrollTop = 0;
-          }, 500);
+          });
         }
-        if (this.activeCollapse.length === 0) {
-          this.activeAllCollapse();
-        } else {
+        if (this.activeCollapse.length === this.GameList.length) {
           this.activeCollapse.length = 0;
           this.activeCollapse = [];
+        } else {
+          this.CollapseAll();
         }
+      },
+      CollapseAll() {
+        clearTimeout(this.timeoutEvent2);
+        this.activeCollapse.length = 0;
+        this.activeCollapse = new Array(this.GameList.length)
+          .fill(null)
+          .map((it, index) => this.GameList[index].LeagueID);
       },
     },
   };
@@ -190,9 +194,11 @@
             margin-right: 5px;
             display: flex;
             justify-content: center;
-            .el-icon-arrow-up {
+            .el-icon-arrow-up,
+            .el-icon-arrow-down {
               font-size: 15px;
               margin-top: -2px;
+              cursor: pointer;
             }
           }
         }
@@ -216,16 +222,13 @@
       }
     }
 
-    .el-collapse {
-      height: calc(100% - 35px);
-      border: 0px;
-      .DynamicScroller {
-        height: 100%;
-      }
-    }
-
     .DynamicScroller {
-      height: 500px;
+      height: calc(100% - 35px);
+      background-color: #e8e8e8;
+      &::-webkit-scrollbar {
+        /*隱藏滾輪*/
+        display: none;
+      }
     }
 
     .EmptyGameTable {
