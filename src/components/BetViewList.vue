@@ -515,7 +515,7 @@
         return this.$SportLib.cartDataToDisplayData(cartData);
       },
       isShowBlackMask(cart) {
-        return cart.Status !== 1;
+        return cart.Status !== 1 || cart.EvtStatus !== 1;
       },
     },
   };

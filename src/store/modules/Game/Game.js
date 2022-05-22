@@ -147,13 +147,14 @@ export default {
         window.OddData.clear();
         return getGameDetail(postData)
           .then(async (res) => {
+            console.log('game detail API response done');
             store.commit('setCatIDAndGameTypeAndWagerType', {
               selectGameType: postData.GameType,
               selectCatID: postData.CatID,
               selectWagerTypeKey: postData.WagerTypeKey,
             });
             store.commit('setGameList', res.data);
-            console.log('game detail load done');
+
             resolve(res);
           })
           .catch(reject);

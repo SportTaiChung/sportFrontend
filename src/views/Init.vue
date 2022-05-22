@@ -18,8 +18,9 @@
             await this.callGetAllMenuData();
             this.$router.replace({ name: 'Games' });
           })
-          .finally(() => {
+          .catch(() => {
             this.$store.commit('SetLoading', false);
+            this.$router.replace({ name: 'Login' });
           });
       }
     },
