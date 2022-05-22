@@ -484,6 +484,7 @@
         this.$store.dispatch('BetCart/submitBet', { betType: 1 }).then((res) => {
           if (res) {
             this.clearMemberData();
+            this.$store.dispatch('User/GetUserInfoCash');
           }
         });
       },

@@ -1,9 +1,5 @@
 <template>
-  <div
-    id="GameTableList"
-    v-loading="selectCatID === null && gameStore.MenuList.length !== 0"
-    :style="GameTableListStyleJudge()"
-  >
+  <div id="GameTableList" :style="GameTableListStyleJudge()">
     <template v-if="selectCatID !== null && gameStore.MenuList.length !== 0">
       <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()">
         <tbody class="GameTableBody">
@@ -84,14 +80,9 @@
       return {
         itemComponent: GameCollapse,
         activeCollapse: [],
-        timeoutEvent: null,
-        timeoutEvent2: null,
-        cool: false,
       };
     },
-    created() {
-      window.tt = this;
-    },
+    created() {},
     computed: {
       selectCatID() {
         return this.gameStore.selectCatID;
@@ -146,7 +137,6 @@
       clickArrow() {
         // 開關大折疊面板時, scroll重新回到最上方;
         if (this.$refs?.virtualList) {
-          clearTimeout(this.timeoutEvent);
           this.$nextTick(() => {
             this.$refs.virtualList.$el.scrollTop = 0;
           });
@@ -159,7 +149,6 @@
         }
       },
       CollapseAll() {
-        clearTimeout(this.timeoutEvent2);
         this.activeCollapse.length = 0;
         this.activeCollapse = new Array(this.GameList.length)
           .fill(null)
@@ -176,6 +165,7 @@
     border-left: 2px solid;
     border-right: 2px solid;
     width: fit-content;
+    background-color: #d5d5d5;
     @include main_bg_border_color();
     .GameTableHeader {
       width: 100%;

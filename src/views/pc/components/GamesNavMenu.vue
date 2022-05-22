@@ -121,21 +121,17 @@
       },
       callGetMenuGameCatList() {
         this.$store.commit('SetLoading', true);
-        this.$store
-          .dispatch('Game/GetMenuGameCatList')
-          .then((res) => {
-            if (this.gameStore.MenuList.length !== 0) {
-              // 手動切換gameType時,系統預設選擇第一個球種
-              this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0, true);
-            }
-          })
-          .finally(() => {
-            this.$store.commit('SetLoading', false);
-          });
+        this.$store.dispatch('Game/GetMenuGameCatList').then((res) => {
+          if (this.gameStore.MenuList.length !== 0) {
+            // 手動切換gameType時,系統預設選擇第一個球種
+            this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0, true);
+          }
+        });
       },
       callGetGameDetail(CatID, WagerTypeKey) {
-        let postData = null;
+        this.$store.commit('SetLoading', true);
 
+        let postData = null;
         postData = {
           GameType: this.gameTypeID,
           CatID,
@@ -148,6 +144,7 @@
             CatID,
             WagerTypeKey
           );
+          this.$store.commit('SetLoading', false);
         });
       },
       gameTypeClickHandler(key) {
