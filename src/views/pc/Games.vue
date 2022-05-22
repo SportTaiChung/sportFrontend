@@ -52,6 +52,7 @@
       //         "EvtStatus": 0
       // })
       window.game = this;
+      window.store = this.$store;
     },
     methods: {
       setFakeUpdate(data) {

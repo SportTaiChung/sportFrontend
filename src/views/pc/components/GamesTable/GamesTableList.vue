@@ -27,17 +27,22 @@
       </table>
 
       <el-collapse v-model="activeCollapse">
-        <virtual-list
-          ref="virtualList"
-          class="virtual-list"
-          :style="GameTableHeaderStyleJudge()"
-          :data-key="'uid'"
-          :data-sources="GameList"
-          :data-component="itemComponent"
-          :keeps="10"
-        />
+        <DynamicScroller :items="GameList" :min-item-size="10" class="DynamicScroller">
+          <template v-slot="{ item, index, active }">
+            <DynamicScrollerItem
+              :item="item"
+              :active="active"
+              :size-dependencies="[item]"
+              :data-index="index"
+              :data-active="active"
+            >
+              <GameCollapse :index="index" :source="item"></GameCollapse>
+            </DynamicScrollerItem>
+          </template>
+        </DynamicScroller>
       </el-collapse>
     </template>
+
     <template v-if="gameStore.MenuList.length === 0">
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
@@ -51,13 +56,15 @@
 
 <script>
   import mixin from './GamesTableMixin';
-  import VirtualList from 'vue-virtual-scroll-list';
   import GameCollapse from './GameCollapse.vue';
+  import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
   export default {
     mixins: [mixin],
     name: 'GameTableList',
     components: {
-      VirtualList,
+      DynamicScroller,
+      DynamicScrollerItem,
+      GameCollapse,
     },
     props: {
       isNavMenuCollapse: {
@@ -70,6 +77,12 @@
         itemComponent: GameCollapse,
         activeCollapse: [],
         timeoutEvent: null,
+        testData: new Array(1000).fill().map((it, index) => {
+          return {
+            id: index,
+            num: Math.floor(Math.random() * 100),
+          };
+        }),
       };
     },
     computed: {
@@ -206,16 +219,15 @@
     .el-collapse {
       height: calc(100% - 35px);
       border: 0px;
-      .virtual-list {
+      .DynamicScroller {
         height: 100%;
-        overflow-y: auto;
-        background-color: #e8e8e8;
-        &::-webkit-scrollbar {
-          /*隱藏滾輪*/
-          display: none;
-        }
       }
     }
+
+    .DynamicScroller {
+      height: 500px;
+    }
+
     .EmptyGameTable {
       width: 100%;
       height: 100%;

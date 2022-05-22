@@ -73,7 +73,7 @@
                         @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
                         <div class="WagerCenterItem">
-                          <Odd :OddValue="sportData.topPlayOdd" />
+                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
                         </div>
                       </div>
                       <div
@@ -82,7 +82,7 @@
                         @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
                         <div class="WagerCenterItem">
-                          <Odd :OddValue="sportData.bottomPlayOdd" />
+                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
                         </div>
                       </div>
                     </template>
@@ -95,7 +95,7 @@
                       >
                         <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
                         <div class="WagerItem">
-                          <Odd :OddValue="sportData.topPlayOdd" />
+                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
                         </div>
                       </div>
                       <div
@@ -106,7 +106,9 @@
                         <div class="WagerItem">
                           {{ sportData.bottomPlayMethod }}
                         </div>
-                        <div class="WagerItem"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
+                        <div class="WagerItem">
+                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`"
+                        /></div>
                       </div>
                     </template>
 
@@ -127,7 +129,7 @@
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
                           <div class="WagerCenterItem">
-                            <Odd :OddValue="wagerData.Odds[0].DrewOdds"
+                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`"
                           /></div>
                         </div>
                       </template>

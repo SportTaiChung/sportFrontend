@@ -19,7 +19,7 @@ export function gameListFinalData(state) {
   } else {
     const BestHeadData = state.GameList.BestHead;
     return state.GameList.List.map((it, index) => {
-      return { uid: index, ...it };
+      return { id: index, ...it };
     }).map((listData) => {
       const newListData = JSON.parse(JSON.stringify(listData));
       newListData.Team = listData.Team.map((TeamData) => {

@@ -70,6 +70,8 @@ export default {
                       oddData.Status = updateData.Status;
                       teamData.EvtStatus = updateData.EvtStatus;
                       return false;
+                    } else {
+                      return true;
                     }
                   });
                 });
@@ -142,6 +144,7 @@ export default {
           selectWagerTypeKey: null,
         });
         store.commit('setGameList', []);
+        store.commit('Odd/clearAll', true, { root: true });
         return getGameDetail(postData)
           .then(async (res) => {
             store.commit('setCatIDAndGameTypeAndWagerType', {

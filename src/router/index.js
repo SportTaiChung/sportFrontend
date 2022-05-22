@@ -39,6 +39,12 @@ export default async () => {
       component: () =>
         import(/* webpackChunkName: "TestTableData" */ '../views/Test/TestOddData.vue'),
     },
+    {
+      path: '/TestVirtualList',
+      name: 'TestVirtualList',
+      component: () =>
+        import(/* webpackChunkName: "TestVirtualList" */ '../views/Test/TestVirtualList.vue'),
+    },
   ];
 
   // 動態路由注入
@@ -75,7 +81,8 @@ export default async () => {
       to.name === 'Init' ||
       to.name === 'Login' ||
       to.name === 'TestOddData' ||
-      to.name === 'TestTableData'
+      to.name === 'TestTableData' ||
+      to.name === 'TestVirtualList'
     ) {
       next();
     } else {

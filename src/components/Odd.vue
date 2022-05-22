@@ -11,6 +11,9 @@
       OddValue: {
         type: [Number, String],
       },
+      UniqueID: {
+        type: String,
+      },
     },
     data() {
       return {
@@ -21,13 +24,43 @@
         colorState: 0,
         // 變色維持時間
         COLOR_MAINTAIN_TIME: 4000,
+        OddList: {},
       };
     },
     beforeDestroy() {
       clearTimeout(this.timeEvent);
     },
+    computed: {
+      OddCssJudge() {
+        if (this.colorState === 1) {
+          return 'biggerColor';
+        } else if (this.colorState === 2) {
+          return 'smallerColor';
+        } else {
+          return '';
+        }
+      },
+      oddDataList() {
+        return this.$store.state.Odd.oddDataList;
+      },
+    },
     watch: {
-      OddValue(newValue, oldValue) {
+      OddValue: {
+        handler(newOdd) {
+          if (this.oddDataList[this.UniqueID] === undefined) {
+            this.$store.commit('Odd/update', { key: this.UniqueID, value: newOdd });
+          } else {
+            if (this.oddDataList[this.UniqueID] !== newOdd) {
+              this.changeColor(newOdd, this.oddDataList[this.UniqueID]);
+              this.$store.commit('Odd/update', { key: this.UniqueID, value: newOdd });
+            }
+          }
+        },
+        immediate: true,
+      },
+    },
+    methods: {
+      changeColor(newValue, oldValue) {
         let floatNewValue;
         let floatOldValue;
         if (newValue === '') {
@@ -47,23 +80,8 @@
         } else if (floatNewValue < floatOldValue) {
           this.colorState = 2;
         }
-        // console.log('origin:', newValue, oldValue);
-        // console.log(floatNewValue, floatOldValue);
         this.regEvent();
       },
-    },
-    computed: {
-      OddCssJudge() {
-        if (this.colorState === 1) {
-          return 'biggerColor';
-        } else if (this.colorState === 2) {
-          return 'smallerColor';
-        } else {
-          return '';
-        }
-      },
-    },
-    methods: {
       regEvent() {
         clearTimeout(this.timeEvent);
         this.timeEvent = setTimeout(() => {
