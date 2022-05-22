@@ -5,6 +5,7 @@
       <MobileHeader
         :activeCollapse="activeCollapse"
         @toggleAllCollapse="toggleAllCollapse"
+        @openWagerTypePopup="isShowWagerTypePopup = true"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
@@ -50,6 +51,11 @@
         v-if="isShowBetRecordView"
         @onCloseBetRecordView="isShowBetRecordView = false"
       ></mBetRecordView>
+
+      <mWagerTypePopup
+        v-if="isShowWagerTypePopup"
+        @closeWagerTypePopup="isShowWagerTypePopup = false"
+      ></mWagerTypePopup>
     </div>
   </div>
 </template>
@@ -61,6 +67,7 @@
   import mGameBetting from './components/mGameBetting.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
+  import mWagerTypePopup from './components/mWagerTypePopup';
 
   export default {
     name: 'MobileGames',
@@ -71,15 +78,16 @@
       mGameBetting,
       mGamesBetInfoAll,
       mBetRecordView,
+      mWagerTypePopup,
     },
     data() {
       return {
         activeCollapse: [],
         isShowBetInfo: false,
         isShowBetRecordView: false,
+        isShowWagerTypePopup: false,
       };
     },
-
     computed: {
       GameList() {
         return this.$store.getters['Game/gameListFinalData'];

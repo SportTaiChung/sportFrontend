@@ -43,7 +43,9 @@
 
     <!-- 玩法類型 -->
     <div class="playTypeBar" @click="onToggleAllCollapseClick">
-      <div class="playTypeBtn">美足 - 全場 / 上半</div>
+      <div class="playTypeBtn" @click="openWagerTypePopup">
+        {{ currentWagerType ? currentWagerType.WagerTypeName : ' - ' }}
+      </div>
       <i
         class="el-collapse-item__arrow el-icon-arrow-right"
         :class="activeCollapse.length > 0 ? 'is-active' : ''"
@@ -63,6 +65,25 @@
         },
       },
     },
+    data() {
+      return {
+        intervalEvent: null,
+      };
+    },
+    mounted() {
+      if (this.gameStore.MenuList.length !== 0) {
+        // 一進入頁面預設選取第一個
+        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+      }
+
+      // 10秒打一次
+      this.intervalEvent = setInterval(() => {
+        this.$store.dispatch('Game/GetGameDetailSmall');
+      }, 10000);
+    },
+    beforeDestroy() {
+      clearInterval(this.intervalEvent);
+    },
     computed: {
       gameStore() {
         return this.$store.state.Game;
@@ -76,65 +97,62 @@
       userCredit() {
         return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
       },
-    },
-    mounted() {
-      if (this.gameStore.MenuList.length !== 0) {
-        // 一進入頁面預設選取第一個
-        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
-      }
-
-      // 10秒打一次
-      this.intervalEvent = setInterval(() => {
-        this.$store.dispatch('Game/GetGameDetailSmall');
-      }, 10000);
+      currentCatData() {
+        const { selectCatID, MenuList } = this.gameStore;
+        const currentCatData = MenuList.find((it) => it.catid === selectCatID);
+        return currentCatData;
+      },
+      currentWagerType() {
+        if (this.currentCatData) {
+          const { selectWagerTypeKey } = this.gameStore;
+          const currentWagerType = this.currentCatData.Items.find(
+            (it) => it.WagerTypeKey === selectWagerTypeKey
+          );
+          return currentWagerType;
+        }
+        return null;
+      },
     },
     methods: {
       routerGoBack() {
         this.$router.push(-1);
       },
-      gameTypeClickHandler(key) {
-        this.$store.commit('Game/setGameType', key);
-        this.callGetMenuGameCatList();
-      },
-      callGetMenuGameCatList() {
-        this.$store.commit('SetLoading', true);
-        this.$store.dispatch('Game/GetMenuGameCatList').finally(() => {
-          // 手動切換gameType時,預設要選取第一個
-          this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
-          this.$store.commit('SetLoading', false);
-        });
-      },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
-        let clickCatID = null;
+        const clickCatID = catData.catid;
         let clickWagerTypeKey = null;
 
-        clickCatID = catData.catid;
-
-        if (catData.Items.length === 0) {
-          clickWagerTypeKey = 1;
+        if (WagerTypeKey === null) {
+          if (catData.Items.length === 0) {
+            clickWagerTypeKey = 1;
+          } else {
+            clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+          }
         } else {
-          clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+          clickWagerTypeKey = WagerTypeKey;
         }
+
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, clickWagerTypeKey);
       },
+      callGetMenuGameCatList() {
+        this.$store.commit('SetLoading', true);
+        this.$store.dispatch('Game/GetMenuGameCatList').then(() => {
+          if (this.gameStore.MenuList.length !== 0) {
+            // 手動切換gameType時,系統預設選擇第一個球種
+            this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0, true);
+          }
+        });
+      },
       callGetGameDetail(CatID, WagerTypeKey) {
-        let postData = null;
+        this.$store.commit('SetLoading', true);
 
-        //* Test 測試CODE 指定數據
-        if (false) {
-          postData = {
-            GameType: 1,
-            CatID: 102,
-            WagerTypeKey: 1,
-          };
-        } else {
-          postData = {
-            GameType: this.gameTypeID,
-            CatID,
-            WagerTypeKey,
-          };
-        }
+        let postData = null;
+        postData = {
+          GameType: this.gameTypeID,
+          CatID,
+          WagerTypeKey,
+        };
+
         this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
@@ -142,11 +160,19 @@
             CatID,
             WagerTypeKey
           );
+          this.$store.commit('SetLoading', false);
         });
+      },
+      gameTypeClickHandler(key) {
+        this.$store.commit('Game/setGameType', key);
+        this.callGetMenuGameCatList();
       },
       onToggleAllCollapseClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('toggleAllCollapse');
+      },
+      openWagerTypePopup() {
+        this.$emit('openWagerTypePopup');
       },
     },
   };
@@ -257,6 +283,7 @@
       align-items: center;
       font-size: 0.8em;
       line-height: 1em;
+      min-height: 30px;
       color: #fff;
       padding: 3px 6px;
       position: -webkit-sticky;
@@ -266,6 +293,7 @@
       background-color: #7d9364;
 
       .playTypeBtn {
+        align-self: stretch;
         border: 1px solid #fff;
         border-radius: 45px;
         padding: 4px 22px;

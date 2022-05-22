@@ -129,6 +129,7 @@
       flex: auto;
       overflow: auto;
       background-color: #d8d8d8;
+      padding: 10px;
     }
   }
 </style>
