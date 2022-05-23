@@ -247,6 +247,7 @@
           WagerTypeID: wagerData.WagerTypeID,
           WagerGrpID: wagerData.WagerGrpID,
           EvtID: teamData.EvtID,
+          EvtStatus: teamData.EvtStatus,
           ...wagerData.Odds[rowIndex],
         };
 

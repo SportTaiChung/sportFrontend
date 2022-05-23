@@ -74,6 +74,8 @@
       if (this.gameStore.MenuList.length !== 0) {
         // 一進入頁面預設選取第一個
         this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+      } else {
+        this.$store.commit('SetLoading', false);
       }
 
       // 10秒打一次
