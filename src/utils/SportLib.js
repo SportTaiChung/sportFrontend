@@ -155,7 +155,7 @@ const PlayMethodData = {
   OddEven: {
     name: 'OddEven',
     typeIdList: [105, 113, 126, 129],
-    wagerPos: [1, 2],
+    wagerPos: [4, 5],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
