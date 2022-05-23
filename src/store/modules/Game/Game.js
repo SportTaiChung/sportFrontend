@@ -9,6 +9,8 @@ export default {
     GameTypeList: [],
     // 側欄選單列表
     MenuList: [],
+    // 一次包含所有選單
+    FullMenuList: [],
     // 遊戲盤口面板列表
     GameList: [],
     // 當前選擇的遊戲分類 (ex.早盤、今日)
@@ -30,6 +32,10 @@ export default {
     setMenuList(state, val) {
       state.MenuList.length = 0;
       state.MenuList = val;
+    },
+    setFullMenuList(state, val) {
+      state.FullMenuList.length = 0;
+      state.FullMenuList = val;
     },
     setGameList(state, val) {
       state.GameList.length = 0;
@@ -86,14 +92,14 @@ export default {
   },
   actions: {
     // 清除選擇的數據
-    ClearSelectData(store) {
-      store.commit('setGameList', []);
-      store.commit('setCatIDAndGameTypeAndWagerType', {
-        selectGameType: null,
-        selectCatID: null,
-        selectWagerTypeKey: null,
-      });
-    },
+    // ClearSelectData(store) {
+    //   store.commit('setGameList', []);
+    //   store.commit('setCatIDAndGameTypeAndWagerType', {
+    //     selectGameType: null,
+    //     selectCatID: null,
+    //     selectWagerTypeKey: null,
+    //   });
+    // },
     // 16. 獲取左側菜單
     GetMenuGameType(store) {
       return new Promise((resolve, reject) => {
@@ -107,10 +113,13 @@ export default {
       });
     },
     // 17. 獲取左侧菜单球种(含赛事数量)
-    GetMenuGameCatList(store, postData) {
+    GetMenuGameCatList(store, isClearOldData = false) {
       return new Promise((resolve, reject) => {
-        store.commit('setMenuList', []);
-        return getMenuGameCatList(postData)
+        if (isClearOldData) {
+          store.commit('setMenuList', []);
+          store.commit('setFullMenuList', []);
+        }
+        return getMenuGameCatList()
           .then(async (res) => {
             if (
               store.state.selectGameType === null &&
@@ -123,13 +132,13 @@ export default {
                 selectWagerTypeKey: res.data.Default.WagerTypeKey,
               });
             }
-            console.log('game:', store.state.selectGameType);
             const listIndex = res.data.list.findIndex(
               (listData) => listData.GameType === store.state.selectGameType
             );
             if (listIndex > -1) {
               store.commit('setMenuList', res.data.list[listIndex].LeftMenu.item);
             }
+            store.commit('setFullMenuList', res.data.list);
             resolve(res);
           })
           .catch(reject);
@@ -138,20 +147,26 @@ export default {
     // 18-a. (赔率)游戏玩法资讯
     GetGameDetail(store, postData) {
       return new Promise((resolve, reject) => {
-        store.commit('setCatIDAndGameTypeAndWagerType', {
-          selectGameType: null,
-          selectCatID: null,
-          selectWagerTypeKey: null,
-        });
+        let apiPostData = postData;
+        if (postData.WagerTypeKey === null) {
+          apiPostData = {
+            GameType: postData.GameType,
+            CatID: postData.CatID,
+          };
+        }
         store.commit('setGameList', []);
         window.OddData.clear();
-        return getGameDetail(postData)
+        return getGameDetail(apiPostData)
           .then(async (res) => {
             console.log('game detail API response done');
+            let newWagerTypeKey = 1;
+            if (postData.WagerTypeKey !== null) {
+              newWagerTypeKey = postData.WagerTypeKey;
+            }
             store.commit('setCatIDAndGameTypeAndWagerType', {
               selectGameType: postData.GameType,
               selectCatID: postData.CatID,
-              selectWagerTypeKey: postData.WagerTypeKey,
+              selectWagerTypeKey: newWagerTypeKey,
             });
             store.commit('setGameList', res.data);
 

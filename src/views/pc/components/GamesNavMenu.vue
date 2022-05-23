@@ -23,7 +23,7 @@
     <el-menu
       ref="elMenu"
       class="el-menu-vertical-demo color_text"
-      :default-active="defaultActive"
+      :default-active="menuActiveString"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"
       :collapse-transition="false"
@@ -76,25 +76,30 @@
     },
     data() {
       return {
-        defaultActive: '',
+        menuActiveString: '',
         intervalEvent: null,
+        intervalEvent2: null,
       };
     },
     mounted() {
       if (this.gameStore.MenuList.length !== 0) {
         // 一進入頁面預設選取第一個
         this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
-      } else {
-        this.$store.commit('SetLoading', false);
       }
 
-      // 10秒打一次
+      // 定時更新遊戲賠率
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('Game/GetGameDetailSmall');
       }, 10000);
+
+      // 定時更新遊戲Menu
+      this.intervalEvent2 = setInterval(() => {
+        this.$store.dispatch('Game/GetMenuGameCatList', false);
+      }, 20000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
+      clearInterval(this.intervalEvent2);
     },
     computed: {
       gameStore() {
@@ -121,16 +126,19 @@
       setNavMenuCollapse(val) {
         this.$emit('update:isNavMenuCollapse', val);
       },
-      callGetMenuGameCatList() {
-        this.$store.commit('SetLoading', true);
-        this.$store.dispatch('Game/GetMenuGameCatList').then((res) => {
-          if (this.gameStore.MenuList.length !== 0) {
-            // 手動切換gameType時,系統預設選擇第一個球種
-            this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0, true);
-          }
-        });
+      // 早盤,今日,滾球...等等切換點擊事件
+      gameTypeClickHandler(gameType) {
+        this.$store.commit('Game/setGameType', gameType);
+        const menuData = this.gameStore.FullMenuList.find((menu) => menu.GameType === gameType);
+        let catid = 1;
+        if (menuData.LeftMenu.item.length !== 0) {
+          catid = menuData.LeftMenu.item[0].catid;
+        }
+        this.menuActiveString = '0-0';
+        this.callGetGameDetail(catid, null);
+        this.$store.dispatch('Game/GetMenuGameCatList', true);
       },
-      callGetGameDetail(CatID, WagerTypeKey) {
+      callGetGameDetail(CatID, WagerTypeKey = null) {
         this.$store.commit('SetLoading', true);
 
         let postData = null;
@@ -149,10 +157,7 @@
           this.$store.commit('SetLoading', false);
         });
       },
-      gameTypeClickHandler(key) {
-        this.$store.commit('Game/setGameType', key);
-        this.callGetMenuGameCatList();
-      },
+
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
         let clickCatID = null;
         let clickWagerTypeKey = null;
@@ -165,7 +170,7 @@
             this.$refs.elMenu.openedMenus = [];
           }
 
-          this.defaultActive = `${catIndex}-0`;
+          this.menuActiveString = `${catIndex}-0`;
           if (catData.Items.length === 0) {
             clickWagerTypeKey = 1;
           } else {

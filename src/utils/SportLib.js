@@ -1,3 +1,9 @@
+// const CatData = {
+//   1: {
+//     label: 足球,
+//   },
+// };
+
 /**
  * CatID 轉文本
  * @param {Number} val

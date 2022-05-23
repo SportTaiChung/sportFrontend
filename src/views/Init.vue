@@ -18,9 +18,12 @@
             await this.callGetAllMenuData();
             this.$router.replace({ name: 'Games' });
           })
-          .catch(() => {
-            this.$store.commit('SetLoading', false);
+          .catch((err) => {
+            console.log('GetUserInfoCash err:', err);
             this.$router.replace({ name: 'Login' });
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
           });
       }
     },
