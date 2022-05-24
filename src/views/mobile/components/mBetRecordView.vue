@@ -42,6 +42,7 @@
     computed: {},
     methods: {
       onTabClick(index) {
+        if (index > 1) return; //  暫時沒有 2,3
         this.tabIndex = index;
       },
     },

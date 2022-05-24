@@ -1,9 +1,30 @@
 <template>
   <div id="mGamesBetInfoAll" @click.stop="onMaskClick">
     <div class="popup">
-      <div class="header"> </div>
+      <div class="header">
+        <ul class="tab-list">
+          <li class="tab-item" :class="tabIndex === 0 ? 'active' : ''" @click="tabIndex = 0"
+            >單項<span class="number">{{ betCartList.length }}</span></li
+          >
+          <li class="tab-item" :class="tabIndex === 1 ? 'active' : ''" @click="tabIndex = 1"
+            >過關<span class="number">{{ betCartList.length }}</span></li
+          >
+        </ul>
+
+        <div class="userCredit">{{ userCredit }}</div>
+
+        <img
+          src="@/assets/img/mobile/btn_arrow_w.svg"
+          class="btn-close"
+          @click.stop="onMaskClick"
+        />
+      </div>
       <div class="body">
-        <BetViewList @betCartListChanged="changeHandler"></BetViewList>
+        <BetViewList
+          :groupIndex="0"
+          :childIndex="tabIndex"
+          @betCartListChanged="changeHandler"
+        ></BetViewList>
       </div>
     </div>
   </div>
@@ -17,14 +38,16 @@
       BetViewList,
     },
     data() {
-      return {};
+      return {
+        tabIndex: 0, // 0: 單項投注 1: 過關投注
+      };
     },
     computed: {
-      showBetCartList() {
-        return this.$store.getters['BetCart/showBetCartList'];
+      userCredit() {
+        return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
       },
-      showBetHistoryList() {
-        return this.$store.getters['BetCart/showBetHistoryList'];
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
       },
     },
     methods: {
@@ -80,11 +103,55 @@
       max-height: 80%;
 
       .header {
-        height: 45px;
+        display: flex;
         background-color: #6da9e5;
         color: #fff;
         border-radius: 4px 4px 0 0;
         font-size: 0.95em;
+        min-height: 30px;
+
+        ul.tab-list {
+          display: flex;
+          max-width: 60%;
+          overflow: auto;
+          li.tab-item {
+            min-height: 26px;
+            padding: 0 8px;
+            min-width: 60px;
+            text-align: center;
+            line-height: 26px;
+            border-radius: 3px;
+            margin: 7px 5px;
+            cursor: pointer;
+            background-color: transparent;
+            font-size: 1.25rem;
+
+            &.active,
+            &:active {
+              background-color: #fff;
+              color: #6da9e5;
+            }
+
+            span.number {
+              margin-left: 5px;
+              color: #ffbc00;
+            }
+          }
+        }
+
+        .userCredit {
+          font-size: 1rem;
+          font-weight: bold;
+          margin-left: auto;
+          align-self: center;
+          margin-right: 15px;
+        }
+
+        .btn-close {
+          opacity: 0.7;
+          width: 16px;
+          margin-right: 15px;
+        }
       }
       .body {
         max-height: 70vh;
