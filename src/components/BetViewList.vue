@@ -327,6 +327,13 @@
           this.$emit('betCartListChanged', this.showBetCartList);
         },
       },
+      strayOdd() {
+        if (this.showBetCartList.length <= 1) {
+          this.$store.commit('BetCart/setStrayOdd', null);
+        } else {
+          this.$store.commit('BetCart/setStrayOdd', this.strayOdd);
+        }
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);

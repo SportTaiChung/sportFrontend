@@ -7,6 +7,7 @@ export default {
     betCartList: [],
     betHistoryList: [],
     isAddNewToChart: false,
+    strayOdd: null,
   },
   getters: {
     showBetCartList(state) {
@@ -17,6 +18,9 @@ export default {
     },
   },
   mutations: {
+    setStrayOdd(state, val) {
+      state.strayOdd = val;
+    },
     pushCart(state, cartData) {
       state.betCartList.push(cartData);
     },
