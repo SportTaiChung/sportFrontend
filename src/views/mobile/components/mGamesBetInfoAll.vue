@@ -20,11 +20,7 @@
         />
       </div>
       <div class="body">
-        <BetViewList
-          :groupIndex="0"
-          :childIndex="tabIndex"
-          @betCartListChanged="changeHandler"
-        ></BetViewList>
+        <BetViewList :groupIndex="0" :childIndex="tabIndex"></BetViewList>
       </div>
     </div>
   </div>
@@ -77,10 +73,10 @@
         if (e.target !== e.currentTarget) return;
         this.$emit('onCloseBetInfo');
       },
-      changeHandler(betCartList) {
-        if (betCartList.length === 0) {
-          this.$emit('onCloseBetInfo');
-        }
+    },
+    watch: {
+      betCartList(list) {
+        list.length === 0 && this.$emit('onCloseBetInfo');
       },
     },
   };

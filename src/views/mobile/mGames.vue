@@ -44,7 +44,7 @@
 
     <div class="float-layout">
       <mGamesBetInfoAll
-        v-if="isShowBetInfo"
+        v-show="isShowBetInfo"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
 

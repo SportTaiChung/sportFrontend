@@ -14,7 +14,7 @@
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
           <span class="num">{{ this.betCartStore.betCartList.length }}</span>
         </div>
-        <span>點此投注</span>
+        <span :style="hasStrayStyle"> {{ strayOdd || '點此投注' }}</span>
       </li>
       <li class="footer-item" @click="onBetRecordViewClick">
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
@@ -37,6 +37,14 @@
       },
       hasBetItem() {
         return this.betCartStore.betCartList.length > 0;
+      },
+      strayOdd() {
+        return this.betCartStore.strayOdd;
+      },
+      hasStrayStyle() {
+        return {
+          color: this.strayOdd ? '#ff9600' : '#000000',
+        };
       },
     },
     methods: {
@@ -65,6 +73,7 @@
       background-color: #eee;
       border-top: 1px solid #ccc;
       box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.1);
+      z-index: 87;
 
       li.footer-item {
         display: flex;
@@ -81,13 +90,13 @@
           background-color: #ddd;
         }
         .icon {
-          margin-bottom: 5px;
-          width: 2.1rem;
+          margin-bottom: 6px;
+          width: 1.825rem;
           height: auto;
         }
         .circle-bets {
-          width: 2.1rem;
-          height: 2.1rem;
+          width: 2.2rem;
+          height: 2.2rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -98,6 +107,7 @@
             color: #5f5f5f;
             font-size: 1.45rem;
             font-weight: bold;
+            line-height: normal;
           }
           &.hasBetItem {
             border: 2px solid #ff9600;
