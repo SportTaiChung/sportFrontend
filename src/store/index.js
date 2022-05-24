@@ -3,13 +3,14 @@ import Vuex from 'vuex';
 import User from './modules/User';
 import BetCart from './modules/BetCart';
 import Game from './modules/Game/Game';
+import MoreGame from './modules/Game/MoreGame';
 
 import { dataFresh } from '@/api/Common';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { User, Game, BetCart },
+  modules: { User, Game, BetCart, MoreGame },
   state: {
     isMobile: false,
     isLoading: false,

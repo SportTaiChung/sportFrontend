@@ -9,6 +9,7 @@
     <div class="main">
       <GamesNavMenu :isNavMenuCollapse.sync="isNavMenuCollapse"></GamesNavMenu>
       <GamesTableList :isNavMenuCollapse="isNavMenuCollapse"></GamesTableList>
+      <MoreGame v-if="isShowMoreGame"></MoreGame>
       <GamesBetInfo />
     </div>
   </div>
@@ -19,10 +20,11 @@
   import GamesSetup from './components/GamesSetup.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
+  import MoreGame from './components/GamesTable/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   export default {
     name: 'PCGames',
-    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList, GamesBetInfo },
+    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList, GamesBetInfo, MoreGame },
     data() {
       return {
         // 左側選單是否縮起選單
@@ -53,6 +55,11 @@
       // })
       window.game = this;
       window.store = this.$store;
+    },
+    computed: {
+      isShowMoreGame() {
+        return this.$store.state.MoreGame.isShowMoreGame;
+      },
     },
     methods: {
       setFakeUpdate(data) {
