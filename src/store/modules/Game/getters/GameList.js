@@ -6,9 +6,9 @@ export function showTableHeaderList(state) {
   return state.GameList.BestHead.map((it) => {
     return {
       originName: it.Name,
-      showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeID, it.WagerGrpID),
-      WagerGrpID: it.WagerGrpID,
-      WagerTypeID: it.WagerTypeID,
+      showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs),
+      WagerGrpID: it.WagerGrpIDs,
+      WagerTypeID: it.WagerTypeIDs,
     };
   });
 }
@@ -48,7 +48,7 @@ export function gameListFinalData(state) {
           });
           BestHeadData.forEach((headData, headIndex) => {
             oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
-              if (headData.WagerTypeID.indexOf(oldWagerData.WagerTypeID) !== -1) {
+              if (headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID) !== -1) {
                 newWagerData[headIndex] = oldWagerData;
                 oldWagerDatas.splice(oldWagerDataIndex, 1);
                 return false;
