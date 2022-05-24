@@ -38,6 +38,7 @@
       <MobileFooter
         @onOpenBetInfoPopup="onOpenBetInfoPopup"
         @onOpenBetRecordView="onOpenBetRecordView"
+        @onOpenMorePanel="onOpenMorePanel"
       ></MobileFooter>
     </div>
 
@@ -56,6 +57,8 @@
         v-if="isShowWagerTypePopup"
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
+
+      <mMorePanel v-if="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
     </div>
   </div>
 </template>
@@ -68,6 +71,7 @@
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
+  import mMorePanel from './components/mMorePanel';
 
   export default {
     name: 'MobileGames',
@@ -79,6 +83,7 @@
       mGamesBetInfoAll,
       mBetRecordView,
       mWagerTypePopup,
+      mMorePanel,
     },
     data() {
       return {
@@ -86,6 +91,7 @@
         isShowBetInfo: false,
         isShowBetRecordView: false,
         isShowWagerTypePopup: false,
+        isShowMorePanel: false,
       };
     },
     computed: {
@@ -118,6 +124,9 @@
       },
       onOpenBetRecordView() {
         this.isShowBetRecordView = true;
+      },
+      onOpenMorePanel() {
+        this.isShowMorePanel = true;
       },
     },
   };

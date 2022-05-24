@@ -147,7 +147,7 @@
       },
       callGetGameDetail(CatID, WagerTypeKey) {
         this.$store.commit('SetLoading', true);
-
+        this.clearActiveCollapse();
         let postData = null;
         postData = {
           GameType: this.gameTypeID,
@@ -176,6 +176,9 @@
       openWagerTypePopup() {
         this.$emit('openWagerTypePopup');
       },
+      clearActiveCollapse(){
+        this.activeCollapse.length = 0
+      }
     },
   };
 </script>

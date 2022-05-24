@@ -20,7 +20,7 @@
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
         <span>投注紀錄</span>
       </li>
-      <li class="footer-item">
+      <li class="footer-item" @click="onOpenMorePanel">
         <img class="icon" src="@/assets/img/mobile/icon_footer_more.svg" alt="" />
         <span>更 多</span>
       </li>
@@ -40,21 +40,14 @@
       },
     },
     methods: {
-      routerGoBack() {
-        this.$router.push(-1);
-      },
-      callGetMenuGameCatList() {
-        this.$store.commit('SetLoading', true);
-        this.$store.dispatch('Game/GetMenuGameCatList').finally(() => {
-          // 手動切換gameType時,預設要選取第一個
-          this.$store.commit('SetLoading', false);
-        });
-      },
       onBetViewClick() {
         this.hasBetItem && this.$emit('onOpenBetInfoPopup');
       },
       onBetRecordViewClick() {
         this.$emit('onOpenBetRecordView');
+      },
+      onOpenMorePanel() {
+        this.$emit('onOpenMorePanel');
       },
     },
   };

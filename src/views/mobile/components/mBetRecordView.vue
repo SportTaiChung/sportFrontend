@@ -34,14 +34,6 @@
     components: {
       BetViewList,
     },
-    props: {
-      activeCollapse: {
-        type: Array,
-        default() {
-          return [];
-        },
-      },
-    },
     data() {
       return {
         tabIndex: 0,
