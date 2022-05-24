@@ -138,7 +138,9 @@ export default {
             if (listIndex > -1) {
               store.commit('setMenuList', res.data.list[listIndex].LeftMenu.item);
             }
+
             store.commit('setFullMenuList', res.data.list);
+
             resolve(res);
           })
           .catch(reject);

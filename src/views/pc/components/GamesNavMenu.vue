@@ -94,7 +94,17 @@
 
       // 定時更新遊戲Menu
       this.intervalEvent2 = setInterval(() => {
-        this.$store.dispatch('Game/GetMenuGameCatList', false);
+        this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
+          const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
+            return menuData.catid === this.gameStore.selectCatID;
+          });
+          if (menuIndex > -1) {
+            this.menuActiveString = `${menuIndex}-0`;
+          } else {
+            this.menuActiveString = `999-0`;
+            this.hideMenuChildren();
+          }
+        });
       }, 20000);
     },
     beforeDestroy() {
@@ -157,7 +167,10 @@
           this.$store.commit('SetLoading', false);
         });
       },
-
+      hideMenuChildren() {
+        this.$refs.elMenu.openedMenus.length = 0;
+        this.$refs.elMenu.openedMenus = [];
+      },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
         let clickCatID = null;
         let clickWagerTypeKey = null;
@@ -166,8 +179,7 @@
         if (WagerTypeKey === null) {
           // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
           if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
-            this.$refs.elMenu.openedMenus.length = 0;
-            this.$refs.elMenu.openedMenus = [];
+            this.hideMenuChildren();
           }
 
           this.menuActiveString = `${catIndex}-0`;
