@@ -197,8 +197,6 @@
     },
     methods: {
       clickArrow() {
-        // this.isCollapse = !this.isCollapse;
-        console.log(this.source);
         this.$emit('collapseChange', this.source.LeagueID);
       },
       WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
@@ -227,7 +225,6 @@
         }
       },
       moreGameClickHandler(TeamData) {
-        console.log(TeamData);
         this.$store.commit('MoreGame/openMoreGameList', {
           CatID: this.source.CatID,
           CatNameStr: this.source.CatNameStr,

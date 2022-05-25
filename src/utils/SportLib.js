@@ -44,54 +44,76 @@ export function CatIDtoShowLabel(val) {
 /**
  * Wager 轉 文本
  * @param {Empty} val
- * @param {Array} typeid WagerTypeID
- * @param {Number} grpid WagerGrpID
+ * @param {Array} WagerTypeIDs WagerTypeIDs
+ * @param {Number} grpId WagerGrpID
  * @returns { String } 用來顯示的文本
  */
-export function WagerTypeIDandWagerGrpIDtoString(typeid, grpid) {
+export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGameMode = false) {
   let WagerGrp = '';
-  let Wagertype = '';
+  let WagerType = '';
   let text = '';
-  if (grpid === 10 || grpid === 0 || grpid === 20) {
+  if (grpId === 10 || grpId === 0 || grpId === 20) {
     WagerGrp = '全場';
-  } else if (grpid === 1 || grpid === 11 || grpid === 21) {
+  } else if (grpId === 1 || grpId === 11 || grpId === 21) {
     WagerGrp = '上半';
   } else {
     WagerGrp = '';
   }
-  if (typeid.indexOf(101 || 103) > -1) {
-    Wagertype = '讓球';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(102 || 104 || 109) > -1) {
-    Wagertype = '大小';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(111 || 110) > -1) {
-    Wagertype = '獨贏';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(105 || 113) > -1) {
-    Wagertype = '單雙';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(106)) {
-    Wagertype = '一输';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(121)) {
+  if ([101, 103].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '讓球';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([102, 104, 109].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '大小';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([111, 110].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '獨贏';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([105, 113].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '單雙';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([106].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '一输';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([121].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數讓球';
-  } else if (typeid.indexOf(122)) {
+  } else if ([122].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數大小';
-  } else if (typeid.indexOf(128)) {
+  } else if ([128].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分讓球';
-  } else if (typeid.indexOf(129)) {
+  } else if ([129].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分單雙';
-  } else if (typeid.indexOf(126)) {
+  } else if ([126].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數單雙';
-  } else if (typeid.indexOf(127)) {
+  } else if ([127].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數獨贏';
-  } else if (typeid.indexOf(125)) {
+  } else if ([125].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分大小';
-  } else if (typeid.indexOf(123)) {
+  } else if ([123].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '盤數獨贏';
-  } else if (typeid.indexOf(124)) {
+  } else if ([124].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '盤數讓球';
+  } else {
+    console.error(`SportLib error ${WagerTypeIDs} not found`);
   }
   return text;
 }

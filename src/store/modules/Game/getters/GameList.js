@@ -6,7 +6,7 @@ export function showTableHeaderList(state) {
   return state.GameList.BestHead.map((it) => {
     return {
       originName: it.Name,
-      showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs),
+      showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs[0]),
       WagerGrpID: it.WagerGrpIDs,
       WagerTypeID: it.WagerTypeIDs,
     };
