@@ -46,7 +46,22 @@
                 v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerData].OddList"
                 :key="menuKey + wagerKey + oddKey"
               >
-                {{ oddData }}
+                <div
+                  class="betBlock"
+                  v-for="(betData, betKey) in $SportLib.oddDataToMorePlayData(
+                    CatID,
+                    menuData.WagerTypeIDs[wagerData].WagerTypeIds[0],
+                    oddData
+                  )"
+                  :key="menuKey + wagerKey + betKey"
+                >
+                  <div class="betBlockTop">
+                    {{ betData.showMethod }}
+                  </div>
+                  <div class="betBlockBottom">
+                    {{ betData.showOdd }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -179,6 +194,22 @@
         return dealWagerHead;
       },
     },
+    methods: {
+      wagerToPlayData(wagerData = null, oddData = null) {
+        console.log(wagerData, oddData);
+        const playData = this.$SportLib.oddDataToPlayData(
+          this.CatID,
+          wagerData.WagerTypeIds[0],
+          oddData
+        );
+        if (playData.playMethodData !== null) {
+          return playData;
+        } else {
+          console.error('More Game 無法解析', wagerData, oddData);
+        }
+        console.log('playData:', playData);
+      },
+    },
   };
 </script>
 
@@ -250,31 +281,66 @@
         height: calc(100% - $MoreGameFilterBlockHeight);
         .MoreGameListOutRow {
           width: 100%;
+          height: fit-content;
           .MoreGameListRowTitle {
             width: 100%;
             background-color: #eee;
             color: #000;
             height: 35px;
             cursor: pointer;
-            border-top: 1px solid #404040;
+            border-top: 1px solid #d6d6d6;
             display: flex;
             align-items: center;
           }
           .MoreGameListInRow {
             height: fit-content;
-            min-height: 45px;
             display: flex;
             align-items: center;
             width: 100%;
+            min-height: 50px;
             background-color: white;
             border-bottom: 1px solid #eeeeee;
             .wagerLabelBlock {
               width: 78px;
+              height: 100%;
               display: flex;
               justify-content: center;
             }
             .wagerPlayList {
               width: calc(100% - 78px);
+              .wagerPlayRow {
+                display: flex;
+                width: 100%;
+                border-bottom: 1px solid #eeeeee;
+                &:last-child {
+                  border-bottom: 0px;
+                }
+                .betBlock {
+                  width: 100%;
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  .betBlockTop {
+                    width: 100%;
+                    height: 25px;
+                    padding-bottom: 2px;
+                    border-left: 1px solid #eeeeee;
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: center;
+                    cursor: pointer;
+                  }
+                  .betBlockBottom {
+                    padding-top: 2px;
+                    width: 100%;
+                    height: 25px;
+                    text-align: center;
+                    color: #3fa381;
+                    border-left: 1px solid #eeeeee;
+                    cursor: pointer;
+                  }
+                }
+              }
             }
           }
         }
