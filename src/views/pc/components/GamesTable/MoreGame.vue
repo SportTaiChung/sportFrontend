@@ -29,42 +29,44 @@
               <i :class="arrowIconJudge" />
             </div>
             <div class="MoreGameListRowTitleText">
-              {{ menuData.groupName }}
+              {{ menuData.WagerGrpName }}
             </div>
           </div>
-          <div
-            class="MoreGameListInRow"
-            v-for="(wagerData, wagerKey) in Object.keys(menuData.WagerTypeIDs)"
-            :key="menuKey + wagerKey"
-          >
-            <div class="wagerLabelBlock">
-              {{ wagerData }}
-            </div>
-            <div class="wagerPlayList">
-              <div
-                class="wagerPlayRow"
-                v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerData].OddList"
-                :key="menuKey + wagerKey + oddKey"
-              >
+          <template v-for="(wagerData, wagerKey) in Object.keys(menuData.WagerTypeIDs)">
+            <div
+              v-if="menuData.WagerTypeIDs[wagerData].OddList.length !== 0"
+              class="MoreGameListInRow"
+              :key="menuKey + wagerKey"
+            >
+              <div class="wagerLabelBlock">
+                {{ wagerData }}
+              </div>
+              <div class="wagerPlayList">
                 <div
-                  class="betBlock"
-                  v-for="(betData, betKey) in $SportLib.oddDataToMorePlayData(
-                    CatID,
-                    menuData.WagerTypeIDs[wagerData].WagerTypeIds[0],
-                    oddData
-                  )"
-                  :key="menuKey + wagerKey + betKey"
+                  class="wagerPlayRow"
+                  v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerData].OddList"
+                  :key="menuKey + wagerKey + oddKey"
                 >
-                  <div class="betBlockTop">
-                    {{ betData.showMethod }}
-                  </div>
-                  <div class="betBlockBottom">
-                    {{ betData.showOdd }}
+                  <div
+                    class="betBlock"
+                    v-for="(betData, betKey) in $SportLib.oddDataToMorePlayData(
+                      CatID,
+                      menuData.WagerTypeIDs[wagerData].WagerTypeIds[0],
+                      oddData
+                    )"
+                    :key="menuKey + wagerKey + betKey"
+                  >
+                    <div class="betBlockTop">
+                      {{ betData.showMethod }}
+                    </div>
+                    <div class="betBlockBottom">
+                      {{ betData.showOdd }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
@@ -81,9 +83,8 @@
       };
     },
     created() {
-      console.log(this.moreGameData);
-
-      console.log(this.mergeMenuHeadData);
+      // console.log(this.moreGameData);
+      // console.log(this.mergeMenuHeadData);
     },
     computed: {
       moreGameData() {
@@ -124,7 +125,7 @@
         const dealGrpHead = this.MenuHead.reduce((sum, it, index) => {
           if (sum[it.WagerGrpName] === undefined) {
             sum[it.WagerGrpName] = {
-              WagerGrpName: it.WagerGrpName[0],
+              WagerGrpName: it.WagerGrpName,
               WagerGrpID: it.WagerGrpIDs[0],
               WagerTypeIDs: it.WagerTypeIDs,
             };
@@ -135,11 +136,9 @@
           return sum;
         }, {});
 
-        console.log('dealWagerHead:', dealGrpHead);
         const dealWagerHead = Object.keys(dealGrpHead)
           .map((key) => {
             return {
-              groupName: key,
               ...dealGrpHead[key],
             };
           })
@@ -167,7 +166,6 @@
               WagerTypeIDs: newWagerTypeIDs,
             };
           });
-        // console.log('dealWagerHead:', dealWagerHead);
 
         this.TeamData.Wager.forEach((wagerData) => {
           const headGrpIndex = dealWagerHead.findIndex(
@@ -189,9 +187,24 @@
           }
         });
 
-        console.log('dealWagerHead:', dealWagerHead);
+        const finallyData = dealWagerHead.reduce((sum, grpData) => {
+          let isValid = false;
+          Object.keys(grpData.WagerTypeIDs).every((wagerDataKey) => {
+            if (grpData.WagerTypeIDs[wagerDataKey].OddList.length !== 0) {
+              isValid = true;
+              return false;
+            } else {
+              return true;
+            }
+          });
+          if (isValid) {
+            sum.push(grpData);
+          }
+          return sum;
+        }, []);
+        console.log('dealWagerHead:', dealWagerHead, finallyData);
 
-        return dealWagerHead;
+        return finallyData;
       },
     },
     methods: {

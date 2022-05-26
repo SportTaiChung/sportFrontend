@@ -158,20 +158,20 @@ export default {
         }
         store.commit('setGameList', []);
         window.OddData.clear();
+
+        let newWagerTypeKey = 1;
+        if (postData.WagerTypeKey !== null) {
+          newWagerTypeKey = postData.WagerTypeKey;
+        }
+        store.commit('setCatIDAndGameTypeAndWagerType', {
+          selectGameType: postData.GameType,
+          selectCatID: postData.CatID,
+          selectWagerTypeKey: newWagerTypeKey,
+        });
         return getGameDetail(apiPostData)
           .then(async (res) => {
             console.log('game detail API response done');
-            let newWagerTypeKey = 1;
-            if (postData.WagerTypeKey !== null) {
-              newWagerTypeKey = postData.WagerTypeKey;
-            }
-            store.commit('setCatIDAndGameTypeAndWagerType', {
-              selectGameType: postData.GameType,
-              selectCatID: postData.CatID,
-              selectWagerTypeKey: newWagerTypeKey,
-            });
             store.commit('setGameList', res.data);
-
             resolve(res);
           })
           .catch(reject);
