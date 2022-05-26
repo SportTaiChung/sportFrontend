@@ -215,6 +215,11 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
         awayShow = '+' + showHdp;
       }
     }
+    if (parseFloat(showHdp) === 0) {
+      homeShow = showHdp;
+      awayShow = showHdp;
+    }
+
     if (isHomeAwayReverse(catID)) {
       return [
         {
