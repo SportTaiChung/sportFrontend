@@ -142,11 +142,13 @@
                   </template>
                 </div>
               </td>
-              <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
-                <div class="borderWhiteBlock"></div>
-                更多
-                <div></div>
+              <td v-if="selectWagerTypeKey === 1 && rowIndex === 0" class="GameTableHeaderMoreTD">
+                <div class="moreGame" @click="moreGameClickHandler(teamData)">
+                  更多
+                  {{ teamData.MoreCount }}
+                </div>
               </td>
+              <td v-else class="GameTableHeaderMoreTD"> </td>
             </tr>
           </template>
         </template>
@@ -195,8 +197,6 @@
     },
     methods: {
       clickArrow() {
-        // this.isCollapse = !this.isCollapse;
-        console.log(this.source);
         this.$emit('collapseChange', this.source.LeagueID);
       },
       WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
@@ -223,6 +223,16 @@
         } else {
           return wagerData.Odds[rowIndex].GameID;
         }
+      },
+      moreGameClickHandler(TeamData) {
+        this.$store.commit('MoreGame/openMoreGameList', {
+          CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
+          LeagueID: this.source.LeagueID,
+          LeagueNameStr: this.source.LeagueNameStr,
+          TeamData,
+          MenuHead: this.$store.state.Game.GameList.BestHead,
+        });
       },
       goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
         const sportData = this.$SportLib.WagerDataToShowData(
@@ -473,6 +483,9 @@
           min-width: 60px;
           white-space: nowrap;
           @include rowBorderBottom();
+        }
+        .moreGame {
+          cursor: pointer;
         }
       }
     }

@@ -176,9 +176,9 @@
       openWagerTypePopup() {
         this.$emit('openWagerTypePopup');
       },
-      clearActiveCollapse(){
-        this.activeCollapse.length = 0
-      }
+      clearActiveCollapse() {
+        this.activeCollapse.length = 0;
+      },
     },
   };
 </script>

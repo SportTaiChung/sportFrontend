@@ -100,6 +100,9 @@
           return 'el-icon-arrow-up';
         }
       },
+      isShowMoreGame() {
+        return this.$store.state.MoreGame.isShowMoreGame;
+      },
     },
     methods: {
       collapseChangeHandler(LeagueID) {
@@ -111,24 +114,34 @@
         }
       },
       GameTableListStyleJudge() {
+        let diffOffset = 0;
         // 左側選單如果關閉時
         if (this.isNavMenuCollapse) {
           // 減掉 左邊側欄 64px
           // 減掉 右邊注單 300px;
           // 加上 卷軸寬度17px;
-          // 因此減掉 364px;
-          return `width: calc(100% - 347px);`;
+          // 因此減掉 347px;
+          diffOffset = 364;
+          // return `width: calc(100% - 347px);`;
         } else {
           // 減掉 左邊側欄 200px
           // 減掉 右邊注單 300px;
           // 加上 卷軸寬度17px;
           // 因此減掉 483px;
-          return `width: calc(100% - 483px);`;
+          diffOffset = 500;
+          // return `width: calc(100% - 483px);`;
         }
+        // 更多投注 寬度370px
+        if (this.isShowMoreGame) {
+          diffOffset += 370;
+        }
+        return `width: calc(100% - ${diffOffset}px);`;
       },
       GameTableHeaderStyleJudge() {
-        // 左側選單如果關閉時
-        if (this.isNavMenuCollapse) {
+        if (this.isShowMoreGame) {
+          return `min-width:666px`;
+        } else if (this.isNavMenuCollapse) {
+          // 左側選單如果關閉時
           return `min-width:836px`;
         } else {
           return `min-width:696px`;

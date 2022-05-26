@@ -44,54 +44,76 @@ export function CatIDtoShowLabel(val) {
 /**
  * Wager 轉 文本
  * @param {Empty} val
- * @param {Array} typeid WagerTypeID
- * @param {Number} grpid WagerGrpID
+ * @param {Array} WagerTypeIDs WagerTypeIDs
+ * @param {Number} grpId WagerGrpID
  * @returns { String } 用來顯示的文本
  */
-export function WagerTypeIDandWagerGrpIDtoString(typeid, grpid) {
+export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGameMode = false) {
   let WagerGrp = '';
-  let Wagertype = '';
+  let WagerType = '';
   let text = '';
-  if (grpid === 10 || grpid === 0 || grpid === 20) {
+  if (grpId === 10 || grpId === 0 || grpId === 20) {
     WagerGrp = '全場';
-  } else if (grpid === 1 || grpid === 11 || grpid === 21) {
+  } else if (grpId === 1 || grpId === 11 || grpId === 21) {
     WagerGrp = '上半';
   } else {
     WagerGrp = '';
   }
-  if (typeid.indexOf(101 || 103) > -1) {
-    Wagertype = '讓球';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(102 || 104 || 109) > -1) {
-    Wagertype = '大小';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(111 || 110) > -1) {
-    Wagertype = '獨贏';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(105 || 113) > -1) {
-    Wagertype = '單雙';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(106)) {
-    Wagertype = '一输';
-    text = WagerGrp + Wagertype;
-  } else if (typeid.indexOf(121)) {
+  if ([101, 103].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '讓球';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([102, 104, 109].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '大小';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([111, 110].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '獨贏';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([105, 113].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '單雙';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([106].find((typeID) => WagerTypeIDs.includes(typeID))) {
+    WagerType = '一输';
+    if (isMoreGameMode) {
+      text = WagerType;
+    } else {
+      text = WagerGrp + WagerType;
+    }
+  } else if ([121].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數讓球';
-  } else if (typeid.indexOf(122)) {
+  } else if ([122].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數大小';
-  } else if (typeid.indexOf(128)) {
+  } else if ([128].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分讓球';
-  } else if (typeid.indexOf(129)) {
+  } else if ([129].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分單雙';
-  } else if (typeid.indexOf(126)) {
+  } else if ([126].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數單雙';
-  } else if (typeid.indexOf(127)) {
+  } else if ([127].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '局數獨贏';
-  } else if (typeid.indexOf(125)) {
+  } else if ([125].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '總分大小';
-  } else if (typeid.indexOf(123)) {
+  } else if ([123].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '盤數獨贏';
-  } else if (typeid.indexOf(124)) {
+  } else if ([124].find((typeID) => WagerTypeIDs.includes(typeID))) {
     text = '盤數讓球';
+  } else {
+    console.error(`SportLib error ${WagerTypeIDs} not found`);
   }
   return text;
 }
@@ -123,7 +145,7 @@ export function isHomeAwayReverse(catID) {
  *  betCutLineDealFunc:
  *?  下注送出時組成CutLine所需的資料
  */
-const PlayMethodData = {
+export const PlayMethodData = {
   // 讓分
   HandiCap: {
     name: 'HandiCap',
@@ -153,7 +175,7 @@ const PlayMethodData = {
     wagerPos: [1, 2, 3],
     showMethod: [],
     showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
-    betCutLineDealFunc: function (oddData) {
+    betCutLineDealFunc: function () {
       return 0;
     },
   },
@@ -164,11 +186,88 @@ const PlayMethodData = {
     wagerPos: [4, 5],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
-    betCutLineDealFunc: function (oddData) {
+    betCutLineDealFunc: function () {
       return 0;
     },
   },
 };
+
+export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData = null) {
+  if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
+    const showHdp = oddData.HomeHdp === '' ? oddData.AwayHdp : oddData.HomeHdp;
+    let homeShow = '';
+    let awayShow = '';
+    if (oddData.HomeHdp === '') {
+      homeShow = '+' + showHdp;
+      awayShow = '-' + showHdp;
+    } else {
+      homeShow = '-' + showHdp;
+      awayShow = '+' + showHdp;
+    }
+    // 讓分
+    return [
+      {
+        showMethod: '主 ' + homeShow,
+        showOdd: oddData.HomeHdpOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
+      },
+      {
+        showMethod: '客 ' + awayShow,
+        showOdd: oddData.AwayHdpOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
+      },
+    ];
+  } else if (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) !== -1) {
+    // 大小
+    return [
+      {
+        showMethod: '大 ' + oddData.OULine,
+        showOdd: oddData.OverOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
+      },
+      {
+        showMethod: '小 ' + oddData.OULine,
+        showOdd: oddData.UnderOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
+      },
+    ];
+  } else if (PlayMethodData.SoloWin.typeIdList.indexOf(wagerTypeID) !== -1) {
+    // 獨贏
+    return [
+      {
+        showMethod: '主',
+        showOdd: oddData.HomeOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
+      },
+      {
+        showMethod: '和',
+        showOdd: oddData.DrewOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[2],
+      },
+      {
+        showMethod: '客',
+        showOdd: oddData.AwayOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
+      },
+    ];
+  } else if (PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) !== -1) {
+    // 單雙
+    return [
+      {
+        showMethod: '單',
+        showOdd: oddData.OverOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
+      },
+      {
+        showMethod: '雙',
+        showOdd: oddData.UnderOdds,
+        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
+      },
+    ];
+  } else {
+    return [];
+  }
+}
 
 // 將oddData轉成用來顯示的資料
 export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = null) {
