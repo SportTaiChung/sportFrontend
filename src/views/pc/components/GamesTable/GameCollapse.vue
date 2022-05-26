@@ -142,13 +142,12 @@
                   </template>
                 </div>
               </td>
-              <td v-if="selectWagerTypeKey === 1 && rowIndex === 0" class="GameTableHeaderMoreTD">
-                <div class="moreGame" @click="moreGameClickHandler(teamData)">
+              <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
+                <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
                   更多
                   {{ teamData.MoreCount }}
                 </div>
               </td>
-              <td v-else class="GameTableHeaderMoreTD"> </td>
             </tr>
           </template>
         </template>
@@ -225,7 +224,8 @@
         }
       },
       moreGameClickHandler(TeamData) {
-        this.$store.commit('MoreGame/openMoreGameList', {
+        this.$store.dispatch('MoreGame/openMoreGameList', {
+          GameType: this.$store.state.Game.selectGameType,
           CatID: this.source.CatID,
           CatNameStr: this.source.CatNameStr,
           LeagueID: this.source.LeagueID,

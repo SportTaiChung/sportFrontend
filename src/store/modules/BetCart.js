@@ -140,7 +140,6 @@ export default {
       const list = [];
       let errorMessage = null;
       store.state.betCartList.every((cartData) => {
-        console.log(cartData);
         const CatId = cartData.CatID;
         const GameID = cartData.GameID;
         const WagerTypeID = cartData.WagerTypeID;
@@ -151,6 +150,10 @@ export default {
         const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
         const OddValue = cartData.playData[oddKey];
         const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
+        if (cartData.BetMax === null && cartData.BetMin === null) {
+          errorMessage = '尚未收到注格資訊,請稍後再試';
+          return false;
+        }
         if (cartData.Status !== 1) {
           errorMessage = '請先移除過期賽事';
           return false;

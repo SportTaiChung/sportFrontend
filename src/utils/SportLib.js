@@ -215,7 +215,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
         awayShow = '+' + showHdp;
       }
     }
-    if (parseFloat(showHdp) === 0) {
+    if (Number(showHdp) === 0) {
       homeShow = showHdp;
       awayShow = showHdp;
     }
@@ -283,7 +283,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
           clickPlayIndex: 0,
         },
       ];
-      if (parseFloat(oddData.DrewOdds) !== 0) {
+      if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
           showMethod: '和',
           showOdd: oddData.DrewOdds,
@@ -307,7 +307,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
           clickPlayIndex: 1,
         },
       ];
-      if (parseFloat(oddData.DrewOdds) !== 0) {
+      if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
           showMethod: '和',
           showOdd: oddData.DrewOdds,

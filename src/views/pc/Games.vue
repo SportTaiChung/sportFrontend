@@ -20,7 +20,7 @@
   import GamesSetup from './components/GamesSetup.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
-  import MoreGame from './components/GamesTable/MoreGame.vue';
+  import MoreGame from '../../components/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   export default {
     name: 'PCGames',
