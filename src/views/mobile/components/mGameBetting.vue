@@ -48,14 +48,14 @@
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
                         @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
-                        <Odd :OddValue="sportData.topPlayOdd" />
+                        <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
                       </li>
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
                         @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
-                        <Odd :OddValue="sportData.bottomPlayOdd" />
+                        <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
                       </li>
                     </template>
                     <!-- 其他正常Layout -->
@@ -66,7 +66,9 @@
                         @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
                         <div class="cell-left"> {{ sportData.topPlayMethod }} </div>
-                        <div class="cell-right"> <Odd :OddValue="sportData.topPlayOdd" /> </div>
+                        <div class="cell-right">
+                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
+                        </div>
                       </li>
                       <li
                         class="wager-cell"
@@ -74,7 +76,9 @@
                         @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
                         <div class="cell-left"> {{ sportData.bottomPlayMethod }} </div>
-                        <div class="cell-right"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
+                        <div class="cell-right">
+                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`"
+                        /></div>
                       </li>
                     </template>
 
@@ -94,7 +98,7 @@
                           :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
-                          <Odd :OddValue="wagerData.Odds[0].DrewOdds" />
+                          <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
                         </li>
                       </template>
                     </template>

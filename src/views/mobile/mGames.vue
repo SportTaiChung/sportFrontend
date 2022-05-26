@@ -58,7 +58,7 @@
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
-      <mMorePanel v-if="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
+      <mMorePanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
     </div>
   </div>
 </template>
