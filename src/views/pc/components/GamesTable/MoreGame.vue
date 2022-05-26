@@ -54,9 +54,9 @@
                       menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                       oddData
                     )"
-                    :class="betBlockSelectCSS(betIndex, oddData)"
+                    :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
                     :key="menuKey + wagerIndex + betIndex"
-                    @click="goBet(betIndex, betData, oddData, menuData)"
+                    @click="goBet(betData.clickPlayIndex, betData, oddData)"
                   >
                     <div class="betBlockTop">
                       {{ betData.showMethod }}
@@ -180,7 +180,13 @@
               true
             );
             dealWagerHead[headGrpIndex].WagerTypeIDs[wagerTypeLabel].OddList.push(
-              ...wagerData.Odds
+              ...wagerData.Odds.filter((it) => {
+                return it.Status === 1;
+              }).map((it) => {
+                it.WagerGrpID = wagerData.WagerGrpID;
+                it.WagerTypeID = wagerData.WagerTypeID;
+                return it;
+              })
             );
           } else {
             if (!wagerData?.isNoData) {
@@ -215,7 +221,6 @@
     methods: {
       betBlockSelectCSS(clickPlayIndex, { GameID }) {
         const compareData = this.betCartList.find((cartData) => {
-          console.log('compareData:', cartData.GameID, GameID);
           return cartData.GameID === GameID;
         });
 
@@ -239,31 +244,30 @@
         }
         console.log('playData:', playData);
       },
-      goBet(clickPlayIndex, betData, oddData, wagerData) {
-        // const selectGameTypeID = this.$store.state.Game.selectGameType;
-        // const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
-        //   (it) => it.key === selectGameTypeID
-        // )?.value;
-        // console.log('wagerData:', wagerData);
-        // debugger;
-        // const betInfoData = {
-        //   OriginShowOdd: parseFloat(betData),
-        //   clickPlayIndex,
-        //   GameTypeID: selectGameTypeID,
-        //   GameTypeLabel: GameTypeLabel,
-        //   GameID: oddData.GameID,
-        //   CatID: this.CatID,
-        //   LeagueNameStr: this.moreGameData.LeagueNameStr,
-        //   HomeTeamStr: this.getTeamData.home,
-        //   AwayTeamStr: this.getTeamData.away,
-        //   WagerTypeID: wagerData.WagerTypeID,
-        //   WagerGrpID: wagerData.WagerGrpID,
-        //   EvtID: this.TeamData.EvtID,
-        //   EvtStatus: this.TeamData.EvtStatus,
-        //   ...oddData,
-        // };
-        // console.log('betInfoData:', betInfoData);
-        // this.$store.dispatch('BetCart/addToCart', betInfoData);
+      goBet(clickPlayIndex, betData, oddData) {
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(betData.showOdd),
+          clickPlayIndex,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: oddData.GameID,
+          CatID: this.CatID,
+          LeagueNameStr: this.moreGameData.LeagueNameStr,
+          HomeTeamStr: this.getTeamData.home,
+          AwayTeamStr: this.getTeamData.away,
+          WagerTypeID: oddData.WagerTypeID,
+          WagerGrpID: oddData.WagerGrpID,
+          EvtID: this.TeamData.EvtID,
+          EvtStatus: this.TeamData.EvtStatus,
+          ...oddData,
+        };
+        console.log('betInfoData:', betInfoData);
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
     },
   };

@@ -74,7 +74,7 @@
                 />
               </div>
             </div>
-            <div class="cardContentBlockRow limitText"> 本場上限 尚未接 </div>
+            <div class="cardContentBlockRow limitText"> 本場上限 : {{ cart.BetMax }} </div>
           </div>
 
           <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
