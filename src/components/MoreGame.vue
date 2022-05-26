@@ -62,7 +62,10 @@
                       {{ betData.showMethod }}
                     </div>
                     <div class="betBlockBottom">
-                      {{ betData.showOdd }}
+                      <Odd
+                        :OddValue="betData.showOdd"
+                        :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
+                      />
                     </div>
                   </div>
                 </div>
@@ -77,16 +80,16 @@
 </template>
 
 <script>
+  import Odd from '@/components/Odd';
   export default {
     name: 'MoreGame',
+    components: {
+      Odd,
+    },
     data() {
       return {
         isCollapse: false,
       };
-    },
-    created() {
-      // console.log(this.moreGameData);
-      // console.log(this.mergeMenuHeadData);
     },
     computed: {
       moreGameData() {
@@ -123,8 +126,8 @@
           return 'el-icon-arrow-up';
         }
       },
-      mergeMenuHeadData() {
-        const dealGrpHead = this.MenuHead.reduce((sum, it, index) => {
+      dealGrpHead() {
+        return this.MenuHead.reduce((sum, it, index) => {
           if (sum[it.WagerGrpName] === undefined) {
             sum[it.WagerGrpName] = {
               WagerGrpName: it.WagerGrpName,
@@ -137,11 +140,12 @@
           }
           return sum;
         }, {});
-
-        const dealWagerHead = Object.keys(dealGrpHead)
+      },
+      mergeMenuHeadData() {
+        const dealWagerHead = Object.keys(this.dealGrpHead)
           .map((key) => {
             return {
-              ...dealGrpHead[key],
+              ...this.dealGrpHead[key],
             };
           })
           .map((wagerGrpData) => {
@@ -210,7 +214,7 @@
           }
           return sum;
         }, []);
-        console.log('dealWagerHead:', dealWagerHead, finallyData);
+        console.log('dealWagerHead:', finallyData);
 
         return finallyData;
       },

@@ -134,8 +134,8 @@
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
                           <div class="WagerCenterItem">
-                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`"
-                          /></div>
+                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
+                          </div>
                         </div>
                       </template>
                     </template>
