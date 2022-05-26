@@ -148,6 +148,7 @@
         this.menuActiveString = '0-0';
         this.callGetGameDetail(catid, null);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
+        this.$store.commit('MoreGame/closeMoreGameList');
       },
       callGetGameDetail(CatID, WagerTypeKey = null) {
         this.$store.commit('SetLoading', true);
@@ -193,6 +194,7 @@
           clickWagerTypeKey = WagerTypeKey;
         }
 
+        this.$store.commit('MoreGame/closeMoreGameList');
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, clickWagerTypeKey);
       },

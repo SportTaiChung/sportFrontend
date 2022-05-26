@@ -428,6 +428,7 @@
           align-items: center;
           justify-content: center;
           flex-grow: 1;
+          white-space: nowrap;
           .borderWhiteBlock {
             background-color: rgba(255, 255, 255, 0.25);
             height: 15px;
