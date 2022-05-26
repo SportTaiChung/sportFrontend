@@ -32,29 +32,31 @@
               {{ menuData.WagerGrpName }}
             </div>
           </div>
-          <template v-for="(wagerData, wagerKey) in Object.keys(menuData.WagerTypeIDs)">
+          <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
             <div
-              v-if="menuData.WagerTypeIDs[wagerData].OddList.length !== 0"
+              v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
               class="MoreGameListInRow"
-              :key="menuKey + wagerKey"
+              :key="menuKey + wagerIndex"
             >
               <div class="wagerLabelBlock">
-                {{ wagerData }}
+                {{ wagerTypeKey }}
               </div>
               <div class="wagerPlayList">
                 <div
                   class="wagerPlayRow"
-                  v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerData].OddList"
-                  :key="menuKey + wagerKey + oddKey"
+                  v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerTypeKey].OddList"
+                  :key="menuKey + wagerIndex + oddKey"
                 >
                   <div
                     class="betBlock"
-                    v-for="(betData, betKey) in $SportLib.oddDataToMorePlayData(
+                    v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
                       CatID,
-                      menuData.WagerTypeIDs[wagerData].WagerTypeIds[0],
+                      menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                       oddData
                     )"
-                    :key="menuKey + wagerKey + betKey"
+                    :class="betBlockSelectCSS(betIndex, oddData)"
+                    :key="menuKey + wagerIndex + betIndex"
+                    @click="goBet(betIndex, betData, oddData, menuData)"
                   >
                     <div class="betBlockTop">
                       {{ betData.showMethod }}
@@ -206,8 +208,23 @@
 
         return finallyData;
       },
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
+      },
     },
     methods: {
+      betBlockSelectCSS(clickPlayIndex, { GameID }) {
+        const compareData = this.betCartList.find((cartData) => {
+          console.log('compareData:', cartData.GameID, GameID);
+          return cartData.GameID === GameID;
+        });
+
+        if (compareData && compareData.clickPlayIndex === clickPlayIndex) {
+          return 'betBlockSelect';
+        } else {
+          return '';
+        }
+      },
       wagerToPlayData(wagerData = null, oddData = null) {
         console.log(wagerData, oddData);
         const playData = this.$SportLib.oddDataToPlayData(
@@ -221,6 +238,32 @@
           console.error('More Game 無法解析', wagerData, oddData);
         }
         console.log('playData:', playData);
+      },
+      goBet(clickPlayIndex, betData, oddData, wagerData) {
+        // const selectGameTypeID = this.$store.state.Game.selectGameType;
+        // const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+        //   (it) => it.key === selectGameTypeID
+        // )?.value;
+        // console.log('wagerData:', wagerData);
+        // debugger;
+        // const betInfoData = {
+        //   OriginShowOdd: parseFloat(betData),
+        //   clickPlayIndex,
+        //   GameTypeID: selectGameTypeID,
+        //   GameTypeLabel: GameTypeLabel,
+        //   GameID: oddData.GameID,
+        //   CatID: this.CatID,
+        //   LeagueNameStr: this.moreGameData.LeagueNameStr,
+        //   HomeTeamStr: this.getTeamData.home,
+        //   AwayTeamStr: this.getTeamData.away,
+        //   WagerTypeID: wagerData.WagerTypeID,
+        //   WagerGrpID: wagerData.WagerGrpID,
+        //   EvtID: this.TeamData.EvtID,
+        //   EvtStatus: this.TeamData.EvtStatus,
+        //   ...oddData,
+        // };
+        // console.log('betInfoData:', betInfoData);
+        // this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
     },
   };
@@ -333,6 +376,9 @@
                   display: flex;
                   flex-wrap: wrap;
                   justify-content: center;
+                  &:hover {
+                    background-color: #ffe1ae;
+                  }
                   .betBlockTop {
                     width: 100%;
                     height: 25px;
@@ -352,6 +398,9 @@
                     border-left: 1px solid #eeeeee;
                     cursor: pointer;
                   }
+                }
+                .betBlockSelect {
+                  background-color: #ffd5d5;
                 }
               }
             }
