@@ -134,21 +134,20 @@
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
                           <div class="WagerCenterItem">
-                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`"
-                          /></div>
+                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
+                          </div>
                         </div>
                       </template>
                     </template>
                   </template>
                 </div>
               </td>
-              <td v-if="selectWagerTypeKey === 1 && rowIndex === 0" class="GameTableHeaderMoreTD">
-                <div class="moreGame" @click="moreGameClickHandler(teamData)">
+              <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
+                <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
                   更多
                   {{ teamData.MoreCount }}
                 </div>
               </td>
-              <td v-else class="GameTableHeaderMoreTD"> </td>
             </tr>
           </template>
         </template>
@@ -225,7 +224,8 @@
         }
       },
       moreGameClickHandler(TeamData) {
-        this.$store.commit('MoreGame/openMoreGameList', {
+        this.$store.dispatch('MoreGame/openMoreGameList', {
+          GameType: this.$store.state.Game.selectGameType,
           CatID: this.source.CatID,
           CatNameStr: this.source.CatNameStr,
           LeagueID: this.source.LeagueID,
@@ -428,6 +428,7 @@
           align-items: center;
           justify-content: center;
           flex-grow: 1;
+          white-space: nowrap;
           .borderWhiteBlock {
             background-color: rgba(255, 255, 255, 0.25);
             height: 15px;

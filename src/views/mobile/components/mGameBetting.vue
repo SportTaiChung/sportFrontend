@@ -1,9 +1,10 @@
 <template>
   <div ref="root" class="mGameBetting" :style="maxHeight" :class="isExpanded ? '' : 'closed'">
-    <table>
+    <table :class="hasMoreGameStyle">
       <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
           <th v-for="(it, i) in showTableHeaderList" :key="i"> {{ it.showName }}</th>
+          <th v-if="hasMoreGame" class="moreGame-holder"></th>
         </tr>
       </thead>
 
@@ -48,14 +49,14 @@
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
                         @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
-                        <Odd :OddValue="sportData.topPlayOdd" />
+                        <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
                       </li>
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
                         @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
-                        <Odd :OddValue="sportData.bottomPlayOdd" />
+                        <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
                       </li>
                     </template>
                     <!-- 其他正常Layout -->
@@ -66,7 +67,9 @@
                         @click="goBet(0, teamData, wagerData, rowIndex)"
                       >
                         <div class="cell-left"> {{ sportData.topPlayMethod }} </div>
-                        <div class="cell-right"> <Odd :OddValue="sportData.topPlayOdd" /> </div>
+                        <div class="cell-right">
+                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
+                        </div>
                       </li>
                       <li
                         class="wager-cell"
@@ -74,7 +77,9 @@
                         @click="goBet(1, teamData, wagerData, rowIndex)"
                       >
                         <div class="cell-left"> {{ sportData.bottomPlayMethod }} </div>
-                        <div class="cell-right"> <Odd :OddValue="sportData.bottomPlayOdd" /></div>
+                        <div class="cell-right">
+                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`"
+                        /></div>
                       </li>
                     </template>
 
@@ -94,12 +99,19 @@
                           :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
                           @click="goBet(2, teamData, wagerData, rowIndex)"
                         >
-                          <Odd :OddValue="wagerData.Odds[0].DrewOdds" />
+                          <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
                         </li>
                       </template>
                     </template>
                   </template>
                 </ul>
+              </td>
+              <td
+                v-if="hasMoreGame && rowIndex === 0"
+                class="moreGame-holder"
+                @click="moreGameClickHandler(teamData)"
+              >
+                {{ teamData.MoreCount }}+
               </td>
             </tr>
           </template>
@@ -110,9 +122,11 @@
 </template>
 
 <script>
+  import mixin from './GamesTableMixin';
   import Odd from '@/components/Odd';
 
   export default {
+    mixins: [mixin],
     name: 'mGameBetting',
     components: {
       Odd,
@@ -153,6 +167,12 @@
         return {
           height: thead.offsetHeight + tbody.offsetHeight + 'px',
         };
+      },
+      hasMoreGame() {
+        return this.selectWagerTypeKey === 1;
+      },
+      hasMoreGameStyle() {
+        return this.hasMoreGame ? 'hasMoreGame' : '';
       },
     },
     mounted() {
@@ -253,6 +273,17 @@
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
+      moreGameClickHandler(TeamData) {
+        this.$store.dispatch('MoreGame/openMoreGameList', {
+          GameType: this.$store.state.Game.selectGameType,
+          CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
+          LeagueID: this.source.LeagueID,
+          LeagueNameStr: this.source.LeagueNameStr,
+          TeamData,
+          MenuHead: this.$store.state.Game.GameList.BestHead,
+        });
+      },
     },
   };
 </script>
@@ -349,6 +380,19 @@
               font-weight: bold;
             }
           }
+        }
+      }
+
+      .moreGame-holder {
+        width: 35px !important;
+        min-width: 35px;
+        max-width: 1rem !important;
+        padding: 0 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid #e8e8e8;
+
+        &:active {
+          background-color: #ddd;
         }
       }
     }

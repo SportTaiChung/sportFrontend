@@ -1,62 +1,69 @@
 <template>
-  <div ref="root" class="mGameInfo" :style="maxHeight" :class="isExpanded ? '' : 'closed'">
-    <table>
-      <thead ref="thead" @click="$emit('toggleCollapse')">
-        <tr>
-          <th>
-            <span class="title">{{ source.LeagueNameStr }}</span>
-            <img
-              src="@/assets/img/mobile/btn_arrow_w.svg"
-              class="arrow"
-              :class="isExpanded ? 'isExpanded' : ''"
-            />
-          </th>
-        </tr>
-      </thead>
+  <div class="mGameInfo">
+    <div
+      ref="collapseContainer"
+      class="collapse-container"
+      :class="isExpanded ? 'on' : ''"
+      :style="maxHeight"
+    >
+      <table>
+        <thead ref="thead" @click="$emit('toggleCollapse')">
+          <tr>
+            <th>
+              <span class="title">{{ source.LeagueNameStr }}</span>
+              <img
+                src="@/assets/img/mobile/btn_arrow_w.svg"
+                class="arrow"
+                :class="isExpanded ? 'isExpanded' : ''"
+              />
+            </th>
+          </tr>
+        </thead>
 
-      <tbody ref="tbody">
-        <template v-for="(teamData, teamIndex) in source.Team">
-          <template v-if="teamData.EvtStatus === 1">
-            <tr
-              v-for="(teamDataRowNum, rowIndex) in teamData.Row"
-              :key="`${teamIndex}-${rowIndex}`"
-              :set="(hasTie = teamData.hasDrewOdds && rowIndex === 0)"
-            >
-              <!-- 賽事 -->
-              <td class="round-block" :class="hasTie ? 'height-big' : 'height-normal'">
-                <div class="team-block">
-                  <!-- 判斷主客場對調 -->
-                  <template v-if="$SportLib.isHomeAwayReverse(source.CatID)">
-                    <div>
-                      <div class="team">{{ teamData.AwayTeamStr }}</div>
+        <tbody ref="collapseTarget" class="collapse-target">
+          <template v-for="(teamData, teamIndex) in source.Team">
+            <template v-if="teamData.EvtStatus === 1">
+              <tr
+                v-for="(teamDataRowNum, rowIndex) in teamData.Row"
+                :key="`${teamIndex}-${rowIndex}`"
+                :set="(hasTie = teamData.hasDrewOdds && rowIndex === 0)"
+              >
+                <!-- 賽事 -->
+                <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
+                  <div class="team-block">
+                    <!-- 判斷主客場對調 -->
+                    <template v-if="$SportLib.isHomeAwayReverse(source.CatID)">
+                      <div>
+                        <div class="team">{{ teamData.AwayTeamStr }}</div>
+                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                      </div>
+                    </template>
+                    <template v-else>
                       <div class="team">{{ teamData.HomeTeamStr }}</div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="team">{{ teamData.HomeTeamStr }}</div>
-                    <div class="team">{{ teamData.AwayTeamStr }}</div>
-                  </template>
+                      <div class="team">{{ teamData.AwayTeamStr }}</div>
+                    </template>
 
-                  <!-- 是否顯示和局 -->
-                  <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
-                </div>
+                    <!-- 是否顯示和局 -->
+                    <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
+                  </div>
 
-                <!-- 時間 -->
-                <div class="time" v-if="rowIndex === 0">
-                  {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                  {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                </div>
+                  <!-- 時間 -->
+                  <div class="time" v-if="rowIndex === 0">
+                    {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                    {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                  </div>
 
-                <!-- 收藏 -->
-                <div class="rightFavoriteBlock">
-                  <div class="star"></div>
-                </div>
-              </td>
-            </tr>
+                  <!-- 收藏 -->
+                  <div class="rightFavoriteBlock">
+                    <div class="star"></div>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </template>
-        </template>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -88,35 +95,50 @@
         isMounted: false,
       };
     },
+    methods: {
+      getCurrentHeight() {
+        const { thead, collapseTarget } = this.$refs;
+        return thead.offsetHeight + collapseTarget.offsetHeight;
+      },
+    },
     computed: {
       maxHeight() {
         if (!this.isMounted) return;
         if (!this.isExpanded) return;
-        const { thead, tbody } = this.$refs;
         return {
-          height: thead.offsetHeight + tbody.offsetHeight + 'px',
+          height: this.getCurrentHeight() + 'px',
         };
+      },
+
+      hasMoreGame() {
+        return this.selectWagerTypeKey === 1;
       },
     },
     mounted() {
       this.isMounted = true;
-      this.$refs.root.addEventListener(
-        'transitionend',
-        (e) => {
-          if (!this.isExpanded && e.propertyName === 'height') {
-            this.$refs.tbody.style.display = 'none';
+      this.$refs.collapseContainer.addEventListener('transitionstart', (e) => {
+        if (e.propertyName === 'height') {
+          // console.log('start');
+        }
+      });
+      this.$refs.collapseContainer.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'height') {
+          // console.log('end');
+          if (!this.isExpanded) {
+            this.$refs.collapseTarget.style.display = 'none';
+          } else {
+            // this.$refs.collapseContainer.style.height = 'auto';
           }
-        },
-        { once: true }
-      );
+        }
+      });
       if (!this.isExpanded) {
-        this.$refs.tbody.style.display = 'none';
+        this.$refs.collapseTarget.style.display = 'none';
       }
     },
     watch: {
       isExpanded(isExpanded) {
         if (isExpanded) {
-          this.$refs.tbody.style.display = '';
+          this.$refs.collapseTarget.style.display = '';
         }
       },
     },
@@ -129,13 +151,15 @@
 
   .mGameInfo {
     position: relative;
-    overflow: hidden;
-    width: fit-content;
-    min-width: 100%;
-    transition: height 300ms ease-out;
+    z-index: 1;
 
-    &.closed {
-      height: $row-height !important;
+    .collapse-container {
+      position: relative;
+      overflow: hidden;
+      width: fit-content;
+      min-width: 100%;
+      transition: height 300ms ease-out;
+      height: $row-height;
       &::after {
         content: '';
         display: block;
@@ -147,9 +171,19 @@
         background-color: #ccc;
       }
 
-      tbody {
+      .collapse-target {
         transition: 350ms ease;
         opacity: 0;
+      }
+
+      &.on {
+        &::after {
+          content: '';
+          display: none;
+        }
+        .collapse-target {
+          opacity: 1;
+        }
       }
     }
 
@@ -213,11 +247,11 @@
         padding-left: 0.8rem;
         height: $row-height * 2;
 
-        &.height-normal {
+        &.height-lv1 {
           height: $row-height * 2;
         }
 
-        &.height-big {
+        &.height-lv2 {
           height: $row-height * 3;
         }
 

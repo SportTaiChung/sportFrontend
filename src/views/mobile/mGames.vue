@@ -42,7 +42,9 @@
       ></MobileFooter>
     </div>
 
-    <div class="float-layout">
+    <div class="fixed-container">
+      <MoreGame v-if="isShowMoreGame"></MoreGame>
+
       <mGamesBetInfoAll
         v-show="isShowBetInfo"
         @onCloseBetInfo="isShowBetInfo = false"
@@ -58,7 +60,7 @@
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
-      <mMorePanel v-if="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
+      <mMorePanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
     </div>
   </div>
 </template>
@@ -72,6 +74,7 @@
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
   import mMorePanel from './components/mMorePanel';
+  import MoreGame from '../../components/MoreGame.vue';
 
   export default {
     name: 'MobileGames',
@@ -84,6 +87,7 @@
       mBetRecordView,
       mWagerTypePopup,
       mMorePanel,
+      MoreGame,
     },
     data() {
       return {
@@ -100,6 +104,9 @@
       },
       gameStore() {
         return this.$store.state.Game;
+      },
+      isShowMoreGame() {
+        return this.$store.state.MoreGame.isShowMoreGame;
       },
     },
     methods: {
@@ -157,13 +164,13 @@
     height: 100vh;
 
     .main-layout {
-      position: fixed;
+      position: absolute;
       left: 0;
       top: 0;
       display: flex;
       flex-direction: column;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
 
       .gameTableContainer {
         overflow: auto;
@@ -192,7 +199,20 @@
         border-bottom: 2px solid #d0d0d0;
       }
     }
-    .float-layout {
+    .fixed-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+
+      & > div {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+      }
     }
   }
 </style>
