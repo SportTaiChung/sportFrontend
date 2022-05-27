@@ -10,6 +10,7 @@ export default {
     // TeamData
     // MenuHead
     moreGameData: {},
+    collapseGrpIDs: [],
   },
   mutations: {
     setIsShowMoreGame(state, val) {
@@ -25,6 +26,7 @@ export default {
   },
   actions: {
     openMoreGameList(store, collapseData) {
+      store.state.collapseGrpIDs.length = 0;
       store.commit('setIsShowMoreGame', true);
       store.commit('setMoreGameData', collapseData);
       store.dispatch('GetMoreGameDetail', collapseData);
@@ -68,7 +70,6 @@ export default {
           GameType: store.state.moreGameData.GameType,
           moreModel: true,
         }).then((res) => {
-          console.log(res.data);
           if (Object.keys(store.state.moreGameData).length !== 0 && res.data.length !== 0) {
             res.data.forEach((newOddData) => {
               const newGameID = newOddData.GameID;

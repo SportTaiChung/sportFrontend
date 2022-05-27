@@ -1,7 +1,10 @@
 <template>
   <div class="setUp">
     <div class="setUp_L">
-      <span class="setUp_color">02-20 18:45:00</span>
+      <span class="timeBlockContainer">
+        <div class="dayBlock">{{ TimeCountDown.day }}</div>
+        <div class="timeBlock">{{ TimeCountDown.time }}</div>
+      </span>
       <div>
         <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" />
         <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" />
@@ -53,11 +56,38 @@
           { value: '0', label: '時間排序' },
           { value: '1', label: '熱門排序' },
         ],
+        currentTime: null,
+        countInterval: null,
       };
     },
-    components: {},
-    mounted() {},
+    computed: {
+      TimeCountDown() {
+        return this.$lib.timeFormatWithOutYY(this.currentTime);
+      },
+    },
+    mounted() {
+      this.countInterval = setInterval(() => {
+        if (this.currentTime !== null) {
+          this.currentTime += 1000;
+        }
+      }, 1000);
+      this.initTimeAPI();
+      document.addEventListener('visibilitychange', this.visibilitychangeEvent);
+    },
+    beforeDestroy() {
+      document.removeEventListener(this.visibilitychangeEvent);
+    },
     methods: {
+      visibilitychangeEvent() {
+        if (document.visibilityState === 'visible') {
+          this.initTimeAPI();
+        }
+      },
+      initTimeAPI() {
+        this.$store.dispatch('getSystemTime').then((res) => {
+          this.currentTime = new Date(res.data.replace(/-/g, '/')).getTime();
+        });
+      },
       changeTheme(value) {
         this.$store.commit('SetThemeInfo', value);
       },
@@ -107,6 +137,17 @@
           width: 25px;
           margin: 1px 5px;
           cursor: pointer;
+        }
+      }
+      .timeBlockContainer {
+        display: flex;
+        align-items: center;
+        width: 120px;
+        color: #81f0ca;
+        white-space: nowrap;
+        margin-left: 20px;
+        .dayBlock {
+          margin-right: 10px;
         }
       }
     }

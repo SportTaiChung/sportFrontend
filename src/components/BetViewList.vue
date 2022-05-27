@@ -128,16 +128,9 @@
               </div>
             </div>
             <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">StatusType: {{ historyItem.StatusType }}</div>
-            </div>
-            <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">RetAmt: {{ historyItem.RetAmt }}</div>
-            </div>
-
-            <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">
-                WinLoseStatus: {{ historyItem.WinLoseStatus }}
-              </div>
+              <div class="cardContentBlockRowText StatusTypeContent">
+                {{ historyItem.StatusTypeContent }}</div
+              >
             </div>
           </div>
         </template>
@@ -600,6 +593,10 @@
           .cardContentBlockRowText {
             margin-right: 5px;
             text-align: left;
+          }
+          .StatusTypeContent {
+            margin-left: 15px;
+            color: #148800;
           }
           .HomeTeamSign {
             color: #ff8800;

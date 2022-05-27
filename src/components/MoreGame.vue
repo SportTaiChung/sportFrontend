@@ -19,60 +19,67 @@
         <div class="filterTab"> 全部 </div>
       </div>
       <div class="MoreGameList">
-        <div
-          class="MoreGameListOutRow"
-          v-for="(menuData, menuKey) in mergeMenuHeadData"
-          :key="menuKey"
-        >
-          <div class="MoreGameListRowTitle">
-            <div class="leftArrowBlock">
-              <i :class="arrowIconJudge" />
-            </div>
-            <div class="MoreGameListRowTitleText">
-              {{ menuData.WagerGrpName }}
-            </div>
-          </div>
-          <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
-            <div
-              v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
-              class="MoreGameListInRow"
-              :key="menuKey + wagerIndex"
-            >
-              <div class="wagerLabelBlock">
-                {{ wagerTypeKey }}
+        <template v-for="(menuData, menuKey) in mergeMenuHeadData">
+          <div class="MoreGameListOutRow" :key="menuKey">
+            <div class="MoreGameListRowTitle" @click="titleClickHandler(menuData.WagerGrpID)">
+              <div class="leftArrowBlock">
+                <i
+                  :class="
+                    titleArrowIconJudge(
+                      $store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1
+                    )
+                  "
+                />
               </div>
-              <div class="wagerPlayList">
-                <div
-                  class="wagerPlayRow"
-                  v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerTypeKey].OddList"
-                  :key="menuKey + wagerIndex + oddKey"
-                >
+              <div class="MoreGameListRowTitleText">
+                {{ menuData.WagerGrpName }}
+              </div>
+            </div>
+            <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
+              <!-- vIF   隱藏空Odd
+                   vShow collapse隱藏 -->
+              <div
+                v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
+                v-show="$store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1"
+                class="MoreGameListInRow"
+                :key="menuKey + wagerIndex"
+              >
+                <div class="wagerLabelBlock">
+                  {{ wagerTypeKey }}
+                </div>
+                <div class="wagerPlayList">
                   <div
-                    class="betBlock"
-                    v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                      CatID,
-                      menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
-                      oddData
-                    )"
-                    :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
-                    :key="menuKey + wagerIndex + betIndex"
-                    @click="goBet(betData.clickPlayIndex, betData, oddData)"
+                    class="wagerPlayRow"
+                    v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerTypeKey].OddList"
+                    :key="menuKey + wagerIndex + oddKey"
                   >
-                    <div class="betBlockTop">
-                      {{ betData.showMethod }}
-                    </div>
-                    <div class="betBlockBottom">
-                      <Odd
-                        :OddValue="betData.showOdd"
-                        :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
-                      />
+                    <div
+                      class="betBlock"
+                      v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
+                        CatID,
+                        menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
+                        oddData
+                      )"
+                      :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
+                      :key="menuKey + wagerIndex + betIndex"
+                      @click="goBet(betData.clickPlayIndex, betData, oddData)"
+                    >
+                      <div class="betBlockTop">
+                        {{ betData.showMethod }}
+                      </div>
+                      <div class="betBlockBottom">
+                        <Odd
+                          :OddValue="betData.showOdd"
+                          :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </div>
+            </template>
+          </div>
+        </template>
       </div>
     </div>
     <div class="GameChatBlock"> </div>
@@ -223,6 +230,21 @@
       },
     },
     methods: {
+      titleArrowIconJudge(isCollapse) {
+        if (!isCollapse) {
+          return 'el-icon-arrow-down';
+        } else {
+          return 'el-icon-arrow-up';
+        }
+      },
+      titleClickHandler(WagerGrpID) {
+        const collapseIndex = this.$store.state.MoreGame.collapseGrpIDs.indexOf(WagerGrpID);
+        if (collapseIndex > -1) {
+          this.$store.state.MoreGame.collapseGrpIDs.splice(collapseIndex, 1);
+        } else {
+          this.$store.state.MoreGame.collapseGrpIDs.push(WagerGrpID);
+        }
+      },
       betBlockSelectCSS(clickPlayIndex, { GameID }) {
         const compareData = this.betCartList.find((cartData) => {
           return cartData.GameID === GameID;
@@ -352,7 +374,7 @@
             color: #000;
             height: 35px;
             cursor: pointer;
-            border-top: 1px solid #d6d6d6;
+            border-bottom: 1px solid #d6d6d6;
             display: flex;
             align-items: center;
           }

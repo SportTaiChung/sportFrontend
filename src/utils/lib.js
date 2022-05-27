@@ -74,6 +74,40 @@ export function timeFormat(time) {
   );
 }
 
+// MM-dd HH:mm:ss
+export function timeFormatWithOutYY(time) {
+  const date = new Date(time);
+  const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
+  const D = date.getDate().toString().padStart(2, '0');
+  const h = date.getHours() + ':';
+  const m = date.getMinutes() + ':';
+  const s = date.getSeconds();
+  const TimeZoneOffset = date.getTimezoneOffset();
+  let UTC = -(TimeZoneOffset / 60);
+  let UTCFloat = '';
+  if (TimeZoneOffset % 60 !== 0) {
+    UTCFloat = `.${-(TimeZoneOffset % 60)}`;
+  }
+  if (UTC > 0) {
+    UTC = ` (UTC+${parseInt(UTC)}${UTCFloat})`;
+  } else {
+    UTC = ` (UTC${parseInt(UTC)}${UTCFloat})`;
+  }
+  // return (
+  //   +' ' +
+  //   (h.toString().length === 2 ? '0' + h : h) +
+  //   (m.toString().length === 2 ? '0' + m : m) +
+  //   (s.toString().length === 1 ? '0' + s : s)
+  // );
+  return {
+    day: M + D,
+    time:
+      (h.toString().length === 2 ? '0' + h : h) +
+      (m.toString().length === 2 ? '0' + m : m) +
+      (s.toString().length === 1 ? '0' + s : s),
+  };
+}
+
 // MMDD
 export function timeFormatMMDD(time) {
   const date = new Date(time);
