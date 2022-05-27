@@ -1,5 +1,5 @@
 <template>
-  <div id="MoreGame">
+  <div id="MoreGame" :class="isMobileClass">
     <div class="MoreGameHeader">
       <div class="teamName">{{ getTeamData.home }}</div>
       <div class="teamVS">vs</div>
@@ -228,6 +228,12 @@
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
+      isMobileClass() {
+        if (process.env.VUE_APP_UI === 'mobile') {
+          return 'mobile';
+        }
+        return '';
+      },
     },
     methods: {
       titleArrowIconJudge(isCollapse) {
@@ -308,6 +314,11 @@
     $gameHeaderHeight: 35px;
     $gameInfoHeight: 185px;
     $gameChatHeight: 60px;
+
+    &.mobile {
+      width: 100%;
+      border: 0;
+    }
     .MoreGameHeader {
       background-color: #136146;
       border-bottom-color: #136146;

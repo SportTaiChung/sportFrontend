@@ -292,10 +292,6 @@
       min-height: 30px;
       color: #fff;
       padding: 3px 6px;
-      position: -webkit-sticky;
-      position: sticky;
-      top: 0;
-      z-index: 5;
       background-color: #7d9364;
 
       .playTypeBtn {
