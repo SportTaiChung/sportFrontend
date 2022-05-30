@@ -62,6 +62,13 @@ export default {
                 return teamData.Wager.every((wagerData) => {
                   return wagerData.Odds.every((oddData) => {
                     if (oddData.GameID === updateData.GameID) {
+                      if (updateData.EvtStatus === 0) {
+                        console.warn(
+                          'some data is disable!!',
+                          teamData.EvtStatus,
+                          updateData.EvtStatus
+                        );
+                      }
                       oddData.HdpPos = updateData.HdpPos;
                       oddData.HomeHdp = updateData.HomeHdp;
                       oddData.AwayHdp = updateData.AwayHdp;

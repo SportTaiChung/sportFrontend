@@ -5,7 +5,7 @@ import BetCart from './modules/BetCart';
 import Game from './modules/Game/Game';
 import MoreGame from './modules/Game/MoreGame';
 
-import { dataFresh, systemTime } from '@/api/Common';
+import { systemTime } from '@/api/Common';
 
 Vue.use(Vuex);
 
@@ -35,9 +35,6 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    getDataFresh() {
-      return dataFresh();
-    },
     getSystemTime() {
       return systemTime();
     },

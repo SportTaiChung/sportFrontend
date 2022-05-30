@@ -469,14 +469,16 @@ export function cartDataToDisplayData(cartData) {
     if (cartData.clickPlayIndex === 0) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
+      showCutLine = 'PK';
     } else if (cartData.clickPlayIndex === 1) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
+      showCutLine = 'PK';
     } else {
       showBetTitle = '和局';
       showOdd = playData.drewPlayOdd;
+      showCutLine = '';
     }
-    showCutLine = 'PK';
   } else if (playData.playMethodData.name === 'OddEven') {
     if (cartData.clickPlayIndex === 0) {
       showBetTitle = '單';

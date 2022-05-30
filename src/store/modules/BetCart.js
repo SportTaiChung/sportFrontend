@@ -226,6 +226,7 @@ export default {
             Notification.success({
               message: res.data[0].Message,
             });
+            store.dispatch('User/GetUserInfoCash', null, { root: true });
             store.commit('SetLoading', false, { root: true });
             resolve(res);
           } else {

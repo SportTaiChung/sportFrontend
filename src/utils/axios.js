@@ -15,12 +15,6 @@ const instance = axios.create({
 // 發送API前的劫持
 instance.interceptors.request.use(
   async (config, data) => {
-    // 根據API 參數有沒有 AddRVfToken,來決定是否要在header加上RVfToken
-    if (config.url !== '/datafresh/token' && config?.param?.AddRVfToken) {
-      await store.dispatch('getDataFresh').then((res) => {
-        config.headers.RVfToken = res.token;
-      });
-    }
     // 根據API 參數有沒有AddMemberToken,來決定是否要在header加上 SSSMBID 和 SSSToken
     if (config?.param?.AddMemberToken) {
       config.headers.SSSMBID = store.state.User.MBID;
