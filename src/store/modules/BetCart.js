@@ -185,7 +185,7 @@ export default {
               WagerString,
               Amount: strayBetAmount,
               AcceptBetter: false,
-              BetType: 1,
+              BetType: 99,
             };
             list.push(listItem);
           } else {
@@ -212,10 +212,14 @@ export default {
     playState(store, traceCodeKey) {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey).then((res) => {
-          if (res.data[0].code === 201) {
+          if (res.data.length === 0) {
             setTimeout(() => {
               return store.dispatch('playState', traceCodeKey);
-            }, 3000);
+            }, 1000);
+          } else if (res.data[0].code === 201) {
+            setTimeout(() => {
+              return store.dispatch('playState', traceCodeKey);
+            }, 1000);
             store.commit('SetLoading', true, { root: true });
           } else if (res.data[0].code === 200) {
             store.commit('clearCart');

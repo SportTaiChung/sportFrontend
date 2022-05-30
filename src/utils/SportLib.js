@@ -382,8 +382,8 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
     //  ps.大小,單雙 玩法不能對調
     if (
       isHomeAwayReverse(catID) &&
-      (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 ||
-        PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1)
+      PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 &&
+      PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1
     ) {
       [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
       [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
@@ -497,7 +497,7 @@ export function cartDataToDisplayData(cartData) {
   } else if (cartData.WagerGrpID === '11') {
     wagerGrpLabel = '- [上半]';
   }
-  const showGameTypeLabel = `${catIDLabel}${cartData.GameTypeLabel}${wagerGrpLabel}`;
+  const showGameTypeLabel = `${catIDLabel} - [${cartData.GameTypeLabel}] ${wagerGrpLabel}`;
 
   return {
     showBetTitle,
