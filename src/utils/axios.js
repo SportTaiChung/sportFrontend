@@ -35,7 +35,8 @@ instance.interceptors.response.use(
       if (goLoginPageErrorCode.includes(resCode)) {
         window.router.replace({ name: 'Login' });
       }
-      message.error(API_ERROR_CODE[resCode]);
+      message.error(res?.data?.message);
+      console.error(API_ERROR_CODE[resCode]);
       store.commit('SetLoading', false);
       return Promise.reject(res);
     } else {
