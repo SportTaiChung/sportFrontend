@@ -19,6 +19,7 @@ export function gameListFinalData(state) {
   } else {
     const BestHeadData = state.GameList.BestHead;
     return state.GameList.List.filter((it) => {
+      // 檢查 League 底下的 teamData.EvtStatus 是否為1
       const enableTeamList = it.Team.filter((teamData) => teamData.EvtStatus === 1);
       const isLeagueEnable = enableTeamList.length !== 0;
       return isLeagueEnable;

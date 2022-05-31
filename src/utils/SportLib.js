@@ -382,8 +382,8 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
     //  ps.大小,單雙 玩法不能對調
     if (
       isHomeAwayReverse(catID) &&
-      (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 ||
-        PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1)
+      PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 &&
+      PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1
     ) {
       [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
       [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
@@ -469,14 +469,16 @@ export function cartDataToDisplayData(cartData) {
     if (cartData.clickPlayIndex === 0) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
+      showCutLine = 'PK';
     } else if (cartData.clickPlayIndex === 1) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
+      showCutLine = 'PK';
     } else {
       showBetTitle = '和局';
       showOdd = playData.drewPlayOdd;
+      showCutLine = '';
     }
-    showCutLine = 'PK';
   } else if (playData.playMethodData.name === 'OddEven') {
     if (cartData.clickPlayIndex === 0) {
       showBetTitle = '單';
@@ -497,7 +499,7 @@ export function cartDataToDisplayData(cartData) {
   } else if (cartData.WagerGrpID === '11') {
     wagerGrpLabel = '- [上半]';
   }
-  const showGameTypeLabel = `${catIDLabel}${cartData.GameTypeLabel}${wagerGrpLabel}`;
+  const showGameTypeLabel = `${catIDLabel} - [${cartData.GameTypeLabel}] ${wagerGrpLabel}`;
 
   return {
     showBetTitle,

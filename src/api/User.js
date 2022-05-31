@@ -6,9 +6,7 @@ export function login(param) {
     url: `/mb/sin/login`,
     method: 'post',
     data: param,
-    param: {
-      AddRVfToken: true,
-    },
+    param: {},
   });
 }
 
@@ -18,7 +16,6 @@ export function getUserInfoAbout() {
     url: `/mb/info/about`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
   });
@@ -30,7 +27,6 @@ export function getUserInfoCash() {
     url: `/mb/info/cash`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
   });

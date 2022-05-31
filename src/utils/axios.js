@@ -15,12 +15,6 @@ const instance = axios.create({
 // 發送API前的劫持
 instance.interceptors.request.use(
   async (config, data) => {
-    // 根據API 參數有沒有 AddRVfToken,來決定是否要在header加上RVfToken
-    if (config.url !== '/datafresh/token' && config?.param?.AddRVfToken) {
-      await store.dispatch('getDataFresh').then((res) => {
-        config.headers.RVfToken = res.token;
-      });
-    }
     // 根據API 參數有沒有AddMemberToken,來決定是否要在header加上 SSSMBID 和 SSSToken
     if (config?.param?.AddMemberToken) {
       config.headers.SSSMBID = store.state.User.MBID;
@@ -41,7 +35,8 @@ instance.interceptors.response.use(
       if (goLoginPageErrorCode.includes(resCode)) {
         window.router.replace({ name: 'Login' });
       }
-      message.error(API_ERROR_CODE[resCode]);
+      message.error(res?.data?.message);
+      console.error(API_ERROR_CODE[resCode]);
       store.commit('SetLoading', false);
       return Promise.reject(res);
     } else {

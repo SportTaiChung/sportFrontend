@@ -135,3 +135,8 @@ export function trunc(num, decimal = 2) {
 export function truncFloor(num, decimal = 2) {
   return Math.floor(trunc(num, decimal));
 }
+
+// 處理浮點數運算 並且ceil 進位小數點
+export function truncCeil(num, decimal = 2) {
+  return Math.ceil(trunc(num, decimal));
+}

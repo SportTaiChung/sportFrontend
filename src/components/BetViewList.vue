@@ -63,14 +63,15 @@
                       : ''
                   "
                   type="Number"
-                  @blur="inputRowItemBlurHandler(0)"
+                  @input="inputRowItemChangeHandler()"
                 />
                 <input
                   class="input"
                   v-model.number="cart.winAmount"
                   placeholder="可赢金額"
                   type="Number"
-                  @blur="inputRowItemBlurHandler(1, true, cartIndex)"
+                  @input="inputRowItemWinAmountChangeHandler(cartIndex)"
+                  @blur="reCalcBetChart()"
                 />
               </div>
             </div>
@@ -155,13 +156,18 @@
       <div class="betInputRow">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
-        <input v-model.number="fillEachBetAmount" type="Number" @blur="fillEachBetAmountHandler" />
+        <input v-model.number="fillEachBetAmount" type="Number" @input="fillEachBetAmountHandler" />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
       <div class="betInputRow">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
-        <input v-model.number="fillEachWinAmount" type="Number" @blur="fillEachWinAmountHandler" />
+        <input
+          v-model.number="fillEachWinAmount"
+          type="Number"
+          @input="fillEachWinAmountHandler()"
+          @blur="reCalcBetChart()"
+        />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
       <div class="totalRow">
@@ -381,48 +387,39 @@
             });
         }
       },
+      inputRowItemChangeHandler() {
+        this.reCalcBetChart();
+      },
+      inputRowItemWinAmountChangeHandler(winAmountIndex) {
+        this.showBetCartList.forEach((cartData, cartIndex) => {
+          if (cartIndex === winAmountIndex) {
+            const displayData = this.cartDataToDisplayData(cartData);
+            if (cartData.winAmount !== null) {
+              cartData.betAmount = this.$lib.truncCeil(
+                cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
+              );
+            }
+          }
+        });
+      },
       fillEachBetAmountHandler() {
+        this.fillEachWinAmount = null;
         this.showBetCartList.forEach((cartData) => {
           cartData.betAmount = this.fillEachBetAmount;
         });
         this.reCalcBetChart();
       },
       fillEachWinAmountHandler() {
+        this.fillEachBetAmount = null;
         this.showBetCartList.forEach((cartData) => {
+          const displayData = this.cartDataToDisplayData(cartData);
           cartData.winAmount = this.fillEachWinAmount;
+          cartData.betAmount = this.$lib.truncCeil(
+            cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
+          );
         });
-        this.reCalcBetChart(true);
       },
-      inputRowItemBlurHandler(
-        inputType,
-        isDriveFromWinAmount = false,
-        winAmountSpecifyIndex = null
-      ) {
-        // 如果是每個item的下注金額 被輸入,則清除全局的下注金額輸入框
-        if (inputType === 0) {
-          this.fillEachBetAmount = null;
-        }
-        // 如果是每個item的可贏金額 被輸入,則清除全局的可贏金額輸入框
-        if (inputType === 1) {
-          this.fillEachWinAmount = null;
-        }
-        this.reCalcBetChart(isDriveFromWinAmount, winAmountSpecifyIndex);
-      },
-      reCalcBetChart(isDriveFromWinAmount = false, winAmountSpecifyIndex = null) {
-        // 如果是透過可贏金額輸入框驅動事件,則要先透過winAmount換算betAmount
-        if (isDriveFromWinAmount) {
-          this.showBetCartList.forEach((cartData, cartIndex) => {
-            if (winAmountSpecifyIndex === null || cartIndex === winAmountSpecifyIndex) {
-              const displayData = this.cartDataToDisplayData(cartData);
-              if (cartData.winAmount !== null) {
-                cartData.betAmount = this.$lib.truncFloor(
-                  cartData.winAmount / this.$lib.trunc(1 + parseFloat(displayData.showOdd))
-                );
-              }
-            }
-          });
-        }
-
+      reCalcBetChart() {
         let newTotalBetAmount = 0;
         let newTotalWinAmount = 0;
         this.showBetCartList.forEach((cartData) => {
@@ -430,7 +427,7 @@
           if (cartData.betAmount !== null) {
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
             cartData.winAmount = this.$lib.truncFloor(
-              cartData.betAmount * this.$lib.trunc(1 + parseFloat(displayData.showOdd))
+              cartData.betAmount * this.$lib.trunc(parseFloat(displayData.showOdd))
             );
             newTotalBetAmount += cartData.betAmount;
             newTotalWinAmount += cartData.winAmount;
@@ -484,7 +481,6 @@
         this.$store.dispatch('BetCart/submitBet', { betType: 1 }).then((res) => {
           if (res) {
             this.clearMemberData();
-            this.$store.dispatch('User/GetUserInfoCash');
           }
         });
       },

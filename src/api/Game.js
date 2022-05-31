@@ -6,7 +6,6 @@ export function getMenuGameType(postData = {}) {
     url: `/GameInfo/MenuGameType`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang },
@@ -19,7 +18,6 @@ export function getMenuGameCatList() {
     url: `/GameInfo/Menu`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang },
@@ -32,7 +30,6 @@ export function getGameDetail(postData = {}) {
     url: `/GameInfo/GameDetail`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
@@ -45,7 +42,6 @@ export function getGameDetailSmall(postData = {}) {
     url: `/GameInfo/GamelistSmall`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
@@ -58,7 +54,6 @@ export function playBet(postData = []) {
     url: `/GameInfo/Play`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, list: postData },
@@ -71,7 +66,6 @@ export function playState(traceCodeKey) {
     url: `/GameInfo/playState`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { traceCodeKey },
@@ -84,7 +78,6 @@ export function getBetInfo(postData = {}) {
     url: `/GameInfo/BetInfo`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: postData,
@@ -97,7 +90,6 @@ export function getBetHistory(postData = {}) {
     url: `/GameInfo/Ticket/betHistory`,
     method: 'post',
     param: {
-      AddRVfToken: true,
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
