@@ -62,7 +62,7 @@ export default {
                 return teamData.Wager.every((wagerData) => {
                   return wagerData.Odds.every((oddData) => {
                     if (oddData.GameID === updateData.GameID) {
-                      if (updateData.EvtStatus === 0) {
+                      if (updateData.EvtStatus !== 1) {
                         console.warn(
                           'some data is disable!!',
                           teamData.EvtStatus,

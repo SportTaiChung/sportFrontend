@@ -122,7 +122,8 @@
                       <template
                         v-if="
                           wagerData.Odds[0].DrewOdds === '0' ||
-                          wagerData.Odds[0].DrewOdds === '0.00'
+                          wagerData.Odds[0].DrewOdds === '0.00' ||
+                          wagerData.Odds[0].Status !== 1
                         "
                       >
                         <div class="WagerRow"> </div>
