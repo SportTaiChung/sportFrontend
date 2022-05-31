@@ -23,7 +23,11 @@
                 <ul
                   class="wager-group"
                   :set="
-                    ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
+                    ((sportData = $SportLib.WagerDataToShowData(
+                      teamData.SetFlag,
+                      wagerData,
+                      rowIndex
+                    )),
                     (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
                     (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
                   "
@@ -225,11 +229,7 @@
         }
       },
       goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
-        const sportData = this.$SportLib.WagerDataToShowData(
-          this.source.CatID,
-          wagerData,
-          rowIndex
-        );
+        const sportData = this.$SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex);
 
         // 如果核心lib解析出來是null 也不能下注
         if (sportData.playMethodData === null) {
@@ -245,7 +245,7 @@
 
         let HomeTeamStr = teamData.HomeTeamStr;
         let AwayTeamStr = teamData.AwayTeamStr;
-        if (this.$SportLib.isHomeAwayReverse(this.source.CatID)) {
+        if (!teamData.SetFlag) {
           HomeTeamStr = teamData.AwayTeamStr;
           AwayTeamStr = teamData.HomeTeamStr;
         }

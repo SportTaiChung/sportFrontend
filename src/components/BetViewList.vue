@@ -37,17 +37,9 @@
             <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
             <div class="cardContentBlockRow">
               <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
-              <div
-                class="cardContentBlockRowText HomeTeamSign"
-                v-if="!$SportLib.isHomeAwayReverse(cart.CatID)"
-                >(主)</div
-              >
+              <div class="cardContentBlockRowText HomeTeamSign" v-if="cart.SetFlag">(主)</div>
               <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
-              <div
-                class="cardContentBlockRowText HomeTeamSign"
-                v-if="$SportLib.isHomeAwayReverse(cart.CatID)"
-                >(主)</div
-              >
+              <div class="cardContentBlockRowText HomeTeamSign" v-if="!cart.SetFlag">(主)</div>
             </div>
             <!-- 一般投注每一個item的各自金額 -->
             <div class="cardContentBlockRow" v-if="childIndex === 0">

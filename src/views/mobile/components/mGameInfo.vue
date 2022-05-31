@@ -32,7 +32,7 @@
                 <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
                   <div class="team-block">
                     <!-- 判斷主客場對調 -->
-                    <template v-if="$SportLib.isHomeAwayReverse(source.CatID)">
+                    <template v-if="!teamData.SetFlag">
                       <div>
                         <div class="team">{{ teamData.AwayTeamStr }}</div>
                         <div class="team">{{ teamData.HomeTeamStr }}</div>

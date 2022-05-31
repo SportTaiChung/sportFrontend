@@ -78,7 +78,7 @@ export default {
                     UnderOdds: apiData.UnderOdds,
                   };
                   store.state.betCartList[updateCartIndex].playData = oddDataToPlayData(
-                    store.state.betCartList[updateCartIndex].CatID,
+                    store.state.betCartList[updateCartIndex].SetFlag,
                     store.state.betCartList[updateCartIndex].WagerTypeID,
                     store.state.betCartList[updateCartIndex]
                   );
@@ -129,7 +129,7 @@ export default {
         betAmount: null,
         winAmount: null,
       };
-      newBetData.playData = oddDataToPlayData(newBetData.CatID, newBetData.WagerTypeID, newBetData);
+      newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
       store.commit('pushCart', newBetData);
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },

@@ -56,7 +56,7 @@
                     <div
                       class="betBlock"
                       v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                        CatID,
+                        TeamData.SetFlag,
                         menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                         oddData
                       )"
@@ -114,7 +114,7 @@
       getTeamData() {
         let home = '';
         let away = '';
-        if (this.$SportLib.isHomeAwayReverse(this.CatID)) {
+        if (!this.TeamData.SetFlag) {
           home = this.TeamData.AwayTeamStr;
           away = this.TeamData.HomeTeamStr;
         } else {
@@ -261,20 +261,6 @@
         } else {
           return '';
         }
-      },
-      wagerToPlayData(wagerData = null, oddData = null) {
-        console.log(wagerData, oddData);
-        const playData = this.$SportLib.oddDataToPlayData(
-          this.CatID,
-          wagerData.WagerTypeIds[0],
-          oddData
-        );
-        if (playData.playMethodData !== null) {
-          return playData;
-        } else {
-          console.error('More Game 無法解析', wagerData, oddData);
-        }
-        console.log('playData:', playData);
       },
       goBet(clickPlayIndex, betData, oddData) {
         const selectGameTypeID = this.$store.state.Game.selectGameType;

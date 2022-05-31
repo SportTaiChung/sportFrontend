@@ -1,9 +1,3 @@
-// const CatData = {
-//   1: {
-//     label: 足球,
-//   },
-// };
-
 /**
  * CatID 轉文本
  * @param {Number} val
@@ -119,17 +113,6 @@ export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGame
 }
 
 /**
- * @param {Number} catID 球種ID
- * @returns {Boolean} 是否需要主客場對調
- */
-export function isHomeAwayReverse(catID) {
-  const intCatID = parseInt(catID);
-  return (
-    intCatID === 4 || intCatID === 11 || intCatID === 12 || intCatID === 14 || intCatID === 101
-  );
-}
-
-/**
  * 所有玩法數據的資料
  * WagerPos : 1主 2客 3和 4大 5小 1單 2雙
  *  name: 'HandiCap',
@@ -192,14 +175,14 @@ export const PlayMethodData = {
   },
 };
 
-export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData = null) {
+export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = null) {
   if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
     // 讓分
     const showHdp = oddData.HomeHdp === '' ? oddData.AwayHdp : oddData.HomeHdp;
     let homeShow = '';
     let awayShow = '';
     if (oddData.HomeHdp === '') {
-      if (isHomeAwayReverse(catID)) {
+      if (!SetFlag) {
         homeShow = '-' + showHdp;
         awayShow = '+' + showHdp;
       } else {
@@ -207,7 +190,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
         awayShow = '-' + showHdp;
       }
     } else {
-      if (isHomeAwayReverse(catID)) {
+      if (!SetFlag) {
         homeShow = '+' + showHdp;
         awayShow = '-' + showHdp;
       } else {
@@ -220,7 +203,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
       awayShow = showHdp;
     }
 
-    if (isHomeAwayReverse(catID)) {
+    if (!SetFlag) {
       return [
         {
           showMethod: '客 ' + homeShow,
@@ -268,7 +251,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
     ];
   } else if (PlayMethodData.SoloWin.typeIdList.indexOf(wagerTypeID) !== -1) {
     // 獨贏
-    if (isHomeAwayReverse(catID)) {
+    if (!SetFlag) {
       const resArr = [
         {
           showMethod: '客',
@@ -339,7 +322,7 @@ export function oddDataToMorePlayData(catID = null, wagerTypeID = null, oddData 
 }
 
 // 將oddData轉成用來顯示的資料
-export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = null) {
+export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
   let topPlayMethod = '';
   let topPlayOdd = '';
   let bottomPlayMethod = '';
@@ -381,7 +364,7 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
     // 處理主客場對調
     //  ps.大小,單雙 玩法不能對調
     if (
-      isHomeAwayReverse(catID) &&
+      !SetFlag &&
       PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 &&
       PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1
     ) {
@@ -415,16 +398,16 @@ export function oddDataToPlayData(catID = null, wagerTypeID = null, oddData = nu
  *     > normal: 預設版型
  *     > single: 只顯示一個Odd
  */
-export function WagerDataToShowData(catID, wagerData, rowIndex) {
+export function WagerDataToShowData(SetFlag, wagerData, rowIndex) {
   if (!wagerData?.isNoData) {
     // 關閉狀態
     if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
-      return oddDataToPlayData(null, null);
+      return oddDataToPlayData(SetFlag, null, null);
     } else {
-      return oddDataToPlayData(catID, wagerData.WagerTypeID, wagerData.Odds[rowIndex]);
+      return oddDataToPlayData(SetFlag, wagerData.WagerTypeID, wagerData.Odds[rowIndex]);
     }
   } else {
-    return oddDataToPlayData(null, null);
+    return oddDataToPlayData(SetFlag, null, null);
   }
 }
 
