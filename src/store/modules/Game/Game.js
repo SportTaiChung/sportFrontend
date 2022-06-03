@@ -175,7 +175,7 @@ export default {
           selectCatID: postData.CatID,
           selectWagerTypeKey: newWagerTypeKey,
         });
-        return getGameDetail(apiPostData)
+        return getGameDetail({ ...apiPostData, show: store.rootState.Setting.tableSort })
           .then(async (res) => {
             console.log('game detail API response done');
             store.commit('setGameList', res.data);

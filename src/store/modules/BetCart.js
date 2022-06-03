@@ -149,10 +149,12 @@ export default {
           .then((res) => {
             if (res.data.length === 0) {
               setTimeout(() => {
+                resolve();
                 return store.dispatch('playState', traceCodeKey);
               }, 1000);
             } else if (res.data[0].code === 201) {
               setTimeout(() => {
+                resolve();
                 return store.dispatch('playState', traceCodeKey);
               }, 1000);
               store.commit('SetLoading', true, { root: true });
@@ -172,10 +174,7 @@ export default {
               reject(res);
             }
           })
-          .catch(reject)
-          .finally(() => {
-            store.commit('SetLoading', false, { root: true });
-          });
+          .catch(reject);
       });
     },
     getBetHistory(store, postData) {

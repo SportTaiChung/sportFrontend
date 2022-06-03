@@ -524,7 +524,7 @@
               CatId,
               WagerString,
               Amount: cartData.betAmount,
-              AcceptBetter: false,
+              AcceptBetter: this.$store.state.Setting.acceptBetter,
               BetType: 1,
             };
             list.push(listItem);
@@ -535,7 +535,7 @@
                 CatId,
                 WagerString,
                 Amount: strayBetAmount,
-                AcceptBetter: false,
+                AcceptBetter: this.$store.state.Setting.acceptBetter,
                 BetType: 99,
               };
               list.push(listItem);
@@ -567,7 +567,7 @@
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
-              console.log('submitBet done!!!');
+              console.log('!!submitBet done!!!');
               this.clearMemberData();
             })
             .catch((err) => {

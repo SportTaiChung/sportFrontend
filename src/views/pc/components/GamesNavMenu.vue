@@ -132,6 +132,16 @@
           return 'width:200px;min-width:200px';
         }
       },
+      tableSort() {
+        return this.$store.state.Setting.tableSort;
+      },
+    },
+    watch: {
+      tableSort: {
+        handler() {
+          this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+        },
+      },
     },
     methods: {
       setNavMenuCollapse(val) {
