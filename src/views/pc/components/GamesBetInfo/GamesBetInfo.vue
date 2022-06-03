@@ -102,6 +102,12 @@
           return '';
         }
       },
+      resetGroupIndex() {
+        if (this.selectGroupIndex !== 0) {
+          this.selectGroupIndex = 0;
+          this.selectChildIndex = 0;
+        }
+      },
     },
   };
 </script>

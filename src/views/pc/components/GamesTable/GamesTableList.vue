@@ -41,6 +41,7 @@
               :source="item"
               :isCollapse="activeCollapse.indexOf(item.LeagueID) > -1"
               @collapseChange="collapseChangeHandler"
+              @AddToCart="$emit('AddToCart')"
             ></GameCollapse>
           </DynamicScrollerItem>
         </template>

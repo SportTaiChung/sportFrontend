@@ -46,7 +46,7 @@ export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGame
   let WagerGrp = '';
   let WagerType = '';
   let text = '';
-  if (grpId === 10 || grpId === 0 || grpId === 20) {
+  if (grpId === 0 || grpId === 10 || grpId === 20) {
     WagerGrp = '全場';
   } else if (grpId === 1 || grpId === 11 || grpId === 21) {
     WagerGrp = '上半';
@@ -172,7 +172,7 @@ export const PlayMethodData = {
   // 其他:
   Other: {
     name: 'Other',
-    typeIdList: [106, 117, 118],
+    typeIdList: [106],
     showMethod: [],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
@@ -541,12 +541,16 @@ export function cartDataToDisplayData(cartData) {
   const catIDLabel = CatIDtoShowLabel(cartData.CatID);
   let wagerGrpLabel = '';
 
-  if (cartData.WagerGrpID === '10') {
+  if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
     wagerGrpLabel = '- [全場]';
-  } else if (cartData.WagerGrpID === '11') {
+  } else if (
+    cartData.WagerGrpID === 1 ||
+    cartData.WagerGrpID === 11 ||
+    cartData.WagerGrpID === 21
+  ) {
     wagerGrpLabel = '- [上半]';
   }
-  const showGameTypeLabel = `${catIDLabel} - [${cartData.GameTypeLabel}] ${wagerGrpLabel}`;
+  const showGameTypeLabel = `${catIDLabel} ${wagerGrpLabel}`;
 
   return {
     showBetTitle,

@@ -98,9 +98,7 @@
           </div>
           <div class="cardContentBlock">
             <div class="cardContentBlockRow">
-              {{
-                `${historyItem.catName} ${historyItem.dataBet[0].WagerTypeName} ${historyItem.dataBet[0].WagerGrpName}`
-              }}
+              {{ `${historyItem.catName} - [${historyItem.dataBet[0].WagerGrpName}]` }}
             </div>
             <div class="cardContentBlockRow"> {{ historyItem.dataBet[0].LeagueName }} </div>
             <div class="cardContentBlockRow">
@@ -108,7 +106,6 @@
               <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
               <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
             </div>
-            <div class="cardContentBlockRow"> 帳務日期: {{ historyItem.AccDateStr }} </div>
             <div class="cardContentBlockRow">
               <div class="cardContentBlockWithHalfRow">投注: {{ historyItem.Amount }}</div>
               <div class="cardContentBlockWithHalfRow">
@@ -119,11 +116,6 @@
                   )
                 }}
               </div>
-            </div>
-            <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText StatusTypeContent">
-                {{ historyItem.StatusTypeContent }}</div
-              >
             </div>
           </div>
         </template>
@@ -581,10 +573,6 @@
           .cardContentBlockRowText {
             margin-right: 5px;
             text-align: left;
-          }
-          .StatusTypeContent {
-            margin-left: 15px;
-            color: #148800;
           }
           .HomeTeamSign {
             color: #ff8800;

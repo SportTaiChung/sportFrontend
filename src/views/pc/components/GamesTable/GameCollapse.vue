@@ -285,6 +285,7 @@
         });
       },
       goBet(clickPlayIndex, teamData, wagerData, rowIndex, wagerPos) {
+        this.$emit('AddToCart');
         const sportData = this.$SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex);
 
         // 如果核心lib解析出來是null 也不能下注

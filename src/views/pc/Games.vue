@@ -8,9 +8,12 @@
     </div>
     <div class="main">
       <GamesNavMenu :isNavMenuCollapse.sync="isNavMenuCollapse"></GamesNavMenu>
-      <GamesTableList :isNavMenuCollapse="isNavMenuCollapse"></GamesTableList>
+      <GamesTableList
+        :isNavMenuCollapse="isNavMenuCollapse"
+        @AddToCart="AddToCartEvent()"
+      ></GamesTableList>
       <MoreGame v-if="isShowMoreGame"></MoreGame>
-      <GamesBetInfo />
+      <GamesBetInfo ref="GamesBetInfo" />
     </div>
   </div>
 </template>
@@ -64,6 +67,9 @@
     methods: {
       setFakeUpdate(data) {
         this.$store.commit('Game/updateGameList', [data]);
+      },
+      AddToCartEvent() {
+        this.$refs.GamesBetInfo.resetGroupIndex();
       },
     },
   };
