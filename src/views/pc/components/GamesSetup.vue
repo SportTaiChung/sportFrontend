@@ -60,11 +60,6 @@
         countInterval: null,
       };
     },
-    computed: {
-      TimeCountDown() {
-        return this.$lib.timeFormatWithOutYY(this.currentTime);
-      },
-    },
     mounted() {
       this.countInterval = setInterval(() => {
         if (this.currentTime !== null) {
@@ -76,6 +71,19 @@
     },
     beforeDestroy() {
       document.removeEventListener(this.visibilitychangeEvent);
+    },
+    computed: {
+      TimeCountDown() {
+        return this.$lib.timeFormatWithOutYY(this.currentTime);
+      },
+    },
+    watch: {
+      TimeCountDown() {
+        const dateTime = this.TimeCountDown.time;
+        if (dateTime === '12:00:00' || dateTime === '12:00:01') {
+          location.reload();
+        }
+      },
     },
     methods: {
       visibilitychangeEvent() {

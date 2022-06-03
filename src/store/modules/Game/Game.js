@@ -196,6 +196,7 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
+            console.log(res.data.map((it) => it.Status));
             store.commit('updateGameList', res.data);
           });
         } else {

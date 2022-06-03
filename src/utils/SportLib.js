@@ -114,7 +114,7 @@ export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGame
 
 /**
  * 所有玩法數據的資料
- * WagerPos : 1主 2客 3和 4大 5小 1單 2雙
+ * WagerPos : 1主 2客 3和 4大 5小 4單 5雙
  *  name: 'HandiCap',
  *?  玩法名
  *  typeIdList: [101, 103],
@@ -133,7 +133,6 @@ export const PlayMethodData = {
   HandiCap: {
     name: 'HandiCap',
     typeIdList: [101, 103],
-    wagerPos: [1, 2],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
@@ -144,7 +143,6 @@ export const PlayMethodData = {
   BigSmall: {
     name: 'BigSmall',
     typeIdList: [102, 104, 109],
-    wagerPos: [4, 5],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
@@ -155,7 +153,6 @@ export const PlayMethodData = {
   SoloWin: {
     name: 'SoloWin',
     typeIdList: [110, 111],
-    wagerPos: [1, 2, 3],
     showMethod: [],
     showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
     betCutLineDealFunc: function () {
@@ -166,7 +163,6 @@ export const PlayMethodData = {
   OddEven: {
     name: 'OddEven',
     typeIdList: [105, 113, 126, 129],
-    wagerPos: [4, 5],
     showMethod: ['topPlayMethod', 'bottomPlayMethod'],
     showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
@@ -174,6 +170,23 @@ export const PlayMethodData = {
     },
   },
 };
+
+export function clickPlayIndexToWagerPos(SetFlag, wagerPosData, clickPlayIndex) {
+  // 正常下注
+  if (SetFlag) {
+    return wagerPosData[clickPlayIndex];
+  } else {
+    // 主客場需要對調的
+    // &&
+    PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 &&
+      PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1;
+    // TODO 如果將來棒球的更多玩法,出現主客和 下面計算方法會有問題
+    let newWagerPosArr = wagerPosData.slice();
+    newWagerPosArr = newWagerPosArr.filter((it, index) => index <= 1);
+    newWagerPosArr.reverse();
+    return newWagerPosArr[clickPlayIndex];
+  }
+}
 
 export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = null) {
   if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
@@ -208,14 +221,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
         {
           showMethod: '客 ' + homeShow,
           showOdd: oddData.AwayHdpOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-          clickPlayIndex: 1,
+          wagerPos: 2,
         },
         {
           showMethod: '主 ' + awayShow,
           showOdd: oddData.HomeHdpOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-          clickPlayIndex: 0,
+          wagerPos: 1,
         },
       ];
     } else {
@@ -223,14 +234,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
         {
           showMethod: '主 ' + homeShow,
           showOdd: oddData.HomeHdpOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-          clickPlayIndex: 0,
+          wagerPos: 1,
         },
         {
           showMethod: '客 ' + awayShow,
           showOdd: oddData.AwayHdpOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-          clickPlayIndex: 1,
+          wagerPos: 2,
         },
       ];
     }
@@ -239,14 +248,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
       {
         showMethod: '大 ' + oddData.OULine,
         showOdd: oddData.OverOdds,
-        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-        clickPlayIndex: 0,
+        wagerPos: 4,
       },
       {
         showMethod: '小 ' + oddData.OULine,
         showOdd: oddData.UnderOdds,
-        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-        clickPlayIndex: 1,
+        wagerPos: 5,
       },
     ];
   } else if (PlayMethodData.SoloWin.typeIdList.indexOf(wagerTypeID) !== -1) {
@@ -256,22 +263,19 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
         {
           showMethod: '客',
           showOdd: oddData.AwayOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-          clickPlayIndex: 1,
+          wagerPos: 2,
         },
         {
           showMethod: '主',
           showOdd: oddData.HomeOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-          clickPlayIndex: 0,
+          wagerPos: 1,
         },
       ];
       if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
           showMethod: '和',
           showOdd: oddData.DrewOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[2],
-          clickPlayIndex: 2,
+          wagerPos: 3,
         });
       }
       return resArr;
@@ -280,22 +284,19 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
         {
           showMethod: '主',
           showOdd: oddData.HomeOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-          clickPlayIndex: 0,
+          wagerPos: 1,
         },
         {
           showMethod: '客',
           showOdd: oddData.AwayOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-          clickPlayIndex: 1,
+          wagerPos: 2,
         },
       ];
       if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
           showMethod: '和',
           showOdd: oddData.DrewOdds,
-          wagerPos: PlayMethodData.HandiCap.wagerPos[2],
-          clickPlayIndex: 2,
+          wagerPos: 3,
         });
       }
       return resArr;
@@ -306,14 +307,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
       {
         showMethod: '單',
         showOdd: oddData.OverOdds,
-        wagerPos: PlayMethodData.HandiCap.wagerPos[0],
-        clickPlayIndex: 0,
+        wagerPos: 4,
       },
       {
         showMethod: '雙',
         showOdd: oddData.UnderOdds,
-        wagerPos: PlayMethodData.HandiCap.wagerPos[1],
-        clickPlayIndex: 1,
+        wagerPos: 5,
       },
     ];
   } else {
@@ -325,9 +324,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
 export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
   let topPlayMethod = '';
   let topPlayOdd = '';
+  let topWagerPos = '';
   let bottomPlayMethod = '';
   let bottomPlayOdd = '';
+  let bottomWagerPos = '';
   let drewPlayOdd = '';
+  let drewWagerPos = '';
   let layoutType = 'normal';
   let playMethodData = null;
   if (oddData !== null) {
@@ -335,29 +337,38 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       // 讓分
       topPlayMethod = oddData.HomeHdp;
       topPlayOdd = oddData.HomeHdpOdds;
+      topWagerPos = 1;
       bottomPlayMethod = oddData.AwayHdp;
       bottomPlayOdd = oddData.AwayHdpOdds;
+      bottomWagerPos = 2;
       playMethodData = PlayMethodData.HandiCap;
     } else if (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) !== -1) {
       // 大小
       topPlayMethod = oddData.OULine;
       topPlayOdd = oddData.OverOdds;
+      topWagerPos = 4;
       bottomPlayMethod = '小';
       bottomPlayOdd = oddData.UnderOdds;
+      bottomWagerPos = 5;
       playMethodData = PlayMethodData.BigSmall;
     } else if (PlayMethodData.SoloWin.typeIdList.indexOf(wagerTypeID) !== -1) {
       // 獨贏
       topPlayOdd = oddData.HomeOdds;
+      topWagerPos = 1;
       bottomPlayOdd = oddData.AwayOdds;
+      bottomWagerPos = 2;
       drewPlayOdd = oddData.DrewOdds;
+      drewWagerPos = 3;
       layoutType = 'single';
       playMethodData = PlayMethodData.SoloWin;
     } else if (PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) !== -1) {
       // 單雙
       topPlayMethod = '單';
       topPlayOdd = oddData.OverOdds;
+      topWagerPos = 4;
       bottomPlayMethod = '雙';
       bottomPlayOdd = oddData.UnderOdds;
+      bottomWagerPos = 5;
       playMethodData = PlayMethodData.OddEven;
     }
 
@@ -370,14 +381,18 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
     ) {
       [topPlayMethod, bottomPlayMethod] = [bottomPlayMethod, topPlayMethod];
       [topPlayOdd, bottomPlayOdd] = [bottomPlayOdd, topPlayOdd];
+      [topWagerPos, bottomWagerPos] = [bottomWagerPos, topWagerPos];
     }
   }
   return {
     topPlayMethod,
     topPlayOdd,
+    topWagerPos,
     bottomPlayMethod,
     bottomPlayOdd,
+    bottomWagerPos,
     drewPlayOdd,
+    drewWagerPos,
     layoutType,
     playMethodData,
   };

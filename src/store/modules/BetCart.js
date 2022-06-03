@@ -1,5 +1,5 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
-import { oddDataToPlayData } from '@/utils/SportLib';
+import { oddDataToPlayData, clickPlayIndexToWagerPos } from '@/utils/SportLib';
 import { Notification } from 'element-ui';
 export default {
   namespaced: true,
@@ -144,7 +144,7 @@ export default {
         const GameID = cartData.GameID;
         const WagerTypeID = cartData.WagerTypeID;
         const WagerGrpID = cartData.WagerGrpID;
-        const WagerPos = cartData.playData.playMethodData.wagerPos[cartData.clickPlayIndex];
+        const WagerPos = cartData.wagerPos;
         const HdpPos = cartData.HdpPos;
         const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
         const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];

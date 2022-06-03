@@ -96,7 +96,6 @@ export default {
                     oddData.DrewOdds = newOddData.DrewOdds;
                     oddData.Status = newOddData.Status;
                     store.state.moreGameData.TeamData.EvtStatus = newOddData.EvtStatus;
-                    console.log('find update!');
                     return false;
                   } else {
                     return true;

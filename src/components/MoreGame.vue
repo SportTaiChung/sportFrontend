@@ -62,7 +62,7 @@
                       )"
                       :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
                       :key="menuKey + wagerIndex + betIndex"
-                      @click="goBet(betData.clickPlayIndex, betData, oddData)"
+                      @click="goBet(betIndex, betData, oddData)"
                     >
                       <div class="betBlockTop">
                         {{ betData.showMethod }}
@@ -263,6 +263,7 @@
         }
       },
       goBet(clickPlayIndex, betData, oddData) {
+        console.log(betData.wagerPos);
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID
@@ -271,6 +272,7 @@
         const betInfoData = {
           OriginShowOdd: parseFloat(betData.showOdd),
           clickPlayIndex,
+          wagerPos: betData.wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,
