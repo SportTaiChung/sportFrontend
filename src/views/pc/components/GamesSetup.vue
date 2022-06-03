@@ -70,7 +70,8 @@
       document.addEventListener('visibilitychange', this.visibilitychangeEvent);
     },
     beforeDestroy() {
-      document.removeEventListener(this.visibilitychangeEvent);
+      document.removeEventListener('visibilitychange', this.visibilitychangeEvent);
+      clearInterval(this.countInterval);
     },
     computed: {
       TimeCountDown() {

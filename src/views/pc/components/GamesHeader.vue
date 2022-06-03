@@ -21,7 +21,8 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
-        <li><i class="el-icon-phone-outline"></i></li>
+        <li><i class="el-icon-bicycle" @click="logout"></i></li>
+
         <li></li>
       </ul>
     </div>
@@ -81,6 +82,12 @@
         );
       },
       handleSelect() {},
+      logout() {
+        this.$store.commit('SetLoading', true);
+        this.$store.dispatch('User/Logout').finally(() => {
+          this.$store.commit('SetLoading', false);
+        });
+      },
     },
   };
 </script>
@@ -120,6 +127,11 @@
         display: inline-flex;
         li {
           margin-right: 15px;
+        }
+        i {
+          font-size: 20px;
+          padding-top: 24px;
+          cursor: pointer;
         }
       }
     }

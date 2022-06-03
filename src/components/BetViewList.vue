@@ -137,13 +137,13 @@
 
     <!-- 單向投注下方面板 -->
     <div class="cardOptionBlock" v-if="isShowChartList">
-      <div class="betInputRow">
+      <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
         <input v-model.number="fillEachBetAmount" type="Number" @input="fillEachBetAmountHandler" />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
-      <div class="betInputRow">
+      <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
         <input
@@ -159,7 +159,7 @@
         <div class="halfItem">可贏金額 : {{ totalWinAmount }}</div>
       </div>
       <div class="buttonRow">
-        <div class="clearBtn" @click="cancelHandler"> 取消</div>
+        <div class="clearBtn" @click="cancelHandler">{{ isLockMode ? '取消' : '全部清除' }}</div>
         <div class="submitBtn" @click="submitHandler">確認下注</div>
       </div>
     </div>
@@ -174,7 +174,7 @@
           <div>注無法串關</div>
         </div>
       </div>
-      <div class="betInputRow">
+      <div class="betInputRow" v-if="!isLockMode">
         <div class="strayBlock">
           <div class="strayBlockTop">
             <div class="strayTopLeft">
@@ -197,7 +197,7 @@
           read="true"
         />
       </div>
-      <div class="betInputRow">
+      <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
         <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
@@ -207,7 +207,7 @@
         <div class="halfItem">可贏金額 : {{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
       </div>
       <div class="buttonRow">
-        <div class="clearBtn" @click="cancelHandler"> 取消</div>
+        <div class="clearBtn" @click="cancelHandler"> {{ isLockMode ? '取消' : '全部清除' }}</div>
         <div class="submitBtn" @click="straySubmitHandler">確認下注</div>
       </div>
     </div>
@@ -274,6 +274,7 @@
         // 其他
         isLoading: false,
         intervalEvent: null,
+        isLockMode: false,
       };
     },
     mounted() {
@@ -300,6 +301,7 @@
       },
       childIndex: {
         handler() {
+          this.isLockMode = false;
           this.callBetHistoryAPI();
         },
       },
@@ -358,6 +360,7 @@
         this.strayBetAmount = null;
         this.EvtIdRepeatList.length = 0;
         this.EvtIdRepeatList = [];
+        this.isLockMode = false;
       },
       callBetHistoryAPI() {
         if (this.groupIndex === 1) {
@@ -461,34 +464,137 @@
         this.$store.commit('BetCart/removeCartByGameID', gameID);
         this.reCalcBetChart();
       },
-      submitHandler() {
-        this.$store.dispatch('BetCart/submitBet', { betType: 1 }).then((res) => {
-          if (res) {
-            this.clearMemberData();
+      checkBetPlayData(betType, strayBetAmount) {
+        // 串關檢查
+        if (betType === 99) {
+          let errorMessage = null;
+          if (this.EvtIdRepeatList.length !== 0) {
+            errorMessage = '串關出現重複賽事';
           }
-        });
-      },
-      straySubmitHandler() {
-        if (this.EvtIdRepeatList.length === 0) {
           if (
             this.strayBetAmount === 0 ||
             this.strayBetAmount === '' ||
             this.strayBetAmount === null
           ) {
-            this.$notify.error({
-              message: '請先輸入串關金額',
-            });
-            return;
+            errorMessage = '請先輸入串關金額';
           }
+
+          if (errorMessage !== null) {
+            this.$notify.error({
+              message: errorMessage,
+            });
+            return null;
+          }
+        }
+
+        // 蒐集投注資料
+        const list = [];
+        let errorMessage = null;
+        this.$store.state.BetCart.betCartList.every((cartData) => {
+          const CatId = cartData.CatID;
+          const GameID = cartData.GameID;
+          const WagerTypeID = cartData.WagerTypeID;
+          const WagerGrpID = cartData.WagerGrpID;
+          const WagerPos = cartData.wagerPos;
+          const HdpPos = cartData.HdpPos;
+          const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
+          const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
+          const OddValue = cartData.playData[oddKey];
+          const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
+          if (cartData.BetMax === null && cartData.BetMin === null) {
+            errorMessage = '尚未收到注格資訊,請稍後再試';
+            return false;
+          }
+          if (cartData.Status !== 1) {
+            errorMessage = '請先移除過期賽事';
+            return false;
+          }
+          // 一般投注
+          if (betType === 1) {
+            if (
+              cartData.betAmount === null ||
+              cartData.betAmount === '' ||
+              cartData.betAmount === 0
+            ) {
+              errorMessage = '請先輸入下注金額';
+              return false;
+            }
+
+            const listItem = {
+              CatId,
+              WagerString,
+              Amount: cartData.betAmount,
+              AcceptBetter: false,
+              BetType: 1,
+            };
+            list.push(listItem);
+          } // 串關投注
+          else if (betType === 99) {
+            if (list.length === 0) {
+              const listItem = {
+                CatId,
+                WagerString,
+                Amount: strayBetAmount,
+                AcceptBetter: false,
+                BetType: 99,
+              };
+              list.push(listItem);
+            } else {
+              list[0].WagerString += '|' + WagerString;
+            }
+          } else {
+            errorMessage = `betType ${betType} not define`;
+            return false;
+          }
+          return true;
+        });
+        // have error
+        if (errorMessage !== null) {
+          this.$notify.error({
+            message: errorMessage,
+          });
+          return null;
+        } else {
+          return list;
+        }
+      },
+      submitHandler() {
+        const checkRes = this.checkBetPlayData(1, null);
+        if (checkRes === null) {
+          return;
+        }
+        if (this.isLockMode) {
           this.$store
-            .dispatch('BetCart/submitBet', { betType: 99, strayBetAmount: this.strayBetAmount })
+            .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
+              console.log('submitBet done!!!');
               this.clearMemberData();
+            })
+            .catch((err) => {
+              console.error(err);
+              this.isLockMode = false;
             });
         } else {
-          this.$notify.error({
-            message: '串關出現重複賽事',
-          });
+          this.isLockMode = true;
+        }
+      },
+      straySubmitHandler() {
+        const checkRes = this.checkBetPlayData(99, this.strayBetAmount);
+        if (checkRes === null) {
+          return;
+        }
+        if (this.isLockMode) {
+          this.$store
+            .dispatch('BetCart/submitBet', checkRes)
+            .then((res) => {
+              this.clearMemberData();
+            })
+            .catch((err) => {
+              console.error(err);
+              this.isLockMode = false;
+            });
+        } else {
+          this.isLockMode = true;
         }
       },
       cartDataToDisplayData(cartData) {

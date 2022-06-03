@@ -136,73 +136,7 @@ export default {
     // 執行投注 API ,
     // betType : 1  一般投注
     // betType : 99 過關投注
-    submitBet(store, { betType, strayBetAmount }) {
-      const list = [];
-      let errorMessage = null;
-      store.state.betCartList.every((cartData) => {
-        const CatId = cartData.CatID;
-        const GameID = cartData.GameID;
-        const WagerTypeID = cartData.WagerTypeID;
-        const WagerGrpID = cartData.WagerGrpID;
-        const WagerPos = cartData.wagerPos;
-        const HdpPos = cartData.HdpPos;
-        const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
-        const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
-        const OddValue = cartData.playData[oddKey];
-        const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-        if (cartData.BetMax === null && cartData.BetMin === null) {
-          errorMessage = '尚未收到注格資訊,請稍後再試';
-          return false;
-        }
-        if (cartData.Status !== 1) {
-          errorMessage = '請先移除過期賽事';
-          return false;
-        }
-        // 一班投注
-        if (betType === 1) {
-          if (
-            cartData.betAmount === null ||
-            cartData.betAmount === '' ||
-            cartData.betAmount === 0
-          ) {
-            errorMessage = '請先輸入下注金額';
-            return false;
-          }
-
-          const listItem = {
-            CatId,
-            WagerString,
-            Amount: cartData.betAmount,
-            AcceptBetter: false,
-            BetType: 1,
-          };
-          list.push(listItem);
-        } // 串關投注
-        else if (betType === 99) {
-          if (list.length === 0) {
-            const listItem = {
-              CatId,
-              WagerString,
-              Amount: strayBetAmount,
-              AcceptBetter: false,
-              BetType: 99,
-            };
-            list.push(listItem);
-          } else {
-            list[0].WagerString += '|' + WagerString;
-          }
-        } else {
-          errorMessage = `betType ${betType} not define`;
-          return false;
-        }
-        return true;
-      });
-      if (errorMessage !== null) {
-        Notification.error({
-          message: errorMessage,
-        });
-        return;
-      }
+    submitBet(store, list) {
       store.commit('SetLoading', true, { root: true });
       return playBet(list).then((res) => {
         return store.dispatch('playState', res.data.traceCodeKey);
@@ -211,32 +145,37 @@ export default {
     // 檢查投注狀態
     playState(store, traceCodeKey) {
       return new Promise((resolve, reject) => {
-        return playState(traceCodeKey).then((res) => {
-          if (res.data.length === 0) {
-            setTimeout(() => {
-              return store.dispatch('playState', traceCodeKey);
-            }, 1000);
-          } else if (res.data[0].code === 201) {
-            setTimeout(() => {
-              return store.dispatch('playState', traceCodeKey);
-            }, 1000);
-            store.commit('SetLoading', true, { root: true });
-          } else if (res.data[0].code === 200) {
-            store.commit('clearCart');
-            Notification.success({
-              message: res.data[0].Message,
-            });
-            store.dispatch('User/GetUserInfoCash', null, { root: true });
+        return playState(traceCodeKey)
+          .then((res) => {
+            if (res.data.length === 0) {
+              setTimeout(() => {
+                return store.dispatch('playState', traceCodeKey);
+              }, 1000);
+            } else if (res.data[0].code === 201) {
+              setTimeout(() => {
+                return store.dispatch('playState', traceCodeKey);
+              }, 1000);
+              store.commit('SetLoading', true, { root: true });
+            } else if (res.data[0].code === 200) {
+              store.commit('clearCart');
+              Notification.success({
+                message: res.data[0].Message,
+              });
+              store.dispatch('User/GetUserInfoCash', null, { root: true });
+              store.commit('SetLoading', false, { root: true });
+              resolve(res);
+            } else {
+              Notification.error({
+                message: res.data[0].Message,
+              });
+              store.commit('SetLoading', false, { root: true });
+              reject(res);
+            }
+          })
+          .catch(reject)
+          .finally(() => {
             store.commit('SetLoading', false, { root: true });
-            resolve(res);
-          } else {
-            Notification.error({
-              message: res.data[0].Message,
-            });
-            store.commit('SetLoading', false, { root: true });
-            reject(res);
-          }
-        });
+          });
       });
     },
     getBetHistory(store, postData) {

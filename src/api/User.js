@@ -10,6 +10,17 @@ export function login(param) {
   });
 }
 
+// 登出
+export function logout() {
+  return request({
+    url: `/mb/sin/logout`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+  });
+}
+
 // 取得用戶資訊
 export function getUserInfoAbout() {
   return request({

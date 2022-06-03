@@ -1,4 +1,4 @@
-import { login, getUserInfoAbout, getUserInfoCash } from '@/api/User';
+import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
 
 export default {
   namespaced: true,
@@ -35,6 +35,21 @@ export default {
             resolve(res);
           })
           .catch(reject);
+      });
+    },
+    Logout(store) {
+      return new Promise((resolve, reject) => {
+        return logout()
+          .then(async (res) => {
+            resolve(res);
+          })
+          .catch(reject)
+          .finally(() => {
+            // 登出handler
+            store.commit('BetCart/clearCart', null, { root: true });
+            store.commit('SetToken', '');
+            window.router.replace({ name: 'Login' });
+          });
       });
     },
     UserInfoAbout(store) {
