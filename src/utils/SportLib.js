@@ -169,24 +169,17 @@ export const PlayMethodData = {
       return 0;
     },
   },
+  // 其他:
+  Other: {
+    name: 'Other',
+    typeIdList: [106, 117, 118],
+    showMethod: [],
+    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
+    betCutLineDealFunc: function () {
+      return 0;
+    },
+  },
 };
-
-export function clickPlayIndexToWagerPos(SetFlag, wagerPosData, clickPlayIndex) {
-  // 正常下注
-  if (SetFlag) {
-    return wagerPosData[clickPlayIndex];
-  } else {
-    // 主客場需要對調的
-    // &&
-    PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) === -1 &&
-      PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) === -1;
-    // TODO 如果將來棒球的更多玩法,出現主客和 下面計算方法會有問題
-    let newWagerPosArr = wagerPosData.slice();
-    newWagerPosArr = newWagerPosArr.filter((it, index) => index <= 1);
-    newWagerPosArr.reverse();
-    return newWagerPosArr[clickPlayIndex];
-  }
-}
 
 export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = null) {
   if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
@@ -315,6 +308,34 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
         wagerPos: 5,
       },
     ];
+  } else if (PlayMethodData.Other.typeIdList.indexOf(wagerTypeID) !== -1) {
+    if (!SetFlag) {
+      return [
+        {
+          showMethod: '客',
+          showOdd: oddData.AwayHdpOdds,
+          wagerPos: 2,
+        },
+        {
+          showMethod: '主',
+          showOdd: oddData.HomeHdpOdds,
+          wagerPos: 1,
+        },
+      ];
+    } else {
+      return [
+        {
+          showMethod: '主',
+          showOdd: oddData.HomeHdpOdds,
+          wagerPos: 1,
+        },
+        {
+          showMethod: '客',
+          showOdd: oddData.AwayHdpOdds,
+          wagerPos: 2,
+        },
+      ];
+    }
   } else {
     return [];
   }
@@ -370,6 +391,16 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       bottomPlayOdd = oddData.UnderOdds;
       bottomWagerPos = 5;
       playMethodData = PlayMethodData.OddEven;
+    } else if (PlayMethodData.Other.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 其他
+      topPlayOdd = oddData.HomeHdpOdds;
+      topWagerPos = 1;
+      bottomPlayOdd = oddData.AwayHdpOdds;
+      bottomWagerPos = 2;
+      layoutType = 'single';
+      playMethodData = PlayMethodData.Other;
+    } else {
+      console.error('wagerTypeID not found:', wagerTypeID);
     }
 
     // 處理主客場對調
@@ -484,6 +515,24 @@ export function cartDataToDisplayData(cartData) {
     } else if (cartData.clickPlayIndex === 1) {
       showBetTitle = '雙';
       showOdd = playData.bottomPlayOdd;
+    }
+  } else if (playData.playMethodData.name === 'Other') {
+    if (cartData.clickPlayIndex === 0) {
+      showBetTitle = cartData.HomeTeamStr;
+      showOdd = playData.topPlayOdd;
+      if (cartData.HomeHdp === '') {
+        showCutLine = '-' + cartData.AwayHdp;
+      } else {
+        showCutLine = '+' + cartData.HomeHdp;
+      }
+    } else if (cartData.clickPlayIndex === 1) {
+      showBetTitle = cartData.AwayTeamStr;
+      showOdd = playData.bottomPlayOdd;
+      if (cartData.AwayHdp === '') {
+        showCutLine = '-' + cartData.HomeHdp;
+      } else {
+        showCutLine = '+' + cartData.AwayHdp;
+      }
     }
   } else {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);

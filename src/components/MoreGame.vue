@@ -60,7 +60,7 @@
                         menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                         oddData
                       )"
-                      :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
+                      :class="betBlockSelectCSS(betIndex, oddData)"
                       :key="menuKey + wagerIndex + betIndex"
                       @click="goBet(betIndex, betData, oddData)"
                     >

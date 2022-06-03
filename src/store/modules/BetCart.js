@@ -1,5 +1,5 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
-import { oddDataToPlayData, clickPlayIndexToWagerPos } from '@/utils/SportLib';
+import { oddDataToPlayData } from '@/utils/SportLib';
 import { Notification } from 'element-ui';
 export default {
   namespaced: true,
