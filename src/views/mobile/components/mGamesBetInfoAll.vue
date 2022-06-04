@@ -47,28 +47,6 @@
       },
     },
     methods: {
-      bottomHeaderRowItem(index) {
-        if (this.selectGroupIndex === 0) {
-          if (index === 0) {
-            return '單向投注';
-          } else {
-            return '過關投注';
-          }
-        } else {
-          if (index === 0) {
-            return '未結算注單';
-          } else {
-            return '可兌現注單';
-          }
-        }
-      },
-      topHeaderTextItemChildCSS(groupIndex) {
-        if (groupIndex === this.selectGroupIndex) {
-          return 'ItemTextActive';
-        } else {
-          return '';
-        }
-      },
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('onCloseBetInfo');

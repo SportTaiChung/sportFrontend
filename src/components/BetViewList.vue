@@ -65,9 +65,13 @@
                   @input="inputRowItemWinAmountChangeHandler(cartIndex)"
                   @blur="reCalcBetChart()"
                 />
+                <div class="submitBtn">確認下注</div>
               </div>
             </div>
             <div class="cardContentBlockRow limitText"> 本場上限 : {{ cart.BetMax }} </div>
+
+            <!-- 小鍵盤 -->
+            <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
           </div>
 
           <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
@@ -136,13 +140,15 @@
     </template>
 
     <!-- 單向投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowChartList">
+    <div class="cardOptionBlock" v-if="isShowChartList && !isMobileMode">
       <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
         <input v-model.number="fillEachBetAmount" type="Number" @input="fillEachBetAmountHandler" />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
+      <!-- 小鍵盤 -->
+      <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
       <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
@@ -154,6 +160,8 @@
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
+      <!-- 小鍵盤 -->
+      <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
         <div class="halfItem">可贏金額 : {{ totalWinAmount }}</div>
@@ -242,8 +250,13 @@
 </template>
 
 <script>
+  import mBetKeyboard from '@/components/mBetKeyboard';
+
   export default {
     name: 'BetViewList',
+    components: {
+      mBetKeyboard,
+    },
     props: {
       // 0: 投注資訊
       // 1: 最新注單
@@ -344,6 +357,9 @@
       },
       includePrincipal() {
         return this.$store.state.Setting.includePrincipal;
+      },
+      isMobileMode() {
+        return process.env.VUE_APP_UI === 'mobile';
       },
     },
     methods: {
@@ -677,6 +693,8 @@
           .inputRow {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
+            width: 100%;
             .input {
               width: 49%;
               height: 30px;
@@ -696,6 +714,20 @@
           .cardContentBlockWithHalfRow {
             width: 50%;
             text-align: left;
+          }
+          .submitBtn {
+            width: 48%;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: #ffdf1b;
+            color: black;
+            &:hover {
+              background-color: #ffeb68f9;
+            }
           }
         }
         .limitText {

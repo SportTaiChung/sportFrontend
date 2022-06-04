@@ -46,9 +46,14 @@
       <MoreGame v-if="isShowMoreGame"></MoreGame>
 
       <mGamesBetInfoAll
-        v-show="isShowBetInfo"
+        v-show="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
+
+      <mGamesBetInfoSingle
+        v-show="betCartList.length === 1 && isShowBetInfoSingle"
+        @onHide="isShowBetInfoSingle = false"
+      ></mGamesBetInfoSingle>
 
       <mBetRecordView
         v-if="isShowBetRecordView"
@@ -71,6 +76,7 @@
   import mGameInfo from './components/mGameInfo.vue';
   import mGameBetting from './components/mGameBetting.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
+  import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
   import mMorePanel from './components/mMorePanel';
@@ -84,6 +90,7 @@
       mGameInfo,
       mGameBetting,
       mGamesBetInfoAll,
+      mGamesBetInfoSingle,
       mBetRecordView,
       mWagerTypePopup,
       mMorePanel,
@@ -93,6 +100,7 @@
       return {
         activeCollapse: [],
         isShowBetInfo: false,
+        isShowBetInfoSingle: true,
         isShowBetRecordView: false,
         isShowWagerTypePopup: false,
         isShowMorePanel: false,
@@ -107,6 +115,9 @@
       },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
+      },
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
       },
     },
     methods: {
@@ -134,6 +145,11 @@
       },
       onOpenMorePanel() {
         this.isShowMorePanel = true;
+      },
+    },
+    watch: {
+      betCartList(list) {
+        list.length === 0 && (this.isShowBetInfoSingle = true);
       },
     },
   };
@@ -186,7 +202,7 @@
         }
         .right-area {
           flex: 1;
-          overflow-x: overlay;
+          overflow-x: auto;
           overflow-y: hidden;
           box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
         }

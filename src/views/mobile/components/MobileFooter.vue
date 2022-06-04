@@ -2,8 +2,8 @@
   <div id="mobileFooter">
     <ul class="footer-container">
       <li class="footer-item">
-        <img class="icon" src="@/assets/img/mobile/icon_footer_transfer.svg" alt="" />
-        <span>快速轉帳</span>
+        <img class="icon" src="@/assets/img/mobile/icon_footer_palysvg.svg" alt="" />
+        <span>直播</span>
       </li>
       <li class="footer-item">
         <img class="icon" src="@/assets/img/mobile/icon_footer_league.svg" alt="" />
