@@ -20,7 +20,7 @@
         />
       </div>
       <div class="body">
-        <BetViewList></BetViewList>
+        <BetViewList :isShowCardOptionBlock="false"></BetViewList>
       </div>
     </div>
   </div>

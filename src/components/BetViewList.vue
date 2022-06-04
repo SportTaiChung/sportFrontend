@@ -1,83 +1,21 @@
 <template>
-  <div id="BetViewList" :set="(displayData = [])" ref="BetViewList" v-loading="isLoading">
+  <div id="BetViewList" ref="BetViewList" v-loading="isLoading">
     <!-- 購物車 -->
     <template v-if="groupIndex === 0">
       <template v-if="isShowChartList || isShowCharStrayList">
-        <div
-          class="listCardItem"
-          v-for="(cart, cartIndex) in showBetCartList"
-          :class="listCardItemClassJudge(cart)"
+        <!-- item -->
+        <listCardItem
+          v-for="(cartData, cartIndex) in showBetCartList"
+          :cartData="cartData"
+          :childIndex="childIndex"
+          :cartIndex="cartIndex"
+          :listCardItemClassJudge="listCardItemClassJudge(cartData.GameID)"
+          :currShowKeyboardIndex="currShowKeyboardIndex"
           :key="cartIndex"
-          :set="(displayData[cartIndex] = cartDataToDisplayData(cart))"
-        >
-          <div class="cardHeaderRow">
-            <div class="playMethodName"> {{ displayData[cartIndex].showBetTitle }}</div>
-            <div class="playMethodNameSupport">
-              {{ displayData[cartIndex].showCutLine }}
-            </div>
-            <div class="at"> @ </div>
-            <div
-              class="playBetOdd"
-              :class="playBetOddClassJudge(cart.OriginShowOdd, displayData[cartIndex].showOdd)"
-            >
-              {{ showOddValue(displayData[cartIndex].showOdd) }}
-            </div>
-
-            <i
-              class="el-icon-close"
-              :style="isShowBlackMask(cart) ? 'color:white;' : ''"
-              @click="cancelSingleHandler(cart.GameID)"
-            ></i>
-          </div>
-
-          <div class="cardContentBlock">
-            <div class="cardContentBlockRow">
-              {{ displayData[cartIndex].showGameTypeLabel }}
-            </div>
-            <div class="cardContentBlockRow"> {{ cart.LeagueNameStr }} </div>
-            <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">{{ cart.HomeTeamStr }}</div>
-              <div class="cardContentBlockRowText HomeTeamSign" v-if="cart.SetFlag">(主)</div>
-              <div class="cardContentBlockRowText"> v {{ cart.AwayTeamStr }}</div>
-              <div class="cardContentBlockRowText HomeTeamSign" v-if="!cart.SetFlag">(主)</div>
-            </div>
-            <!-- 一般投注每一個item的各自金額 -->
-            <div class="cardContentBlockRow" v-if="childIndex === 0">
-              <div class="inputRow">
-                <input
-                  class="input"
-                  v-model.number="cart.betAmount"
-                  :max="cart.BetMax"
-                  :min="cart.BetMin"
-                  :placeholder="
-                    cart.BetMin !== null && cart.BetMax !== null
-                      ? cart.BetMin + '-' + cart.BetMax
-                      : ''
-                  "
-                  type="Number"
-                  @input="inputRowItemChangeHandler()"
-                />
-                <input
-                  class="input"
-                  v-model.number="cart.winAmount"
-                  placeholder="可赢金額"
-                  type="Number"
-                  @input="inputRowItemWinAmountChangeHandler(cartIndex)"
-                  @blur="reCalcBetChart()"
-                />
-                <div class="submitBtn">確認下注</div>
-              </div>
-            </div>
-            <div class="cardContentBlockRow limitText"> 本場上限 : {{ cart.BetMax }} </div>
-
-            <!-- 小鍵盤 -->
-            <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
-          </div>
-
-          <div class="blackMaskErrorBlock" v-if="isShowBlackMask(cart)">
-            <div class="blackMaskText"> 盤口關閉中，請移除再下注 </div>
-          </div>
-        </div>
+          @cancelSingleHandler="cancelSingleHandler"
+          @inputRowItemChangeHandler="inputRowItemChangeHandler"
+          @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
+        ></listCardItem>
       </template>
     </template>
 
@@ -140,15 +78,22 @@
     </template>
 
     <!-- 單向投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowChartList && !isMobileMode">
+    <div class="cardOptionBlock" v-if="isShowChartList && isShowCardOptionBlock">
       <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
-        <input v-model.number="fillEachBetAmount" type="Number" @input="fillEachBetAmountHandler" />
+        <input
+          v-model.number="fillEachBetAmount"
+          type="Number"
+          @input="fillEachBetAmountHandler"
+          @click="
+            isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
+            lastClickInput = 1;
+          "
+        />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
-      <!-- 小鍵盤 -->
-      <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
+
       <div class="betInputRow" v-if="!isLockMode">
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
@@ -156,12 +101,18 @@
           v-model.number="fillEachWinAmount"
           type="Number"
           @input="fillEachWinAmountHandler()"
+          @click="
+            isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
+            lastClickInput = 2;
+          "
           @blur="reCalcBetChart()"
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
+
       <!-- 小鍵盤 -->
-      <mBetKeyboard v-if="isMobileMode"></mBetKeyboard>
+      <mBetKeyboard v-if="isMobileMode && isShowBetKB"></mBetKeyboard>
+
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
         <div class="halfItem">可贏金額 : {{ totalWinAmount }}</div>
@@ -173,7 +124,7 @@
     </div>
 
     <!-- 串關投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowCharStrayList">
+    <div class="cardOptionBlock" v-if="isShowCharStrayList && isShowCardOptionBlock">
       <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
         <div class="topTextRow"> ※ 存在同場賽事 </div>
         <div class="bottomTextRow">
@@ -203,6 +154,7 @@
           type="Number"
           @blur="reCalcStrayBetChart"
           read="true"
+          @click="isShowStrayKB = !isShowStrayKB"
         />
       </div>
       <div class="betInputRow" v-if="!isLockMode">
@@ -210,6 +162,10 @@
         <div class="betInputSymbol">:</div>
         <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
       </div>
+
+      <!-- 小鍵盤 -->
+      <mBetKeyboard v-if="isMobileMode && isShowStrayKB"></mBetKeyboard>
+
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ strayBetAmount }}</div>
         <div class="halfItem">可贏金額 : {{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
@@ -251,11 +207,13 @@
 
 <script>
   import mBetKeyboard from '@/components/mBetKeyboard';
+  import listCardItem from '@/components/ListCardItem';
 
   export default {
     name: 'BetViewList',
     components: {
       mBetKeyboard,
+      listCardItem,
     },
     props: {
       // 0: 投注資訊
@@ -271,6 +229,10 @@
       childIndex: {
         type: Number,
         default: 0,
+      },
+      isShowCardOptionBlock: {
+        type: Boolean,
+        default: true,
       },
     },
     data() {
@@ -288,6 +250,14 @@
         isLoading: false,
         intervalEvent: null,
         isLockMode: false,
+
+        // 是否顯示下方 主要小鍵盤
+        isShowBetKB: false,
+        isShowStrayKB: false,
+        lastClickInput: null,
+
+        // 目前打開小鍵盤的 購物車item index
+        currShowKeyboardIndex: -1,
       };
     },
     mounted() {
@@ -332,6 +302,12 @@
           this.$store.commit('BetCart/setStrayOdd', this.strayOdd);
         }
       },
+      isShowBetKB(isShowBetKB) {
+        this.currShowKeyboardIndex = isShowBetKB ? -1 : this.currShowKeyboardIndex;
+      },
+      currShowKeyboardIndex(index) {
+        this.isShowBetKB = index === -1;
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -355,23 +331,13 @@
       isShowStrayCantPlayTip() {
         return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length <= 1;
       },
-      includePrincipal() {
-        return this.$store.state.Setting.includePrincipal;
-      },
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
     },
     methods: {
-      showOddValue(oddValue) {
-        if (this.includePrincipal) {
-          return this.$lib.trunc(parseFloat(oddValue) + 1);
-        } else {
-          return oddValue;
-        }
-      },
-      listCardItemClassJudge(cart) {
-        if (this.childIndex === 1 && this.EvtIdRepeatList.indexOf(cart.GameID) > -1) {
+      listCardItemClassJudge(GameID) {
+        if (this.childIndex === 1 && this.EvtIdRepeatList.indexOf(GameID) > -1) {
           return 'redErrorStyle';
         } else {
           return '';
@@ -403,18 +369,7 @@
       inputRowItemChangeHandler() {
         this.reCalcBetChart();
       },
-      inputRowItemWinAmountChangeHandler(winAmountIndex) {
-        this.showBetCartList.forEach((cartData, cartIndex) => {
-          if (cartIndex === winAmountIndex) {
-            const displayData = this.cartDataToDisplayData(cartData);
-            if (cartData.winAmount !== null) {
-              cartData.betAmount = this.$lib.truncCeil(
-                cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
-              );
-            }
-          }
-        });
-      },
+
       fillEachBetAmountHandler() {
         this.fillEachWinAmount = null;
         this.showBetCartList.forEach((cartData) => {
@@ -472,13 +427,7 @@
         // 扣掉本金 就可以得到串關賠率
         this.strayOdd = this.$lib.trunc(strayOdd - 1);
       },
-      playBetOddClassJudge(OriginShowOdd, NowShowOdd) {
-        if (parseFloat(OriginShowOdd) !== parseFloat(NowShowOdd)) {
-          return 'oddChangeStyle';
-        } else {
-          return '';
-        }
-      },
+
       cancelHandler() {
         this.clearMemberData();
         this.$store.commit('BetCart/clearCart');
@@ -629,6 +578,9 @@
       isShowBlackMask(cart) {
         return cart.Status !== 1 || cart.EvtStatus !== 1;
       },
+      onCartListItemKeyboardShow(index) {
+        this.currShowKeyboardIndex = index;
+      },
     },
   };
 </script>
@@ -637,145 +589,7 @@
   #BetViewList {
     height: calc(100% - 35px);
     overflow: auto;
-    .listCardItem {
-      background-color: #eaeaea;
-      margin-bottom: 5px;
-      position: relative;
-      .cardHeaderRow {
-        display: flex;
-        padding: 7px 10px;
-        border-bottom: 1px solid #cccccc;
-        position: relative;
-        @mixin common {
-          margin-right: 5px;
-          font-weight: bold;
-        }
-        .playMethodName {
-          color: #005aff;
-          @include common();
-        }
-        .playMethodNameSupport {
-          color: red;
-          @include common();
-        }
-        .oddChangeStyle {
-          background-color: #41b590;
-          padding: 2px 4px;
-          color: white !important;
-        }
-        .at {
-          @include common();
-        }
-        .playBetOdd {
-          color: red;
-          @include common();
-        }
-        .el-icon-close {
-          font-weight: bold;
-          position: absolute;
-          right: 6px;
-          font-size: 18px;
-          opacity: 0.5;
-          margin-top: -3px;
-          cursor: pointer;
-          z-index: 9999;
-        }
-      }
-      .cardContentBlock {
-        padding: 8px 10px;
-        .cardContentBlockRow {
-          display: flex;
-          flex-wrap: wrap;
-          margin-bottom: 6px;
-          &:last-child {
-            margin-bottom: 0px;
-          }
-          .inputRow {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            width: 100%;
-            .input {
-              width: 49%;
-              height: 30px;
-              font-size: 15px;
-              border-radius: 3px;
-              padding: 5px;
-              border: 1px solid transparent;
-            }
-          }
-          .cardContentBlockRowText {
-            margin-right: 5px;
-            text-align: left;
-          }
-          .HomeTeamSign {
-            color: #ff8800;
-          }
-          .cardContentBlockWithHalfRow {
-            width: 50%;
-            text-align: left;
-          }
-          .submitBtn {
-            width: 48%;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: bold;
-            background-color: #ffdf1b;
-            color: black;
-            &:hover {
-              background-color: #ffeb68f9;
-            }
-          }
-        }
-        .limitText {
-          color: #006a8a;
-        }
-      }
-      .strayContentBlock {
-        padding: 8px 10px;
-        .strayContentBlockRow {
-          display: flex;
-          flex-wrap: wrap;
-          margin-bottom: 6px;
-          &:last-child {
-            margin-bottom: 0px;
-          }
-          .strayTitleInfoText {
-            color: #005aff;
-            padding: 0px 5px;
-          }
-          .strayTitleInfoTextTip {
-            color: #f00;
-          }
-        }
-      }
-      .blackMaskErrorBlock {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.55);
-        width: 100%;
-        height: 100%;
-        z-index: 999;
-        left: 0;
-        top: 0;
-        .blackMaskText {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          -webkit-transform: translate(-50%, -50%);
-          color: white;
-          font-size: 15px;
-          text-align: center;
-          background-color: rgba(0, 0, 0, 0.8);
-          white-space: nowrap;
-          border-radius: 20px;
-          padding: 8px 25px;
-        }
-      }
-    }
+
     .redErrorStyle {
       background-color: #deb7b7;
       .cardHeaderRow {
