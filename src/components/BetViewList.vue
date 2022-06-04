@@ -113,6 +113,17 @@
       <!-- 小鍵盤 -->
       <mBetKeyboard v-if="isMobileMode && isShowBetKB"></mBetKeyboard>
 
+      <!-- 小籌碼 -->
+      <div class="betPlay_chip" v-if="!isMobileMode">
+        <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
+        <div class="chips">
+          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
+          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
+          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+        </div>
+        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+      </div>
+
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
         <div class="halfItem">可贏金額 : {{ totalWinAmount }}</div>
@@ -165,6 +176,17 @@
 
       <!-- 小鍵盤 -->
       <mBetKeyboard v-if="isMobileMode && isShowStrayKB"></mBetKeyboard>
+
+      <!-- 小籌碼 -->
+      <div class="betPlay_chip" v-if="!isMobileMode">
+        <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
+        <div class="chips">
+          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
+          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
+          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+        </div>
+        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+      </div>
 
       <div class="totalRow">
         <div class="halfItem">所有投注 : {{ strayBetAmount }}</div>
@@ -258,6 +280,10 @@
 
         // 目前打開小鍵盤的 購物車item index
         currShowKeyboardIndex: -1,
+
+        chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000, 999999],
+        chipPageIndex: 0,
+        chipsNumPerPage: 3,
       };
     },
     mounted() {
@@ -333,6 +359,15 @@
       },
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
+      },
+      maxChipPage() {
+        return Math.trunc(this.chipsData.length / this.chipsNumPerPage);
+      },
+      currentChips() {
+        return this.chipsData.slice(
+          this.chipPageIndex * this.chipsNumPerPage,
+          (this.chipPageIndex + 1) * this.chipsNumPerPage
+        );
       },
     },
     methods: {
@@ -581,6 +616,17 @@
       onCartListItemKeyboardShow(index) {
         this.currShowKeyboardIndex = index;
       },
+      chipPosStyle(chipIndex) {
+        const n = this.chipsNumPerPage;
+        const x = 57 * (chipIndex + this.chipPageIndex * n);
+        return {
+          'background-position-x': -x + 'px',
+        };
+      },
+      onChipClick(index) {
+        const value = this.currentChips[index] > 0 ? this.currentChips[index] : null;
+        console.log('籌碼點擊: ', value);
+      },
     },
   };
 </script>
@@ -736,6 +782,61 @@
         .halfItem {
           width: 50%;
           text-align: left;
+        }
+      }
+      .betPlay_chip {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-bottom: 1px solid #888;
+        padding-bottom: 5px;
+
+        i {
+          color: 000;
+          font-size: 22px;
+          font-weight: bold;
+          cursor: pointer;
+          opacity: 0.6;
+          transition: all 0.3s ease;
+          &:hover {
+            opacity: 1;
+          }
+          &:active {
+            transform: scale(1.25);
+          }
+        }
+
+        .chips {
+          flex: 1;
+          flex-grow: 1;
+          flex-shrink: 1;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
+          overflow: hidden;
+
+          .chip {
+            cursor: pointer;
+            flex: 0 0 57px;
+            background: url('~@/assets/img/pc/icon_chip.png') no-repeat;
+            background-size: auto 100%;
+            width: 57px;
+            height: 37px;
+            transition: all ease 0.1s;
+
+            &:hover {
+              transform: translateY(-4px);
+            }
+            &:active {
+              transform: translateY(-4px) scale(1.05);
+            }
+
+            $chip-width: 57px;
+            &:nth-child(2n + 1) {
+              background-position-x: -57px;
+            }
+          }
         }
       }
     }
