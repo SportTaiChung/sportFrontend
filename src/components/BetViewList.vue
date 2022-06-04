@@ -823,7 +823,7 @@
             background-size: auto 100%;
             width: 57px;
             height: 37px;
-            transition: all ease 0.1s;
+            transition: transform ease 0.1s;
 
             &:hover {
               transform: translateY(-4px);
