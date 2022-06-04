@@ -20,7 +20,7 @@
               class="playBetOdd"
               :class="playBetOddClassJudge(cart.OriginShowOdd, displayData[cartIndex].showOdd)"
             >
-              {{ displayData[cartIndex].showOdd }}
+              {{ showOddValue(displayData[cartIndex].showOdd) }}
             </div>
 
             <i
@@ -93,7 +93,7 @@
             </div>
             <div class="at"> @ </div>
             <div class="playBetOdd">
-              {{ historyItem.dataBet[0].PayoutOddsStr }}
+              {{ showOddValue(historyItem.dataBet[0].PayoutOddsStr) }}
             </div>
           </div>
           <div class="cardContentBlock">
@@ -342,8 +342,18 @@
       isShowStrayCantPlayTip() {
         return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length <= 1;
       },
+      includePrincipal() {
+        return this.$store.state.Setting.includePrincipal;
+      },
     },
     methods: {
+      showOddValue(oddValue) {
+        if (this.includePrincipal) {
+          return this.$lib.trunc(parseFloat(oddValue) + 1);
+        } else {
+          return oddValue;
+        }
+      },
       listCardItemClassJudge(cart) {
         if (this.childIndex === 1 && this.EvtIdRepeatList.indexOf(cart.GameID) > -1) {
           return 'redErrorStyle';

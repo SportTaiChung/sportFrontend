@@ -1,6 +1,6 @@
 <template>
   <div class="Odd" :class="OddCssJudge">
-    {{ OddValue }}
+    {{ showOddValue }}
   </div>
 </template>
 
@@ -38,6 +38,16 @@
           return 'smallerColor';
         } else {
           return '';
+        }
+      },
+      includePrincipal() {
+        return this.$store.state.Setting.includePrincipal;
+      },
+      showOddValue() {
+        if (this.includePrincipal) {
+          return this.$lib.trunc(parseFloat(this.OddValue) + 1);
+        } else {
+          return this.OddValue;
         }
       },
     },
