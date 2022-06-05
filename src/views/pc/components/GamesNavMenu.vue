@@ -36,31 +36,39 @@
           <el-menu-item v-for="(item, i) in []" :key="i">{{ item.value }}</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu v-for="(menuData, i) in gameStore.MenuList" :key="i" :index="i + ''">
-        <template slot="title">
+      <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
+        <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
+          <template slot="title">
+            <i class="el-icon-basketball"></i>
+            <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
+              <span class="nav_text">{{ menuData.catName }}</span>
+              <span class="nav_number">{{ menuData.count }}</span>
+            </div>
+          </template>
+          <el-menu-item-group v-show="menuData.Items.length > 0">
+            <el-menu-item
+              v-for="(Items, y) in menuData.Items"
+              :key="y"
+              :index="i + '-' + y"
+              @click="menuItemClickHandler(menuData, Items.WagerTypeKey, i)"
+            >
+              <template slot="title">
+                <div class="nav_bottom_item">
+                  <span class="nav_text">{{ Items.WagerTypeName }}</span>
+                  <span class="nav_number">{{ Items.count }}</span>
+                </div>
+              </template>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
           <i class="el-icon-basketball"></i>
           <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
             <span class="nav_text">{{ menuData.catName }}</span>
             <span class="nav_number">{{ menuData.count }}</span>
           </div>
-        </template>
-        <el-menu-item-group v-show="menuData.Items.length > 0">
-          <el-menu-item
-            v-for="(Items, y) in menuData.Items"
-            :key="y"
-            :index="i + '-' + y"
-            @click="menuItemClickHandler(menuData, Items.WagerTypeKey, i)"
-          >
-            <template slot="title">
-              <div class="nav_bottom_item">
-                <!-- <span class="subMenuItemText">{{ Items.WagerTypeName }}</span> -->
-                <span class="nav_text">{{ Items.WagerTypeName }}</span>
-                <span class="nav_number">{{ Items.count }}</span>
-              </div>
-            </template>
-          </el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+        </el-menu-item>
+      </template>
     </el-menu>
   </div>
 </template>
@@ -84,7 +92,7 @@
     mounted() {
       if (this.gameStore.MenuList.length !== 0) {
         // 一進入頁面預設選取第一個
-        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 1);
       }
 
       // 定時更新遊戲賠率
@@ -94,19 +102,17 @@
       }, 10000);
 
       // 定時更新遊戲Menu
-      this.intervalEvent2 = setInterval(() => {
-        this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
-          const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
-            return menuData.catid === this.gameStore.selectCatID;
-          });
-          if (menuIndex > -1) {
-            this.menuActiveString = `${menuIndex}-0`;
-          } else {
-            this.menuActiveString = `999-0`;
-            this.hideMenuChildren();
-          }
-        });
-      }, 20000);
+      // this.intervalEvent2 = setInterval(() => {
+      //   this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
+      //     const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
+      //       return menuData.catid === this.gameStore.selectCatID;
+      //     });
+      //     console.log(menuRes, menuIndex);
+      //     if (menuIndex === -1) {
+      //       this.hideMenuChildren();
+      //     }
+      //   });
+      // }, 15000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -122,6 +128,12 @@
       gameTypeID() {
         return this.$store.state.Game.selectGameType;
       },
+      selectCatID() {
+        return this.$store.state.Game.selectCatID;
+      },
+      selectWagerTypeKey() {
+        return this.$store.state.Game.selectWagerTypeKey;
+      },
       showHiddenCollapseText() {
         return this.showGameTypeList.find((it) => it.key === this.gameTypeID)?.value;
       },
@@ -135,6 +147,17 @@
       tableSort() {
         return this.$store.state.Setting.tableSort;
       },
+      includeFavoriteMenuList() {
+        return [
+          {
+            Items: [],
+            catName: '收藏',
+            count: this.$store.state.Setting.favorites.length,
+            isFavorite: true,
+          },
+          ...this.gameStore.MenuList,
+        ];
+      },
     },
     watch: {
       tableSort: {
@@ -142,8 +165,43 @@
           this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
         },
       },
+      selectCatID: {
+        handler() {
+          this.$nextTick(() => {
+            this.initMenuActiveString();
+          });
+        },
+        immediate: true,
+      },
+      includeFavoriteMenuList() {
+        this.initMenuActiveString();
+      },
+      selectWagerTypeKey() {
+        this.initMenuActiveString();
+      },
     },
     methods: {
+      initMenuActiveString() {
+        const menuIndex = this.includeFavoriteMenuList.findIndex(
+          (it) => it.catid === this.selectCatID
+        );
+        if (menuIndex === -1) {
+          this.hideMenuChildren();
+        } else {
+          if (this.includeFavoriteMenuList[menuIndex].Items.length === 0) {
+            this.menuActiveString = `${menuIndex}`;
+          } else {
+            const wagerIndex = this.includeFavoriteMenuList[menuIndex].Items.findIndex(
+              (it) => it.WagerTypeKey === this.selectWagerTypeKey
+            );
+            if (wagerIndex > -1) {
+              this.menuActiveString = `${menuIndex}-${wagerIndex}`;
+            } else {
+              this.menuActiveString = `${menuIndex}-0`;
+            }
+          }
+        }
+      },
       setNavMenuCollapse(val) {
         this.$emit('update:isNavMenuCollapse', val);
       },
@@ -155,7 +213,6 @@
         if (menuData.LeftMenu.item.length !== 0) {
           catid = menuData.LeftMenu.item[0].catid;
         }
-        this.menuActiveString = '0-0';
         this.callGetGameDetail(catid, null);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
         this.$store.commit('MoreGame/closeMoreGameList');
@@ -194,7 +251,6 @@
             this.hideMenuChildren();
           }
 
-          this.menuActiveString = `${catIndex}-0`;
           if (catData.Items.length === 0) {
             clickWagerTypeKey = 1;
           } else {
@@ -268,6 +324,24 @@
         }
         &.is-active {
           @include nav_menu_active_bg();
+        }
+      }
+      .el-menu-item {
+        height: 35px;
+        line-height: 35px;
+        i {
+          margin-right: 0px;
+        }
+        &.is-active {
+          @include nav_menu_active_bg();
+        }
+      }
+      .singleMenuItem {
+        .nav_bottom {
+          width: calc(100% - 20px);
+        }
+        &:hover {
+          @include hover_color();
         }
       }
     }

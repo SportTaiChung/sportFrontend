@@ -41,7 +41,7 @@
                   <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
                 </div>
                 <div class="rightFavoriteBlock">
-                  <div class="star"></div>
+                  <div class="star" @click="addFavoriteHandler(teamData.EvtID)"></div>
                 </div>
               </td>
 
@@ -245,6 +245,10 @@
       },
     },
     methods: {
+      addFavoriteHandler(EvtID) {
+        console.log(EvtID);
+        this.$store.commit('Setting/addFavorites', EvtID);
+      },
       clickArrow() {
         this.$emit('collapseChange', this.source.LeagueID);
       },
@@ -461,6 +465,7 @@
               height: $starSize;
               background-size: 100% auto;
               background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
+              cursor: pointer;
             }
             .starActive {
               width: $starSize;
