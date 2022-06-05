@@ -33,7 +33,17 @@
       </div>
       <!-- 一般投注每一個item的各自金額 -->
       <div class="cardContentBlockRow" v-if="childIndex === 0">
-        <div class="inputRow">
+        <div class="lockRowInfo" v-if="isLockMode">
+          <div class="infoItem">
+            <div class="infoItemTitle">投注 :</div>
+            <div class="infoItemVal"> {{ cartData.betAmount }}</div>
+          </div>
+          <div class="infoItem">
+            <div class="infoItemTitle">可贏 :</div>
+            <div class="infoItemVal"> {{ cartData.winAmount }}</div>
+          </div>
+        </div>
+        <div class="inputRow" v-else>
           <input
             class="input"
             v-model="cartData.betAmount"
@@ -58,14 +68,18 @@
             @click="onCardInputClick"
             @blur="winAmountBlur(cartData.GameID)"
           />
-          <div class="submitBtn" v-if="isMobileMode">確認下注</div>
+          <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')"
+            >確認下注</div
+          >
         </div>
       </div>
-      <div class="cardContentBlockRow limitText"> 本場上限 : {{ cartData.BetMax }} </div>
+      <div class="cardContentBlockRow limitText" v-if="!isLockMode">
+        本場上限 : {{ cartData.BetMax }}
+      </div>
 
       <!-- 小鍵盤 -->
       <mBetKeyboard
-        v-if="isMobileMode && isShowKeyboard"
+        v-if="isMobileMode && isShowKeyboard && !isLockMode"
         @Add="(data) => $emit('Add', data)"
         @Assign="(data) => $emit('Assign', data)"
       ></mBetKeyboard>
@@ -105,6 +119,9 @@
       listCardItemClassJudge: {
         type: String,
         default: '',
+      },
+      isLockMode: {
+        type: Boolean,
       },
     },
     methods: {

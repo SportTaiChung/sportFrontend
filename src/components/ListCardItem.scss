@@ -65,6 +65,20 @@
           border: 1px solid transparent;
         }
       }
+      .lockRowInfo {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        .infoItem {
+          width: 50%;
+          display: flex;
+          .infoItemTitle {
+            margin-right: 5px;
+          }
+          .infoItemVal {
+          }
+        }
+      }
       .cardContentBlockRowText {
         margin-right: 5px;
         text-align: left;

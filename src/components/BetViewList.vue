@@ -11,6 +11,7 @@
           :cartIndex="cartIndex"
           :listCardItemClassJudge="listCardItemClassJudge(cartData.GameID)"
           :currShowKeyboardIndex="currShowKeyboardIndex"
+          :isLockMode="isLockMode"
           :key="cartIndex"
           @cancelSingleHandler="cancelSingleHandler"
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
@@ -18,6 +19,7 @@
           @lastBlurInputEvent="lastBlurInputEvent"
           @Add="keyBoardAddEvent"
           @Assign="keyBoardAssignEvent"
+          @MobileListItemSubmitBet="submitHandler"
         ></listCardItem>
       </template>
     </template>
@@ -80,6 +82,12 @@
       </div>
     </template>
 
+    <div class="cardOptionBlock" v-if="isMobileMode && !isShowCardOptionBlock && isLockMode">
+      <div class="buttonRow">
+        <div class="submitBtn" style="text-align: center" @click="submitHandler">確認下注</div>
+      </div>
+    </div>
+
     <!-- 單向投注下方面板 -->
     <div class="cardOptionBlock" v-if="isShowChartList && isShowCardOptionBlock">
       <div class="betInputRow" v-if="!isLockMode">
@@ -116,13 +124,13 @@
 
       <!-- 小鍵盤 -->
       <mBetKeyboard
-        v-if="isMobileMode && isShowBetKB"
+        v-if="isMobileMode && isShowBetKB && !isLockMode"
         @Add="keyBoardAddEvent"
         @Assign="keyBoardAssignEvent"
       ></mBetKeyboard>
 
       <!-- 小籌碼 -->
-      <div class="betPlay_chip" v-if="!isMobileMode">
+      <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
           <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
@@ -185,13 +193,13 @@
 
       <!-- 小鍵盤 -->
       <mBetKeyboard
-        v-if="isMobileMode && isShowStrayKB"
+        v-if="isMobileMode && isShowStrayKB && !isLockMode"
         @Add="keyBoardAddEvent"
         @Assign="keyBoardAssignEvent"
       ></mBetKeyboard>
 
       <!-- 小籌碼 -->
-      <div class="betPlay_chip" v-if="!isMobileMode">
+      <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
           <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
@@ -321,8 +329,11 @@
       },
       groupIndex: {
         handler() {
-          this.callBetHistoryAPI();
+          if (this.groupIndex === 1) {
+            this.callBetHistoryAPI();
+          }
         },
+        immediate: true,
       },
       childIndex: {
         handler() {
@@ -784,6 +795,7 @@
             }
             this.fillEachWinAmount = newNum.toString();
             this.fillEachWinAmountHandler();
+            this.reCalcBetChart();
           }
         } else if (this.lastBlurInput.name === 'strayBetAmount') {
           let newNum = 0;

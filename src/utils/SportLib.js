@@ -16,7 +16,7 @@ export function CatIDtoShowLabel(val) {
     return '世界杯';
   } else if (val === 32) {
     return '歐洲杯';
-  } else if (val === 4 || val === 12 || val === 14 || val === 101) {
+  } else if (val === 4 || val === 12 || val === 13 || val === 14 || val === 101) {
     return '棒球';
   } else if (val === 102 || val === 3 || val === 16) {
     return '籃球';
