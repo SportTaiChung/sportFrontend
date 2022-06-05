@@ -64,7 +64,11 @@
       <div class="cardContentBlockRow limitText"> 本場上限 : {{ cartData.BetMax }} </div>
 
       <!-- 小鍵盤 -->
-      <mBetKeyboard v-if="isMobileMode && isShowKeyboard"></mBetKeyboard>
+      <mBetKeyboard
+        v-if="isMobileMode && isShowKeyboard"
+        @Add="(data) => $emit('Add', data)"
+        @Assign="(data) => $emit('Assign', data)"
+      ></mBetKeyboard>
     </div>
 
     <div class="blackMaskErrorBlock" v-if="isShowBlackMask">

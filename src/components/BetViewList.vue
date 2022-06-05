@@ -16,6 +16,8 @@
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
           @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
           @lastBlurInputEvent="lastBlurInputEvent"
+          @Add="keyBoardAddEvent"
+          @Assign="keyBoardAssignEvent"
         ></listCardItem>
       </template>
     </template>
@@ -113,7 +115,11 @@
       </div>
 
       <!-- 小鍵盤 -->
-      <mBetKeyboard v-if="isMobileMode && isShowBetKB"></mBetKeyboard>
+      <mBetKeyboard
+        v-if="isMobileMode && isShowBetKB"
+        @Add="keyBoardAddEvent"
+        @Assign="keyBoardAssignEvent"
+      ></mBetKeyboard>
 
       <!-- 小籌碼 -->
       <div class="betPlay_chip" v-if="!isMobileMode">
@@ -178,7 +184,11 @@
       </div>
 
       <!-- 小鍵盤 -->
-      <mBetKeyboard v-if="isMobileMode && isShowStrayKB"></mBetKeyboard>
+      <mBetKeyboard
+        v-if="isMobileMode && isShowStrayKB"
+        @Add="keyBoardAddEvent"
+        @Assign="keyBoardAssignEvent"
+      ></mBetKeyboard>
 
       <!-- 小籌碼 -->
       <div class="betPlay_chip" v-if="!isMobileMode">
@@ -452,7 +462,9 @@
         });
       },
       strayBetAmountInputChangeHandler() {
+        console.log('wtf1', this.strayBetAmount);
         this.strayBetAmount = parseFloat(this.strayBetAmount.replace(/[^\d]/g, ''));
+        console.log('wtf2', this.strayBetAmount);
         if (isNaN(this.strayBetAmount)) {
           this.strayBetAmount = 0;
         }
@@ -568,7 +580,7 @@
             const listItem = {
               CatId,
               WagerString,
-              Amount: cartData.betAmount,
+              Amount: parseFloat(cartData.betAmount),
               AcceptBetter: this.$store.state.Setting.acceptBetter,
               BetType: 1,
             };
@@ -579,7 +591,7 @@
               const listItem = {
                 CatId,
                 WagerString,
-                Amount: strayBetAmount,
+                Amount: parseFloat(strayBetAmount),
                 AcceptBetter: this.$store.state.Setting.acceptBetter,
                 BetType: 99,
               };
@@ -670,14 +682,19 @@
         this.reCalcStrayBetChart();
       },
       lastBlurInputEvent(lastBlurInputData) {
-        console.log('lastBlurInputEvent', lastBlurInputData);
         this.lastBlurInput = lastBlurInputData;
       },
       onChipClick(index) {
         const value = this.currentChips[index] > 0 ? this.currentChips[index] : null;
         this.processLastBlurInput(value);
       },
-      processLastBlurInput(value) {
+      keyBoardAddEvent(addNum) {
+        this.processLastBlurInput(addNum);
+      },
+      keyBoardAssignEvent(newNum) {
+        this.processLastBlurInput(newNum, true);
+      },
+      processLastBlurInput(value, isAssignMode = false) {
         if (this.lastBlurInput.name === 'rowItem') {
           const CartListIndex = this.showBetCartList.findIndex(
             (it) => it.GameID === this.lastBlurInput.GameID
@@ -688,7 +705,16 @@
               if (this.showBetCartList[CartListIndex].betAmount === null) {
                 newNum = value;
               } else {
-                newNum = parseInt(this.showBetCartList[CartListIndex].betAmount) + value;
+                if (isAssignMode) {
+                  if (value === -1) {
+                    newNum = this.showBetCartList[CartListIndex].betAmount.toString().slice(0, -1);
+                  } else {
+                    newNum =
+                      this.showBetCartList[CartListIndex].betAmount.toString() + value.toString();
+                  }
+                } else {
+                  newNum = parseInt(this.showBetCartList[CartListIndex].betAmount) + value;
+                }
               }
               this.showBetCartList[CartListIndex].betAmount = newNum.toString();
               this.reCalcBetChart();
@@ -696,7 +722,16 @@
               if (this.showBetCartList[CartListIndex].winAmount === null) {
                 newNum = value;
               } else {
-                newNum = parseInt(this.showBetCartList[CartListIndex].winAmount) + value;
+                if (isAssignMode) {
+                  if (value === -1) {
+                    newNum = this.showBetCartList[CartListIndex].winAmount.toString().slice(0, -1);
+                  } else {
+                    newNum =
+                      this.showBetCartList[CartListIndex].winAmount.toString() + value.toString();
+                  }
+                } else {
+                  newNum = parseInt(this.showBetCartList[CartListIndex].winAmount) + value;
+                }
               }
               this.showBetCartList[CartListIndex].winAmount = newNum.toString();
               const cartData = this.showBetCartList[CartListIndex];
@@ -721,7 +756,15 @@
             if (this.fillEachBetAmount === null) {
               newNum = value;
             } else {
-              newNum = parseInt(this.fillEachBetAmount) + value;
+              if (isAssignMode) {
+                if (value === -1) {
+                  newNum = this.fillEachBetAmount.toString().slice(0, -1);
+                } else {
+                  newNum = this.fillEachBetAmount.toString() + value.toString();
+                }
+              } else {
+                newNum = parseInt(this.fillEachBetAmount) + value;
+              }
             }
             this.fillEachBetAmount = newNum.toString();
             this.fillEachBetAmountHandler();
@@ -729,17 +772,37 @@
             if (this.fillEachWinAmount === null) {
               newNum = value;
             } else {
-              newNum = parseInt(this.fillEachWinAmount) + value;
+              if (isAssignMode) {
+                if (value === -1) {
+                  newNum = this.fillEachWinAmount.toString().slice(0, -1);
+                } else {
+                  newNum = this.fillEachWinAmount.toString() + value.toString();
+                }
+              } else {
+                newNum = parseInt(this.fillEachWinAmount) + value;
+              }
             }
             this.fillEachWinAmount = newNum.toString();
             this.fillEachWinAmountHandler();
           }
         } else if (this.lastBlurInput.name === 'strayBetAmount') {
           let newNum = 0;
-          if (this.strayBetAmount === null) {
-            newNum = value;
+          if (this.strayBetAmount === null || this.strayBetAmount === '') {
+            if (value === -1) {
+              newNum = 0;
+            } else {
+              newNum = value;
+            }
           } else {
-            newNum = parseInt(this.strayBetAmount) + value;
+            if (isAssignMode) {
+              if (value === -1) {
+                newNum = this.strayBetAmount.toString().slice(0, -1);
+              } else {
+                newNum = this.strayBetAmount.toString() + value.toString();
+              }
+            } else {
+              newNum = parseInt(this.strayBetAmount) + value;
+            }
           }
           this.strayBetAmount = newNum.toString();
           this.reCalcStrayBetChart();

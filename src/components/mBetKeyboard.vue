@@ -2,27 +2,27 @@
   <div id="mBetKeyboard">
     <!-- 快選 -->
     <ul class="quick-add">
-      <li class="btn-quick-add">+10</li>
-      <li class="btn-quick-add">+100</li>
-      <li class="btn-quick-add">+500</li>
-      <li class="btn-quick-add">+1000</li>
+      <li class="btn-quick-add" @click="Add(10)">+10</li>
+      <li class="btn-quick-add" @click="Add(100)">+100</li>
+      <li class="btn-quick-add" @click="Add(500)">+500</li>
+      <li class="btn-quick-add" @click="Add(1000)">+1000</li>
 
       <!-- <li class="max-num-tip">999999</li> -->
     </ul>
 
     <!-- 數字鍵盤 -->
     <div class="num-input-pad">
-      <div class="input-item">1</div>
-      <div class="input-item">2</div>
-      <div class="input-item">3</div>
-      <div class="input-item">4</div>
-      <div class="input-item">5</div>
-      <div class="input-item">🠔</div>
-      <div class="input-item">6</div>
-      <div class="input-item">7</div>
-      <div class="input-item">8</div>
-      <div class="input-item">9</div>
-      <div class="input-item">0</div>
+      <div class="input-item" @click="Assign(1)">1</div>
+      <div class="input-item" @click="Assign(2)">2</div>
+      <div class="input-item" @click="Assign(3)">3</div>
+      <div class="input-item" @click="Assign(4)">4</div>
+      <div class="input-item" @click="Assign(5)">5</div>
+      <div class="input-item" @click="Assign(-1)">🠔</div>
+      <div class="input-item" @click="Assign(6)">6</div>
+      <div class="input-item" @click="Assign(7)">7</div>
+      <div class="input-item" @click="Assign(8)">8</div>
+      <div class="input-item" @click="Assign(9)">9</div>
+      <div class="input-item" @click="Assign(0)">0</div>
     </div>
   </div>
 </template>
@@ -30,6 +30,14 @@
 <script>
   export default {
     name: 'mBetKeyboard',
+    methods: {
+      Add(addNum) {
+        this.$emit('Add', addNum);
+      },
+      Assign(AssignNum) {
+        this.$emit('Assign', AssignNum);
+      },
+    },
   };
 </script>
 
