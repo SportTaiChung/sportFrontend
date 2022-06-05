@@ -44,10 +44,13 @@
         return this.$store.state.Setting.includePrincipal;
       },
       showOddValue() {
-        if (this.includePrincipal) {
-          return this.$lib.trunc(parseFloat(this.OddValue) + 1);
-        } else {
-          return this.OddValue;
+        if (this.OddValue === '') return '';
+        else {
+          if (this.includePrincipal) {
+            return this.$lib.trunc(parseFloat(this.OddValue) + 1);
+          } else {
+            return this.OddValue;
+          }
         }
       },
     },

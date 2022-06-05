@@ -47,6 +47,7 @@
             "
             @input="inputRowItemChangeHandler(cartData)"
             @click="onCardInputClick"
+            @blur="betAmountBlur(cartData.GameID)"
           />
           <input
             class="input"
@@ -54,8 +55,8 @@
             placeholder="可赢金額"
             type="number"
             @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
-            @blur="$emit('inputRowItemChangeHandler')"
             @click="onCardInputClick"
+            @blur="winAmountBlur(cartData.GameID)"
           />
           <div class="submitBtn" v-if="isMobileMode">確認下注</div>
         </div>
@@ -103,6 +104,21 @@
       },
     },
     methods: {
+      betAmountBlur(GameID) {
+        this.$emit('lastBlurInputEvent', {
+          name: 'rowItem',
+          from: 'betAmount',
+          GameID,
+        });
+      },
+      winAmountBlur(GameID) {
+        this.$emit('inputRowItemChangeHandler');
+        this.$emit('lastBlurInputEvent', {
+          name: 'rowItem',
+          from: 'winAmount',
+          GameID,
+        });
+      },
       onCardInputClick() {
         this.$emit('onCartListItemKeyboardShow', this.cartIndex);
       },
@@ -175,143 +191,5 @@
 </script>
 
 <style lang="scss" scoped>
-  .listCardItem {
-    background-color: #eaeaea;
-    margin-bottom: 5px;
-    position: relative;
-    .cardHeaderRow {
-      display: flex;
-      padding: 7px 10px;
-      border-bottom: 1px solid #cccccc;
-      position: relative;
-      @mixin common {
-        margin-right: 5px;
-        font-weight: bold;
-      }
-      .playMethodName {
-        color: #005aff;
-        @include common();
-      }
-      .playMethodNameSupport {
-        color: red;
-        @include common();
-      }
-      .oddChangeStyle {
-        background-color: #41b590;
-        padding: 2px 4px;
-        color: white !important;
-      }
-      .at {
-        @include common();
-      }
-      .playBetOdd {
-        color: red;
-        @include common();
-      }
-      .el-icon-close {
-        font-weight: bold;
-        position: absolute;
-        right: 6px;
-        font-size: 18px;
-        opacity: 0.5;
-        margin-top: -3px;
-        cursor: pointer;
-        z-index: 9999;
-      }
-    }
-    .cardContentBlock {
-      padding: 8px 10px;
-      .cardContentBlockRow {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 6px;
-        &:last-child {
-          margin-bottom: 0px;
-        }
-        .inputRow {
-          display: flex;
-          justify-content: space-between;
-          gap: 10px;
-          width: 100%;
-          .input {
-            width: 49%;
-            height: 30px;
-            font-size: 15px;
-            border-radius: 3px;
-            padding: 5px;
-            border: 1px solid transparent;
-          }
-        }
-        .cardContentBlockRowText {
-          margin-right: 5px;
-          text-align: left;
-        }
-        .HomeTeamSign {
-          color: #ff8800;
-        }
-        .cardContentBlockWithHalfRow {
-          width: 50%;
-          text-align: left;
-        }
-        .submitBtn {
-          width: 48%;
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          font-size: 14px;
-          cursor: pointer;
-          font-weight: bold;
-          background-color: #ffdf1b;
-          color: black;
-          &:hover {
-            background-color: #ffeb68f9;
-          }
-        }
-      }
-      .limitText {
-        color: #006a8a;
-      }
-    }
-    .strayContentBlock {
-      padding: 8px 10px;
-      .strayContentBlockRow {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 6px;
-        &:last-child {
-          margin-bottom: 0px;
-        }
-        .strayTitleInfoText {
-          color: #005aff;
-          padding: 0px 5px;
-        }
-        .strayTitleInfoTextTip {
-          color: #f00;
-        }
-      }
-    }
-    .blackMaskErrorBlock {
-      position: absolute;
-      background-color: rgba(0, 0, 0, 0.55);
-      width: 100%;
-      height: 100%;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      .blackMaskText {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        color: white;
-        font-size: 15px;
-        text-align: center;
-        background-color: rgba(0, 0, 0, 0.8);
-        white-space: nowrap;
-        border-radius: 20px;
-        padding: 8px 25px;
-      }
-    }
-  }
+  @import './ListCardItem.scss';
 </style>

@@ -15,6 +15,7 @@
           @cancelSingleHandler="cancelSingleHandler"
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
           @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
+          @lastBlurInputEvent="lastBlurInputEvent"
         ></listCardItem>
       </template>
     </template>
@@ -90,6 +91,7 @@
             isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
             lastClickInput = 1;
           "
+          @blur="fillEachBetAmountBlurHandler"
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
@@ -105,7 +107,7 @@
             isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
             lastClickInput = 2;
           "
-          @blur="reCalcBetChart()"
+          @blur="fillEachWinAmountBlurHandler"
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
@@ -166,7 +168,7 @@
           read="true"
           @input="strayBetAmountInputChangeHandler"
           @click="isShowStrayKB = !isShowStrayKB"
-          @blur="reCalcStrayBetChart"
+          @blur="strayBetBlurHandler"
         />
       </div>
       <div class="betInputRow" v-if="!isLockMode">
@@ -285,6 +287,9 @@
         chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000],
         chipPageIndex: 0,
         chipsNumPerPage: 3,
+
+        // 最後blur的input
+        lastBlurInput: { name: 'fillEachBetAmount' },
       };
     },
     mounted() {
@@ -313,6 +318,13 @@
         handler() {
           this.isLockMode = false;
           this.callBetHistoryAPI();
+          if (this.groupIndex === 0) {
+            if (this.childIndex === 0) {
+              this.lastBlurInput = { name: 'fillEachBetAmount' };
+            } else {
+              this.lastBlurInput = { name: 'strayBetAmount' };
+            }
+          }
         },
       },
       showBetCartList: {
@@ -372,6 +384,13 @@
       },
     },
     methods: {
+      showOddValue(oddValue) {
+        if (this.includePrincipal) {
+          return this.$lib.trunc(parseFloat(oddValue) + 1);
+        } else {
+          return oddValue;
+        }
+      },
       listCardItemClassJudge(GameID) {
         if (this.childIndex === 1 && this.EvtIdRepeatList.indexOf(GameID) > -1) {
           return 'redErrorStyle';
@@ -406,21 +425,24 @@
         this.reCalcBetChart();
       },
       fillEachBetAmountHandler() {
+        this.fillEachWinAmount = null;
         this.fillEachBetAmount = parseFloat(this.fillEachBetAmount.replace(/[^\d]/g, ''));
         if (isNaN(this.fillEachBetAmount)) {
           this.fillEachBetAmount = 0;
         }
-        this.fillEachWinAmount = null;
+
         this.showBetCartList.forEach((cartData) => {
           cartData.betAmount = this.fillEachBetAmount;
         });
         this.reCalcBetChart();
       },
       fillEachWinAmountHandler() {
+        this.fillEachBetAmount = null;
         this.fillEachWinAmount = parseFloat(this.fillEachWinAmount.replace(/[^\d]/g, ''));
         if (isNaN(this.fillEachWinAmount)) {
           this.fillEachWinAmount = 0;
         }
+
         this.showBetCartList.forEach((cartData) => {
           const displayData = this.cartDataToDisplayData(cartData);
           cartData.winAmount = this.fillEachWinAmount;
@@ -636,15 +658,99 @@
           'background-position-x': -x + 'px',
         };
       },
+      fillEachBetAmountBlurHandler() {
+        this.lastBlurInput = { name: 'fillEachBetAmount' };
+      },
+      fillEachWinAmountBlurHandler() {
+        this.lastBlurInput = { name: 'fillEachWinAmount' };
+        this.reCalcBetChart();
+      },
+      strayBetBlurHandler() {
+        this.lastBlurInput = { name: 'strayBetAmount' };
+        this.reCalcStrayBetChart();
+      },
+      lastBlurInputEvent(lastBlurInputData) {
+        console.log('lastBlurInputEvent', lastBlurInputData);
+        this.lastBlurInput = lastBlurInputData;
+      },
       onChipClick(index) {
         const value = this.currentChips[index] > 0 ? this.currentChips[index] : null;
-        console.log('籌碼點擊: ', value);
+        this.processLastBlurInput(value);
+      },
+      processLastBlurInput(value) {
+        if (this.lastBlurInput.name === 'rowItem') {
+          const CartListIndex = this.showBetCartList.findIndex(
+            (it) => it.GameID === this.lastBlurInput.GameID
+          );
+          if (CartListIndex > -1) {
+            let newNum = 0;
+            if (this.lastBlurInput.from === 'betAmount') {
+              if (this.showBetCartList[CartListIndex].betAmount === null) {
+                newNum = value;
+              } else {
+                newNum = parseInt(this.showBetCartList[CartListIndex].betAmount) + value;
+              }
+              this.showBetCartList[CartListIndex].betAmount = newNum.toString();
+              this.reCalcBetChart();
+            } else {
+              if (this.showBetCartList[CartListIndex].winAmount === null) {
+                newNum = value;
+              } else {
+                newNum = parseInt(this.showBetCartList[CartListIndex].winAmount) + value;
+              }
+              this.showBetCartList[CartListIndex].winAmount = newNum.toString();
+              const cartData = this.showBetCartList[CartListIndex];
+              const displayData = this.cartDataToDisplayData(cartData);
+              if (cartData.winAmount !== null) {
+                this.showBetCartList[CartListIndex].betAmount = this.$lib.truncCeil(
+                  cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
+                );
+              }
+              this.reCalcBetChart();
+            }
+          } else {
+            this.lastBlurInput.name = 'fillEachBetAmount';
+          }
+        }
+        if (
+          this.lastBlurInput.name === 'fillEachBetAmount' ||
+          this.lastBlurInput.name === 'fillEachWinAmount'
+        ) {
+          let newNum = 0;
+          if (this.lastBlurInput.name === 'fillEachBetAmount') {
+            if (this.fillEachBetAmount === null) {
+              newNum = value;
+            } else {
+              newNum = parseInt(this.fillEachBetAmount) + value;
+            }
+            this.fillEachBetAmount = newNum.toString();
+            this.fillEachBetAmountHandler();
+          } else {
+            if (this.fillEachWinAmount === null) {
+              newNum = value;
+            } else {
+              newNum = parseInt(this.fillEachWinAmount) + value;
+            }
+            this.fillEachWinAmount = newNum.toString();
+            this.fillEachWinAmountHandler();
+          }
+        } else if (this.lastBlurInput.name === 'strayBetAmount') {
+          let newNum = 0;
+          if (this.strayBetAmount === null) {
+            newNum = value;
+          } else {
+            newNum = parseInt(this.strayBetAmount) + value;
+          }
+          this.strayBetAmount = newNum.toString();
+          this.reCalcStrayBetChart();
+        }
       },
     },
   };
 </script>
 
 <style lang="scss" scoped>
+  @import './ListCardItem.scss';
   #BetViewList {
     height: calc(100% - 35px);
     overflow: auto;
