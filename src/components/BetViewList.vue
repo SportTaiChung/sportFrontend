@@ -353,6 +353,7 @@
           // 驅動過關賠率計算
           this.reCalcStrayBetChart();
           this.$emit('betCartListChanged', this.showBetCartList);
+          this.isLockMode = false;
         },
       },
       strayOdd() {
