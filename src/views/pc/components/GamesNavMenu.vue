@@ -102,17 +102,17 @@
       }, 10000);
 
       // 定時更新遊戲Menu
-      // this.intervalEvent2 = setInterval(() => {
-      //   this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
-      //     const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
-      //       return menuData.catid === this.gameStore.selectCatID;
-      //     });
-      //     console.log(menuRes, menuIndex);
-      //     if (menuIndex === -1) {
-      //       this.hideMenuChildren();
-      //     }
-      //   });
-      // }, 15000);
+      this.intervalEvent2 = setInterval(() => {
+        this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
+          const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
+            return menuData.catid === this.gameStore.selectCatID;
+          });
+          console.log(menuRes, menuIndex);
+          if (menuIndex === -1) {
+            this.hideMenuChildren();
+          }
+        });
+      }, 15000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -280,9 +280,6 @@
           color: $nav_submenu_active_text !important;
         }
       }
-      .el-submenu {
-        border-bottom: 1px solid $GamesNavMenu_submenu_border_bottom_color;
-      }
     }
   }
   #app[data-theme='dark'] {
@@ -292,9 +289,6 @@
         .nav_text {
           color: $nav_submenu_active_text1 !important;
         }
-      }
-      .el-submenu {
-        border-bottom: 1px solid $GamesNavMenu_submenu_border_bottom_color1;
       }
     }
   }
@@ -324,6 +318,9 @@
         }
         &.is-active {
           @include nav_menu_active_bg();
+          .el-submenu__title {
+            border-bottom: 1px solid #ccc;
+          }
         }
       }
       .el-menu-item {
@@ -337,6 +334,7 @@
         }
       }
       .singleMenuItem {
+        border-bottom: 1px solid #bbb;
         .nav_bottom {
           width: calc(100% - 20px);
         }
