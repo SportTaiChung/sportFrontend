@@ -37,6 +37,12 @@ export default {
           .catch(reject);
       });
     },
+    LogoutClearHandler(store) {
+      // 登出handler
+      store.commit('BetCart/clearCart', null, { root: true });
+      store.commit('SetToken', '');
+      window.router.replace({ name: 'Login' });
+    },
     Logout(store) {
       return new Promise((resolve, reject) => {
         return logout()
@@ -45,10 +51,7 @@ export default {
           })
           .catch(reject)
           .finally(() => {
-            // 登出handler
-            store.commit('BetCart/clearCart', null, { root: true });
-            store.commit('SetToken', '');
-            window.router.replace({ name: 'Login' });
+            store.dispatch('LogoutClearHandler');
           });
       });
     },

@@ -40,8 +40,12 @@
 
                   <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
                 </div>
-                <div class="rightFavoriteBlock">
-                  <div class="star" @click="addFavoriteHandler(teamData.EvtID)"></div>
+                <div class="rightFavoriteBlock" v-if="rowIndex === 0">
+                  <div
+                    class="star"
+                    :class="starCSSJudge(teamData.EvtID)"
+                    @click="addFavoriteHandler(teamData.EvtID)"
+                  ></div>
                 </div>
               </td>
 
@@ -245,6 +249,13 @@
       },
     },
     methods: {
+      starCSSJudge(EvtID) {
+        if (this.$store.state.Setting.favorites.indexOf(EvtID) > -1) {
+          return 'starActive';
+        } else {
+          return '';
+        }
+      },
       addFavoriteHandler(EvtID) {
         console.log(EvtID);
         this.$store.commit('Setting/addFavorites', EvtID);

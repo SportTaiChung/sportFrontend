@@ -83,8 +83,8 @@
         <div class="betInputTitle"> 單注 </div>
         <div class="betInputSymbol">:</div>
         <input
-          v-model.number="fillEachBetAmount"
-          type="Number"
+          v-model="fillEachBetAmount"
+          type="number"
           @input="fillEachBetAmountHandler"
           @click="
             isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
@@ -98,9 +98,9 @@
         <div class="betInputTitle"> 可贏金額 </div>
         <div class="betInputSymbol">:</div>
         <input
-          v-model.number="fillEachWinAmount"
-          type="Number"
-          @input="fillEachWinAmountHandler()"
+          v-model="fillEachWinAmount"
+          type="number"
+          @input="fillEachWinAmountHandler"
           @click="
             isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
             lastClickInput = 2;
@@ -161,11 +161,12 @@
         </div>
         <div class="betInputSymbol">:</div>
         <input
-          v-model.number="strayBetAmount"
-          type="Number"
-          @blur="reCalcStrayBetChart"
+          v-model="strayBetAmount"
+          type="number"
           read="true"
+          @input="strayBetAmountInputChangeHandler"
           @click="isShowStrayKB = !isShowStrayKB"
+          @blur="reCalcStrayBetChart"
         />
       </div>
       <div class="betInputRow" v-if="!isLockMode">
@@ -281,7 +282,7 @@
         // 目前打開小鍵盤的 購物車item index
         currShowKeyboardIndex: -1,
 
-        chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000, 999999],
+        chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000],
         chipPageIndex: 0,
         chipsNumPerPage: 3,
       };
@@ -361,7 +362,7 @@
         return process.env.VUE_APP_UI === 'mobile';
       },
       maxChipPage() {
-        return Math.trunc(this.chipsData.length / this.chipsNumPerPage);
+        return Math.trunc(this.chipsData.length / this.chipsNumPerPage) - 1;
       },
       currentChips() {
         return this.chipsData.slice(
@@ -404,8 +405,11 @@
       inputRowItemChangeHandler() {
         this.reCalcBetChart();
       },
-
       fillEachBetAmountHandler() {
+        this.fillEachBetAmount = parseFloat(this.fillEachBetAmount.replace(/[^\d]/g, ''));
+        if (isNaN(this.fillEachBetAmount)) {
+          this.fillEachBetAmount = 0;
+        }
         this.fillEachWinAmount = null;
         this.showBetCartList.forEach((cartData) => {
           cartData.betAmount = this.fillEachBetAmount;
@@ -413,7 +417,10 @@
         this.reCalcBetChart();
       },
       fillEachWinAmountHandler() {
-        this.fillEachBetAmount = null;
+        this.fillEachWinAmount = parseFloat(this.fillEachWinAmount.replace(/[^\d]/g, ''));
+        if (isNaN(this.fillEachWinAmount)) {
+          this.fillEachWinAmount = 0;
+        }
         this.showBetCartList.forEach((cartData) => {
           const displayData = this.cartDataToDisplayData(cartData);
           cartData.winAmount = this.fillEachWinAmount;
@@ -421,6 +428,12 @@
             cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
           );
         });
+      },
+      strayBetAmountInputChangeHandler() {
+        this.strayBetAmount = parseFloat(this.strayBetAmount.replace(/[^\d]/g, ''));
+        if (isNaN(this.strayBetAmount)) {
+          this.strayBetAmount = 0;
+        }
       },
       reCalcBetChart() {
         let newTotalBetAmount = 0;

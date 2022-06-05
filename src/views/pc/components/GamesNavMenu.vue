@@ -107,7 +107,6 @@
           const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
             return menuData.catid === this.gameStore.selectCatID;
           });
-          console.log(menuRes, menuIndex);
           if (menuIndex === -1) {
             this.hideMenuChildren();
           }

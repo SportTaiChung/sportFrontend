@@ -36,7 +36,8 @@
         <div class="inputRow">
           <input
             class="input"
-            v-model.number="cartData.betAmount"
+            v-model="cartData.betAmount"
+            type="number"
             :max="cartData.BetMax"
             :min="cartData.BetMin"
             :placeholder="
@@ -44,16 +45,15 @@
                 ? cartData.BetMin + '-' + cartData.BetMax
                 : ''
             "
-            type="Number"
-            @input="$emit('inputRowItemChangeHandler')"
+            @input="inputRowItemChangeHandler(cartData)"
             @click="onCardInputClick"
           />
           <input
             class="input"
-            v-model.number="cartData.winAmount"
+            v-model="cartData.winAmount"
             placeholder="可赢金額"
-            type="Number"
-            @input="inputRowItemWinAmountChangeHandler(cartIndex)"
+            type="number"
+            @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
             @blur="$emit('inputRowItemChangeHandler')"
             @click="onCardInputClick"
           />
@@ -112,7 +112,18 @@
       cartDataToDisplayData(cartData) {
         return this.$SportLib.cartDataToDisplayData(cartData);
       },
-      inputRowItemWinAmountChangeHandler(winAmountIndex) {
+      inputRowItemChangeHandler(cartData) {
+        cartData.betAmount = parseFloat(cartData.betAmount.replace(/[^\d]/g, ''));
+        if (isNaN(cartData.betAmount)) {
+          cartData.betAmount = 0;
+        }
+        this.$emit('inputRowItemChangeHandler');
+      },
+      inputRowItemWinAmountChangeHandler(cartData, winAmountIndex) {
+        cartData.winAmount = parseFloat(cartData.winAmount.replace(/[^\d]/g, ''));
+        if (isNaN(cartData.winAmount)) {
+          cartData.winAmount = 0;
+        }
         this.showBetCartList.forEach((cartData, cartIndex) => {
           if (cartIndex === winAmountIndex) {
             const displayData = this.cartDataToDisplayData(cartData);
