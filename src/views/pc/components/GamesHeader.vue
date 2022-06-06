@@ -22,8 +22,12 @@
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
         <li>
-          <img src="@/assets/img/pc/icon_header_logout.svg" class="logoutIcon" alt="" />
-          <!-- <svg-icon data_iconName="icon_header_logout_default" className="logoutIcon" /> -->
+          <img
+            src="@/assets/img/pc/icon_header_logout.svg"
+            class="logoutIcon"
+            alt=""
+            @click="logout"
+          />
         </li>
 
         <li></li>
