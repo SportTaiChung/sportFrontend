@@ -27,7 +27,7 @@
                 </div>
                 <div class="centerTeamBlock">
                   <!-- 主客場對調 -->
-                  <template v-if="$SportLib.isHomeAwayReverse(source.CatID)">
+                  <template v-if="!teamData.SetFlag">
                     <div>
                       <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
                       <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
@@ -40,8 +40,12 @@
 
                   <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
                 </div>
-                <div class="rightFavoriteBlock">
-                  <div class="star"></div>
+                <div class="rightFavoriteBlock" v-if="rowIndex === 0">
+                  <div
+                    class="star"
+                    :class="starCSSJudge(teamData.EvtID)"
+                    @click="addFavoriteHandler(teamData.EvtID)"
+                  ></div>
                 </div>
               </td>
 
@@ -50,7 +54,11 @@
                 v-for="(wagerData, wagerIndex) in teamData.Wager"
                 :key="wagerIndex"
                 :set="
-                  ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
+                  ((sportData = $SportLib.WagerDataToShowData(
+                    teamData.SetFlag,
+                    wagerData,
+                    rowIndex
+                  )),
                   (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
                   (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
                 "
@@ -75,7 +83,16 @@
                       <div
                         class="WagerRow"
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
-                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            0,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                       >
                         <div class="WagerCenterItem">
                           <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
@@ -84,7 +101,16 @@
                       <div
                         class="WagerRow"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
-                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            1,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                       >
                         <div class="WagerCenterItem">
                           <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
@@ -96,7 +122,16 @@
                       <div
                         class="WagerRow"
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
-                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            0,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                       >
                         <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
                         <div class="WagerItem">
@@ -106,7 +141,16 @@
                       <div
                         class="WagerRow"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
-                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            1,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                       >
                         <div class="WagerItem">
                           {{ sportData.bottomPlayMethod }}
@@ -122,7 +166,8 @@
                       <template
                         v-if="
                           wagerData.Odds[0].DrewOdds === '0' ||
-                          wagerData.Odds[0].DrewOdds === '0.00'
+                          wagerData.Odds[0].DrewOdds === '0.00' ||
+                          wagerData.Odds[0].Status !== 1
                         "
                       >
                         <div class="WagerRow"> </div>
@@ -131,7 +176,16 @@
                         <div
                           class="WagerRow"
                           :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
-                          @click="goBet(2, teamData, wagerData, rowIndex)"
+                          @click="
+                            goBet(
+                              2,
+                              teamData,
+                              wagerData,
+                              rowIndex,
+                              $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                .drewWagerPos
+                            )
+                          "
                         >
                           <div class="WagerCenterItem">
                             <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
@@ -195,6 +249,17 @@
       },
     },
     methods: {
+      starCSSJudge(EvtID) {
+        if (this.$store.state.Setting.favorites.indexOf(EvtID) > -1) {
+          return 'starActive';
+        } else {
+          return '';
+        }
+      },
+      addFavoriteHandler(EvtID) {
+        console.log(EvtID);
+        this.$store.commit('Setting/addFavorites', EvtID);
+      },
       clickArrow() {
         this.$emit('collapseChange', this.source.LeagueID);
       },
@@ -234,12 +299,9 @@
           MenuHead: this.$store.state.Game.GameList.BestHead,
         });
       },
-      goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
-        const sportData = this.$SportLib.WagerDataToShowData(
-          this.source.CatID,
-          wagerData,
-          rowIndex
-        );
+      goBet(clickPlayIndex, teamData, wagerData, rowIndex, wagerPos) {
+        this.$emit('AddToCart');
+        const sportData = this.$SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex);
 
         // 如果核心lib解析出來是null 也不能下注
         if (sportData.playMethodData === null) {
@@ -255,7 +317,7 @@
 
         let HomeTeamStr = teamData.HomeTeamStr;
         let AwayTeamStr = teamData.AwayTeamStr;
-        if (this.$SportLib.isHomeAwayReverse(this.source.CatID)) {
+        if (!teamData.SetFlag) {
           HomeTeamStr = teamData.AwayTeamStr;
           AwayTeamStr = teamData.HomeTeamStr;
         }
@@ -268,6 +330,7 @@
         const betInfoData = {
           OriginShowOdd: parseFloat(showOdd),
           clickPlayIndex,
+          wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: wagerData.Odds[rowIndex].GameID,
@@ -279,6 +342,7 @@
           WagerGrpID: wagerData.WagerGrpID,
           EvtID: teamData.EvtID,
           EvtStatus: teamData.EvtStatus,
+          SetFlag: teamData.SetFlag,
           ...wagerData.Odds[rowIndex],
         };
 
@@ -412,6 +476,7 @@
               height: $starSize;
               background-size: 100% auto;
               background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
+              cursor: pointer;
             }
             .starActive {
               width: $starSize;

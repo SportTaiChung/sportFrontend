@@ -56,13 +56,13 @@
                     <div
                       class="betBlock"
                       v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                        CatID,
+                        TeamData.SetFlag,
                         menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                         oddData
                       )"
-                      :class="betBlockSelectCSS(betData.clickPlayIndex, oddData)"
+                      :class="betBlockSelectCSS(betIndex, oddData)"
                       :key="menuKey + wagerIndex + betIndex"
-                      @click="goBet(betData.clickPlayIndex, betData, oddData)"
+                      @click="goBet(betIndex, betData, oddData)"
                     >
                       <div class="betBlockTop">
                         {{ betData.showMethod }}
@@ -114,7 +114,7 @@
       getTeamData() {
         let home = '';
         let away = '';
-        if (this.$SportLib.isHomeAwayReverse(this.CatID)) {
+        if (!this.TeamData.SetFlag) {
           home = this.TeamData.AwayTeamStr;
           away = this.TeamData.HomeTeamStr;
         } else {
@@ -262,21 +262,8 @@
           return '';
         }
       },
-      wagerToPlayData(wagerData = null, oddData = null) {
-        console.log(wagerData, oddData);
-        const playData = this.$SportLib.oddDataToPlayData(
-          this.CatID,
-          wagerData.WagerTypeIds[0],
-          oddData
-        );
-        if (playData.playMethodData !== null) {
-          return playData;
-        } else {
-          console.error('More Game 無法解析', wagerData, oddData);
-        }
-        console.log('playData:', playData);
-      },
       goBet(clickPlayIndex, betData, oddData) {
+        console.log(betData.wagerPos);
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID
@@ -285,6 +272,7 @@
         const betInfoData = {
           OriginShowOdd: parseFloat(betData.showOdd),
           clickPlayIndex,
+          wagerPos: betData.wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,

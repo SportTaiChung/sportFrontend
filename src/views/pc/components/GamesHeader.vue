@@ -21,7 +21,11 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
-        <li><i class="el-icon-phone-outline"></i></li>
+        <li>
+          <img src="@/assets/img/pc/icon_header_logout.svg" class="logoutIcon" alt="" />
+          <!-- <svg-icon data_iconName="icon_header_logout_default" className="logoutIcon" /> -->
+        </li>
+
         <li></li>
       </ul>
     </div>
@@ -81,6 +85,12 @@
         );
       },
       handleSelect() {},
+      logout() {
+        this.$store.commit('SetLoading', true);
+        this.$store.dispatch('User/Logout').finally(() => {
+          this.$store.commit('SetLoading', false);
+        });
+      },
     },
   };
 </script>
@@ -120,6 +130,18 @@
         display: inline-flex;
         li {
           margin-right: 15px;
+        }
+        i {
+          font-size: 20px;
+          padding-top: 24px;
+          cursor: pointer;
+        }
+        .logoutIcon {
+          width: 20px;
+          height: 20px;
+          margin-top: 24px;
+          color: white;
+          cursor: pointer;
         }
       }
     }

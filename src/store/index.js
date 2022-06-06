@@ -4,13 +4,14 @@ import User from './modules/User';
 import BetCart from './modules/BetCart';
 import Game from './modules/Game/Game';
 import MoreGame from './modules/Game/MoreGame';
+import Setting from './modules/Setting';
 
 import { systemTime } from '@/api/Common';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { User, Game, BetCart, MoreGame },
+  modules: { User, Game, BetCart, MoreGame, Setting },
   state: {
     isMobile: false,
     isLoading: false,

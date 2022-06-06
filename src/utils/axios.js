@@ -27,15 +27,24 @@ instance.interceptors.request.use(
   }
 );
 
+window.LockErrorMessage = false;
+window.LockErrorEvent = null;
 instance.interceptors.response.use(
   (res) => {
     const resCode = res?.data?.code;
     if (resCode && resCode !== 200) {
       const goLoginPageErrorCode = [-101, -105];
-      if (goLoginPageErrorCode.includes(resCode)) {
-        window.router.replace({ name: 'Login' });
+      if (!window.LockErrorMessage) {
+        message.error(res?.data?.message);
       }
-      message.error(res?.data?.message);
+      if (goLoginPageErrorCode.includes(resCode)) {
+        window.LockErrorMessage = true;
+        clearTimeout(window.LockErrorEvent);
+        setTimeout(() => {
+          window.LockErrorMessage = false;
+        }, 1000);
+        store.dispatch('User/LogoutClearHandler');
+      }
       console.error(API_ERROR_CODE[resCode]);
       store.commit('SetLoading', false);
       return Promise.reject(res);

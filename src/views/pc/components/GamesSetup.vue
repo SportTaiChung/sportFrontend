@@ -1,5 +1,5 @@
 <template>
-  <div class="setUp">
+  <div id="GamesSetup">
     <div class="setUp_L">
       <span class="timeBlockContainer">
         <div class="dayBlock">{{ TimeCountDown.day }}</div>
@@ -11,18 +11,42 @@
       </div>
     </div>
     <div class="setUp_C">
-      <span>自動接收最佳賠率 <el-checkbox v-model="checked"></el-checkbox></span>
+      <span>
+        自動接收最佳賠率
+        <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
+      ></span>
       <el-divider direction="vertical"></el-divider>
       <span class="yellow_color">聯盟選擇</span>
       <el-divider direction="vertical"></el-divider>
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown @command="handleHot" trigger="click">
+      <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
         <span class="el-dropdown-link">
-          {{ HotValue }}
+          {{ principalOption.find((it) => it.value === isIncludePrincipal).label }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="(item, key) in HotList" :key="key" :command="item.label">
+          <el-dropdown-item
+            v-for="(item, key) in principalOption"
+            :key="key"
+            :command="item.value"
+            :class="item.value === isIncludePrincipal ? 'DefaultFocus' : ''"
+          >
+            {{ item.label }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-divider direction="vertical"></el-divider>
+      <el-dropdown @command="handleSort" trigger="click" class="dropDown">
+        <span class="el-dropdown-link">
+          {{ sortList.find((it) => it.value === sortValue).label }}
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="(item, key) in sortList"
+            :key="key"
+            :command="item.value"
+            :class="item.value === sortValue ? 'DefaultFocus' : ''"
+          >
             {{ item.label }}
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -44,26 +68,22 @@
     data() {
       return {
         quick_bet: false, // 快速投注开关
-        checked: '',
         listValue: '含本金',
         input: '',
-        list: [
-          { value: '0', label: '含本金' },
-          { value: '1', label: '不含本金' },
+        isAcceptBetter: null,
+        sortValue: null,
+        sortList: [
+          { value: 1, label: '時間排序' },
+          { value: 0, label: '熱門排序' },
         ],
-        HotValue: '時間排序',
-        HotList: [
-          { value: '0', label: '時間排序' },
-          { value: '1', label: '熱門排序' },
+        isIncludePrincipal: null,
+        principalOption: [
+          { value: false, label: '不含本金' },
+          { value: true, label: '含本金' },
         ],
         currentTime: null,
         countInterval: null,
       };
-    },
-    computed: {
-      TimeCountDown() {
-        return this.$lib.timeFormatWithOutYY(this.currentTime);
-      },
     },
     mounted() {
       this.countInterval = setInterval(() => {
@@ -75,7 +95,48 @@
       document.addEventListener('visibilitychange', this.visibilitychangeEvent);
     },
     beforeDestroy() {
-      document.removeEventListener(this.visibilitychangeEvent);
+      document.removeEventListener('visibilitychange', this.visibilitychangeEvent);
+      clearInterval(this.countInterval);
+    },
+    computed: {
+      TimeCountDown() {
+        return this.$lib.timeFormatWithOutYY(this.currentTime);
+      },
+      tableSort() {
+        return this.$store.state.Setting.tableSort;
+      },
+      includePrincipal() {
+        return this.$store.state.Setting.includePrincipal;
+      },
+      acceptBetter() {
+        return this.$store.state.Setting.acceptBetter;
+      },
+    },
+    watch: {
+      TimeCountDown() {
+        const dateTime = this.TimeCountDown.time;
+        if (dateTime === '12:00:00' || dateTime === '12:00:01') {
+          location.reload();
+        }
+      },
+      tableSort: {
+        handler() {
+          this.sortValue = this.tableSort;
+        },
+        immediate: true,
+      },
+      includePrincipal: {
+        handler() {
+          this.isIncludePrincipal = this.includePrincipal;
+        },
+        immediate: true,
+      },
+      acceptBetter: {
+        handler() {
+          this.isAcceptBetter = this.acceptBetter;
+        },
+        immediate: true,
+      },
     },
     methods: {
       visibilitychangeEvent() {
@@ -94,18 +155,26 @@
       closeProject(value) {
         this.listValue = value.label;
       },
-      closeHotValue(value) {
-        this.HotValue = value.label;
-      },
       handleCommand(command) {
         this.listValue = command;
       },
-      handleHot(command) {
-        this.HotValue = command;
+      handleSort(val) {
+        this.$store.commit('Setting/setTableSort', val);
+      },
+      handleIsIncludePrincipal(val) {
+        this.$store.commit('Setting/setIncludePrincipal', val);
+      },
+      checkboxChangeHandler(val) {
+        this.$store.commit('Setting/setAcceptBetter', val);
       },
     },
   };
 </script>
+
+<style lang="scss">
+  #GamesSetup {
+  }
+</style>
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
@@ -115,13 +184,18 @@
     @include base-fontColor();
   }
 
-  .setUp {
+  #GamesSetup {
     color: #fff;
     height: 38px;
     font-size: 13px;
     @include background-color-hederTop();
     width: 100%;
     display: flex;
+    .el-divider {
+      height: 22px;
+      background-color: #81f0ca;
+      margin: 0 15px;
+    }
     .setUp_L {
       width: 200px;
       display: inline-flex;
@@ -160,7 +234,6 @@
         margin: 0 0 0 8px;
       }
       .el-dropdown {
-        width: 70px;
         font-size: 12px;
         cursor: pointer;
         @include base-fontColor();
@@ -168,6 +241,9 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+        i {
+          margin-left: 5px;
         }
       }
     }

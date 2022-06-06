@@ -15,6 +15,7 @@
           .dispatch('User/GetUserInfoCash')
           .then(async () => {
             this.$store.commit('SetIsInit', true);
+            this.$store.commit('Setting/init');
             await this.callGetAllMenuData();
             this.$router.replace({ name: 'Games' });
           })

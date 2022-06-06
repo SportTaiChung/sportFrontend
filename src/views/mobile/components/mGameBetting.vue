@@ -23,7 +23,11 @@
                 <ul
                   class="wager-group"
                   :set="
-                    ((sportData = $SportLib.WagerDataToShowData(source.CatID, wagerData, rowIndex)),
+                    ((sportData = $SportLib.WagerDataToShowData(
+                      teamData.SetFlag,
+                      wagerData,
+                      rowIndex
+                    )),
                     (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
                     (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
                   "
@@ -47,14 +51,32 @@
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
-                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            0,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                       >
                         <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
                       </li>
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
-                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            1,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                       >
                         <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
                       </li>
@@ -64,7 +86,16 @@
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
-                        @click="goBet(0, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            0,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                       >
                         <div class="cell-left"> {{ sportData.topPlayMethod }} </div>
                         <div class="cell-right">
@@ -74,7 +105,16 @@
                       <li
                         class="wager-cell"
                         :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
-                        @click="goBet(1, teamData, wagerData, rowIndex)"
+                        @click="
+                          goBet(
+                            1,
+                            teamData,
+                            wagerData,
+                            rowIndex,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                       >
                         <div class="cell-left"> {{ sportData.bottomPlayMethod }} </div>
                         <div class="cell-right">
@@ -88,7 +128,8 @@
                       <template
                         v-if="
                           wagerData.Odds[0].DrewOdds === '0' ||
-                          wagerData.Odds[0].DrewOdds === '0.00'
+                          wagerData.Odds[0].DrewOdds === '0.00' ||
+                          wagerData.Odds[0].Status !== 1
                         "
                       >
                         <li class="wager-cell"> </li>
@@ -97,7 +138,16 @@
                         <li
                           class="wager-cell"
                           :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
-                          @click="goBet(2, teamData, wagerData, rowIndex)"
+                          @click="
+                            goBet(
+                              2,
+                              teamData,
+                              wagerData,
+                              rowIndex,
+                              $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                .drewWagerPos
+                            )
+                          "
                         >
                           <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
                         </li>
@@ -223,12 +273,8 @@
           return wagerData.Odds[rowIndex].GameID;
         }
       },
-      goBet(clickPlayIndex, teamData, wagerData, rowIndex) {
-        const sportData = this.$SportLib.WagerDataToShowData(
-          this.source.CatID,
-          wagerData,
-          rowIndex
-        );
+      goBet(clickPlayIndex, teamData, wagerData, rowIndex, wagerPos) {
+        const sportData = this.$SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex);
 
         // 如果核心lib解析出來是null 也不能下注
         if (sportData.playMethodData === null) {
@@ -244,7 +290,7 @@
 
         let HomeTeamStr = teamData.HomeTeamStr;
         let AwayTeamStr = teamData.AwayTeamStr;
-        if (this.$SportLib.isHomeAwayReverse(this.source.CatID)) {
+        if (!teamData.SetFlag) {
           HomeTeamStr = teamData.AwayTeamStr;
           AwayTeamStr = teamData.HomeTeamStr;
         }
@@ -257,6 +303,7 @@
         const betInfoData = {
           OriginShowOdd: parseFloat(showOdd),
           clickPlayIndex,
+          wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: wagerData.Odds[rowIndex].GameID,
@@ -268,6 +315,7 @@
           WagerGrpID: wagerData.WagerGrpID,
           EvtID: teamData.EvtID,
           EvtStatus: teamData.EvtStatus,
+          SetFlag: teamData.SetFlag,
           ...wagerData.Odds[rowIndex],
         };
 

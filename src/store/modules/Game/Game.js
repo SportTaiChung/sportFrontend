@@ -62,7 +62,7 @@ export default {
                 return teamData.Wager.every((wagerData) => {
                   return wagerData.Odds.every((oddData) => {
                     if (oddData.GameID === updateData.GameID) {
-                      if (updateData.EvtStatus === 0) {
+                      if (updateData.EvtStatus !== 1) {
                         console.warn(
                           'some data is disable!!',
                           teamData.EvtStatus,
@@ -175,7 +175,7 @@ export default {
           selectCatID: postData.CatID,
           selectWagerTypeKey: newWagerTypeKey,
         });
-        return getGameDetail(apiPostData)
+        return getGameDetail({ ...apiPostData, show: store.rootState.Setting.tableSort })
           .then(async (res) => {
             console.log('game detail API response done');
             store.commit('setGameList', res.data);
@@ -196,6 +196,7 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
+            console.log(res.data.map((it) => it.Status));
             store.commit('updateGameList', res.data);
           });
         } else {
