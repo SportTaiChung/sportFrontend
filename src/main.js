@@ -20,6 +20,8 @@ import 'normalize.css';
 
 import '@/utils/OddDataList';
 
+// import '@/svgIcon/index.js';
+
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
 });

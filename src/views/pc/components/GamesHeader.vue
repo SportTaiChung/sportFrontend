@@ -21,7 +21,10 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
-        <li><i class="el-icon-bicycle" @click="logout"></i></li>
+        <li>
+          <img src="@/assets/img/pc/icon_header_logout.svg" class="logoutIcon" alt="" />
+          <!-- <svg-icon data_iconName="icon_header_logout_default" className="logoutIcon" /> -->
+        </li>
 
         <li></li>
       </ul>
@@ -131,6 +134,13 @@
         i {
           font-size: 20px;
           padding-top: 24px;
+          cursor: pointer;
+        }
+        .logoutIcon {
+          width: 20px;
+          height: 20px;
+          margin-top: 24px;
+          color: white;
           cursor: pointer;
         }
       }
