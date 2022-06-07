@@ -1,54 +1,62 @@
 <template>
   <div id="GameTableList" :style="GameTableListStyleJudge()">
-    <template v-if="selectCatID !== null && gameStore.MenuList.length !== 0">
-      <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()">
-        <tbody class="GameTableBody">
-          <td class="FirstCatNameBlock">
-            <div class="leftArrowBlock" @click="clickArrow">
-              <i :class="arrowIconJudge" />
-            </div>
-            {{ selectCatID | CatIDtoString }}
-          </td>
-          <td v-for="(it, key) in showTableHeaderList" :key="key" class="GameTableHeaderOtherTD">
-            <div class="borderWhiteBlock"></div>
-            {{ it.showName }}
-            <div></div>
-          </td>
-          <td
-            v-if="selectWagerTypeKey === 1 && gameStore.selectCatID !== 72"
-            class="GameTableHeaderMoreTD"
-          >
-            <div class="borderWhiteBlock"></div>
-            更多
-            <div></div>
-          </td>
-        </tbody>
-      </table>
+    <template v-if="gameStore.MenuList.length !== 0">
+      <template v-for="(GameData, GameIndex) in GameList">
+        <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()" :key="GameIndex">
+          <tbody class="GameTableBody">
+            <td class="FirstCatNameBlock">
+              <div class="leftArrowBlock" @click="clickArrow">
+                <i :class="arrowIconJudge" />
+              </div>
+              <!-- {{ selectCatID | CatIDtoString }} -->
+              {{ GameData.CatName }}
+            </td>
+            <td
+              v-for="(it, key) in GameData.Items.BestHead"
+              :key="key"
+              class="GameTableHeaderOtherTD"
+            >
+              <div class="borderWhiteBlock"></div>
+              {{ it.showName }}
+              <div></div>
+            </td>
+            <td
+              v-if="selectWagerTypeKey === 1 && gameStore.selectCatID !== 72"
+              class="GameTableHeaderMoreTD"
+            >
+              <div class="borderWhiteBlock"></div>
+              更多
+              <div></div>
+            </td>
+          </tbody>
+        </table>
 
-      <DynamicScroller
-        :items="GameList"
-        :min-item-size="10"
-        class="DynamicScroller"
-        ref="virtualList"
-      >
-        <template v-slot="{ item, index, active }">
-          <DynamicScrollerItem
-            :item="item"
-            :active="active"
-            :size-dependencies="[item.LeagueID]"
-            :data-index="index"
-            :data-active="active"
-          >
-            <GameCollapse
-              :index="index"
-              :source="item"
-              :isCollapse="activeCollapse.indexOf(item.LeagueID) > -1"
-              @collapseChange="collapseChangeHandler"
-              @AddToCart="$emit('AddToCart')"
-            ></GameCollapse>
-          </DynamicScrollerItem>
-        </template>
-      </DynamicScroller>
+        <DynamicScroller
+          class="DynamicScroller"
+          ref="virtualList"
+          :items="GameData.Items.List"
+          :min-item-size="10"
+          :key="'DynamicScroller' + GameIndex"
+        >
+          <template v-slot="{ item, index, active }">
+            <DynamicScrollerItem
+              :item="item"
+              :active="active"
+              :size-dependencies="[item.LeagueID]"
+              :data-index="index"
+              :data-active="active"
+            >
+              <GameCollapse
+                :index="index"
+                :source="item"
+                :isCollapse="activeCollapse.indexOf(item.LeagueID) > -1"
+                @collapseChange="collapseChangeHandler"
+                @AddToCart="$emit('AddToCart')"
+              ></GameCollapse>
+            </DynamicScrollerItem>
+          </template>
+        </DynamicScroller>
+      </template>
     </template>
 
     <template v-if="gameStore.MenuList.length === 0">

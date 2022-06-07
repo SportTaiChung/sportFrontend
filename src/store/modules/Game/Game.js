@@ -178,6 +178,27 @@ export default {
         return getGameDetail({ ...apiPostData, show: store.rootState.Setting.tableSort })
           .then(async (res) => {
             console.log('game detail API response done');
+
+            if (res.data.length !== 0) {
+              const newData = [
+                {
+                  CatName: res.data.List[0].CatNameStr,
+                  Items: { ...res.data },
+                },
+              ];
+              store.commit('setGameList', newData);
+            }
+            resolve(res);
+          })
+          .catch(reject);
+      });
+    },
+    // 18-b. 收藏夾盤口-(赔率)游戏玩法资讯
+    GetFavoriteGameDetail(store, postData) {
+      return new Promise((resolve, reject) => {
+        return getGameDetail(postData)
+          .then(async (res) => {
+            console.log('favorite game detail API response done');
             store.commit('setGameList', res.data);
             resolve(res);
           })

@@ -96,22 +96,22 @@
       }
 
       // 定時更新遊戲賠率
-      this.intervalEvent = setInterval(() => {
-        this.$store.dispatch('Game/GetGameDetailSmall');
-        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
-      }, 10000);
+      // this.intervalEvent = setInterval(() => {
+      //   this.$store.dispatch('Game/GetGameDetailSmall');
+      //   this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
+      // }, 10000);
 
       // 定時更新遊戲Menu
-      this.intervalEvent2 = setInterval(() => {
-        this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
-          const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
-            return menuData.catid === this.gameStore.selectCatID;
-          });
-          if (menuIndex === -1) {
-            this.hideMenuChildren();
-          }
-        });
-      }, 15000);
+      // this.intervalEvent2 = setInterval(() => {
+      //   this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
+      //     const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
+      //       return menuData.catid === this.gameStore.selectCatID;
+      //     });
+      //     if (menuIndex === -1) {
+      //       this.hideMenuChildren();
+      //     }
+      //   });
+      // }, 15000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -235,33 +235,64 @@
           this.$store.commit('SetLoading', false);
         });
       },
+
+      // 最愛
+      callGetFavoriteGameDetail() {
+        this.$store.commit('SetLoading', true);
+
+        let postData = null;
+        postData = {
+          GameType: this.gameTypeID,
+          EvtIDs: this.$store.state.Setting.favorites.join(','),
+          FavoritesModel: true,
+        };
+        this.$store
+          .dispatch('Game/GetFavoriteGameDetail', postData)
+          .then((res) => {})
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
       hideMenuChildren() {
         this.$refs.elMenu.openedMenus.length = 0;
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
-        let clickCatID = null;
-        let clickWagerTypeKey = null;
-        clickCatID = catData.catid;
-        // 父親層級被點
-        if (WagerTypeKey === null) {
-          // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
-          if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
-            this.hideMenuChildren();
-          }
+        if (!catData.isFavorite) {
+          let clickCatID = null;
+          let clickWagerTypeKey = null;
+          clickCatID = catData.catid;
+          // 父親層級被點
+          if (WagerTypeKey === null) {
+            // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
+            if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
+              this.hideMenuChildren();
+            }
 
-          if (catData.Items.length === 0) {
-            clickWagerTypeKey = 1;
+            if (catData.Items.length === 0) {
+              clickWagerTypeKey = 1;
+            } else {
+              clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            }
           } else {
-            clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            clickWagerTypeKey = WagerTypeKey;
           }
-        } else {
-          clickWagerTypeKey = WagerTypeKey;
-        }
 
-        this.$store.commit('MoreGame/closeMoreGameList');
-        // 獲取遊戲detail
-        this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 獲取遊戲detail
+          this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+        } else {
+          this.menuActiveString = '0';
+          this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
+            selectGameType: this.gameTypeID,
+            selectCatID: null,
+            selectWagerTypeKey: null,
+          });
+          this.hideMenuChildren();
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 最愛遊戲
+          this.callGetFavoriteGameDetail();
+        }
       },
     },
   };
