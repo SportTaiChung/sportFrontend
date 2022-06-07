@@ -14,7 +14,10 @@
             {{ it.showName }}
             <div></div>
           </td>
-          <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
+          <td
+            v-if="selectWagerTypeKey === 1 && gameStore.selectCatID !== 72"
+            class="GameTableHeaderMoreTD"
+          >
             <div class="borderWhiteBlock"></div>
             更多
             <div></div>

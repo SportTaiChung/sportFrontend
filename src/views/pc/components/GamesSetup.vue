@@ -5,9 +5,10 @@
         <div class="dayBlock">{{ TimeCountDown.day }}</div>
         <div class="timeBlock">{{ TimeCountDown.time }}</div>
       </span>
+      <!-- 切換主題色 -->
       <div>
-        <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" />
-        <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" />
+        <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
+        <!-- <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" /> -->
       </div>
     </div>
     <div class="setUp_C">

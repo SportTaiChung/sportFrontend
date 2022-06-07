@@ -196,7 +196,10 @@
                   </template>
                 </div>
               </td>
-              <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
+              <td
+                v-if="selectWagerTypeKey === 1 && gameStore.selectCatID !== 72"
+                class="GameTableHeaderMoreTD"
+              >
                 <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
                   更多
                   {{ teamData.MoreCount }}
