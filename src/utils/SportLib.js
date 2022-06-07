@@ -560,3 +560,31 @@ export function cartDataToDisplayData(cartData) {
     wagerGrpLabel,
   };
 }
+
+// 以 catID 取得對應 menu icon
+export function getMenuIconByCatID(catID) {
+  const iconMap = Object.freeze({
+    1: 'icon_sportMenu_soccer.svg',
+    5: 'icon_sportMenu_soccer.svg',
+    21: 'icon_sportMenu_pingpong.svg',
+    22: 'icon_sportMenu_badminton.svg',
+    31: 'icon_sportMenu_worldCup.svg',
+    32: 'icon_sportMenu_UEFA.svg',
+    4: 'icon_sportMenu_baseball.svg',
+    12: 'icon_sportMenu_baseball.svg',
+    13: 'icon_sportMenu_baseball.svg',
+    14: 'icon_sportMenu_baseball.svg',
+    101: 'icon_sportMenu_baseball.svg',
+    102: 'icon_sportMenu_basketball.svg',
+    3: 'icon_sportMenu_basketball.svg',
+    16: 'icon_sportMenu_basketball.svg',
+    55: 'icon_sportMenu_tennis.svg',
+    72: '',
+    82: 'icon_sportMenu_hockey.svg',
+    83: '',
+    85: 'icon_sportMenu_pcgame.svg',
+    default: 'icon_sportMenu_soccer.svg',
+  });
+
+  return iconMap[catID] || iconMap.default;
+}

@@ -36,7 +36,10 @@
         :class="gameStore.selectCatID == catData.catid ? 'active' : ''"
         @click.stop="menuItemClickHandler(catData, null, index)"
       >
-        <i class="el-icon-basketball"></i>
+        <img
+          :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(catData.catid))"
+          class="menu-icon"
+        />
         {{ catData.catName }}
       </li>
     </ul>
@@ -180,6 +183,9 @@
       clearActiveCollapse() {
         this.activeCollapse.length = 0;
       },
+      getMenuIconByCatID(catId) {
+        return this.$SportLib.getMenuIconByCatID(catId);
+      },
     },
   };
 </script>
@@ -277,8 +283,8 @@
           color: #fff;
         }
 
-        i {
-          font-size: 160%;
+        img.menu-icon {
+          padding-top: 3px;
         }
       }
     }
