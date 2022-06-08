@@ -282,10 +282,11 @@
           // 獲取遊戲detail
           this.callGetGameDetail(clickCatID, clickWagerTypeKey);
         } else {
+          // 如果點擊選單的收藏
           this.menuActiveString = '0';
           this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
             selectGameType: this.gameTypeID,
-            selectCatID: null,
+            selectCatID: -999,
             selectWagerTypeKey: null,
           });
           this.hideMenuChildren();

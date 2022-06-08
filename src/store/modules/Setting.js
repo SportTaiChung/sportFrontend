@@ -38,6 +38,8 @@ export default {
       } else {
         state.favorites.push(val);
       }
+
+      // 處理localStorage
       let favoritesData = JSON.parse(localStorage.getItem('favorites'));
       const MBID = localStorage.getItem('MBID');
       if (favoritesData) {
@@ -51,6 +53,21 @@ export default {
           favorites: [val],
         };
       }
+      localStorage.setItem('favorites', JSON.stringify(favoritesData));
+    },
+    setFavorites(state, newFavoritesArr) {
+      state.favorites.length = 0;
+      state.favorites = newFavoritesArr;
+
+      // 處理localStorage
+      let favoritesData = JSON.parse(localStorage.getItem('favorites'));
+      const MBID = localStorage.getItem('MBID');
+      if (!favoritesData) {
+        favoritesData = {};
+      }
+      favoritesData[MBID] = {
+        favorites: newFavoritesArr,
+      };
       localStorage.setItem('favorites', JSON.stringify(favoritesData));
     },
     clearFavorites(state, val) {

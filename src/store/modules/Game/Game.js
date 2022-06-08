@@ -1,6 +1,8 @@
 import { getMenuGameType, getMenuGameCatList, getGameDetail, getGameDetailSmall } from '@/api/Game';
+import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import * as GameListGetters from './getters/GameList';
+import store from '@/store';
 
 export default {
   namespaced: true,
@@ -15,7 +17,7 @@ export default {
     GameList: [],
     // 當前選擇的遊戲分類 (ex.早盤、今日)
     selectGameType: null,
-    // 當前選擇的球種
+    // 當前選擇的球種 如果是-999 代表是收藏玩法
     selectCatID: null,
     // 當前選擇的WagerType
     selectWagerTypeKey: null,
@@ -37,9 +39,79 @@ export default {
       state.FullMenuList.length = 0;
       state.FullMenuList = val;
     },
-    setGameList(state, val) {
+    setGameList(state, setData) {
       state.GameList.length = 0;
-      state.GameList = val;
+      const favoritesTmp = [];
+      state.GameList = setData.data.map((gameData) => {
+        const newBestHead = gameData.Items.BestHead.map((it) => {
+          return {
+            originName: it.Name,
+            showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs[0]),
+            WagerGrpIDs: it.WagerGrpIDs,
+            WagerTypeIDs: it.WagerTypeIDs,
+          };
+        });
+        const newList = gameData.Items.List.filter((it) => {
+          // 檢查 League 底下的 teamData.EvtStatus 是否為1
+          const enableTeamList = it.Team.filter((teamData) => teamData.EvtStatus === 1);
+          const isLeagueEnable = enableTeamList.length !== 0;
+          return isLeagueEnable;
+        })
+          .map((it, index) => {
+            return { id: index, ...it };
+          })
+          .map((listData) => {
+            const newListData = JSON.parse(JSON.stringify(listData));
+            newListData.Team = listData.Team.map((TeamData) => {
+              favoritesTmp.push(TeamData.EvtID);
+
+              const newTeamData = JSON.parse(JSON.stringify(TeamData));
+              const DrewOdds = [];
+              newTeamData.Wager.forEach((item_Team_Wager) => {
+                DrewOdds.push(item_Team_Wager.Odds[0].DrewOdds);
+              });
+              // 如果 DrewOdds每個都是字串0 代表不會有和 玩法
+              if (DrewOdds.every((key) => key === '0' || key === '0.00')) {
+                newTeamData.hasDrewOdds = false;
+              } else {
+                newTeamData.hasDrewOdds = true;
+              }
+
+              // 補上空欄位
+              const oldWagerDatas = JSON.parse(JSON.stringify(newTeamData.Wager));
+              const newWagerData = new Array(newBestHead.length).fill({
+                isNoData: true,
+              });
+              newBestHead.forEach((headData, headIndex) => {
+                oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
+                  if (headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID) !== -1) {
+                    newWagerData[headIndex] = oldWagerData;
+                    oldWagerDatas.splice(oldWagerDataIndex, 1);
+                    return false;
+                  }
+                });
+              });
+              newTeamData.Wager = newWagerData;
+
+              return newTeamData;
+            });
+            return newListData;
+          });
+
+        // 從收藏模式API 進來的
+        if (setData.isFavorite) {
+          console.log('favoritesTmp:', favoritesTmp);
+          store.commit('Setting/setFavorites', favoritesTmp);
+        }
+
+        return {
+          ...gameData,
+          Items: {
+            BestHead: newBestHead,
+            List: newList,
+          },
+        };
+      });
     },
     setGameType(state, val) {
       state.selectGameType = val;
@@ -98,15 +170,6 @@ export default {
     },
   },
   actions: {
-    // 清除選擇的數據
-    // ClearSelectData(store) {
-    //   store.commit('setGameList', []);
-    //   store.commit('setCatIDAndGameTypeAndWagerType', {
-    //     selectGameType: null,
-    //     selectCatID: null,
-    //     selectWagerTypeKey: null,
-    //   });
-    // },
     // 16. 獲取左側菜單
     GetMenuGameType(store) {
       return new Promise((resolve, reject) => {
@@ -163,7 +226,10 @@ export default {
             CatID: postData.CatID,
           };
         }
-        store.commit('setGameList', []);
+        store.commit('setGameList', {
+          data: [],
+          isFavorite: false,
+        });
         window.OddData.clear();
 
         let newWagerTypeKey = 1;
@@ -179,14 +245,18 @@ export default {
           .then(async (res) => {
             console.log('game detail API response done');
 
-            if (res.data.length !== 0) {
+            if (res.data?.List.length !== 0) {
               const newData = [
                 {
+                  CatID: res.data.List[0].CatID,
                   CatName: res.data.List[0].CatNameStr,
                   Items: { ...res.data },
                 },
               ];
-              store.commit('setGameList', newData);
+              store.commit('setGameList', {
+                data: newData,
+                isFavorite: false,
+              });
             }
             resolve(res);
           })
@@ -199,7 +269,10 @@ export default {
         return getGameDetail(postData)
           .then(async (res) => {
             console.log('favorite game detail API response done');
-            store.commit('setGameList', res.data);
+            store.commit('setGameList', {
+              data: res.data,
+              isFavorite: true,
+            });
             resolve(res);
           })
           .catch(reject);
