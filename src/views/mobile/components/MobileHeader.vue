@@ -24,6 +24,9 @@
         <div class="userCreditBlock">
           <div v-if="userCredit" class="creditText">$ {{ userCredit }}</div>
         </div>
+
+        <img src="@/assets/img/common/icon_header_service.svg" class="icon-service" />
+        <img src="@/assets/img/common/icon_header_logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
 
@@ -186,6 +189,12 @@
       getMenuIconByCatID(catId) {
         return this.$SportLib.getMenuIconByCatID(catId);
       },
+      logout() {
+        this.$store.commit('SetLoading', true);
+        this.$store.dispatch('User/Logout').finally(() => {
+          this.$store.commit('SetLoading', false);
+        });
+      },
     },
   };
 </script>
@@ -215,18 +224,20 @@
         .navList {
           display: flex;
           align-items: center;
-          margin-left: 20px;
+          margin-left: 1.2rem;
           .navItem {
             display: flex;
             align-items: center;
-            height: 24px;
-            padding: 0px 10px;
+            height: 1.6rem;
+            padding: 0px 0.8rem;
             color: white;
-            margin-right: 1.1rem;
+            margin-right: 0.6rem;
             border-radius: 2px;
             .text {
+              text-align: center;
               margin-top: 2px;
               font-size: 1.2rem;
+              white-space: nowrap;
             }
             &:last-child {
               margin-right: 0px;
@@ -239,10 +250,26 @@
         }
       }
       .rightContainer {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
         .userCreditBlock {
           .creditText {
             color: #ffdf1a;
             font-size: 1.2rem;
+            white-space: nowrap;
+          }
+        }
+
+        img.icon-logout,
+        img.icon-service {
+          width: 2rem;
+          height: 2rem;
+          cursor: pointer;
+          margin-left: 1.25rem;
+          opacity: 0.8;
+          &:active {
+            opacity: 1;
           }
         }
       }
@@ -281,10 +308,11 @@
 
         &.active {
           color: #fff;
+          font-weight: bold;
         }
 
         img.menu-icon {
-          padding-top: 3px;
+          padding-top: 4px;
         }
       }
     }
