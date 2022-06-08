@@ -2,7 +2,6 @@ import router from '@/router';
 
 export function getRouteByName(name) {
   const allRoutes = router.options.routes;
-  debugger;
   return allRoutes.filter((route) => {
     return route.name === name;
   })[0];

@@ -98,12 +98,6 @@ export default {
             return newListData;
           });
 
-        // 從收藏模式API 進來的
-        if (setData.isFavorite) {
-          console.log('favoritesTmp:', favoritesTmp);
-          store.commit('Setting/setFavorites', favoritesTmp);
-        }
-
         return {
           ...gameData,
           Items: {
@@ -112,6 +106,11 @@ export default {
           },
         };
       });
+
+      // 從收藏模式API 進來的
+      if (setData.isFavorite) {
+        store.commit('Setting/setFavorites', favoritesTmp);
+      }
     },
     setGameType(state, val) {
       state.selectGameType = val;
@@ -162,7 +161,7 @@ export default {
                 });
               });
             } catch (err) {
-              debugger;
+              console.error('err:', err);
             }
           }
         });
@@ -268,7 +267,6 @@ export default {
       return new Promise((resolve, reject) => {
         return getGameDetail(postData)
           .then(async (res) => {
-            console.log('favorite game detail API response done');
             store.commit('setGameList', {
               data: res.data,
               isFavorite: true,
@@ -290,7 +288,10 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
-            console.log(res.data.map((it) => it.Status));
+            console.log(
+              'GetGameDetailSmall:',
+              res.data.map((it) => it.Status)
+            );
             store.commit('updateGameList', res.data);
           });
         } else {

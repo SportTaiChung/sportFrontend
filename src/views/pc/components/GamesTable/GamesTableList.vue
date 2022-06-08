@@ -1,7 +1,21 @@
 <template>
   <div id="GameTableList" :style="GameTableListStyleJudge()" ref="GameTableList">
     <template v-if="gameStore.MenuList.length !== 0 && GameList.length !== 0">
+      <!-- 收藏夾Header -->
       <GameTableHeader
+        v-if="isFavoriteMode"
+        CatName="收藏夾"
+        :isCollapse="TopFavoriteIsCollapse()"
+        :isNavMenuCollapse="isNavMenuCollapse"
+        :BestHead="[]"
+        :isShowMoreGameEntryBtn="false"
+        @ArrowClick="TopFavoriteArrowClick()"
+      >
+      </GameTableHeader>
+
+      <!-- 正常玩法Header -->
+      <GameTableHeader
+        v-else
         :isCollapse="GameTableHeaderIsCollapse()"
         :isNavMenuCollapse="isNavMenuCollapse"
         :CatName="GameList[0].CatName"
@@ -13,6 +27,17 @@
 
       <div class="ScrollViewContainer">
         <div class="gameContainer" v-for="(GameData, GameIndex) in GameList" :key="GameIndex">
+          <GameTableHeader
+            v-if="isFavoriteMode"
+            :isCollapse="FavoriteGameTableHeaderIsCollapse(GameData.Items.List)"
+            :isNavMenuCollapse="isNavMenuCollapse"
+            :CatName="GameData.CatName"
+            :BestHead="GameData.Items.BestHead"
+            :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameData.CatID)"
+            @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
+          >
+          </GameTableHeader>
+
           <div v-for="(leagueData, leagueIndex) in GameData.Items.List" :key="leagueIndex">
             <GameCollapse
               :index="leagueIndex"
@@ -84,8 +109,7 @@
     },
     methods: {
       GameTableHeaderTopArrowClick() {
-        console.log('GameTableHeaderTopArrowClick');
-        // 展開所有摺疊所有
+        // 展開所有摺疊
         if (this.activeCollapse.length === this.GameList[0].Items.List.length) {
           this.$store.commit('SetLoading', true);
           clearTimeout(this.collapseTimeoutEvent);
@@ -102,6 +126,69 @@
           this.activeCollapse = new Array(this.GameList[0].Items.List.length)
             .fill(null)
             .map((it, index) => this.GameList[0].Items.List[index].LeagueID);
+        }
+      },
+      FavoriteGameTableHeaderIsCollapse(ChildListData) {
+        const childIDS = ChildListData.map((it) => it.LeagueID);
+        const childInActiveList = childIDS.filter((val) => {
+          return this.activeCollapse.indexOf(val) !== -1;
+        });
+        // 所有元素皆摺疊
+        if (childInActiveList.length === ChildListData.length) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      FavoriteGameTableHeaderBottomArrowClick(ChildListData) {
+        const childIDS = ChildListData.map((it) => it.LeagueID);
+        const childInActiveList = childIDS.filter((val) => {
+          return this.activeCollapse.indexOf(val) !== -1;
+        });
+        // 展開所有折疊
+        if (childInActiveList.length === ChildListData.length) {
+          this.$store.commit('SetLoading', true);
+          clearTimeout(this.collapseTimeoutEvent);
+          this.collapseTimeoutEvent = setTimeout(() => {
+            childInActiveList.forEach((childID) => {
+              const childIndex = this.activeCollapse.indexOf(childID);
+              if (childIndex > -1) {
+                this.activeCollapse.splice(childIndex, 1);
+              }
+            });
+            this.$nextTick(() => {
+              this.$store.commit('SetLoading', false);
+            });
+          }, 100);
+        } else {
+          childIDS.forEach((childID) => {
+            const childIndex = this.activeCollapse.indexOf(childID);
+            if (childIndex === -1) {
+              this.activeCollapse.push(childID);
+            }
+          });
+        }
+      },
+      TopFavoriteIsCollapse() {
+        const GetAllLeagueID = this.GameList.reduce((sum, gameData) => {
+          return [...sum, ...gameData.Items.List.map((LeagueData) => LeagueData.LeagueID)];
+        }, []);
+        if (GetAllLeagueID.length === this.activeCollapse.length) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      TopFavoriteArrowClick() {
+        const GetAllLeagueID = this.GameList.reduce((sum, gameData) => {
+          return [...sum, ...gameData.Items.List.map((LeagueData) => LeagueData.LeagueID)];
+        }, []);
+        if (GetAllLeagueID.length === this.activeCollapse.length) {
+          this.activeCollapse.length = 0;
+          this.activeCollapse = [];
+        } else {
+          this.activeCollapse.length = 0;
+          this.activeCollapse = GetAllLeagueID;
         }
       },
       GameTableHeaderIsCollapse() {
