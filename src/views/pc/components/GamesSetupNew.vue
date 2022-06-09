@@ -9,7 +9,7 @@
 
       <div class="body">
         <ul class="list">
-          <li class="item">
+          <!-- <li class="item">
             <div class="title">賠率類型</div>
             <div class="content">
               <div class="radio-group">
@@ -33,8 +33,8 @@
                 </label>
               </div>
             </div>
-          </li>
-          <li class="item">
+          </li> -->
+          <!-- <li class="item">
             <div class="title">賽事排序</div>
             <div class="content">
               <div class="radio-group">
@@ -58,7 +58,7 @@
                 </label>
               </div>
             </div>
-          </li>
+          </li> -->
           <li class="item">
             <div class="title">下注確認信息</div>
             <div class="content">
@@ -112,7 +112,7 @@
               </div>
             </div>
           </li>
-          <li class="item">
+          <!-- <li class="item">
             <div class="title">自動接收最佳賠率</div>
             <div class="content">
               <div class="radio-group">
@@ -136,7 +136,7 @@
                 </label>
               </div>
             </div>
-          </li>
+          </li> -->
           <li class="item">
             <div class="title">自訂籌碼</div>
             <div class="content">
