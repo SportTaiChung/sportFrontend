@@ -13,25 +13,37 @@
         @AddToCart="AddToCartEvent()"
       ></GamesTableList>
       <MoreGame v-if="isShowMoreGame"></MoreGame>
-      <GamesBetInfo ref="GamesBetInfo" />
+      <GamesBetInfo ref="GamesBetInfo" @openSetup="isShowSetup = true" />
     </div>
+
+    <GamesSetupNew v-show="isShowSetup" @closeMe="isShowSetup = false"></GamesSetupNew>
   </div>
 </template>
 
 <script>
   import GamesHeader from './components/GamesHeader.vue';
   import GamesSetup from './components/GamesSetup.vue';
+  import GamesSetupNew from './components/GamesSetupNew.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import MoreGame from '../../components/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   export default {
     name: 'PCGames',
-    components: { GamesHeader, GamesSetup, GamesNavMenu, GamesTableList, GamesBetInfo, MoreGame },
+    components: {
+      GamesHeader,
+      GamesSetup,
+      GamesSetupNew,
+      GamesNavMenu,
+      GamesTableList,
+      GamesBetInfo,
+      MoreGame,
+    },
     data() {
       return {
         // 左側選單是否縮起選單
         isNavMenuCollapse: false,
+        isShowSetup: false,
       };
     },
     created() {
