@@ -2,7 +2,7 @@ import { getMenuGameType, getMenuGameCatList, getGameDetail, getGameDetailSmall 
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import * as GameListGetters from './getters/GameList';
-import store from '@/store';
+import rootStore from '@/store';
 
 export default {
   namespaced: true,
@@ -109,7 +109,7 @@ export default {
 
       // 從收藏模式API 進來的
       if (setData.isFavorite) {
-        store.commit('Setting/setFavorites', favoritesTmp);
+        rootStore.commit('Setting/setFavorites', favoritesTmp);
       }
     },
     setGameType(state, val) {
@@ -123,47 +123,57 @@ export default {
     updateGameList(state, updateData) {
       if (state.GameList.length !== 0) {
         updateData.forEach((updateData) => {
-          const gameListIndex = state.GameList.List.findIndex(
-            (LeagueData) => LeagueData.LeagueID === updateData.LeagueID
-          );
+          state.GameList.every((GameData) => {
+            const gameListIndex = GameData.Items.List.findIndex(
+              (LeagueData) => LeagueData.LeagueID === updateData.LeagueID
+            );
 
-          if (gameListIndex !== -1) {
-            try {
-              state.GameList.List[gameListIndex].Team.every((teamData) => {
-                return teamData.Wager.every((wagerData) => {
-                  return wagerData.Odds.every((oddData) => {
-                    if (oddData.GameID === updateData.GameID) {
-                      if (updateData.EvtStatus !== 1) {
-                        console.warn(
-                          'some data is disable!!',
-                          teamData.EvtStatus,
-                          updateData.EvtStatus
-                        );
-                      }
-                      oddData.HdpPos = updateData.HdpPos;
-                      oddData.HomeHdp = updateData.HomeHdp;
-                      oddData.AwayHdp = updateData.AwayHdp;
-                      oddData.HomeHdpOdds = updateData.HomeHdpOdds;
-                      oddData.AwayHdpOdds = updateData.AwayHdpOdds;
-                      oddData.OULine = updateData.OULine;
-                      oddData.OverOdds = updateData.OverOdds;
-                      oddData.UnderOdds = updateData.UnderOdds;
-                      oddData.HomeOdds = updateData.HomeOdds;
-                      oddData.AwayOdds = updateData.AwayOdds;
-                      oddData.DrewOdds = updateData.DrewOdds;
-                      oddData.Status = updateData.Status;
-                      teamData.EvtStatus = updateData.EvtStatus;
+            if (gameListIndex !== -1) {
+              try {
+                GameData.Items.List[gameListIndex].Team.every((teamData) => {
+                  return teamData.Wager.every((wagerData) => {
+                    if (wagerData?.isNoData) {
                       return false;
                     } else {
-                      return true;
+                      return wagerData.Odds.every((oddData) => {
+                        if (oddData.GameID === updateData.GameID) {
+                          if (updateData.EvtStatus !== 1) {
+                            console.warn(
+                              'some data is disable!!',
+                              teamData.EvtStatus,
+                              updateData.EvtStatus
+                            );
+                          }
+                          oddData.HdpPos = updateData.HdpPos;
+                          oddData.HomeHdp = updateData.HomeHdp;
+                          oddData.AwayHdp = updateData.AwayHdp;
+                          oddData.HomeHdpOdds = updateData.HomeHdpOdds;
+                          oddData.AwayHdpOdds = updateData.AwayHdpOdds;
+                          oddData.OULine = updateData.OULine;
+                          oddData.OverOdds = updateData.OverOdds;
+                          oddData.UnderOdds = updateData.UnderOdds;
+                          oddData.HomeOdds = updateData.HomeOdds;
+                          oddData.AwayOdds = updateData.AwayOdds;
+                          oddData.DrewOdds = updateData.DrewOdds;
+                          oddData.Status = updateData.Status;
+                          teamData.EvtStatus = updateData.EvtStatus;
+                          console.log('update!!!');
+                          return false;
+                        } else {
+                          return true;
+                        }
+                      });
                     }
                   });
                 });
-              });
-            } catch (err) {
-              console.error('err:', err);
+              } catch (err) {
+                console.error('err:', err);
+              }
+              return false;
+            } else {
+              return true;
             }
-          }
+          });
         });
       }
     },
@@ -263,8 +273,14 @@ export default {
       });
     },
     // 18-b. 收藏夾盤口-(赔率)游戏玩法资讯
-    GetFavoriteGameDetail(store, postData) {
+    GetFavoriteGameDetail(store) {
       return new Promise((resolve, reject) => {
+        let postData = null;
+        postData = {
+          GameType: store.state.selectGameType,
+          EvtIDs: rootStore.state.Setting.favorites.join(','),
+          FavoritesModel: true,
+        };
         return getGameDetail(postData)
           .then(async (res) => {
             store.commit('setGameList', {
@@ -276,7 +292,7 @@ export default {
           .catch(reject);
       });
     },
-    // 更新GameDetail
+    // 19-a. 更新GameDetail
     GetGameDetailSmall(store) {
       return new Promise((resolve, reject) => {
         const CatID = store.state.selectCatID;
@@ -297,6 +313,23 @@ export default {
         } else {
           resolve();
         }
+      });
+    },
+    // 19-b. 更新GameDetail
+    GetFavoriteGameDetailSmall(store) {
+      return new Promise((resolve, reject) => {
+        const GameType = store.state.selectGameType;
+        return getGameDetailSmall({
+          FavoritesModel: true,
+          GameType,
+          EvtIDs: rootStore.state.Setting.favorites.join(','),
+        }).then((res) => {
+          console.log(
+            'GetGameDetailSmall:',
+            res.data.map((it) => it.Status)
+          );
+          store.commit('updateGameList', res.data);
+        });
       });
     },
   },

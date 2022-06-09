@@ -96,22 +96,26 @@
       }
 
       // 定時更新遊戲賠率
-      // this.intervalEvent = setInterval(() => {
-      //   this.$store.dispatch('Game/GetGameDetailSmall');
-      //   this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
-      // }, 10000);
+      this.intervalEvent = setInterval(() => {
+        if (this.isFavoriteMode) {
+          this.$store.dispatch('Game/GetFavoriteGameDetailSmall');
+        } else {
+          this.$store.dispatch('Game/GetGameDetailSmall');
+        }
+        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
+      }, 10000);
 
       // 定時更新遊戲Menu
-      // this.intervalEvent2 = setInterval(() => {
-      //   this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
-      //     const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
-      //       return menuData.catid === this.gameStore.selectCatID;
-      //     });
-      //     if (menuIndex === -1) {
-      //       this.hideMenuChildren();
-      //     }
-      //   });
-      // }, 15000);
+      this.intervalEvent2 = setInterval(() => {
+        this.$store.dispatch('Game/GetMenuGameCatList', false).then((menuRes) => {
+          const menuIndex = this.gameStore.MenuList.findIndex((menuData) => {
+            return menuData.catid === this.gameStore.selectCatID;
+          });
+          if (menuIndex === -1) {
+            this.hideMenuChildren();
+          }
+        });
+      }, 15000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -129,6 +133,9 @@
       },
       selectCatID() {
         return this.$store.state.Game.selectCatID;
+      },
+      isFavoriteMode() {
+        return this.selectCatID === -999;
       },
       selectWagerTypeKey() {
         return this.$store.state.Game.selectWagerTypeKey;
@@ -239,15 +246,8 @@
       // 最愛
       callGetFavoriteGameDetail() {
         this.$store.commit('SetLoading', true);
-
-        let postData = null;
-        postData = {
-          GameType: this.gameTypeID,
-          EvtIDs: this.$store.state.Setting.favorites.join(','),
-          FavoritesModel: true,
-        };
         this.$store
-          .dispatch('Game/GetFavoriteGameDetail', postData)
+          .dispatch('Game/GetFavoriteGameDetail')
           .then((res) => {})
           .finally(() => {
             this.$store.commit('SetLoading', false);
