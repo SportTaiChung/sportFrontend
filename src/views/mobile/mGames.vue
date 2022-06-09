@@ -65,7 +65,7 @@
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
-      <mMorePanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
+      <mMenuPanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMenuPanel>
     </div>
   </div>
 </template>
@@ -79,7 +79,7 @@
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
-  import mMorePanel from './components/mMorePanel';
+  import mMenuPanel from './components/mMenuPanel';
   import MoreGame from '../../components/MoreGame.vue';
 
   export default {
@@ -93,7 +93,7 @@
       mGamesBetInfoSingle,
       mBetRecordView,
       mWagerTypePopup,
-      mMorePanel,
+      mMenuPanel,
       MoreGame,
     },
     data() {

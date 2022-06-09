@@ -1,5 +1,5 @@
 <template>
-  <div id="mMorePanel" @click.stop="onMaskClick">
+  <div id="mMenuPanel" @click.stop="onMaskClick">
     <div class="panel">
       <div class="header-container">
         <img class="level" src="@/assets/img/mobile/icon_level1.svg" />
@@ -9,6 +9,7 @@
         <div class="btn-announcement" @click="$emit('callAnnouncement')"> </div>
       </div>
 
+      <!-- 一級選單面板區 -->
       <div class="main-container">
         <ul class="feature-list">
           <li class="feature-item">
@@ -31,7 +32,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_rule.svg" />
             <div class="text"> 規則 </div>
           </li>
-          <li class="feature-item">
+          <li class="feature-item" @click="openSecondaryPanel">
             <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" />
             <div class="text"> 功能設定 </div>
           </li>
@@ -47,17 +48,40 @@
           <li :class="isThemeActive('light')" @click="onThemeSelect('light')">淺色</li>
         </ul>
       </div>
+
+      <!-- 二級選單面板區 -->
+      <div class="secondaryPanel" :class="isSecondaryPanelOpened ? 'open' : ''">
+        <div class="secondaryPanel-header">
+          <img
+            src="@/assets/img/mobile/btn_arrow_w.svg"
+            class="btn-back"
+            @click="closeSecondaryPanel"
+          />
+          <div class="title">{{ secondaryPanelTitle }}</div>
+        </div>
+        <div class="secondaryPanel-body">
+          <mAdvancedSettings v-if="isShowAdvancedSettings"></mAdvancedSettings>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+  import mAdvancedSettings from '../components/menuPanel/mAdvancedSettings.vue';
+
   export default {
-    name: 'mMorePanel',
-    components: {},
+    name: 'mMenuPanel',
+    components: {
+      mAdvancedSettings,
+    },
 
     data() {
-      return {};
+      return {
+        isSecondaryPanelOpened: false,
+        isShowAdvancedSettings: true,
+        secondaryPanelTitle: 'title',
+      };
     },
     computed: {
       userStore() {
@@ -81,13 +105,19 @@
       isThemeActive(themeName) {
         return this.$store.state.nowThemeInfo === themeName ? 'active' : '';
       },
+      openSecondaryPanel() {
+        this.isSecondaryPanelOpened = true;
+      },
+      closeSecondaryPanel() {
+        this.isSecondaryPanelOpened = false;
+      },
     },
   };
 </script>
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  #mMorePanel {
+  #mMenuPanel {
     position: fixed;
     top: 0;
     left: 0;
@@ -98,7 +128,7 @@
 
     .panel {
       position: relative;
-      width: 67%;
+      width: 70%;
       height: 100%;
       max-width: 300px;
       min-width: 180px;
@@ -106,11 +136,11 @@
       display: flex;
       flex-direction: column;
       background-color: #e4e4e4;
+      overflow: hidden;
 
       .header-container {
-        height: 48px;
+        height: 45px;
         width: 100%;
-        // padding: 0 10px;
         display: flex;
         flex-shrink: 0;
         justify-content: space-between;
@@ -247,7 +277,7 @@
             }
 
             &:active {
-              background-color: #fff;
+              // background-color: #fff;
             }
 
             &.active {
@@ -265,6 +295,60 @@
               }
             }
           }
+        }
+      }
+
+      .secondaryPanel {
+        display: flex;
+        flex-flow: column nowrap;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        background: #e4e4e4;
+        transform: translateX(100%);
+        transition: 350ms ease;
+
+        &.open {
+          opacity: 1;
+          transform: translateX(0);
+          box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .secondaryPanel-header {
+          flex-shrink: 0;
+          height: 45px;
+          width: 100%;
+          // background: #ccc;
+          display: flex;
+          flex-flow: row nowrap;
+          align-items: center;
+          border: 1px solid #aaa;
+          box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+          z-index: 1;
+
+          .title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            line-height: normal;
+            white-space: nowrap;
+          }
+
+          .btn-back {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin: 0.6rem;
+            transform: rotate(90deg);
+            filter: contrast(0);
+          }
+        }
+
+        .secondaryPanel-body {
+          flex-grow: 1;
+          background: #e4e4e4;
+          overflow: auto;
         }
       }
     }
