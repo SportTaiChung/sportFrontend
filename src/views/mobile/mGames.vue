@@ -9,12 +9,12 @@
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
-      <div class="gameTableContainer">
+      <div class="gameTableContainer" v-if="GameList.length !== 0">
         <div style="display: flex">
           <!-- 左半邊 - 隊伍資訊 -->
           <div class="left-area">
             <mGameInfo
-              v-for="(source, index) in GameList"
+              v-for="(source, index) in GameList[0].Items.List"
               :key="index"
               :source="source"
               :isExpanded="isExpanded(index)"
@@ -24,7 +24,7 @@
           <!-- 右半邊 - 下注資訊-->
           <div class="right-area">
             <mGameBetting
-              v-for="(source, index) in GameList"
+              v-for="(source, index) in GameList[0].Items.List"
               :key="index"
               :source="source"
               :isExpanded="isExpanded(index)"
@@ -108,7 +108,7 @@
     },
     computed: {
       GameList() {
-        return this.$store.getters['Game/gameListFinalData'];
+        return this.gameStore.GameList;
       },
       gameStore() {
         return this.$store.state.Game;

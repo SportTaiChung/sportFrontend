@@ -196,10 +196,7 @@
                   </template>
                 </div>
               </td>
-              <td
-                v-if="selectWagerTypeKey === 1 && gameStore.selectCatID !== 72"
-                class="GameTableHeaderMoreTD"
-              >
+              <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
                 <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
                   更多
                   {{ teamData.MoreCount }}
@@ -233,6 +230,9 @@
         },
       },
       isCollapse: {
+        type: Boolean,
+      },
+      isShowMoreGameEntryBtn: {
         type: Boolean,
       },
     },
@@ -360,7 +360,7 @@
   @import './GameTable.scss';
   #app[data-theme='light'] {
     .GameCollapse {
-      border-bottom-color: #d0d0d0;
+      border-bottom: 1px solid #d0d0d0;
       table {
         background-color: white;
         color: black;

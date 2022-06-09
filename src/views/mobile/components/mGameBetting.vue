@@ -204,9 +204,6 @@
       };
     },
     computed: {
-      showTableHeaderList() {
-        return this.$store.getters['Game/showTableHeaderList'];
-      },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },

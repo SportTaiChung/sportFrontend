@@ -97,7 +97,11 @@
 
       // 定時更新遊戲賠率
       this.intervalEvent = setInterval(() => {
-        this.$store.dispatch('Game/GetGameDetailSmall');
+        if (this.isFavoriteMode) {
+          this.$store.dispatch('Game/GetFavoriteGameDetailSmall');
+        } else {
+          this.$store.dispatch('Game/GetGameDetailSmall');
+        }
         this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
       }, 10000);
 
@@ -129,6 +133,9 @@
       },
       selectCatID() {
         return this.$store.state.Game.selectCatID;
+      },
+      isFavoriteMode() {
+        return this.selectCatID === -999;
       },
       selectWagerTypeKey() {
         return this.$store.state.Game.selectWagerTypeKey;
@@ -235,33 +242,58 @@
           this.$store.commit('SetLoading', false);
         });
       },
+
+      // 最愛
+      callGetFavoriteGameDetail() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetFavoriteGameDetail')
+          .then((res) => {})
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
       hideMenuChildren() {
         this.$refs.elMenu.openedMenus.length = 0;
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
-        let clickCatID = null;
-        let clickWagerTypeKey = null;
-        clickCatID = catData.catid;
-        // 父親層級被點
-        if (WagerTypeKey === null) {
-          // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
-          if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
-            this.hideMenuChildren();
-          }
+        if (!catData.isFavorite) {
+          let clickCatID = null;
+          let clickWagerTypeKey = null;
+          clickCatID = catData.catid;
+          // 父親層級被點
+          if (WagerTypeKey === null) {
+            // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
+            if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
+              this.hideMenuChildren();
+            }
 
-          if (catData.Items.length === 0) {
-            clickWagerTypeKey = 1;
+            if (catData.Items.length === 0) {
+              clickWagerTypeKey = 1;
+            } else {
+              clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            }
           } else {
-            clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            clickWagerTypeKey = WagerTypeKey;
           }
-        } else {
-          clickWagerTypeKey = WagerTypeKey;
-        }
 
-        this.$store.commit('MoreGame/closeMoreGameList');
-        // 獲取遊戲detail
-        this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 獲取遊戲detail
+          this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+        } else {
+          // 如果點擊選單的收藏
+          this.menuActiveString = '0';
+          this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
+            selectGameType: this.gameTypeID,
+            selectCatID: -999,
+            selectWagerTypeKey: null,
+          });
+          this.hideMenuChildren();
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 最愛遊戲
+          this.callGetFavoriteGameDetail();
+        }
       },
     },
   };
