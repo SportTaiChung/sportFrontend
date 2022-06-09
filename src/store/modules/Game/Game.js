@@ -1,7 +1,6 @@
 import { getMenuGameType, getMenuGameCatList, getGameDetail, getGameDetailSmall } from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
-import * as GameListGetters from './getters/GameList';
 import rootStore from '@/store';
 
 export default {
@@ -24,7 +23,6 @@ export default {
   },
   getters: {
     ...GameTypeListGetters,
-    ...GameListGetters,
   },
   mutations: {
     setGameTypeList(state, val) {
