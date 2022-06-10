@@ -28,7 +28,7 @@
       <div class="ScrollViewContainer">
         <div class="gameContainer" v-for="(GameData, GameIndex) in GameList" :key="GameIndex">
           <GameTableHeader
-            v-if="isFavoriteMode"
+            v-if="isFavoriteMode && GameData.Items.List.length !== 0"
             :isCollapse="FavoriteGameTableHeaderIsCollapse(GameData.Items.List)"
             :isNavMenuCollapse="isNavMenuCollapse"
             :CatName="GameData.CatName"

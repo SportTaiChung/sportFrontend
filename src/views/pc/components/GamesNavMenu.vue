@@ -102,7 +102,7 @@
         } else {
           this.$store.dispatch('Game/GetGameDetailSmall');
         }
-        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
+        // this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
       }, 10000);
 
       // 定時更新遊戲Menu
@@ -280,7 +280,9 @@
 
           this.$store.commit('MoreGame/closeMoreGameList');
           // 獲取遊戲detail
-          this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+          // this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+          // TODO TEST
+          this.callGetGameDetail(82, clickWagerTypeKey);
         } else {
           // 如果點擊選單的收藏
           this.menuActiveString = '0';

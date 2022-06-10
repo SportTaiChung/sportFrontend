@@ -1,9 +1,9 @@
 <template>
   <div id="MoreGame" :class="isMobileClass">
     <div class="MoreGameHeader">
-      <div class="teamName">{{ getteamData.home }}</div>
+      <div class="teamName">{{ getTeamData.home }}</div>
       <div class="teamVS">vs</div>
-      <div class="teamName">{{ getteamData.away }}</div>
+      <div class="teamName">{{ getTeamData.away }}</div>
       <img
         class="closeBtn"
         src="@/assets/img/pc/btn_close_w.svg"
@@ -16,25 +16,28 @@
         <div class="leftArrowBlock">
           <i :class="arrowIconJudge" />
         </div>
-        <div class="menuTab" v-for="(menuData, menuIndex) in menuTabs" :key="menuIndex">
-          <div @click="selectItemKey = menuData.ItemKey">{{ menuData.ItemName }}</div>
-          <div class="active" v-if="menuData.ItemKey === selectItemKey"></div>
-        </div>
+        <div class="filterTab"> 全部 </div>
       </div>
       <div class="MoreGameList">
-        <template v-for="(gameData, gameIndex) in FinalGameList">
-          <div class="MoreGameListOutRow" :key="gameIndex">
-            <div class="MoreGameListRowTitle" @click="titleClickHandler(gameData.ItemName)">
+        <template v-for="(menuData, menuKey) in mergeMenuHeadData">
+          <div class="MoreGameListOutRow" :key="menuKey">
+            <div class="MoreGameListRowTitle" @click="titleClickHandler(menuData.WagerGrpID)">
               <div class="leftArrowBlock">
                 <i
-                  :class="titleArrowIconJudge(collapseItemNames.indexOf(gameData.ItemName) === -1)"
+                  :class="
+                    titleArrowIconJudge(
+                      $store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1
+                    )
+                  "
                 />
               </div>
               <div class="MoreGameListRowTitleText">
-                {{ gameData.ItemName }}
+                {{ menuData.WagerGrpName }}
               </div>
             </div>
-            <!-- <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
+            <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
+              <!-- vIF   隱藏空Odd
+                   vShow collapse隱藏 -->
               <div
                 v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
                 v-show="$store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1"
@@ -53,7 +56,7 @@
                     <div
                       class="betBlock"
                       v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                        teamData.SetFlag,
+                        TeamData.SetFlag,
                         menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
                         oddData
                       )"
@@ -74,7 +77,7 @@
                   </div>
                 </div>
               </div>
-            </template> -->
+            </template>
           </div>
         </template>
       </div>
@@ -93,99 +96,30 @@
     data() {
       return {
         isCollapse: false,
-        collapseItemNames: [],
-        selectItemKey: null,
       };
-    },
-    created() {
-      console.log(this.FinalGameList);
     },
     computed: {
       moreGameData() {
-        if (Object.keys(this.$store.state.MoreGame.moreGameData).length === 0) {
-          return null;
-        } else {
-          return this.$store.state.MoreGame.moreGameData;
-        }
+        return this.$store.state.MoreGame.moreGameData;
       },
-      GameList() {
-        if (this.moreGameData === null) {
-          return [];
-        }
-        return this.moreGameData.List;
+      TeamData() {
+        return this.moreGameData.TeamData;
       },
-      FinalGameList() {
-        if (this.GameList.length === 0) {
-          return [];
-        }
-        return this.GameList.map((gameData) => {
-          const newList = gameData.List.map((LeagueData) => {
-            const OddsData = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
-              const wagerOdds = WagerData.Odds.map((oddData) => {
-                const WagerTypeID = WagerData.WagerTypeID;
-                const headWagerData = gameData.BestHead.find((headData) => {
-                  const findIndex = headData.WagerTypeIDs.findIndex(
-                    (typeID) => typeID === WagerTypeID
-                  );
-                  if (findIndex > -1) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                });
-                console.log(headWagerData);
-                if (headWagerData) {
-                  return {
-                    ...oddData,
-                    WagerGrpID: WagerData.WagerGrpID,
-                    WagerTypeID,
-                    ShowName: gameData.ItemName + headWagerData.WagerTypeName,
-                  };
-                } else {
-                  // TODO List出現的數據 head卻沒有
-                  return {
-                    empty: true,
-                  };
-                }
-              });
-              return [...sum, ...wagerOdds];
-            }, []);
-            return {
-              ...LeagueData,
-              Team: LeagueData.Team[0],
-              Odds: OddsData,
-            };
-          });
-          return {
-            ...gameData,
-            List: newList,
-          };
-        });
-      },
-      teamData() {
-        return this.$store.state.MoreGame.teamData;
-      },
-      menuTabs() {
-        if (this.moreGameData === null) {
-          return [];
-        }
-        return this.moreGameData.Menu;
-      },
-      MoreGameStoreUpdateFlag() {
-        return this.$store.state.MoreGame.MoreGameStoreUpdateFlag;
+      MenuHead() {
+        return this.moreGameData.MenuHead;
       },
       CatID() {
-        return this.$store.state.MoreGame.CatID;
+        return this.moreGameData.CatID;
       },
-      getteamData() {
+      getTeamData() {
         let home = '';
         let away = '';
-        if (!this.teamData.SetFlag) {
-          home = this.teamData.AwayTeamStr;
-          away = this.teamData.HomeTeamStr;
+        if (!this.TeamData.SetFlag) {
+          home = this.TeamData.AwayTeamStr;
+          away = this.TeamData.HomeTeamStr;
         } else {
-          home = this.teamData.HomeTeamStr;
-          away = this.teamData.AwayTeamStr;
+          home = this.TeamData.HomeTeamStr;
+          away = this.TeamData.AwayTeamStr;
         }
         return {
           home,
@@ -199,98 +133,98 @@
           return 'el-icon-arrow-up';
         }
       },
-      // dealGrpHead() {
-      //   return this.MenuHead.reduce((sum, it, index) => {
-      //     if (sum[it.WagerGrpName] === undefined) {
-      //       sum[it.WagerGrpName] = {
-      //         WagerGrpName: it.WagerGrpName,
-      //         WagerGrpID: it.WagerGrpIDs[0],
-      //         WagerTypeIDs: it.WagerTypeIDs,
-      //       };
-      //     } else {
-      //       const mergeData = [...sum[it.WagerGrpName].WagerTypeIDs, ...it.WagerTypeIDs];
-      //       sum[it.WagerGrpName].WagerTypeIDs = mergeData;
-      //     }
-      //     return sum;
-      //   }, {});
-      // },
-      // mergeMenuHeadData() {
-      //   const dealWagerHead = Object.keys(this.dealGrpHead)
-      //     .map((key) => {
-      //       return {
-      //         ...this.dealGrpHead[key],
-      //       };
-      //     })
-      //     .map((wagerGrpData) => {
-      //       const newWagerTypeIDs = wagerGrpData.WagerTypeIDs.reduce((sum, WagerTypeId) => {
-      //         const WagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
-      //           [WagerTypeId],
-      //           wagerGrpData.WagerGrpID,
-      //           true
-      //         );
-      //         if (sum[WagerTypeLabel] === undefined) {
-      //           sum[WagerTypeLabel] = {
-      //             WagerTypeIds: [WagerTypeId],
-      //             OddList: [],
-      //           };
-      //         } else {
-      //           if (sum[WagerTypeLabel].WagerTypeIds.indexOf(WagerTypeId) === -1) {
-      //             sum[WagerTypeLabel].WagerTypeIds.push(WagerTypeId);
-      //           }
-      //         }
-      //         return sum;
-      //       }, {});
-      //       return {
-      //         ...wagerGrpData,
-      //         WagerTypeIDs: newWagerTypeIDs,
-      //       };
-      //     });
+      dealGrpHead() {
+        return this.MenuHead.reduce((sum, it, index) => {
+          if (sum[it.WagerGrpName] === undefined) {
+            sum[it.WagerGrpName] = {
+              WagerGrpName: it.WagerGrpName,
+              WagerGrpID: it.WagerGrpIDs[0],
+              WagerTypeIDs: it.WagerTypeIDs,
+            };
+          } else {
+            const mergeData = [...sum[it.WagerGrpName].WagerTypeIDs, ...it.WagerTypeIDs];
+            sum[it.WagerGrpName].WagerTypeIDs = mergeData;
+          }
+          return sum;
+        }, {});
+      },
+      mergeMenuHeadData() {
+        const dealWagerHead = Object.keys(this.dealGrpHead)
+          .map((key) => {
+            return {
+              ...this.dealGrpHead[key],
+            };
+          })
+          .map((wagerGrpData) => {
+            const newWagerTypeIDs = wagerGrpData.WagerTypeIDs.reduce((sum, WagerTypeId) => {
+              const WagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
+                [WagerTypeId],
+                wagerGrpData.WagerGrpID,
+                true
+              );
+              if (sum[WagerTypeLabel] === undefined) {
+                sum[WagerTypeLabel] = {
+                  WagerTypeIds: [WagerTypeId],
+                  OddList: [],
+                };
+              } else {
+                if (sum[WagerTypeLabel].WagerTypeIds.indexOf(WagerTypeId) === -1) {
+                  sum[WagerTypeLabel].WagerTypeIds.push(WagerTypeId);
+                }
+              }
+              return sum;
+            }, {});
+            return {
+              ...wagerGrpData,
+              WagerTypeIDs: newWagerTypeIDs,
+            };
+          });
 
-      //   this.teamData.Wager.forEach((wagerData) => {
-      //     const headGrpIndex = dealWagerHead.findIndex(
-      //       (headData) => headData.WagerGrpID === wagerData.WagerGrpID
-      //     );
-      //     if (headGrpIndex > -1) {
-      //       const wagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
-      //         [wagerData.WagerTypeID],
-      //         wagerData.WagerGrpID,
-      //         true
-      //       );
-      //       dealWagerHead[headGrpIndex].WagerTypeIDs[wagerTypeLabel].OddList.push(
-      //         ...wagerData.Odds.filter((it) => {
-      //           return it.Status === 1;
-      //         }).map((it) => {
-      //           it.WagerGrpID = wagerData.WagerGrpID;
-      //           it.WagerTypeID = wagerData.WagerTypeID;
-      //           return it;
-      //         })
-      //       );
-      //     } else {
-      //       if (!wagerData?.isNoData) {
-      //         console.error(`More Game 錯誤 ${wagerData.WagerGrpID} 無法對應head grp`);
-      //       }
-      //     }
-      //   });
+        this.TeamData.Wager.forEach((wagerData) => {
+          const headGrpIndex = dealWagerHead.findIndex(
+            (headData) => headData.WagerGrpID === wagerData.WagerGrpID
+          );
+          if (headGrpIndex > -1) {
+            const wagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
+              [wagerData.WagerTypeID],
+              wagerData.WagerGrpID,
+              true
+            );
+            dealWagerHead[headGrpIndex].WagerTypeIDs[wagerTypeLabel].OddList.push(
+              ...wagerData.Odds.filter((it) => {
+                return it.Status === 1;
+              }).map((it) => {
+                it.WagerGrpID = wagerData.WagerGrpID;
+                it.WagerTypeID = wagerData.WagerTypeID;
+                return it;
+              })
+            );
+          } else {
+            if (!wagerData?.isNoData) {
+              console.error(`More Game 錯誤 ${wagerData.WagerGrpID} 無法對應head grp`);
+            }
+          }
+        });
 
-      //   const finallyData = dealWagerHead.reduce((sum, grpData) => {
-      //     let isValid = false;
-      //     Object.keys(grpData.WagerTypeIDs).every((wagerDataKey) => {
-      //       if (grpData.WagerTypeIDs[wagerDataKey].OddList.length !== 0) {
-      //         isValid = true;
-      //         return false;
-      //       } else {
-      //         return true;
-      //       }
-      //     });
-      //     if (isValid) {
-      //       sum.push(grpData);
-      //     }
-      //     return sum;
-      //   }, []);
-      //   console.log('dealWagerHead:', finallyData);
+        const finallyData = dealWagerHead.reduce((sum, grpData) => {
+          let isValid = false;
+          Object.keys(grpData.WagerTypeIDs).every((wagerDataKey) => {
+            if (grpData.WagerTypeIDs[wagerDataKey].OddList.length !== 0) {
+              isValid = true;
+              return false;
+            } else {
+              return true;
+            }
+          });
+          if (isValid) {
+            sum.push(grpData);
+          }
+          return sum;
+        }, []);
+        console.log('dealWagerHead:', finallyData);
 
-      //   return finallyData;
-      // },
+        return finallyData;
+      },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
@@ -301,22 +235,7 @@
         return '';
       },
     },
-    watch: {
-      MoreGameStoreUpdateFlag() {
-        this.resetData();
-      },
-      menuTabs() {
-        if (this.menuTabs.length !== 0) {
-          this.selectItemKey = this.menuTabs[0].ItemKey;
-        }
-      },
-    },
     methods: {
-      resetData() {
-        this.collapseItemNames.length = 0;
-        this.collapseItemNames = [];
-        this.selectItemKey = null;
-      },
       titleArrowIconJudge(isCollapse) {
         if (!isCollapse) {
           return 'el-icon-arrow-down';
@@ -325,11 +244,11 @@
         }
       },
       titleClickHandler(WagerGrpID) {
-        const collapseIndex = this.collapseItemNames.indexOf(WagerGrpID);
+        const collapseIndex = this.$store.state.MoreGame.collapseGrpIDs.indexOf(WagerGrpID);
         if (collapseIndex > -1) {
-          this.collapseItemNames.splice(collapseIndex, 1);
+          this.$store.state.MoreGame.collapseGrpIDs.splice(collapseIndex, 1);
         } else {
-          this.collapseItemNames.push(WagerGrpID);
+          this.$store.state.MoreGame.collapseGrpIDs.push(WagerGrpID);
         }
       },
       betBlockSelectCSS(clickPlayIndex, { GameID }) {
@@ -359,12 +278,12 @@
           GameID: oddData.GameID,
           CatID: this.CatID,
           LeagueNameStr: this.moreGameData.LeagueNameStr,
-          HomeTeamStr: this.getteamData.home,
-          AwayTeamStr: this.getteamData.away,
+          HomeTeamStr: this.getTeamData.home,
+          AwayTeamStr: this.getTeamData.away,
           WagerTypeID: oddData.WagerTypeID,
           WagerGrpID: oddData.WagerGrpID,
-          EvtID: this.teamData.EvtID,
-          EvtStatus: this.teamData.EvtStatus,
+          EvtID: this.TeamData.EvtID,
+          EvtStatus: this.TeamData.EvtStatus,
           ...oddData,
         };
         console.log('betInfoData:', betInfoData);
@@ -441,21 +360,6 @@
         color: white;
         display: flex;
         align-items: center;
-        .menuTab {
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-          margin-right: 20px;
-          width: fit-content;
-          flex-wrap: wrap;
-
-          .active {
-            width: 100%;
-            height: 3px;
-            background-color: #fff;
-            margin-top: 2px;
-          }
-        }
       }
       .MoreGameList {
         overflow-y: auto;

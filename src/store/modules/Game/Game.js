@@ -115,7 +115,9 @@ export default {
     },
     setCatIDAndGameTypeAndWagerType(state, { selectGameType, selectCatID, selectWagerTypeKey }) {
       state.selectGameType = selectGameType;
-      state.selectCatID = selectCatID;
+      // state.selectCatID = selectCatID;
+      // TODO TEST
+      state.selectCatID = 82;
       state.selectWagerTypeKey = selectWagerTypeKey;
     },
     updateGameList(state, updateData) {

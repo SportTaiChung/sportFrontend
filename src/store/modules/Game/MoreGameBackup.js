@@ -7,16 +7,17 @@ export default {
     // CatNameStr
     // LeagueID
     // LeagueNameStr
-    // teamData
+    // TeamData
     // MenuHead
     moreGameData: {},
-    teamData: [],
-    // 監聽此值發生變化,就能知道moreGameData重新被初始化
-    MoreGameStoreUpdateFlag: false,
+    collapseGrpIDs: [],
   },
   mutations: {
     setIsShowMoreGame(state, val) {
       state.isShowMoreGame = val;
+    },
+    setMoreGameData(state, val) {
+      state.moreGameData = JSON.parse(JSON.stringify(val));
     },
     closeMoreGameList(state) {
       state.isShowMoreGame = false;
@@ -24,34 +25,35 @@ export default {
     },
   },
   actions: {
-    openMoreGameList(store, { teamData }) {
-      store.state.MoreGameStoreUpdateFlag = !store.state.MoreGameStoreUpdateFlag;
-      store.state.teamData = teamData;
+    openMoreGameList(store, collapseData) {
+      store.state.collapseGrpIDs.length = 0;
       store.commit('setIsShowMoreGame', true);
-      store.dispatch('GetMoreGameDetail', teamData);
+      store.commit('setMoreGameData', collapseData);
+      store.dispatch('GetMoreGameDetail', collapseData);
     },
     // 18-a. (赔率)游戏玩法资讯 更多
-    GetMoreGameDetail(store, teamData) {
+    GetMoreGameDetail(store, collapseData) {
       return new Promise((resolve, reject) => {
         return getGameDetail({
+          CatID: collapseData.CatID,
+          GameType: collapseData.GameType,
           show: 2,
+          EvtIDs: collapseData.TeamData.EvtID,
           moreModel: true,
-          EvtIDs: teamData.EvtID.toString(),
         })
           .then((res) => {
-            // if (res.data.List.length !== 0) {
-            //   const newteamData = res.data.List[0].Team[0];
-            //   const newMenuData = res.data.Menu;
-            //   // 只更新目前打開更多的EvtID狀態
-            //   if (
-            //     Object.keys(store.state.moreGameData).length !== 0 &&
-            //     newteamData.EvtID === store.state.moreGameData.teamData.EvtID
-            //   ) {
-            //     store.state.moreGameData.teamData = newteamData;
-            //     store.state.moreGameData.MenuHead = newMenuData;
-            //   }
-            // }
-            store.state.moreGameData = res.data;
+            if (res.data.List.length !== 0) {
+              const newTeamData = res.data.List[0].Team[0];
+              const newMenuData = res.data.Menu;
+              // 只更新目前打開更多的EvtID狀態
+              if (
+                Object.keys(store.state.moreGameData).length !== 0 &&
+                newTeamData.EvtID === store.state.moreGameData.TeamData.EvtID
+              ) {
+                store.state.moreGameData.TeamData = newTeamData;
+                store.state.moreGameData.MenuHead = newMenuData;
+              }
+            }
             resolve(res);
           })
           .catch(reject);
@@ -74,12 +76,12 @@ export default {
               const newWagerGrpID = newOddData.WagerGrpID;
               const newWagerTypeID = newOddData.WagerTypeID;
 
-              const wagerIndex = store.state.moreGameData.teamData.Wager.findIndex(
+              const wagerIndex = store.state.moreGameData.TeamData.Wager.findIndex(
                 (wagerData) =>
                   wagerData.WagerGrpID === newWagerGrpID && wagerData.WagerTypeID === newWagerTypeID
               );
               if (wagerIndex > -1) {
-                store.state.moreGameData.teamData.Wager[wagerIndex].Odds.every((oddData) => {
+                store.state.moreGameData.TeamData.Wager[wagerIndex].Odds.every((oddData) => {
                   if (oddData.GameID === newGameID) {
                     oddData.HdpPos = newOddData.HdpPos;
                     oddData.HomeHdp = newOddData.HomeHdp;
@@ -93,7 +95,7 @@ export default {
                     oddData.AwayOdds = newOddData.AwayOdds;
                     oddData.DrewOdds = newOddData.DrewOdds;
                     oddData.Status = newOddData.Status;
-                    store.state.moreGameData.teamData.EvtStatus = newOddData.EvtStatus;
+                    store.state.moreGameData.TeamData.EvtStatus = newOddData.EvtStatus;
                     return false;
                   } else {
                     return true;
