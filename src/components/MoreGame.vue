@@ -34,47 +34,47 @@
                 {{ gameData.ItemName }}
               </div>
             </div>
-            <!-- <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
-              <div
-                v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
-                v-show="$store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1"
-                class="MoreGameListInRow"
-                :key="menuKey + wagerIndex"
-              >
-                <div class="wagerLabelBlock">
-                  {{ wagerTypeKey }}
-                </div>
-                <div class="wagerPlayList">
-                  <div
-                    class="wagerPlayRow"
-                    v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerTypeKey].OddList"
-                    :key="menuKey + wagerIndex + oddKey"
-                  >
-                    <div
-                      class="betBlock"
-                      v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                        teamData.SetFlag,
-                        menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
-                        oddData
-                      )"
-                      :class="betBlockSelectCSS(betIndex, oddData)"
-                      :key="menuKey + wagerIndex + betIndex"
-                      @click="goBet(betIndex, betData, oddData)"
-                    >
-                      <div class="betBlockTop">
-                        {{ betData.showMethod }}
-                      </div>
-                      <div class="betBlockBottom">
-                        <Odd
-                          :OddValue="betData.showOdd"
-                          :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
-                        />
+
+            <template v-for="(leagueData, leagueIndex) in gameData.List">
+              <template v-if="collapseItemNames.indexOf(gameData.ItemName) === -1">
+                <template v-for="(renderHeadData, renderHeadIndex) in leagueData.RenderHead">
+                  <div class="MoreGameListInRow" :key="gameIndex + leagueIndex + renderHeadIndex">
+                    <div class="wagerLabelBlock">
+                      {{ renderHeadData.HeadShowName }}
+                    </div>
+                    <div class="wagerPlayList">
+                      <div
+                        class="wagerPlayRow"
+                        v-for="(oddData, oddIndex) in renderHeadData.Odds"
+                        :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex"
+                      >
+                        <div
+                          class="betBlock"
+                          v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
+                            teamData.SetFlag,
+                            oddData.WagerTypeID,
+                            oddData
+                          )"
+                          :class="betBlockSelectCSS(betIndex, oddData)"
+                          :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex + betIndex"
+                          @click="goBet(betIndex, betData, oddData)"
+                        >
+                          <div class="betBlockTop">
+                            {{ betData.showMethod }}
+                          </div>
+                          <div class="betBlockBottom">
+                            <Odd
+                              :OddValue="betData.showOdd"
+                              :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </template> -->
+                </template>
+              </template>
+            </template>
           </div>
         </template>
       </div>
@@ -120,7 +120,8 @@
         }
         return this.GameList.map((gameData) => {
           const newList = gameData.List.map((LeagueData) => {
-            const OddsData = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
+            // 排列出Wager底下所有Odd
+            const Odds = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
               const wagerOdds = WagerData.Odds.map((oddData) => {
                 const WagerTypeID = WagerData.WagerTypeID;
                 const headWagerData = gameData.BestHead.find((headData) => {
@@ -133,7 +134,6 @@
                     return false;
                   }
                 });
-                console.log(headWagerData);
                 if (headWagerData) {
                   return {
                     ...oddData,
@@ -149,11 +149,34 @@
                 }
               });
               return [...sum, ...wagerOdds];
-            }, []);
+            }, []).filter((it) => it?.empty === undefined);
+
+            // 組成渲染head
+            const RenderHead = JSON.parse(JSON.stringify(gameData.BestHead)).map((it) => {
+              return {
+                ...it,
+                Odds: [],
+                HeadShowName: gameData.ItemName + it.WagerTypeName,
+              };
+            });
+
+            // 將Odd資料組進渲染head
+            Odds.forEach((OddData) => {
+              const oddWagerTypeID = OddData.WagerTypeID;
+              RenderHead.every((renderHeadData) => {
+                const isFind = renderHeadData.WagerTypeIDs.find((ID) => ID === oddWagerTypeID);
+                if (isFind) {
+                  renderHeadData.Odds.push(OddData);
+                  return false;
+                }
+                return true;
+              });
+            });
+
             return {
               ...LeagueData,
               Team: LeagueData.Team[0],
-              Odds: OddsData,
+              RenderHead,
             };
           });
           return {

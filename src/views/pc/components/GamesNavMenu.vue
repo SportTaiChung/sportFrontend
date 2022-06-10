@@ -280,9 +280,7 @@
 
           this.$store.commit('MoreGame/closeMoreGameList');
           // 獲取遊戲detail
-          // this.callGetGameDetail(clickCatID, clickWagerTypeKey);
-          // TODO TEST
-          this.callGetGameDetail(82, clickWagerTypeKey);
+          this.callGetGameDetail(clickCatID, clickWagerTypeKey);
         } else {
           // 如果點擊選單的收藏
           this.menuActiveString = '0';
