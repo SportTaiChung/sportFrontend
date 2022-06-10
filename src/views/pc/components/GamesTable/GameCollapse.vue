@@ -291,15 +291,19 @@
           return wagerData.Odds[rowIndex].GameID;
         }
       },
-      moreGameClickHandler(TeamData) {
+      moreGameClickHandler(teamData) {
+        console.log('teamData:', teamData);
         this.$store.dispatch('MoreGame/openMoreGameList', {
-          GameType: this.$store.state.Game.selectGameType,
-          CatID: this.source.CatID,
-          CatNameStr: this.source.CatNameStr,
-          LeagueID: this.source.LeagueID,
-          LeagueNameStr: this.source.LeagueNameStr,
-          TeamData,
-          MenuHead: this.$store.state.Game.GameList.BestHead,
+          // GameType: this.$store.state.Game.selectGameType,
+          // CatID: this.source.CatID,
+          // CatNameStr: this.source.CatNameStr,
+          // LeagueID: this.source.LeagueID,
+          // LeagueNameStr: this.source.LeagueNameStr,
+          // TeamData,
+          // MenuHead: this.$store.state.Game.GameList.BestHead,
+
+          // EvtIDs: TeamData.EvtID.toString(),
+          teamData,
         });
       },
       goBet(clickPlayIndex, teamData, wagerData, rowIndex, wagerPos) {

@@ -116,7 +116,7 @@
     watch: {
       TimeCountDown() {
         const dateTime = this.TimeCountDown.time;
-        if (dateTime === '12:00:00') {
+        if (dateTime === '12:03:00') {
           location.reload();
         }
       },
