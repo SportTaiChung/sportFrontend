@@ -33,6 +33,20 @@
     <!-- 遊戲類型 -->
     <ul class="gameTypeNav">
       <li
+        v-if="hasFavorite || gameStore.selectCatID == -999"
+        class="gameTypeItem"
+        :class="gameStore.selectCatID == -999 ? 'active' : ''"
+        @click="goFav"
+        style="background-color: #6da9e5; position: sticky; left: 0"
+      >
+        <img
+          :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(-999))"
+          class="menu-icon"
+          @click="goFav()"
+        />
+        收藏夾
+      </li>
+      <li
         v-for="(catData, index) in gameStore.MenuList"
         :key="index"
         class="gameTypeItem"
@@ -46,31 +60,13 @@
         {{ catData.catName }}
       </li>
     </ul>
-
-    <!-- 玩法類型 -->
-    <div class="playTypeBar" @click="onToggleAllCollapseClick">
-      <div class="playTypeBtn" @click="openWagerTypePopup">
-        {{ currentWagerType ? currentWagerType.WagerTypeName : ' - ' }}
-      </div>
-      <i
-        class="el-collapse-item__arrow el-icon-arrow-right"
-        :class="activeCollapse.length > 0 ? 'is-active' : ''"
-      ></i>
-    </div>
   </div>
 </template>
 
 <script>
   export default {
     name: 'mobileHeader',
-    props: {
-      activeCollapse: {
-        type: Array,
-        default() {
-          return [];
-        },
-      },
-    },
+    props: {},
     data() {
       return {
         intervalEvent: null,
@@ -87,7 +83,11 @@
 
       // 更新 賠率: 每10秒
       this.intervalEvent = setInterval(() => {
-        this.$store.dispatch('Game/GetGameDetailSmall');
+        if (this.isFavoriteMode) {
+          this.$store.dispatch('Game/GetFavoriteGameDetailSmall');
+        } else {
+          this.$store.dispatch('Game/GetGameDetailSmall');
+        }
       }, 10000);
 
       // 更新 MENU: 每20秒
@@ -103,6 +103,9 @@
       gameStore() {
         return this.$store.state.Game;
       },
+      GameList() {
+        return this.gameStore.GameList;
+      },
       showGameTypeList() {
         return this.gameStore.GameTypeList.filter((it, index) => index <= 2);
       },
@@ -112,20 +115,11 @@
       userCredit() {
         return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
       },
-      currentCatData() {
-        const { selectCatID, MenuList } = this.gameStore;
-        const currentCatData = MenuList.find((it) => it.catid === selectCatID);
-        return currentCatData;
+      isFavoriteMode() {
+        return this.gameStore.selectCatID === -999;
       },
-      currentWagerType() {
-        if (this.currentCatData) {
-          const { selectWagerTypeKey } = this.gameStore;
-          const currentWagerType = this.currentCatData.Items.find(
-            (it) => it.WagerTypeKey === selectWagerTypeKey
-          );
-          return currentWagerType;
-        }
-        return null;
+      hasFavorite() {
+        return this.$store.state.Setting.favorites.length > 0;
       },
     },
     methods: {
@@ -148,7 +142,6 @@
       },
       callGetGameDetail(CatID, WagerTypeKey = null) {
         this.$store.commit('SetLoading', true);
-        this.clearActiveCollapse();
         let postData = null;
         postData = {
           GameType: this.gameTypeID,
@@ -169,10 +162,7 @@
       gameTypeClickHandler(gameType) {
         this.$store.commit('Game/setGameType', gameType);
         const menuData = this.gameStore.FullMenuList.find((menu) => menu.GameType === gameType);
-        let catid = 1;
-        if (menuData.LeftMenu.item.length !== 0) {
-          catid = menuData.LeftMenu.item[0].catid;
-        }
+        const catid = menuData.LeftMenu.item.length !== 0 ? menuData.LeftMenu.item[0].catid : 1;
         this.callGetGameDetail(catid, null);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
       },
@@ -183,9 +173,6 @@
       openWagerTypePopup() {
         this.$emit('openWagerTypePopup');
       },
-      clearActiveCollapse() {
-        this.activeCollapse.length = 0;
-      },
       getMenuIconByCatID(catId) {
         return this.$SportLib.getMenuIconByCatID(catId);
       },
@@ -195,6 +182,25 @@
           this.$store.commit('SetLoading', false);
         });
       },
+      goFav() {
+        this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
+          selectGameType: this.gameTypeID,
+          selectCatID: -999,
+          selectWagerTypeKey: null,
+        });
+
+        this.callGetFavoriteGameDetail();
+      },
+      // 最愛
+      callGetFavoriteGameDetail() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetFavoriteGameDetail')
+          .then((res) => {})
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
     },
   };
 </script>
@@ -203,7 +209,7 @@
   @import '@/assets/sass/theme/mixin.scss';
   #mobileHeader {
     .header-container {
-      height: 45px;
+      height: 3.5rem;
       width: 100%;
       padding: 0 10px;
       @include base-background();
@@ -279,9 +285,9 @@
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
-      align-items: center;
+      align-items: stretch;
       min-height: 50px;
-      padding: 0.4rem;
+      padding: 0;
       width: 100%;
       background-color: #3fa381;
       overflow-x: auto;
@@ -295,50 +301,28 @@
         display: flex;
         flex: none;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
+        padding: 0.4rem 0;
         min-width: 5.35rem;
         width: fit-content;
-        height: 100%;
         text-align: center;
-        font-size: 1.11rem;
+        font-size: 1.2rem;
         white-space: nowrap;
         color: rgba(255, 255, 255, 0.6);
 
         &.active {
           color: #fff;
-          font-weight: bold;
+          img.menu-icon {
+            filter: brightness(1.1);
+          }
         }
 
         img.menu-icon {
           padding-top: 4px;
-        }
-      }
-    }
-
-    .playTypeBar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8em;
-      line-height: 1em;
-      min-height: 30px;
-      color: #fff;
-      padding: 3px 6px;
-      background-color: #7d9364;
-
-      .playTypeBtn {
-        align-self: stretch;
-        border: 1px solid #fff;
-        border-radius: 45px;
-        padding: 4px 22px;
-        line-height: 1;
-        background-color: rgba(255, 255, 255, 0.15);
-        font-size: 1.1rem;
-
-        &:active {
-          background-color: rgba(0, 0, 0, 0.15);
+          filter: grayscale(1) brightness(3);
+          opacity: 0.7;
         }
       }
     }

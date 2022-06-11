@@ -5,34 +5,22 @@
       <MobileHeader
         :activeCollapse="activeCollapse"
         @toggleAllCollapse="toggleAllCollapse"
-        @openWagerTypePopup="isShowWagerTypePopup = true"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
-      <div class="gameTableContainer" v-if="GameList.length !== 0">
-        <div style="display: flex">
-          <!-- 左半邊 - 隊伍資訊 -->
-          <div class="left-area">
-            <mGameInfo
-              v-for="(source, index) in GameList[0].Items.List"
-              :key="index"
-              :source="source"
-              :isExpanded="isExpanded(index)"
-              @toggleCollapse="toggleCollapse(index)"
-            ></mGameInfo>
-          </div>
-          <!-- 右半邊 - 下注資訊-->
-          <div class="right-area">
-            <div v-for="(source, index) in GameList[0].Items.List" :key="index">
-              <mGameBetting
-                :source="source"
-                :bestHead="GameList[0].Items.BestHead"
-                :isExpanded="isExpanded(index)"
-                @toggleCollapse="toggleCollapse(index)"
-              ></mGameBetting>
-            </div>
-          </div>
-        </div>
+      <div class="gameTableContainer">
+        <template v-if="GameList.length">
+          <mGameTable
+            v-for="(gameData, index) in GameList"
+            :key="index"
+            :gameData="gameData"
+            :isExpanded="isExpanded(index)"
+            @openWagerTypePopup="isShowWagerTypePopup = true"
+          ></mGameTable>
+        </template>
+        <template v-else>
+          <div class="noData" v-if="!$store.state.isLoading"> NO DATA </div>
+        </template>
       </div>
 
       <!-- FOOTER -->
@@ -74,8 +62,8 @@
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
-  import mGameInfo from './components/mGameInfo.vue';
-  import mGameBetting from './components/mGameBetting.vue';
+  import mGameTable from './components/mGameTable.vue';
+
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
@@ -88,8 +76,7 @@
     components: {
       MobileHeader,
       MobileFooter,
-      mGameInfo,
-      mGameBetting,
+      mGameTable,
       mGamesBetInfoAll,
       mGamesBetInfoSingle,
       mBetRecordView,
@@ -193,19 +180,12 @@
         overflow: auto;
         flex: 1;
 
-        .left-area {
-          width: 35%;
-          transition: width 600ms ease-out;
-
-          @media screen and(max-width: 480px) {
-            width: calc(200px);
-          }
-        }
-        .right-area {
-          flex: 1;
-          overflow-x: auto;
-          overflow-y: hidden;
-          box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
+        .noData {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
         }
       }
 

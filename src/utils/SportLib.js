@@ -577,6 +577,7 @@ export function getMenuIconByCatID(catID) {
     82: 'icon_sportMenu_hockey.svg',
     83: '',
     85: 'icon_sportMenu_pcgame.svg',
+    '-999': 'icon_sportMenu_star.svg',
     default: 'icon_sportMenu_soccer.svg',
   });
 

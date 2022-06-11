@@ -32,7 +32,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_rule.svg" />
             <div class="text"> 規則 </div>
           </li>
-          <li class="feature-item" @click="openSecondaryPanel">
+          <li class="feature-item" @click="openSecondaryPanel('功能設定')">
             <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" />
             <div class="text"> 功能設定 </div>
           </li>
@@ -105,8 +105,9 @@
       isThemeActive(themeName) {
         return this.$store.state.nowThemeInfo === themeName ? 'active' : '';
       },
-      openSecondaryPanel() {
+      openSecondaryPanel(title) {
         this.isSecondaryPanelOpened = true;
+        this.secondaryPanelTitle = title;
       },
       closeSecondaryPanel() {
         this.isSecondaryPanelOpened = false;
@@ -139,7 +140,7 @@
       overflow: hidden;
 
       .header-container {
-        height: 45px;
+        height: 3.5rem;
         width: 100%;
         display: flex;
         flex-shrink: 0;
@@ -319,7 +320,7 @@
 
         .secondaryPanel-header {
           flex-shrink: 0;
-          height: 45px;
+          height: 3.5rem;
           width: 100%;
           // background: #ccc;
           display: flex;
@@ -330,7 +331,7 @@
           z-index: 1;
 
           .title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: bold;
             line-height: normal;
             white-space: nowrap;
