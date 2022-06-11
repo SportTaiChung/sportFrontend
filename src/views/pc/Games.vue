@@ -4,10 +4,14 @@
       <GamesHeader></GamesHeader>
     </div>
     <div class="setUp">
-      <GamesSetup></GamesSetup>
+      <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
     </div>
     <div class="main">
-      <GamesNavMenu :isNavMenuCollapse.sync="isNavMenuCollapse"></GamesNavMenu>
+      <GamesNavMenu
+        ref="GamesNavMenu"
+        :isNavMenuCollapse.sync="isNavMenuCollapse"
+        @ChangeCat="ChangeCat()"
+      ></GamesNavMenu>
       <GamesTableList
         :isNavMenuCollapse="isNavMenuCollapse"
         @AddToCart="AddToCartEvent()"
@@ -82,6 +86,12 @@
       },
       AddToCartEvent() {
         this.$refs.GamesBetInfo.resetGroupIndex();
+      },
+      SelectLeague() {
+        this.$refs.GamesNavMenu.reCallGameDetailAPI();
+      },
+      ChangeCat() {
+        this.$refs.GamesSetup.clearLeagueList();
       },
     },
   };

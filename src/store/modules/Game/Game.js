@@ -1,4 +1,10 @@
-import { getMenuGameType, getMenuGameCatList, getGameDetail, getGameDetailSmall } from '@/api/Game';
+import {
+  getGameResultLeagues,
+  getMenuGameType,
+  getMenuGameCatList,
+  getGameDetail,
+  getGameDetailSmall,
+} from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
@@ -20,11 +26,17 @@ export default {
     selectCatID: null,
     // 當前選擇的WagerType
     selectWagerTypeKey: null,
+    // 當前選擇指定的聯盟
+    selectLeagueIDs: [],
   },
   getters: {
     ...GameTypeListGetters,
   },
   mutations: {
+    changeCatReset(state) {
+      state.selectLeagueIDs.length = 0;
+      state.selectLeagueIDs = [];
+    },
     setGameTypeList(state, val) {
       state.GameTypeList.length = 0;
       state.GameTypeList = val;
@@ -36,6 +48,10 @@ export default {
     setFullMenuList(state, val) {
       state.FullMenuList.length = 0;
       state.FullMenuList = val;
+    },
+    setSelectLeagueIDs(state, val) {
+      state.selectLeagueIDs.length = 0;
+      state.selectLeagueIDs = val;
     },
     setGameList(state, setData) {
       state.GameList.length = 0;
@@ -177,6 +193,16 @@ export default {
     },
   },
   actions: {
+    // API(15,18)共用-聯賽Items
+    GetGameResultLeagues(store) {
+      return new Promise((resolve, reject) => {
+        return getGameResultLeagues()
+          .then(async (res) => {
+            resolve(res);
+          })
+          .catch(reject);
+      });
+    },
     // 16. 獲取左側菜單
     GetMenuGameType(store) {
       return new Promise((resolve, reject) => {
@@ -248,7 +274,11 @@ export default {
           selectCatID: postData.CatID,
           selectWagerTypeKey: newWagerTypeKey,
         });
-        return getGameDetail({ ...apiPostData, show: store.rootState.Setting.tableSort })
+        return getGameDetail({
+          ...apiPostData,
+          show: store.rootState.Setting.tableSort,
+          LeagueIDs: store.state.selectLeagueIDs.join(','),
+        })
           .then(async (res) => {
             console.log('game detail API response done');
 

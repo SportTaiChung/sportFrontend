@@ -167,7 +167,7 @@
     watch: {
       tableSort: {
         handler() {
-          this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+          this.reCallGameDetailAPI();
         },
       },
       selectCatID: {
@@ -186,6 +186,9 @@
       },
     },
     methods: {
+      reCallGameDetailAPI() {
+        this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+      },
       initMenuActiveString() {
         const menuIndex = this.includeFavoriteMenuList.findIndex(
           (it) => it.catid === this.selectCatID
@@ -258,6 +261,8 @@
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
+        this.$emit('ChangeCat');
+        this.$store.commit('Game/changeCatReset');
         if (!catData.isFavorite) {
           let clickCatID = null;
           let clickWagerTypeKey = null;

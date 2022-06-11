@@ -1,5 +1,18 @@
 import request from '@/utils/axios';
 import store from '@/store';
+
+// API(15,18)共用-聯賽Items
+export function getGameResultLeagues(postData = {}) {
+  return request({
+    url: `/GameInfo/GameResultLeagues`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang },
+  });
+}
+
 // 16. 獲取左側菜單
 export function getMenuGameType(postData = {}) {
   return request({
