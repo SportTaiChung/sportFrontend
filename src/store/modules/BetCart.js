@@ -40,13 +40,6 @@ export default {
     },
   },
   actions: {
-    isCartListAlreadyHaveSelf(store, { GameID, clickPlayIndex }) {
-      return (
-        store.state.betCartList.findIndex(
-          (cartData) => cartData.GameID === GameID && cartData.clickPlayIndex === clickPlayIndex
-        ) > -1
-      );
-    },
     // 获取投注盘口详情API
     callCartUpdateAPI(store, gameIDs) {
       return new Promise((resolve, reject) => {
@@ -107,8 +100,7 @@ export default {
       // 是否在購物車內找到完全相同的自己
       const isSelfJustRemove =
         store.state.betCartList.findIndex(
-          (cartData) =>
-            cartData.GameID === betData.GameID && cartData.clickPlayIndex === betData.clickPlayIndex
+          (cartData) => cartData.GameID === betData.GameID && cartData.wagerPos === betData.wagerPos
         ) > -1;
 
       // 移除相同的game id

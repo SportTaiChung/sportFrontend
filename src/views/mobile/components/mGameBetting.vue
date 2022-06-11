@@ -50,10 +50,18 @@
                     <template v-if="sportData.layoutType === 'single'">
                       <li
                         class="wager-cell"
-                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        :class="
+                          WagerRowIsSelectInCartCSS(
+                            GameID,
+                            sportData.topPlayOdd,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                         @click="
                           goBet(
-                            0,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topPlayOdd,
                             teamData,
                             wagerData,
                             rowIndex,
@@ -66,10 +74,18 @@
                       </li>
                       <li
                         class="wager-cell"
-                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        :class="
+                          WagerRowIsSelectInCartCSS(
+                            GameID,
+                            sportData.bottomPlayOdd,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                         @click="
                           goBet(
-                            1,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomPlayOdd,
                             teamData,
                             wagerData,
                             rowIndex,
@@ -85,10 +101,18 @@
                     <template v-else>
                       <li
                         class="wager-cell"
-                        :class="WagerRowIsSelectInCartCSS(GameID, 0, sportData)"
+                        :class="
+                          WagerRowIsSelectInCartCSS(
+                            GameID,
+                            sportData.topPlayOdd,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topWagerPos
+                          )
+                        "
                         @click="
                           goBet(
-                            0,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .topPlayOdd,
                             teamData,
                             wagerData,
                             rowIndex,
@@ -104,10 +128,18 @@
                       </li>
                       <li
                         class="wager-cell"
-                        :class="WagerRowIsSelectInCartCSS(GameID, 1, sportData)"
+                        :class="
+                          WagerRowIsSelectInCartCSS(
+                            GameID,
+                            sportData.bottomPlayOdd,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomWagerPos
+                          )
+                        "
                         @click="
                           goBet(
-                            1,
+                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                              .bottomPlayOdd,
                             teamData,
                             wagerData,
                             rowIndex,
@@ -137,10 +169,17 @@
                       <template v-else>
                         <li
                           class="wager-cell"
-                          :class="WagerRowIsSelectInCartCSS(GameID, 2, sportData)"
+                          :class="
+                            WagerRowIsSelectInCartCSS(
+                              GameID,
+                              wagerData.Odds[0].DrewOdds,
+                              $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                .drewWagerPos
+                            )
+                          "
                           @click="
                             goBet(
-                              2,
+                              wagerData.Odds[0].DrewOdds,
                               teamData,
                               wagerData,
                               rowIndex,
@@ -245,16 +284,13 @@
       },
     },
     methods: {
-      WagerRowIsSelectInCartCSS(GameID, playIndex, sportData) {
+      WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';
-        if (sportData.playMethodData !== null) {
-          const showOddKeyName = sportData.playMethodData.showOdd[playIndex];
-          if (sportData[showOddKeyName] !== '') {
-            appendCSS = ' interactive';
-          }
+        if (showOdd !== '') {
+          appendCSS = ' interactive';
         }
         const compareData = this.betCartList.find((cartData) => cartData.GameID === GameID);
-        if (compareData && compareData.clickPlayIndex === playIndex) {
+        if (compareData && compareData.wagerPos === wagerPos) {
           appendCSS += ' isSelected';
         }
         return appendCSS;
@@ -270,17 +306,7 @@
           return wagerData.Odds[rowIndex].GameID;
         }
       },
-      goBet(clickPlayIndex, teamData, wagerData, rowIndex, wagerPos) {
-        const sportData = this.$SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex);
-
-        // 如果核心lib解析出來是null 也不能下注
-        if (sportData.playMethodData === null) {
-          return;
-        }
-
-        // 如果點擊的選項顯示賠率是空的 代表這一格無法下注
-        const showOddKeyName = sportData.playMethodData.showOdd[clickPlayIndex];
-        const showOdd = sportData[showOddKeyName];
+      goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
         if (showOdd === '') {
           return;
         }
@@ -299,12 +325,12 @@
 
         const betInfoData = {
           OriginShowOdd: parseFloat(showOdd),
-          clickPlayIndex,
           wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: wagerData.Odds[rowIndex].GameID,
           CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
           LeagueNameStr: this.source.LeagueNameStr,
           HomeTeamStr,
           AwayTeamStr,

@@ -96,8 +96,6 @@ export const PlayMethodData = {
   HandiCap: {
     name: 'HandiCap',
     typeIdList: [101, 103],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -106,8 +104,6 @@ export const PlayMethodData = {
   BigSmall: {
     name: 'BigSmall',
     typeIdList: [102, 104, 109],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
       return oddData.OULine;
     },
@@ -116,8 +112,6 @@ export const PlayMethodData = {
   SoloWin: {
     name: 'SoloWin',
     typeIdList: [110, 111],
-    showMethod: [],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -126,8 +120,6 @@ export const PlayMethodData = {
   OddEven: {
     name: 'OddEven',
     typeIdList: [105, 113, 126, 129],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -136,8 +128,6 @@ export const PlayMethodData = {
   Other: {
     name: 'Other',
     typeIdList: [106],
-    showMethod: [],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -435,8 +425,17 @@ export function cartDataToDisplayData(cartData) {
   let showCutLine = '';
   let showOdd = '';
   const playData = cartData.playData;
+  const SetFlag = cartData.SetFlag;
+  let judgeWagerPos = cartData.wagerPos;
   if (playData.playMethodData.name === 'HandiCap') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       if (playData.topPlayMethod === '') {
         showCutLine = '+' + playData.bottomPlayMethod;
@@ -444,7 +443,7 @@ export function cartDataToDisplayData(cartData) {
         showCutLine = '-' + playData.topPlayMethod;
       }
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       if (playData.topPlayMethod === '') {
         showCutLine = '-' + playData.bottomPlayMethod;
@@ -452,44 +451,66 @@ export function cartDataToDisplayData(cartData) {
         showCutLine = '+' + playData.topPlayMethod;
       }
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
     if (playData.topPlayMethod === '0' || playData.bottomPlayMethod === '0') {
       showCutLine = '0';
     }
   } else if (playData.playMethodData.name === 'BigSmall') {
-    if (cartData.clickPlayIndex === 0) {
+    if (judgeWagerPos === 4) {
       showBetTitle = '大';
       showCutLine = playData.topPlayMethod;
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 5) {
       showBetTitle = '小';
       showCutLine = playData.topPlayMethod;
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'SoloWin') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
       showCutLine = 'PK';
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
       showCutLine = 'PK';
-    } else {
+    } else if (judgeWagerPos === 3) {
       showBetTitle = '和局';
       showOdd = playData.drewPlayOdd;
       showCutLine = '';
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'OddEven') {
-    if (cartData.clickPlayIndex === 0) {
+    if (judgeWagerPos === 4) {
       showBetTitle = '單';
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 5) {
       showBetTitle = '雙';
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'Other') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
       if (cartData.HomeHdp === '') {
@@ -497,7 +518,7 @@ export function cartDataToDisplayData(cartData) {
       } else {
         showCutLine = '+' + cartData.HomeHdp;
       }
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
       if (cartData.AwayHdp === '') {
@@ -505,6 +526,8 @@ export function cartDataToDisplayData(cartData) {
       } else {
         showCutLine = '+' + cartData.AwayHdp;
       }
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);
