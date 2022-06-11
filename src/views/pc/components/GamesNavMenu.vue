@@ -102,7 +102,6 @@
         } else {
           this.$store.dispatch('Game/GetGameDetailSmall');
         }
-        // this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
       }, 10000);
 
       // 定時更新遊戲Menu

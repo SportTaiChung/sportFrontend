@@ -95,9 +95,18 @@
         isCollapse: false,
         collapseItemNames: [],
         selectItemKey: null,
+        intervalEvent: null,
       };
     },
-    created() {},
+    created() {
+      // 定時更新遊戲賠率
+      this.intervalEvent = setInterval(() => {
+        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
+      }, 4000);
+    },
+    beforeDestroy() {
+      clearInterval(this.intervalEvent);
+    },
     computed: {
       moreGameData() {
         if (Object.keys(this.$store.state.MoreGame.moreGameData).length === 0) {
@@ -150,7 +159,7 @@
             }, []).filter((it) => it?.empty === undefined);
 
             // 組成渲染head
-            const RenderHead = JSON.parse(JSON.stringify(gameData.BestHead)).map((it) => {
+            let RenderHead = JSON.parse(JSON.stringify(gameData.BestHead)).map((it) => {
               return {
                 ...it,
                 Odds: [],
@@ -170,6 +179,8 @@
                 return true;
               });
             });
+
+            RenderHead = RenderHead.filter((renderHeadData) => renderHeadData.Odds.length !== 0);
 
             return {
               ...LeagueData,

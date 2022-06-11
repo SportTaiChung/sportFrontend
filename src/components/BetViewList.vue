@@ -311,15 +311,15 @@
       };
     },
     mounted() {
-      // this.intervalEvent = setInterval(() => {
-      //   if (this.groupIndex === 0) {
-      //     this.$store.dispatch('BetCart/updateAllCartData').then(() => {
-      //       this.$nextTick(() => {
-      //         this.reCalcBetChart();
-      //       });
-      //     });
-      //   }
-      // }, 10000);
+      this.intervalEvent = setInterval(() => {
+        if (this.groupIndex === 0) {
+          this.$store.dispatch('BetCart/updateAllCartData').then(() => {
+            this.$nextTick(() => {
+              this.reCalcBetChart();
+            });
+          });
+        }
+      }, 10000);
     },
     watch: {
       isAddNewToChart() {
