@@ -3,7 +3,7 @@
     <table :class="hasMoreGameStyle">
       <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
-          <th v-for="(it, i) in showTableHeaderList" :key="i"> {{ it.showName }}</th>
+          <th v-for="(it, i) in bestHead" :key="i"> {{ it.showName }}</th>
           <th v-if="hasMoreGame" class="moreGame-holder"></th>
         </tr>
       </thead>
@@ -221,13 +221,16 @@
       Odd,
     },
     props: {
-      index: {
-        type: Number,
-      },
       source: {
         type: Object,
         default() {
           return {};
+        },
+      },
+      bestHead: {
+        type: Array,
+        default() {
+          return [];
         },
       },
       isExpanded: {
@@ -344,15 +347,9 @@
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
-      moreGameClickHandler(TeamData) {
+      moreGameClickHandler(teamData) {
         this.$store.dispatch('MoreGame/openMoreGameList', {
-          GameType: this.$store.state.Game.selectGameType,
-          CatID: this.source.CatID,
-          CatNameStr: this.source.CatNameStr,
-          LeagueID: this.source.LeagueID,
-          LeagueNameStr: this.source.LeagueNameStr,
-          TeamData,
-          MenuHead: this.$store.state.Game.GameList.BestHead,
+          teamData,
         });
       },
     },

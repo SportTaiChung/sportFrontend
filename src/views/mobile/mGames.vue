@@ -23,13 +23,14 @@
           </div>
           <!-- 右半邊 - 下注資訊-->
           <div class="right-area">
-            <mGameBetting
-              v-for="(source, index) in GameList[0].Items.List"
-              :key="index"
-              :source="source"
-              :isExpanded="isExpanded(index)"
-              @toggleCollapse="toggleCollapse(index)"
-            ></mGameBetting>
+            <div v-for="(source, index) in GameList[0].Items.List" :key="index">
+              <mGameBetting
+                :source="source"
+                :bestHead="GameList[0].Items.BestHead"
+                :isExpanded="isExpanded(index)"
+                @toggleCollapse="toggleCollapse(index)"
+              ></mGameBetting>
+            </div>
           </div>
         </div>
       </div>
