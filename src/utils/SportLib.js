@@ -1,41 +1,4 @@
 /**
- * CatID 轉文本
- * @param {Number} val
- * @returns String
- */
-export function CatIDtoShowLabel(val) {
-  if (val === 1) {
-    return '足球';
-  } else if (val === 5) {
-    return '美足';
-  } else if (val === 21) {
-    return '乒乓球';
-  } else if (val === 22) {
-    return '羽毛球';
-  } else if (val === 31) {
-    return '世界杯';
-  } else if (val === 32) {
-    return '歐洲杯';
-  } else if (val === 4 || val === 12 || val === 13 || val === 14 || val === 101) {
-    return '棒球';
-  } else if (val === 102 || val === 3 || val === 16) {
-    return '籃球';
-  } else if (val === 55) {
-    return '网球';
-  } else if (val === 72) {
-    return '赛马赛狗';
-  } else if (val === 82) {
-    return '冰球';
-  } else if (val === 83) {
-    return '彩球';
-  } else if (val === 85) {
-    return 'ESports';
-  } else {
-    console.error(`catIDtoString ${val} no found`);
-  }
-}
-
-/**
  * Wager 轉 文本
  * @param {Empty} val
  * @param {Array} WagerTypeIDs WagerTypeIDs
@@ -182,6 +145,9 @@ export const PlayMethodData = {
 };
 
 export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = null) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
     // 讓分
     const showHdp = oddData.HomeHdp === '' ? oddData.AwayHdp : oddData.HomeHdp;
@@ -343,6 +309,9 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
 
 // 將oddData轉成用來顯示的資料
 export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   let topPlayMethod = '';
   let topPlayOdd = '';
   let topWagerPos = '';
@@ -445,6 +414,9 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
  *     > single: 只顯示一個Odd
  */
 export function WagerDataToShowData(SetFlag, wagerData, rowIndex) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   if (!wagerData?.isNoData) {
     // 關閉狀態
     if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
@@ -538,7 +510,6 @@ export function cartDataToDisplayData(cartData) {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);
   }
 
-  const catIDLabel = CatIDtoShowLabel(cartData.CatID);
   let wagerGrpLabel = '';
 
   if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
@@ -550,7 +521,7 @@ export function cartDataToDisplayData(cartData) {
   ) {
     wagerGrpLabel = '- [上半]';
   }
-  const showGameTypeLabel = `${catIDLabel} ${wagerGrpLabel}`;
+  const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 
   return {
     showBetTitle,

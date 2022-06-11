@@ -129,6 +129,7 @@ export default {
         betAmount: null,
         winAmount: null,
       };
+      console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
       store.commit('pushCart', newBetData);
       store.dispatch('callCartUpdateAPI', [betData.GameID]);

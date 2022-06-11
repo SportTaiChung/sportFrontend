@@ -28,12 +28,6 @@ export default async () => {
       component: () => import(/* webpackChunkName: "Login" */ '../views/Login.vue'),
     },
     {
-      path: '/TestTableData',
-      name: 'TestTableData',
-      component: () =>
-        import(/* webpackChunkName: "TestTableData" */ '../views/Test/TestTableData.vue'),
-    },
-    {
       path: '/TestOddData',
       name: 'TestOddData',
       component: () =>

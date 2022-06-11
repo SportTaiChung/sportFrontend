@@ -219,6 +219,7 @@
         if (menuData.LeftMenu.item.length !== 0) {
           catid = menuData.LeftMenu.item[0].catid;
         }
+        // GameType切換的時候, WagerTypeKey 不用送出
         this.callGetGameDetail(catid, null);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
         this.$store.commit('MoreGame/closeMoreGameList');

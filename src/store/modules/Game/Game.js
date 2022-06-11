@@ -155,7 +155,7 @@ export default {
                           oddData.DrewOdds = updateData.DrewOdds;
                           oddData.Status = updateData.Status;
                           teamData.EvtStatus = updateData.EvtStatus;
-                          console.log('update!!!');
+                          // console.log('update!!!');
                           return false;
                         } else {
                           return true;
@@ -322,10 +322,10 @@ export default {
           GameType,
           EvtIDs: rootStore.state.Setting.favorites.join(','),
         }).then((res) => {
-          console.log(
-            'GetGameDetailSmall:',
-            res.data.map((it) => it.Status)
-          );
+          // console.log(
+          //   'GetGameDetailSmall:',
+          //   res.data.map((it) => it.Status)
+          // );
           store.commit('updateGameList', res.data);
         });
       });

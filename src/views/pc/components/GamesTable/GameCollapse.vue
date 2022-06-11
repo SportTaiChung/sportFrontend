@@ -333,6 +333,7 @@
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID
         )?.value;
+        console.log('oddData:', wagerData.Odds[rowIndex]);
 
         const betInfoData = {
           OriginShowOdd: parseFloat(showOdd),
@@ -342,6 +343,7 @@
           GameTypeLabel: GameTypeLabel,
           GameID: wagerData.Odds[rowIndex].GameID,
           CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
           LeagueNameStr: this.source.LeagueNameStr,
           HomeTeamStr,
           AwayTeamStr,

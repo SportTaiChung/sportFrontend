@@ -10,7 +10,6 @@ import VueVirtualScroller from 'vue-virtual-scroller';
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';
 import * as lib from '@/utils/lib';
-import * as filters from '@/utils/filters';
 import '@/assets/sass/global.scss';
 import '@/assets/sass/elementChange.scss';
 
@@ -21,10 +20,6 @@ import 'normalize.css';
 import '@/utils/OddDataList';
 
 // import '@/svgIcon/index.js';
-
-Object.keys(filters).forEach((key) => {
-  Vue.filter(key, filters[key]);
-});
 
 Promise.all([router()]).then(async (res) => {
   // 將router注入到全域 方便axios等使用
