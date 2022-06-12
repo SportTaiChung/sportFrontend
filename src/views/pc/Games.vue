@@ -17,10 +17,20 @@
         @AddToCart="AddToCartEvent()"
       ></GamesTableList>
       <MoreGame v-if="isShowMoreGame"></MoreGame>
-      <GamesBetInfo ref="GamesBetInfo" @openSetup="isShowSetup = true" />
+      <GamesBetInfo
+        ref="GamesBetInfo"
+        @openSetup="
+          isShowSetup = true;
+          $refs.GamesSetupNew.loadSettings();
+        "
+      />
     </div>
 
-    <GamesSetupNew v-show="isShowSetup" @closeMe="isShowSetup = false"></GamesSetupNew>
+    <GamesSetupNew
+      ref="GamesSetupNew"
+      v-show="isShowSetup"
+      @closeMe="isShowSetup = false"
+    ></GamesSetupNew>
   </div>
 </template>
 

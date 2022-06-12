@@ -17,8 +17,8 @@
                   <input
                     type="radio"
                     name="includePrincipal"
-                    :checked="includePrincipal"
-                    @change="includePrincipalChangeHandler(true)"
+                    value="true"
+                    v-model="mIncludePrincipal"
                   />
                   <span> 含本金 </span>
                 </label>
@@ -26,117 +26,155 @@
                   <input
                     type="radio"
                     name="includePrincipal"
-                    :checked="!includePrincipal"
-                    @change="includePrincipalChangeHandler(false)"
+                    value="false"
+                    v-model="mIncludePrincipal"
                   />
                   <span> 不含本金 </span>
                 </label>
               </div>
             </div>
           </li> -->
+
           <!-- <li class="item">
             <div class="title">賽事排序</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="tableSort"
-                    :checked="tableSort == 0"
-                    @change="tableSortChangeHandler(0)"
-                  />
+                  <input type="radio" name="tableSort" value="0" v-model="mTableSort" />
                   <span> 熱門 </span>
                 </label>
                 <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="tableSort"
-                    :checked="tableSort == 1"
-                    @change="tableSortChangeHandler(1)"
-                  />
+                  <input type="radio" name="tableSort" value="1" v-model="mTableSort" />
                   <span> 時間 </span>
                 </label>
               </div>
             </div>
           </li> -->
+
           <li class="item">
             <div class="title">下注確認信息</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input type="radio" name="c" />
+                  <input
+                    type="radio"
+                    name="showBetConfirm"
+                    value="true"
+                    v-model="mShowBetConfirm"
+                  />
                   <span> 顯示 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="c" />
+                  <input
+                    type="radio"
+                    name="showBetConfirm"
+                    value="false"
+                    v-model="mShowBetConfirm"
+                  />
                   <span> 隱藏 </span>
                 </label>
               </div>
             </div>
           </li>
+
           <li class="item">
             <div class="title">默認金額</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input type="radio" name="d" />
+                  <input
+                    type="radio"
+                    name="defaultAmountType"
+                    value="0"
+                    v-model="mDefaultAmountType"
+                  />
                   <span> 關閉 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="d" />
+                  <input
+                    type="radio"
+                    name="defaultAmountType"
+                    value="1"
+                    v-model="mDefaultAmountType"
+                  />
                   <span> 最後投注 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="d" />
+                  <input
+                    type="radio"
+                    name="defaultAmountType"
+                    value="2"
+                    v-model="mDefaultAmountType"
+                  />
                   <span> 自訂金額 </span>
                 </label>
               </div>
+              <input
+                v-show="mDefaultAmountType == 2"
+                class="amount-input"
+                type="number"
+                v-model="mDefaultAmountValue"
+              />
             </div>
           </li>
+
           <li class="item">
             <div class="title">默認過關投注</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input type="radio" name="e" />
+                  <input
+                    type="radio"
+                    name="defaultStrayAmountType"
+                    value="0"
+                    v-model="mDefaultStrayAmountType"
+                  />
                   <span> 關閉 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="e" />
+                  <input
+                    type="radio"
+                    name="defaultStrayAmountType"
+                    value="1"
+                    v-model="mDefaultStrayAmountType"
+                  />
                   <span> 最後投注 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="e" />
+                  <input
+                    type="radio"
+                    name="defaultStrayAmountType"
+                    value="2"
+                    v-model="mDefaultStrayAmountType"
+                  />
                   <span> 自訂金額 </span>
                 </label>
               </div>
+              <input
+                v-show="mDefaultStrayAmountType == 2"
+                class="amount-input"
+                type="number"
+                v-model="mDefaultStrayAmountValue"
+              />
             </div>
           </li>
+
           <!-- <li class="item">
             <div class="title">自動接收最佳賠率</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="acceptBetter"
-                    :checked="acceptBetter"
-                    @change="acceptBetterChangeHandler(true)"
-                  />
+                  <input type="radio" name="acceptBetter" value="true" v-model="mAcceptBetter" />
                   <span> 是 </span>
                 </label>
                 <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="acceptBetter"
-                    :checked="!acceptBetter"
-                    @change="acceptBetterChangeHandler(false)"
-                  />
+                  <input type="radio" name="acceptBetter" value="false" v-model="mAcceptBetter" />
                   <span> 否 </span>
                 </label>
               </div>
             </div>
           </li> -->
+
           <li class="item">
             <div class="title">自訂籌碼</div>
             <div class="content">
@@ -154,6 +192,8 @@
             </div>
           </li>
         </ul>
+
+        <div class="btn-save" @click="saveSettings">確認修改</div>
       </div>
     </div>
   </div>
@@ -164,59 +204,70 @@
     name: 'GamesSetupNew',
     data() {
       return {
-        acceptBetter: null,
-        includePrincipal: null,
-        tableSort: null,
+        mAcceptBetter: null,
+        mIncludePrincipal: null,
+        mTableSort: null,
+
+        mShowBetConfirm: false,
+        mDefaultAmountType: 0,
+        mDefaultAmountValue: 0,
+        mDefaultStrayAmountType: 0,
+        mDefaultStrayAmountValue: 0,
       };
     },
     computed: {
       settings() {
         return this.$store.state.Setting.UserSetting;
       },
-      isIncludePrincipal() {
-        return this.settings.includePrincipal;
-      },
-      tableSortMode() {
-        return this.settings.tableSort;
-      },
-      isAcceptBetter() {
-        return this.settings.acceptBetter;
-      },
-    },
-    watch: {
-      isIncludePrincipal: {
-        handler(newVal, old) {
-          this.includePrincipal = newVal;
-        },
-        immediate: true,
-      },
-      tableSortMode: {
-        handler(newVal, old) {
-          this.tableSort = newVal;
-        },
-        immediate: true,
-      },
-      isAcceptBetter: {
-        handler(newVal, old) {
-          this.acceptBetter = newVal;
-        },
-        immediate: true,
-      },
     },
     methods: {
-      acceptBetterChangeHandler(val) {
-        this.$store.commit('Setting/setAcceptBetter', val);
+      // 讀取設定
+      loadSettings() {
+        this.mAcceptBetter = this.settings.acceptBetter;
+        this.mIncludePrincipal = this.settings.includePrincipal;
+        this.mTableSort = this.settings.tableSort;
+        this.mShowBetConfirm = this.settings.showBetConfirm;
+        this.mDefaultAmountType = this.settings.defaultAmount.type;
+        this.mDefaultAmountValue = this.settings.defaultAmount.amount;
+        this.mDefaultStrayAmountType = this.settings.defaultStrayAmount.type;
+        this.mDefaultStrayAmountValue = this.settings.defaultStrayAmount.amount;
       },
-      includePrincipalChangeHandler(val) {
-        this.$store.commit('Setting/setIncludePrincipal', val);
+      // 保存設定
+      saveSettings() {
+        this.$store.commit('SetLoading', true);
+
+        const newSettings = {
+          acceptBetter: this.mAcceptBetter,
+          includePrincipal: this.mIncludePrincipal,
+          tableSort: this.mTableSort,
+          showBetConfirm: this.mShowBetConfirm,
+          defaultAmount: {
+            type: Number(this.mDefaultAmountType),
+            amount: this.mDefaultAmountValue,
+          },
+          defaultStrayAmount: {
+            type: Number(this.mDefaultStrayAmountType),
+            amount: this.mDefaultStrayAmountValue,
+          },
+        };
+        this.$store.commit('Setting/setSettings', newSettings);
+
+        setTimeout(() => {
+          this.$notify.success({
+            message: '修改成功',
+          });
+          this.$store.commit('SetLoading', false);
+        }, 500);
       },
-      tableSortChangeHandler(val) {
-        this.$store.commit('Setting/setTableSort', val);
-      },
+      // 離開
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('closeMe');
+        this.loadSettings();
       },
+    },
+    mounted() {
+      this.loadSettings();
     },
   };
 </script>
@@ -240,6 +291,7 @@
       max-width: 390px;
       max-height: 80%;
       background-color: #eee;
+      overflow: hidden;
 
       .header {
         @include base-background();
@@ -293,10 +345,8 @@
       .body {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
         max-height: 70vh;
-        // padding: 10px;
-        overflow: auto;
+        overflow: overlay;
 
         ul.list {
           li.item {
@@ -365,11 +415,12 @@
 
         ul.chips {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          grid-gap: 0.5rem;
+          grid-template-columns: repeat(auto-fit, 75px);
+          grid-gap: 5px;
 
           li.chip {
             height: 30px;
+            width: 75px;
             border: 1px solid transparent;
             border-radius: 3px;
             background-color: #fff;
@@ -383,6 +434,35 @@
             &.active {
               border: 1px solid #0169ff;
             }
+          }
+        }
+
+        input.amount-input {
+          width: calc(100% - 10px);
+          height: 35px;
+          margin-top: 5px;
+          border-radius: 3px;
+          border: 1px solid transparent;
+          text-align: center;
+        }
+
+        .btn-save {
+          background-color: #ffdf1b;
+          border-radius: 5px;
+          text-align: center;
+          font-size: 16px;
+          line-height: normal;
+          height: 35px;
+          width: 160px;
+          line-height: 35px;
+          margin: 10px auto;
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba(255, 235, 104, 0.9764705882);
+          }
+          &:active {
+            background-color: #ffdf1b;
           }
         }
       }

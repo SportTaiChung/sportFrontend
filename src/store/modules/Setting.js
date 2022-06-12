@@ -30,6 +30,17 @@ export default {
           tableSort: 1,
           acceptBetter: false,
           includePrincipal: false,
+          showBetConfirm: true,
+          defaultAmount: {
+            // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
+            type: 0,
+            amount: 0,
+          },
+          defaultStrayAmount: {
+            // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
+            type: 0,
+            amount: 0,
+          },
         };
         rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
       }
@@ -57,6 +68,11 @@ export default {
     },
     setFavorites(state, newFavoritesArr) {
       state.UserSetting.favorites = newFavoritesArr;
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
+    },
+    setSettings(state, val) {
+      const newSettings = val;
+      Object.assign(state.UserSetting, newSettings);
       rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
   },
