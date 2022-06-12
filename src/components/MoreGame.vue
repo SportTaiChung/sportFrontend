@@ -361,7 +361,7 @@
     border-right: 2px solid #bbb;
     background-color: #eeeeee;
     $gameHeaderHeight: 35px;
-    $gameInfoHeight: 185px;
+    $gameInfoHeight: 150px;
     $gameChatHeight: 60px;
 
     &.mobile {
@@ -397,7 +397,8 @@
       }
     }
     .GameInfoBlock {
-      height: $gameInfoHeight;
+      height: fit-content;
+      min-height: $gameInfoHeight;
     }
     .leftArrowBlock {
       width: 50px;

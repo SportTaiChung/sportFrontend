@@ -583,3 +583,32 @@ export function getMenuIconByCatID(catID) {
 
   return iconMap[catID] || iconMap.default;
 }
+
+// 以 catID 取得對應 背景圖片
+export function getBackgroundIndexByCatId(catID) {
+  const iconMap = Object.freeze({
+    1: 0,
+    5: 0,
+    21: 9,
+    22: 7,
+    31: -1,
+    32: -1,
+    4: 2,
+    12: 2,
+    13: 2,
+    14: 2,
+    101: 2,
+    102: 1,
+    3: 1,
+    16: 1,
+    55: 3,
+    72: -1,
+    82: 4,
+    83: -1,
+    85: 10,
+    '-999': -1,
+    default: -1,
+  });
+
+  return iconMap[catID] || iconMap.default;
+}
