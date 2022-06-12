@@ -57,7 +57,7 @@ export default {
         state.UserSetting = Object.assign(cloneDefault, UserSetting[MBID]);
       } else {
         // 新會員
-        state.UserSetting = defaultSettings;
+        state.UserSetting = Object.assign({}, defaultSettings);
         rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
       }
     },

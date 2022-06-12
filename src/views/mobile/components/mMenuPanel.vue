@@ -39,14 +39,14 @@
         </ul>
 
         <!-- theme -->
-        <div class="theme-bar">
+        <!-- <div class="theme-bar">
           <img class="icon" src="@/assets/img/mobile/icon_exterior.svg" />
           <div class="text">色調</div>
         </div>
         <ul class="theme-list">
           <li :class="isThemeActive('dark')" @click="onThemeSelect('dark')">深色</li>
           <li :class="isThemeActive('light')" @click="onThemeSelect('light')">淺色</li>
-        </ul>
+        </ul> -->
       </div>
 
       <!-- 二級選單面板區 -->

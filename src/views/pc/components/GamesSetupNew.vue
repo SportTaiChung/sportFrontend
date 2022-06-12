@@ -17,7 +17,7 @@
                   <input
                     type="radio"
                     name="includePrincipal"
-                    value="true"
+                    v-bind:value="true"
                     v-model="mIncludePrincipal"
                   />
                   <span> 含本金 </span>
@@ -26,7 +26,7 @@
                   <input
                     type="radio"
                     name="includePrincipal"
-                    value="false"
+                    v-bind:value="false"
                     v-model="mIncludePrincipal"
                   />
                   <span> 不含本金 </span>
@@ -40,11 +40,11 @@
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input type="radio" name="tableSort" value="0" v-model="mTableSort" />
+                  <input type="radio" name="tableSort" v-bind:value="0" v-model="mTableSort" />
                   <span> 熱門 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="tableSort" value="1" v-model="mTableSort" />
+                  <input type="radio" name="tableSort" v-bind:value="1" v-model="mTableSort" />
                   <span> 時間 </span>
                 </label>
               </div>
@@ -59,7 +59,7 @@
                   <input
                     type="radio"
                     name="showBetConfirm"
-                    value="true"
+                    v-bind:value="true"
                     v-model="mShowBetConfirm"
                   />
                   <span> 顯示 </span>
@@ -68,7 +68,7 @@
                   <input
                     type="radio"
                     name="showBetConfirm"
-                    value="false"
+                    v-bind:value="false"
                     v-model="mShowBetConfirm"
                   />
                   <span> 隱藏 </span>
@@ -85,7 +85,7 @@
                   <input
                     type="radio"
                     name="defaultAmountType"
-                    value="0"
+                    v-bind:value="0"
                     v-model="mDefaultAmountType"
                   />
                   <span> 關閉 </span>
@@ -94,7 +94,7 @@
                   <input
                     type="radio"
                     name="defaultAmountType"
-                    value="1"
+                    v-bind:value="1"
                     v-model="mDefaultAmountType"
                   />
                   <span> 最後投注 </span>
@@ -103,7 +103,7 @@
                   <input
                     type="radio"
                     name="defaultAmountType"
-                    value="2"
+                    v-bind:value="2"
                     v-model="mDefaultAmountType"
                   />
                   <span> 自訂金額 </span>
@@ -126,7 +126,7 @@
                   <input
                     type="radio"
                     name="defaultStrayAmountType"
-                    value="0"
+                    v-bind:value="0"
                     v-model="mDefaultStrayAmountType"
                   />
                   <span> 關閉 </span>
@@ -135,7 +135,7 @@
                   <input
                     type="radio"
                     name="defaultStrayAmountType"
-                    value="1"
+                    v-bind:value="1"
                     v-model="mDefaultStrayAmountType"
                   />
                   <span> 最後投注 </span>
@@ -144,7 +144,7 @@
                   <input
                     type="radio"
                     name="defaultStrayAmountType"
-                    value="2"
+                    v-bind:value="2"
                     v-model="mDefaultStrayAmountType"
                   />
                   <span> 自訂金額 </span>
@@ -164,11 +164,11 @@
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
-                  <input type="radio" name="acceptBetter" value="true" v-model="mAcceptBetter" />
+                  <input type="radio" name="acceptBetter" v-bind:value="true" v-model="mAcceptBetter" />
                   <span> 是 </span>
                 </label>
                 <label class="radio-item">
-                  <input type="radio" name="acceptBetter" value="false" v-model="mAcceptBetter" />
+                  <input type="radio" name="acceptBetter" v-bind:value="false" v-model="mAcceptBetter" />
                   <span> 否 </span>
                 </label>
               </div>
@@ -214,7 +214,6 @@
         mAcceptBetter: null,
         mIncludePrincipal: null,
         mTableSort: null,
-
         mShowBetConfirm: false,
         mDefaultAmountType: 0,
         mDefaultAmountValue: 0,
