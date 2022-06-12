@@ -12,6 +12,19 @@
     </div>
     <div class="GameInfoBlock" v-if="gameTypeID === 2">
       <!-- 比分板區塊 -->
+      <Soccer v-if="selectCatID === 1"></Soccer>
+      <BaseBall
+        v-if="
+          selectCatID === 4 ||
+          selectCatID === 12 ||
+          selectCatID === 13 ||
+          selectCatID === 14 ||
+          selectCatID === 101
+        "
+      ></BaseBall>
+      <BasketBall
+        v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
+      ></BasketBall>
     </div>
     <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
@@ -87,10 +100,16 @@
 
 <script>
   import Odd from '@/components/Odd';
+  import BaseBall from '@/components/LiveBoard/BaseBall';
+  import Soccer from '@/components/LiveBoard/Soccer';
+  import BasketBall from './LiveBoard/BasketBall.vue';
   export default {
     name: 'MoreGame',
     components: {
       Odd,
+      Soccer,
+      BaseBall,
+      BasketBall,
     },
     data() {
       return {
