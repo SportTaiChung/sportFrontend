@@ -16,7 +16,7 @@
     <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
-          <i :class="arrowIconJudge" />
+          <i :class="collapseAllArrowIconJudge" @click="collapseAllIconClick" />
         </div>
         <div class="menuTab" v-for="(menuData, menuIndex) in menuTabs" :key="menuIndex">
           <div @click="selectItemKey = menuData.ItemKey">{{ menuData.ItemName }}</div>
@@ -94,7 +94,6 @@
     },
     data() {
       return {
-        isCollapse: false,
         collapseItemNames: [],
         selectItemKey: null,
         intervalEvent: null,
@@ -130,7 +129,7 @@
         return this.$store.state.Game.selectGameType;
       },
       selectCatID() {
-        return this.gameStore.selectCatID;
+        return this.$store.state.Game.selectCatID;
       },
       teamData() {
         return this.$store.state.MoreGame.teamData;
@@ -159,8 +158,8 @@
           away,
         };
       },
-      arrowIconJudge() {
-        if (this.isCollapse) {
+      collapseAllArrowIconJudge() {
+        if (this.FinalGameList.length === this.collapseItemNames.length) {
           return 'el-icon-arrow-down';
         } else {
           return 'el-icon-arrow-up';
@@ -179,7 +178,9 @@
         if (this.GameList.length === 0) {
           return [];
         }
-        return this.GameList.map((gameData) => {
+        return this.GameList.filter((gameData) => {
+          return gameData.ItemKeys.indexOf(this.selectItemKey) > -1;
+        }).map((gameData) => {
           const newList = gameData.List.map((LeagueData) => {
             // 排列出Wager底下所有Odd
             const Odds = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
@@ -258,6 +259,10 @@
           this.selectItemKey = this.menuTabs[0].ItemKey;
         }
       },
+      selectItemKey() {
+        this.collapseItemNames.length = 0;
+        this.collapseItemNames = [];
+      },
     },
     methods: {
       resetData() {
@@ -289,6 +294,15 @@
           return 'betBlockSelect';
         } else {
           return '';
+        }
+      },
+      collapseAllIconClick() {
+        if (this.FinalGameList.length === this.collapseItemNames.length) {
+          this.collapseItemNames.length = 0;
+          this.collapseItemNames = [];
+        } else {
+          this.collapseItemNames.length = 0;
+          this.collapseItemNames = this.FinalGameList.map((it) => it.ItemName);
         }
       },
       goBet(betData, oddData, leagueData) {
@@ -399,7 +413,7 @@
           .active {
             width: 100%;
             height: 3px;
-            background-color: #fff;
+            background-color: #caffed;
             margin-top: 2px;
           }
         }
