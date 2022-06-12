@@ -119,7 +119,7 @@
         return this.gameStore.selectCatID === -999;
       },
       hasFavorite() {
-        return this.$store.state.Setting.favorites.length > 0;
+        return this.$store.state.Setting.UserSetting.favorites.length > 0;
       },
     },
     methods: {

@@ -1,74 +1,63 @@
 // import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
-
+import rootStore from '@/store';
 export default {
   namespaced: true,
   state: {
-    tableSort: 1,
-    acceptBetter: false,
-    includePrincipal: false,
-    favorites: [],
+    UserSetting: {},
   },
   getters: {},
   mutations: {
-    init(state, val) {
-      let favoritesDefault = [];
-      const favoritesData = JSON.parse(localStorage.getItem('favorites'));
+    writeSettingToLocalStorage(state, UserSetting) {
       const MBID = localStorage.getItem('MBID');
-      if (favoritesData !== null) {
-        if (favoritesData[MBID] !== undefined) {
-          favoritesDefault = favoritesData[MBID].favorites;
-        }
+      let writeSetting = JSON.parse(localStorage.getItem('UserSetting'));
+      if (writeSetting === null) {
+        writeSetting = {};
       }
-      state.favorites.length = 0;
-      state.favorites = favoritesDefault;
+      if (writeSetting[MBID] === undefined) {
+        writeSetting[MBID] = {};
+      }
+      writeSetting[MBID] = UserSetting;
+      localStorage.setItem('UserSetting', JSON.stringify(writeSetting));
+    },
+    init(state, val) {
+      const UserSetting = JSON.parse(localStorage.getItem('UserSetting'));
+      const MBID = localStorage.getItem('MBID');
+      if (UserSetting !== null && UserSetting[MBID] !== undefined) {
+        state.UserSetting = UserSetting[MBID];
+      } else {
+        state.UserSetting = {
+          favorites: [],
+          tableSort: 1,
+          acceptBetter: false,
+          includePrincipal: false,
+        };
+        rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
+      }
     },
     setTableSort(state, val) {
-      state.tableSort = val;
+      state.UserSetting.tableSort = val;
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     setAcceptBetter(state, val) {
-      state.acceptBetter = val;
+      state.UserSetting.acceptBetter = val;
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     setIncludePrincipal(state, val) {
-      state.includePrincipal = val;
+      state.UserSetting.includePrincipal = val;
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     addFavorites(state, val) {
-      const findIndex = state.favorites.findIndex((it, index) => it === val);
+      const findIndex = state.UserSetting.favorites.findIndex((it, index) => it === val);
       if (findIndex > -1) {
-        state.favorites.splice(findIndex, 1);
+        state.UserSetting.favorites.splice(findIndex, 1);
       } else {
-        state.favorites.push(val);
+        state.UserSetting.favorites.push(val);
       }
-
-      // 處理localStorage
-      let favoritesData = JSON.parse(localStorage.getItem('favorites'));
-      const MBID = localStorage.getItem('MBID');
-      if (favoritesData) {
-        if (favoritesData[MBID] === undefined) {
-          favoritesData[MBID] = {};
-        }
-        favoritesData[MBID].favorites = state.favorites;
-      } else {
-        favoritesData = {};
-        favoritesData[MBID] = {
-          favorites: [val],
-        };
-      }
-      localStorage.setItem('favorites', JSON.stringify(favoritesData));
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     setFavorites(state, newFavoritesArr) {
-      state.favorites.length = 0;
       state.favorites = newFavoritesArr;
-
-      // 處理localStorage
-      let favoritesData = JSON.parse(localStorage.getItem('favorites'));
-      const MBID = localStorage.getItem('MBID');
-      if (!favoritesData) {
-        favoritesData = {};
-      }
-      favoritesData[MBID] = {
-        favorites: newFavoritesArr,
-      };
-      localStorage.setItem('favorites', JSON.stringify(favoritesData));
+      rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     clearFavorites(state, val) {
       state.favorites.length = 0;

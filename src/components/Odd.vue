@@ -41,7 +41,7 @@
         }
       },
       includePrincipal() {
-        return this.$store.state.Setting.includePrincipal;
+        return this.$store.state.Setting.UserSetting.includePrincipal;
       },
       showOddValue() {
         if (this.OddValue === '') return '';

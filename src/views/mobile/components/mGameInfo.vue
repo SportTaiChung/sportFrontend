@@ -128,7 +128,7 @@
         return thead.offsetHeight + collapseTarget.offsetHeight;
       },
       starCSSJudge(EvtID) {
-        if (this.$store.state.Setting.favorites.indexOf(EvtID) > -1) {
+        if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
           return 'active';
         } else {
           return '';

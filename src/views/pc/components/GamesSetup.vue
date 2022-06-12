@@ -138,13 +138,13 @@
         return this.$lib.timeFormatWithOutYY(this.currentTime);
       },
       tableSort() {
-        return this.$store.state.Setting.tableSort;
+        return this.$store.state.Setting.UserSetting.tableSort;
       },
       includePrincipal() {
-        return this.$store.state.Setting.includePrincipal;
+        return this.$store.state.Setting.UserSetting.includePrincipal;
       },
       acceptBetter() {
-        return this.$store.state.Setting.acceptBetter;
+        return this.$store.state.Setting.UserSetting.acceptBetter;
       },
       LeagueListDataFilter() {
         if (this.dialogData.onlyShowCheck) {

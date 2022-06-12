@@ -171,7 +171,7 @@
     },
     computed: {
       settings() {
-        return this.$store.state.Setting;
+        return this.$store.state.Setting.UserSetting;
       },
       isIncludePrincipal() {
         return this.settings.includePrincipal;

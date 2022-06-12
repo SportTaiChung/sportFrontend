@@ -594,7 +594,7 @@
               CatId,
               WagerString,
               Amount: parseFloat(cartData.betAmount),
-              AcceptBetter: this.$store.state.Setting.acceptBetter,
+              AcceptBetter: this.$store.state.Setting.UserSetting.acceptBetter,
               BetType: 1,
             };
             list.push(listItem);
@@ -605,7 +605,7 @@
                 CatId,
                 WagerString,
                 Amount: parseFloat(strayBetAmount),
-                AcceptBetter: this.$store.state.Setting.acceptBetter,
+                AcceptBetter: this.$store.state.Setting.UserSetting.acceptBetter,
                 BetType: 99,
               };
               list.push(listItem);

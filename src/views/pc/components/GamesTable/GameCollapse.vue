@@ -317,7 +317,7 @@
         }
       },
       starCSSJudge(EvtID) {
-        if (this.$store.state.Setting.favorites.indexOf(EvtID) > -1) {
+        if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
           return 'starActive';
         } else {
           return '';

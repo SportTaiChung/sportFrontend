@@ -303,7 +303,7 @@ export default {
         });
         return getGameDetail({
           ...apiPostData,
-          show: store.rootState.Setting.tableSort,
+          show: store.rootState.Setting.UserSetting.tableSort,
           LeagueIDs: store.state.selectLeagueIDs.join(','),
         })
           .then(async (res) => {
@@ -337,7 +337,7 @@ export default {
         let postData = null;
         postData = {
           GameType: store.state.selectGameType,
-          EvtIDs: rootStore.state.Setting.favorites.join(','),
+          EvtIDs: rootStore.state.Setting.UserSetting.favorites.join(','),
           FavoritesModel: true,
         };
         return getGameDetail(postData)
@@ -385,7 +385,7 @@ export default {
         return getGameDetailSmall({
           FavoritesModel: true,
           GameType,
-          EvtIDs: rootStore.state.Setting.favorites.join(','),
+          EvtIDs: rootStore.state.Setting.UserSetting.favorites.join(','),
         }).then((res) => {
           store.commit('updateGameList', {
             updateOtherStore: true,

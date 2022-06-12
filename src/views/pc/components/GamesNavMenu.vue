@@ -153,14 +153,14 @@
         }
       },
       tableSort() {
-        return this.$store.state.Setting.tableSort;
+        return this.$store.state.Setting.UserSetting.tableSort;
       },
       includeFavoriteMenuList() {
         return [
           {
             Items: [],
             catName: '收藏',
-            count: this.$store.state.Setting.favorites.length,
+            count: this.$store.state.Setting.UserSetting.favorites.length,
             isFavorite: true,
           },
           ...this.gameStore.MenuList,
