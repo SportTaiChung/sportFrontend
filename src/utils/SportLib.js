@@ -584,15 +584,15 @@ export function getMenuIconByCatID(catID) {
   return iconMap[catID] || iconMap.default;
 }
 
-// 以 catID 取得對應 背景圖片
+// 以 catID 取得對應 背景圖片順位
 export function getBackgroundIndexByCatId(catID) {
-  const iconMap = Object.freeze({
+  const backgroundIndexes = Object.freeze({
     1: 0,
     5: 0,
     21: 9,
     22: 7,
-    31: -1,
-    32: -1,
+    31: null,
+    32: null,
     4: 2,
     12: 2,
     13: 2,
@@ -602,13 +602,52 @@ export function getBackgroundIndexByCatId(catID) {
     3: 1,
     16: 1,
     55: 3,
-    72: -1,
+    72: null,
     82: 4,
-    83: -1,
+    83: null,
     85: 10,
-    '-999': -1,
-    default: -1,
+    '-999': null,
+    default: null,
   });
 
-  return iconMap[catID] || iconMap.default;
+  return backgroundIndexes[catID] || backgroundIndexes.default;
 }
+
+export const chipsData = [
+  {
+    value: 1,
+    img: 'icon_chip_01.png',
+  },
+  {
+    value: 5,
+    img: 'icon_chip_02.png',
+  },
+  {
+    value: 10,
+    img: 'icon_chip_03.png',
+  },
+  {
+    value: 100,
+    img: 'icon_chip_04.png',
+  },
+  {
+    value: 500,
+    img: 'icon_chip_05.png',
+  },
+  {
+    value: 1000,
+    img: 'icon_chip_06.png',
+  },
+  {
+    value: 2000,
+    img: 'icon_chip_07.png',
+  },
+  {
+    value: 5000,
+    img: 'icon_chip_08.png',
+  },
+  {
+    value: 10000,
+    img: 'icon_chip_09.png',
+  },
+];

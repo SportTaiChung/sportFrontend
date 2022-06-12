@@ -44,7 +44,7 @@
       // 背景圖
       backgroundY() {
         const index = this.$SportLib.getBackgroundIndexByCatId(1);
-        const y = (index === -1 ? 0 : 150 * index) * -1;
+        const y = (index > 0 ? index * 150 : 0) * -1;
         return {
           'background-position-y': y + 'px',
         };

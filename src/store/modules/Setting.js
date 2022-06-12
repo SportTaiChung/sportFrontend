@@ -1,5 +1,33 @@
 // import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
 import rootStore from '@/store';
+
+const defaultSettings = Object.freeze({
+  // 收藏夾
+  favorites: [],
+  // 賽事排序方式 0: 熱門 1: 時間
+  tableSort: 1,
+  // 自動接收最佳賠率
+  acceptBetter: false,
+  // 是否含本金
+  includePrincipal: false,
+  // 下注確認信息
+  showBetConfirm: true,
+  // 默認金額
+  defaultAmount: {
+    // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
+    type: 0,
+    amount: 0,
+  },
+  // 默認過關投注
+  defaultStrayAmount: {
+    // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
+    type: 0,
+    amount: 0,
+  },
+  // 偏好籌碼 (最多6個)
+  preferChips: [1, 5, 10, 500, 1000, 2000],
+});
+
 export default {
   namespaced: true,
   state: {
@@ -23,25 +51,13 @@ export default {
       const UserSetting = JSON.parse(localStorage.getItem('UserSetting'));
       const MBID = localStorage.getItem('MBID');
       if (UserSetting !== null && UserSetting[MBID] !== undefined) {
-        state.UserSetting = UserSetting[MBID];
+        // 舊會員
+        // 先拷貝預設值, 再覆寫, 避免日後新增欄位後, localStorage 讀不到的問題
+        const cloneDefault = Object.assign({}, defaultSettings);
+        state.UserSetting = Object.assign(cloneDefault, UserSetting[MBID]);
       } else {
-        state.UserSetting = {
-          favorites: [],
-          tableSort: 1,
-          acceptBetter: false,
-          includePrincipal: false,
-          showBetConfirm: true,
-          defaultAmount: {
-            // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
-            type: 0,
-            amount: 0,
-          },
-          defaultStrayAmount: {
-            // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
-            type: 0,
-            amount: 0,
-          },
-        };
+        // 新會員
+        state.UserSetting = defaultSettings;
         rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
       }
     },

@@ -132,11 +132,18 @@
       <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
-          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
-          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
-          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+          <div
+            class="chip"
+            v-for="(chip, index) in currentChips"
+            :style="getChipImage(index)"
+            @click="onChipClick(index)"
+            :key="index"
+          ></div>
         </div>
-        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+        <i
+          class="el-icon-arrow-right"
+          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
+        ></i>
       </div>
 
       <div class="totalRow">
@@ -201,11 +208,18 @@
       <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
-          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
-          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
-          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+          <div
+            class="chip"
+            v-for="(chip, index) in currentChips"
+            :style="getChipImage(index)"
+            @click="onChipClick(index)"
+            :key="index"
+          ></div>
         </div>
-        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+        <i
+          class="el-icon-arrow-right"
+          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
+        ></i>
       </div>
 
       <div class="totalRow">
@@ -301,7 +315,6 @@
         // 目前打開小鍵盤的 購物車item index
         currShowKeyboardIndex: -1,
 
-        chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000],
         chipPageIndex: 0,
         chipsNumPerPage: 3,
 
@@ -369,11 +382,17 @@
       currShowKeyboardIndex(index) {
         this.isShowBetKB = index === -1;
       },
+      chipsData() {
+        this.chipPageIndex = 0;
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
     },
     computed: {
+      settings() {
+        return this.$store.state.Setting.UserSetting;
+      },
       showBetCartList() {
         return this.$store.getters['BetCart/showBetCartList'];
       },
@@ -395,13 +414,20 @@
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
+      chipsData() {
+        const preferChips = this.settings.preferChips;
+        if (preferChips.length > 0 && preferChips.length <= 6) {
+          return this.$SportLib.chipsData.filter((chip) => preferChips.includes(chip.value));
+        }
+        return this.$SportLib.chipsData;
+      },
       maxChipPage() {
-        return Math.trunc(this.chipsData.length / this.chipsNumPerPage) - 1;
+        return Math.ceil(this.chipsData.length / this.chipsNumPerPage);
       },
       currentChips() {
         return this.chipsData.slice(
           this.chipPageIndex * this.chipsNumPerPage,
-          (this.chipPageIndex + 1) * this.chipsNumPerPage
+          this.chipPageIndex * this.chipsNumPerPage + 3
         );
       },
     },
@@ -676,11 +702,11 @@
       onCartListItemKeyboardShow(index) {
         this.currShowKeyboardIndex = index;
       },
-      chipPosStyle(chipIndex) {
-        const n = this.chipsNumPerPage;
-        const x = 57 * (chipIndex + this.chipPageIndex * n);
+      getChipImage(pos) {
+        const chip = this.currentChips[pos];
+        const img = chip.img;
         return {
-          'background-position-x': -x + 'px',
+          'background-image': `url(${require('@/assets/img/pc/chips/' + img)})`,
         };
       },
       fillEachBetAmountBlurHandler() {
@@ -698,7 +724,9 @@
         this.lastBlurInput = lastBlurInputData;
       },
       onChipClick(index) {
-        const value = this.currentChips[index] > 0 ? this.currentChips[index] : null;
+        const chip = this.currentChips[index];
+        if (!chip) return;
+        const value = chip.value > 0 ? chip.value : null;
         this.processLastBlurInput(value);
       },
       keyBoardAddEvent(addNum) {
@@ -986,6 +1014,7 @@
         align-items: center;
         border-bottom: 1px solid #888;
         padding-bottom: 5px;
+        overflow: hidden;
 
         i {
           color: 000;
@@ -1015,7 +1044,8 @@
           .chip {
             cursor: pointer;
             flex: 0 0 57px;
-            background: url('~@/assets/img/pc/icon_chip.png') no-repeat;
+            background: url();
+            background-repeat: no-repeat;
             background-size: auto 100%;
             width: 57px;
             height: 37px;
@@ -1026,11 +1056,6 @@
             }
             &:active {
               transform: translateY(-4px) scale(1.05);
-            }
-
-            $chip-width: 57px;
-            &:nth-child(2n + 1) {
-              background-position-x: -57px;
             }
           }
         }

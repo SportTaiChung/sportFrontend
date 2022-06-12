@@ -176,18 +176,22 @@
           </li> -->
 
           <li class="item">
-            <div class="title">自訂籌碼</div>
+            <div class="title">
+              自訂籌碼
+              <br />
+              <span class="redTip"> 最多設置6個 </span>
+            </div>
             <div class="content">
               <ul class="chips">
-                <li class="chip">+1</li>
-                <li class="chip">+5</li>
-                <li class="chip">+10</li>
-                <li class="chip">+100</li>
-                <li class="chip">+500</li>
-                <li class="chip">+1000</li>
-                <li class="chip">+2000</li>
-                <li class="chip">+5000</li>
-                <li class="chip">+10000</li>
+                <li
+                  v-for="(chip, index) in chipsData"
+                  class="chip"
+                  :class="activeChips.includes(chip.value) ? 'active' : ''"
+                  :key="index"
+                  @click="chipClickHandler(chip.value)"
+                >
+                  <img :src="require('@/assets/img/pc/chips/' + chip.img)" />
+                </li>
               </ul>
             </div>
           </li>
@@ -204,6 +208,9 @@
     name: 'GamesSetupNew',
     data() {
       return {
+        chipsData: this.$SportLib.chipsData,
+
+        // models
         mAcceptBetter: null,
         mIncludePrincipal: null,
         mTableSort: null,
@@ -213,6 +220,8 @@
         mDefaultAmountValue: 0,
         mDefaultStrayAmountType: 0,
         mDefaultStrayAmountValue: 0,
+
+        activeChips: [],
       };
     },
     computed: {
@@ -231,6 +240,7 @@
         this.mDefaultAmountValue = this.settings.defaultAmount.amount;
         this.mDefaultStrayAmountType = this.settings.defaultStrayAmount.type;
         this.mDefaultStrayAmountValue = this.settings.defaultStrayAmount.amount;
+        this.activeChips = Array.from(new Set(this.settings.preferChips));
       },
       // 保存設定
       saveSettings() {
@@ -249,6 +259,9 @@
             type: Number(this.mDefaultStrayAmountType),
             amount: this.mDefaultStrayAmountValue,
           },
+          preferChips: this.chipsData
+            .map((it) => it.value)
+            .filter((v) => this.activeChips.includes(v)),
         };
         this.$store.commit('Setting/setSettings', newSettings);
 
@@ -258,6 +271,18 @@
           });
           this.$store.commit('SetLoading', false);
         }, 500);
+      },
+      // 籌碼點擊
+      chipClickHandler(value) {
+        if (this.activeChips.includes(value)) {
+          if (this.activeChips.length > 1) {
+            this.activeChips = this.activeChips.filter((it) => it !== value);
+          }
+        } else {
+          if (this.activeChips.length < 6) {
+            this.activeChips.push(value);
+          }
+        }
       },
       // 離開
       onMaskClick(e) {
@@ -356,12 +381,17 @@
             border-bottom: 1px solid #ccc;
             .title {
               flex: 0 0 125px;
-              height: 2.5rem;
               line-height: normal;
               font-size: 1.1rem;
               display: flex;
-              align-items: center;
+              flex-flow: column;
+              align-items: flex-start;
               padding-left: 15px;
+              margin: auto;
+
+              span.redTip {
+                color: #f00;
+              }
             }
             .content {
               padding: 0;
@@ -419,20 +449,17 @@
           grid-gap: 5px;
 
           li.chip {
-            height: 30px;
-            width: 75px;
-            border: 1px solid transparent;
-            border-radius: 3px;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            line-height: normal;
+            text-align: center;
             cursor: pointer;
-            &:active,
+            opacity: 0.3;
+            &:hover {
+              opacity: 0.8;
+            }
+            &:active {
+              transform: scale(1.2);
+            }
             &.active {
-              border: 1px solid #0169ff;
+              opacity: 1;
             }
           }
         }
