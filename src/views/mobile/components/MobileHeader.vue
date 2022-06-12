@@ -149,7 +149,7 @@
           WagerTypeKey,
         };
 
-        this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { postData }).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
             this.gameTypeID,
