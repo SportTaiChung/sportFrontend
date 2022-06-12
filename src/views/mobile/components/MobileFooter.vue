@@ -10,7 +10,6 @@
         <span>其他聯盟</span>
       </li>
       <li class="footer-item" @click="onBetViewClick">
-        <!-- <i class="el-icon-basketball"></i> -->
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
           <span class="num">{{ this.betCartStore.betCartList.length }}</span>
         </div>

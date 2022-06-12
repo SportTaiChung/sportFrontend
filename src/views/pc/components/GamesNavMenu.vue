@@ -39,7 +39,10 @@
       <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
           <template slot="title">
-            <i class="el-icon-basketball"></i>
+            <img
+              :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(menuData.catid))"
+              class="menu-icon"
+            />
             <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
               <span class="nav_text">{{ menuData.catName }}</span>
               <span class="nav_number">{{ menuData.count }}</span>
@@ -62,7 +65,10 @@
           </el-menu-item-group>
         </el-submenu>
         <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
-          <i class="el-icon-basketball"></i>
+          <img
+            :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(-999))"
+            class="menu-icon"
+          />
           <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
             <span class="nav_text">{{ menuData.catName }}</span>
             <span class="nav_number">{{ menuData.count }}</span>
@@ -313,6 +319,9 @@
           this.callGetFavoriteGameDetail();
         }
       },
+      getMenuIconByCatID(catId) {
+        return this.$SportLib.getMenuIconByCatID(catId);
+      },
     },
   };
 </script>
@@ -391,6 +400,11 @@
           @include hover_color();
         }
       }
+    }
+
+    .menu-icon {
+      width: 18px;
+      height: 18px;
     }
   }
 </style>
