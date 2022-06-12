@@ -22,7 +22,7 @@
     </div>
     <el-menu
       ref="elMenu"
-      class="el-menu-vertical-demo color_text"
+      class="el-menu-vertical-demo"
       :default-active="menuActiveString"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"

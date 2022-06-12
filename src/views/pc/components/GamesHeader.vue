@@ -6,14 +6,14 @@
     <div class="headerTop_nav">
       <el-menu
         :default-active="activeIndex"
-        class="color_text"
+        class="headerMenu"
         mode="horizontal"
         text-color="#fff"
         @select="handleSelect"
       >
-        <el-menu-item index="1">即時比分</el-menu-item>
+        <el-menu-item index="1" @click="jumpLink('scoreLive')">即時比分</el-menu-item>
         <el-menu-item index="2">賽果</el-menu-item>
-        <el-menu-item index="3">規則</el-menu-item>
+        <el-menu-item index="3" @click="jumpLink('rule')">規則</el-menu-item>
         <el-menu-item index="4" @click="OpenPopupCenter">投註記錄</el-menu-item>
       </el-menu>
     </div>
@@ -48,6 +48,7 @@
       this.callUserInfoAbout();
       this.callGetUserInfoCash();
     },
+
     computed: {
       userName() {
         return this.$store.state.User.UserData?.Name;
@@ -57,26 +58,24 @@
       },
     },
     methods: {
+      jumpLink(linkKey) {
+        this.WindowOpen(this.$conf.JumpLink[linkKey]);
+      },
       callGetUserInfoCash() {
         this.$store.dispatch('User/GetUserInfoCash');
       },
       callUserInfoAbout() {
         this.$store.dispatch('User/UserInfoAbout');
       },
-      OpenPopupCenter() {
-        var width = document.documentElement.clientWidth;
-        var height = document.documentElement.clientHeight;
-        var popupwidth = width * 0.6;
-        var popupheight = height * 0.6;
-        var top = (height - popupheight + 20) / 2;
-        var left = (width - popupwidth) / 2;
-
-        var historyRecord = this.$router.resolve({
-          path: 'historyRecord',
-        });
-
+      WindowOpen(href) {
+        const width = document.documentElement.clientWidth;
+        const height = document.documentElement.clientHeight;
+        const popupwidth = width * 0.6;
+        const popupheight = height * 0.6;
+        const top = (height - popupheight + 20) / 2;
+        const left = (width - popupwidth) / 2;
         return window.open(
-          historyRecord.href,
+          href,
           '111',
           'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
             popupwidth +
@@ -88,7 +87,18 @@
             left
         );
       },
-      handleSelect() {},
+      OpenPopupCenter() {
+        const historyRecord = this.$router.resolve({
+          path: 'historyRecord',
+        });
+        this.WindowOpen(historyRecord.href);
+      },
+      handleSelect() {
+        this.activeIndex = '1';
+        setTimeout(() => {
+          this.activeIndex = '4';
+        }, 1);
+      },
       logout() {
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('User/Logout').finally(() => {
@@ -123,6 +133,12 @@
         @include base-background();
         display: inline-flex;
         border: none;
+      }
+    }
+    .headerMenu {
+      .el-menu-item {
+        background-color: transparent !important;
+        border-bottom: 0px !important;
       }
     }
     .headerTop_userinfo {

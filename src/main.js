@@ -10,6 +10,8 @@ import VueVirtualScroller from 'vue-virtual-scroller';
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';
 import * as lib from '@/utils/lib';
+import * as conf from '@/Config/index';
+
 import '@/assets/sass/global.scss';
 import '@/assets/sass/elementChange.scss';
 
@@ -30,6 +32,7 @@ Promise.all([router()]).then(async (res) => {
   Vue.prototype.$axios = axios;
   Vue.prototype.$MSG = message;
   Vue.prototype.$lib = lib;
+  Vue.prototype.$conf = conf;
 
   Vue.use(ElementUI);
   Vue.use(VueCarousel);

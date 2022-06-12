@@ -171,7 +171,7 @@ export default {
                           oddData.DrewOdds = updateData.DrewOdds;
                           oddData.Status = updateData.Status;
                           teamData.EvtStatus = updateData.EvtStatus;
-                          console.log('update!!!');
+                          // console.log('update!!!');
                           return false;
                         } else {
                           return true;
