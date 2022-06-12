@@ -28,6 +28,8 @@ export default {
     selectWagerTypeKey: null,
     // 當前選擇指定的聯盟
     selectLeagueIDs: [],
+    // GamesNavMenu會去監聽此值,此值如果發生變化,會重新打detail API
+    isCallGameDetailAPI: false,
   },
   getters: {
     ...GameTypeListGetters,
@@ -136,7 +138,9 @@ export default {
     },
     updateGameList(state, { updateOtherStore, updateData }) {
       if (state.GameList.length !== 0) {
+        const notFindData = [];
         updateData.forEach((updateData) => {
+          let isFind = false;
           state.GameList.every((GameData) => {
             const gameListIndex = GameData.Items.List.findIndex(
               (LeagueData) => LeagueData.LeagueID === updateData.LeagueID
@@ -151,6 +155,7 @@ export default {
                     } else {
                       return wagerData.Odds.every((oddData) => {
                         if (oddData.GameID === updateData.GameID) {
+                          isFind = true;
                           if (updateData.EvtStatus !== 1) {
                             console.warn(
                               'some data is disable!!',
@@ -188,7 +193,19 @@ export default {
               return true;
             }
           });
+          if (!isFind) {
+            notFindData.push(updateData);
+          }
         });
+
+        if (!updateOtherStore) {
+          // 更新數據有,但是Table卻沒有時,要重新打detail API
+          if (notFindData.length !== 0) {
+            console.warn('update的資料,detail資料不存在,即將重打detail API', notFindData);
+            state.isCallGameDetailAPI = !state.isCallGameDetailAPI;
+          }
+        }
+
         if (updateOtherStore) {
           rootStore.commit('MoreGame/updateMoreGameData', {
             updateOtherStore: false,
@@ -256,7 +273,7 @@ export default {
       });
     },
     // 18-a. (赔率)游戏玩法资讯
-    GetGameDetail(store, postData) {
+    GetGameDetail(store, { updateBehind, postData }) {
       return new Promise((resolve, reject) => {
         let apiPostData = postData;
         if (postData.WagerTypeKey === null) {
@@ -265,10 +282,14 @@ export default {
             CatID: postData.CatID,
           };
         }
-        store.commit('setGameList', {
-          data: [],
-          isFavorite: false,
-        });
+
+        if (!updateBehind) {
+          store.commit('setGameList', {
+            data: [],
+            isFavorite: false,
+          });
+        }
+
         window.OddData.clear();
 
         let newWagerTypeKey = 1;
@@ -289,6 +310,10 @@ export default {
             console.log('game detail API response done');
 
             if (res.data?.List.length !== 0) {
+              console.log(
+                'detail 當前所有league id',
+                res.data.List.map((it) => it.LeagueID).sort((a, b) => a - b)
+              );
               const newData = [
                 {
                   CatID: res.data.List[0].CatID,
@@ -338,9 +363,10 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
+            const EvtStatusList = res.data.map((it) => it.EvtStatus);
+            console.log('DetailSmall 內所有資料的EvtStatus:', EvtStatusList);
             console.log(
-              'GetGameDetailSmall:',
-              res.data.map((it) => it.Status)
+              `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
             );
             store.commit('updateGameList', {
               updateOtherStore: true,

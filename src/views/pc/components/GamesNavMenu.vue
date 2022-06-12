@@ -133,6 +133,9 @@
       selectCatID() {
         return this.$store.state.Game.selectCatID;
       },
+      isCallGameDetailAPI() {
+        return this.$store.state.Game.isCallGameDetailAPI;
+      },
       isFavoriteMode() {
         return this.selectCatID === -999;
       },
@@ -165,9 +168,18 @@
       },
     },
     watch: {
+      isCallGameDetailAPI: {
+        handler() {
+          this.callGetGameDetail(
+            this.gameStore.selectCatID,
+            this.gameStore.selectWagerTypeKey,
+            true
+          );
+        },
+      },
       tableSort: {
         handler() {
-          this.reCallGameDetailAPI();
+          this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
         },
       },
       selectCatID: {
@@ -186,9 +198,6 @@
       },
     },
     methods: {
-      reCallGameDetailAPI() {
-        this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
-      },
       initMenuActiveString() {
         const menuIndex = this.includeFavoriteMenuList.findIndex(
           (it) => it.catid === this.selectCatID
@@ -226,8 +235,11 @@
         this.$store.dispatch('Game/GetMenuGameCatList', true);
         this.$store.commit('MoreGame/closeMoreGameList');
       },
-      callGetGameDetail(CatID, WagerTypeKey = null) {
-        this.$store.commit('SetLoading', true);
+      // updateBehind如果是true 則不會清除GameList和不會跑loading動畫
+      callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
 
         let postData = null;
         postData = {
@@ -235,14 +247,16 @@
           CatID,
           WagerTypeKey,
         };
-        this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { updateBehind, postData }).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
             this.gameTypeID,
             CatID,
             WagerTypeKey
           );
-          this.$store.commit('SetLoading', false);
+          if (!updateBehind) {
+            this.$store.commit('SetLoading', false);
+          }
         });
       },
 
