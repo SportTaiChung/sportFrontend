@@ -78,12 +78,15 @@
 <style lang="scss" scoped>
   #Soccer {
     height: 100%;
+    background-color: #222;
 
     .table-wrapper {
       height: 150px;
+      max-width: 370px;
       padding: 20px 15px 0 15px;
+      margin: auto;
       background-image: url('~@/assets/img/common/liveBoard/backgrounds.jpg');
-      background-position-x: 0;
+      background-position-x: center;
       background-repeat: no-repeat;
       background-size: 370px auto;
 
@@ -98,6 +101,12 @@
         thead {
           & > tr > td:nth-child(1) {
             width: 60%;
+          }
+        }
+
+        tbody {
+          & > tr > td:nth-child(4) {
+            color: yellow;
           }
         }
 

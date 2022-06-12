@@ -53,7 +53,7 @@
       },
       // board 資訊
       title() {
-        return "下半場 38'";
+        return '02:00';
       },
       // 隊伍1 資訊
       team1Info() {
@@ -86,12 +86,15 @@
 <style lang="scss" scoped>
   #BasketBall {
     height: 100%;
+    background-color: #222;
 
     .table-wrapper {
       height: 150px;
+      max-width: 370px;
       padding: 20px 15px 0 15px;
+      margin: auto;
       background-image: url('~@/assets/img/common/liveBoard/backgrounds.jpg');
-      background-position-x: 0;
+      background-position-x: center;
       background-repeat: no-repeat;
       background-size: 370px auto;
 
@@ -106,6 +109,12 @@
         thead {
           & > tr > td:nth-child(1) {
             width: 40%;
+          }
+        }
+
+        tbody {
+          & > tr > td:nth-child(7) {
+            color: yellow;
           }
         }
 

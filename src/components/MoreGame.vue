@@ -365,7 +365,7 @@
     $gameChatHeight: 60px;
 
     &.mobile {
-      width: 100%;
+      min-width: 370px;
       border: 0;
     }
     .MoreGameHeader {
