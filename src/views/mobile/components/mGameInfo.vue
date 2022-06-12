@@ -31,14 +31,22 @@
                 <!-- 賽事 -->
                 <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
                   <div class="team-block">
-                    <!-- 判斷主客場對調 -->
-                    <template v-if="!teamData.SetFlag">
-                      <div class="team">{{ teamData.AwayTeamStr }}</div>
-                      <div class="team">{{ teamData.HomeTeamStr }}</div>
+                    <!-- 只需要顯示一個隊伍 -->
+                    <template v-if="teamData.AwayTeamStr === '.'">
+                      <div>
+                        <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                      </div>
                     </template>
                     <template v-else>
-                      <div class="team">{{ teamData.HomeTeamStr }}</div>
-                      <div class="team">{{ teamData.AwayTeamStr }}</div>
+                      <!-- 判斷主客場對調 -->
+                      <template v-if="!teamData.SetFlag">
+                        <div class="team">{{ teamData.AwayTeamStr }}</div>
+                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                      </template>
+                      <template v-else>
+                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                        <div class="team">{{ teamData.AwayTeamStr }}</div>
+                      </template>
                     </template>
 
                     <!-- 是否顯示和局 -->

@@ -26,16 +26,20 @@
                   </div>
                 </div>
                 <div class="centerTeamBlock">
-                  <!-- 主客場對調 -->
-                  <template v-if="!teamData.SetFlag">
-                    <div>
-                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
-                      <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
-                    </div>
+                  <!-- 只需要顯示一個隊伍 -->
+                  <template v-if="teamData.AwayTeamStr === '.'">
+                    <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                   </template>
                   <template v-else>
-                    <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
-                    <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                    <!-- 主客場對調 -->
+                    <template v-if="!teamData.SetFlag">
+                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                      <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                    </template>
+                    <template v-else>
+                      <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                    </template>
                   </template>
 
                   <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
@@ -408,6 +412,7 @@
         color: black;
         tbody {
           .FirstCatNameBlock {
+            border-bottom: 1px solid #f3f3f3;
             .leftTimeBlock {
               .timeRow {
                 color: #888;
@@ -503,18 +508,25 @@
             flex-wrap: wrap;
             align-items: center;
             padding-left: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
             .teamRow {
               width: 100%;
               height: fit-content;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              font-size: 13px;
+              line-height: 18px;
             }
           }
           .rightFavoriteBlock {
             width: 30px;
             display: flex;
             align-items: center;
+            justify-content: center;
             $starSize: 19px;
             .star {
               width: $starSize;

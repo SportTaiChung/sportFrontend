@@ -117,7 +117,6 @@
             isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
             lastClickInput = 2;
           "
-          @blur="fillEachWinAmountBlurHandler"
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
@@ -322,9 +321,11 @@
       }, 10000);
     },
     watch: {
+      // 有新增投注到購物車事件
       isAddNewToChart() {
         this.$nextTick(() => {
           this.$refs.BetViewList.scrollTop = 999999;
+          this.isLockMode = false;
         });
       },
       groupIndex: {
@@ -353,7 +354,6 @@
           // 驅動過關賠率計算
           this.reCalcStrayBetChart();
           this.$emit('betCartListChanged', this.showBetCartList);
-          this.isLockMode = false;
         },
       },
       strayOdd() {
@@ -472,6 +472,8 @@
             cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
           );
         });
+
+        this.fillEachWinAmountBlurHandler();
       },
       strayBetAmountInputChangeHandler() {
         console.log('wtf1', this.strayBetAmount);
