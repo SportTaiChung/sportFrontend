@@ -259,7 +259,6 @@
           }
         });
       },
-
       // 最愛
       callGetFavoriteGameDetail() {
         this.$store.commit('SetLoading', true);

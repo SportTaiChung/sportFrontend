@@ -56,12 +56,8 @@ export default {
       rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },
     setFavorites(state, newFavoritesArr) {
-      state.favorites = newFavoritesArr;
+      state.UserSetting.favorites = newFavoritesArr;
       rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
-    },
-    clearFavorites(state, val) {
-      state.favorites.length = 0;
-      state.favorites = [];
     },
   },
   actions: {},

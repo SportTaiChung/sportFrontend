@@ -22,9 +22,6 @@
           .catch((err) => {
             console.log('GetUserInfoCash err:', err);
             this.$router.replace({ name: 'Login' });
-          })
-          .finally(() => {
-            this.$store.commit('SetLoading', false);
           });
       }
     },
