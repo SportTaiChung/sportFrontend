@@ -235,7 +235,11 @@
                   </template>
                 </div>
               </td>
-              <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
+              <td
+                v-if="isShowMoreGameEntryBtn"
+                class="GameTableHeaderMoreTD"
+                :class="isGameTableHeaderMoreSelect(teamData, rowIndex)"
+              >
                 <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
                   更多
                   {{ teamData.MoreCount }}
@@ -289,8 +293,25 @@
           return 'el-icon-arrow-up';
         }
       },
+      moreGameEvtID() {
+        if (
+          this.$store.state.MoreGame.isShowMoreGame &&
+          Object.keys(this.$store.state.MoreGame.teamData).length !== 0
+        ) {
+          return this.$store.state.MoreGame.teamData.EvtID;
+        } else {
+          return null;
+        }
+      },
     },
     methods: {
+      isGameTableHeaderMoreSelect(teamData, rowIndex) {
+        if (teamData.EvtID === this.moreGameEvtID && rowIndex === 0) {
+          return 'GameTableHeaderMoreSelect';
+        } else {
+          return '';
+        }
+      },
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.favorites.indexOf(EvtID) > -1) {
           return 'starActive';
@@ -523,6 +544,9 @@
             height: 15px;
             width: 1px;
           }
+        }
+        .GameTableHeaderMoreSelect {
+          background-color: #cce6ff;
         }
         .GameTableHeaderOtherTD {
           height: 100%;

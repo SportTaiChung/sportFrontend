@@ -134,7 +134,7 @@ export default {
       state.selectCatID = selectCatID;
       state.selectWagerTypeKey = selectWagerTypeKey;
     },
-    updateGameList(state, updateData) {
+    updateGameList(state, { updateOtherStore, updateData }) {
       if (state.GameList.length !== 0) {
         updateData.forEach((updateData) => {
           state.GameList.every((GameData) => {
@@ -171,7 +171,7 @@ export default {
                           oddData.DrewOdds = updateData.DrewOdds;
                           oddData.Status = updateData.Status;
                           teamData.EvtStatus = updateData.EvtStatus;
-                          // console.log('update!!!');
+                          console.log('update!!!');
                           return false;
                         } else {
                           return true;
@@ -189,6 +189,12 @@ export default {
             }
           });
         });
+        if (updateOtherStore) {
+          rootStore.commit('MoreGame/updateMoreGameData', {
+            updateOtherStore: false,
+            updateData,
+          });
+        }
       }
     },
   },
@@ -336,7 +342,10 @@ export default {
               'GetGameDetailSmall:',
               res.data.map((it) => it.Status)
             );
-            store.commit('updateGameList', res.data);
+            store.commit('updateGameList', {
+              updateOtherStore: true,
+              updateData: res.data,
+            });
           });
         } else {
           resolve();
@@ -352,11 +361,10 @@ export default {
           GameType,
           EvtIDs: rootStore.state.Setting.favorites.join(','),
         }).then((res) => {
-          // console.log(
-          //   'GetGameDetailSmall:',
-          //   res.data.map((it) => it.Status)
-          // );
-          store.commit('updateGameList', res.data);
+          store.commit('updateGameList', {
+            updateOtherStore: true,
+            updateData: res.data,
+          });
         });
       });
     },

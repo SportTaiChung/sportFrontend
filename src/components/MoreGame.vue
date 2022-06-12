@@ -1,5 +1,5 @@
 <template>
-  <div id="MoreGame" :class="isMobileClass">
+  <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
       <div class="teamName">{{ getteamData.home }}</div>
       <div class="teamVS">vs</div>
@@ -10,8 +10,10 @@
         @click="$store.commit('MoreGame/closeMoreGameList')"
       />
     </div>
-    <div class="GameInfoBlock"> </div>
-    <div class="MoreGameBlock">
+    <div class="GameInfoBlock" v-if="gameTypeID === 2">
+      <!-- 比分板區塊 -->
+    </div>
+    <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
           <i :class="arrowIconJudge" />
@@ -102,7 +104,7 @@
       // 定時更新遊戲賠率
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
-      }, 4000);
+      }, 6000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -115,11 +117,63 @@
           return this.$store.state.MoreGame.moreGameData;
         }
       },
+      loading() {
+        return this.$store.state.MoreGame.loading;
+      },
       GameList() {
         if (this.moreGameData === null) {
           return [];
         }
         return this.moreGameData.List;
+      },
+      gameTypeID() {
+        return this.$store.state.Game.selectGameType;
+      },
+      selectCatID() {
+        return this.gameStore.selectCatID;
+      },
+      teamData() {
+        return this.$store.state.MoreGame.teamData;
+      },
+      menuTabs() {
+        if (this.moreGameData === null) {
+          return [];
+        }
+        return this.moreGameData.Menu;
+      },
+      MoreGameStoreUpdateFlag() {
+        return this.$store.state.MoreGame.MoreGameStoreUpdateFlag;
+      },
+      getteamData() {
+        let home = '';
+        let away = '';
+        if (!this.teamData.SetFlag) {
+          home = this.teamData.AwayTeamStr;
+          away = this.teamData.HomeTeamStr;
+        } else {
+          home = this.teamData.HomeTeamStr;
+          away = this.teamData.AwayTeamStr;
+        }
+        return {
+          home,
+          away,
+        };
+      },
+      arrowIconJudge() {
+        if (this.isCollapse) {
+          return 'el-icon-arrow-down';
+        } else {
+          return 'el-icon-arrow-up';
+        }
+      },
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
+      },
+      isMobileClass() {
+        if (process.env.VUE_APP_UI === 'mobile') {
+          return 'mobile';
+        }
+        return '';
       },
       FinalGameList() {
         if (this.GameList.length === 0) {
@@ -194,49 +248,6 @@
           };
         });
       },
-      teamData() {
-        return this.$store.state.MoreGame.teamData;
-      },
-      menuTabs() {
-        if (this.moreGameData === null) {
-          return [];
-        }
-        return this.moreGameData.Menu;
-      },
-      MoreGameStoreUpdateFlag() {
-        return this.$store.state.MoreGame.MoreGameStoreUpdateFlag;
-      },
-      getteamData() {
-        let home = '';
-        let away = '';
-        if (!this.teamData.SetFlag) {
-          home = this.teamData.AwayTeamStr;
-          away = this.teamData.HomeTeamStr;
-        } else {
-          home = this.teamData.HomeTeamStr;
-          away = this.teamData.AwayTeamStr;
-        }
-        return {
-          home,
-          away,
-        };
-      },
-      arrowIconJudge() {
-        if (this.isCollapse) {
-          return 'el-icon-arrow-down';
-        } else {
-          return 'el-icon-arrow-up';
-        }
-      },
-      betCartList() {
-        return this.$store.state.BetCart.betCartList;
-      },
-      isMobileClass() {
-        if (process.env.VUE_APP_UI === 'mobile') {
-          return 'mobile';
-        }
-        return '';
-      },
     },
     watch: {
       MoreGameStoreUpdateFlag() {
@@ -286,7 +297,6 @@
           (it) => it.key === selectGameTypeID
         )?.value;
 
-        console.log('more betData:', betData);
         const betInfoData = {
           OriginShowOdd: parseFloat(betData.showOdd),
           wagerPos: betData.wagerPos,
@@ -469,6 +479,9 @@
           }
         }
       }
+    }
+    .MoreGameBlockWithOutGameInfo {
+      height: calc(100% - $gameHeaderHeight - $gameChatHeight);
     }
     .GameChatBlock {
       height: $gameChatHeight;
