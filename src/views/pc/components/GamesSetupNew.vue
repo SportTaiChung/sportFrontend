@@ -179,7 +179,7 @@
             <div class="title">
               自訂籌碼
               <br />
-              <span class="redTip"> 最多設置6個 </span>
+              <span class="redTip"> 最多設置 {{ maxChips }} 個 </span>
             </div>
             <div class="content">
               <ul class="chips">
@@ -209,6 +209,7 @@
     data() {
       return {
         chipsData: this.$SportLib.chipsData,
+        maxChips: 6,
 
         // models
         mAcceptBetter: null,
@@ -239,7 +240,9 @@
         this.mDefaultAmountValue = this.settings.defaultAmount.amount;
         this.mDefaultStrayAmountType = this.settings.defaultStrayAmount.type;
         this.mDefaultStrayAmountValue = this.settings.defaultStrayAmount.amount;
-        this.activeChips = Array.from(new Set(this.settings.preferChips));
+        this.activeChips = Array.from(new Set(this.settings.preferChips))
+          .sort((a, b) => a - b)
+          .slice(0, this.maxChips);
       },
       // 保存設定
       saveSettings() {
@@ -279,7 +282,7 @@
             this.activeChips = this.activeChips.filter((it) => it !== value);
           }
         } else {
-          if (this.activeChips.length < 6) {
+          if (this.activeChips.length < this.maxChips) {
             this.activeChips.push(value);
           }
         }
