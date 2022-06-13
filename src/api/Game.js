@@ -9,7 +9,7 @@ export function getGameResultLeagues(postData = {}) {
     param: {
       AddMemberToken: true,
     },
-    data: { lang: store.state.Lang },
+    data: { lang: store.state.Lang, ...postData },
   });
 }
 

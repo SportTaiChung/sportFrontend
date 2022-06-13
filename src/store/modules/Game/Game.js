@@ -219,7 +219,10 @@ export default {
     // API(15,18)共用-聯賽Items
     GetGameResultLeagues(store) {
       return new Promise((resolve, reject) => {
-        return getGameResultLeagues()
+        return getGameResultLeagues({
+          CatID: store.state.selectCatID,
+          GameType: store.state.selectGameType,
+        })
           .then(async (res) => {
             resolve(res);
           })

@@ -16,7 +16,7 @@
         :isNavMenuCollapse="isNavMenuCollapse"
         @AddToCart="AddToCartEvent()"
       ></GamesTableList>
-      <MoreGame v-if="isShowMoreGame"></MoreGame>
+      <MoreGame v-if="isShowMoreGame" @AddToCart="AddToCartEvent()"></MoreGame>
       <GamesBetInfo
         ref="GamesBetInfo"
         @openSetup="

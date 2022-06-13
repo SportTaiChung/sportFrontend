@@ -185,7 +185,7 @@
       },
       tableSort: {
         handler() {
-          this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+          this.reCallGameDetailAPI();
         },
       },
       selectCatID: {
@@ -204,6 +204,9 @@
       },
     },
     methods: {
+      reCallGameDetailAPI() {
+        this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+      },
       initMenuActiveString() {
         const menuIndex = this.includeFavoriteMenuList.findIndex(
           (it) => it.catid === this.selectCatID

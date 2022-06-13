@@ -92,6 +92,9 @@
       selectCatID() {
         return this.gameStore.selectCatID;
       },
+      selectGameType() {
+        return this.gameStore.selectGameType;
+      },
       isFavoriteMode() {
         return this.selectCatID === -999;
       },
@@ -104,6 +107,9 @@
     },
     watch: {
       selectCatID() {
+        this.activeCollapse.length = 0;
+      },
+      selectGameType() {
         this.activeCollapse.length = 0;
       },
     },

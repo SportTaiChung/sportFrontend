@@ -358,11 +358,11 @@
         });
       },
       goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
-        this.$emit('AddToCart');
-
         if (showOdd === '') {
           return;
         }
+
+        this.$emit('AddToCart');
 
         let HomeTeamStr = teamData.HomeTeamStr;
         let AwayTeamStr = teamData.AwayTeamStr;

@@ -269,7 +269,7 @@
             message: '修改成功',
           });
           this.$store.commit('SetLoading', false);
-        }, 500);
+        }, 100);
       },
       // 籌碼點擊
       chipClickHandler(value) {

@@ -325,6 +325,7 @@
         }
       },
       goBet(betData, oddData, leagueData) {
+        this.$emit('AddToCart');
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID
