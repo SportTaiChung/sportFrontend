@@ -1,6 +1,7 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
 import { Notification } from 'element-ui';
+import rootStore from '@/store';
 export default {
   namespaced: true,
   state: {
@@ -40,13 +41,6 @@ export default {
     },
   },
   actions: {
-    isCartListAlreadyHaveSelf(store, { GameID, clickPlayIndex }) {
-      return (
-        store.state.betCartList.findIndex(
-          (cartData) => cartData.GameID === GameID && cartData.clickPlayIndex === clickPlayIndex
-        ) > -1
-      );
-    },
     // 获取投注盘口详情API
     callCartUpdateAPI(store, gameIDs) {
       return new Promise((resolve, reject) => {
@@ -107,8 +101,7 @@ export default {
       // 是否在購物車內找到完全相同的自己
       const isSelfJustRemove =
         store.state.betCartList.findIndex(
-          (cartData) =>
-            cartData.GameID === betData.GameID && cartData.clickPlayIndex === betData.clickPlayIndex
+          (cartData) => cartData.GameID === betData.GameID && cartData.wagerPos === betData.wagerPos
         ) > -1;
 
       // 移除相同的game id
@@ -122,13 +115,22 @@ export default {
       // watch 此旗標就知道有新增投注到購物車
       store.state.isAddNewToChart = !store.state.isAddNewToChart;
       let newBetData = JSON.parse(JSON.stringify(betData));
+
+      let betAmount = null;
+      if (
+        rootStore.state.Setting.UserSetting.defaultAmount.type === 1 ||
+        rootStore.state.Setting.UserSetting.defaultAmount.type === 2
+      ) {
+        betAmount = parseInt(rootStore.state.Setting.UserSetting.defaultAmount.amount);
+      }
       newBetData = {
         ...newBetData,
         BetMax: null,
         BetMin: null,
-        betAmount: null,
+        betAmount,
         winAmount: null,
       };
+      console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
       store.commit('pushCart', newBetData);
       store.dispatch('callCartUpdateAPI', [betData.GameID]);

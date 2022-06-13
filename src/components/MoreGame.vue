@@ -1,82 +1,94 @@
 <template>
-  <div id="MoreGame" :class="isMobileClass">
+  <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
-      <div class="teamName">{{ getTeamData.home }}</div>
+      <div class="teamName">{{ getteamData.home }}</div>
       <div class="teamVS">vs</div>
-      <div class="teamName">{{ getTeamData.away }}</div>
+      <div class="teamName">{{ getteamData.away }}</div>
       <img
         class="closeBtn"
         src="@/assets/img/pc/btn_close_w.svg"
         @click="$store.commit('MoreGame/closeMoreGameList')"
       />
     </div>
-    <div class="GameInfoBlock"> </div>
-    <div class="MoreGameBlock">
+    <div class="GameInfoBlock" v-if="gameTypeID === 2">
+      <!-- 比分板區塊 -->
+      <Soccer v-if="selectCatID === 1"></Soccer>
+      <BaseBall
+        v-if="
+          selectCatID === 4 ||
+          selectCatID === 12 ||
+          selectCatID === 13 ||
+          selectCatID === 14 ||
+          selectCatID === 101
+        "
+      ></BaseBall>
+      <BasketBall
+        v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
+      ></BasketBall>
+    </div>
+    <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
-          <i :class="arrowIconJudge" />
+          <i :class="collapseAllArrowIconJudge" @click="collapseAllIconClick" />
         </div>
-        <div class="filterTab"> 全部 </div>
+        <div class="menuTab" v-for="(menuData, menuIndex) in menuTabs" :key="menuIndex">
+          <div @click="selectItemKey = menuData.ItemKey">{{ menuData.ItemName }}</div>
+          <div class="active" v-if="menuData.ItemKey === selectItemKey"></div>
+        </div>
       </div>
       <div class="MoreGameList">
-        <template v-for="(menuData, menuKey) in mergeMenuHeadData">
-          <div class="MoreGameListOutRow" :key="menuKey">
-            <div class="MoreGameListRowTitle" @click="titleClickHandler(menuData.WagerGrpID)">
+        <template v-for="(gameData, gameIndex) in FinalGameList">
+          <div class="MoreGameListOutRow" :key="gameIndex">
+            <div class="MoreGameListRowTitle" @click="titleClickHandler(gameData.ItemName)">
               <div class="leftArrowBlock">
                 <i
-                  :class="
-                    titleArrowIconJudge(
-                      $store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1
-                    )
-                  "
+                  :class="titleArrowIconJudge(collapseItemNames.indexOf(gameData.ItemName) === -1)"
                 />
               </div>
               <div class="MoreGameListRowTitleText">
-                {{ menuData.WagerGrpName }}
+                {{ gameData.ItemName }}
               </div>
             </div>
-            <template v-for="(wagerTypeKey, wagerIndex) in Object.keys(menuData.WagerTypeIDs)">
-              <!-- vIF   隱藏空Odd
-                   vShow collapse隱藏 -->
-              <div
-                v-if="menuData.WagerTypeIDs[wagerTypeKey].OddList.length !== 0"
-                v-show="$store.state.MoreGame.collapseGrpIDs.indexOf(menuData.WagerGrpID) === -1"
-                class="MoreGameListInRow"
-                :key="menuKey + wagerIndex"
-              >
-                <div class="wagerLabelBlock">
-                  {{ wagerTypeKey }}
-                </div>
-                <div class="wagerPlayList">
-                  <div
-                    class="wagerPlayRow"
-                    v-for="(oddData, oddKey) in menuData.WagerTypeIDs[wagerTypeKey].OddList"
-                    :key="menuKey + wagerIndex + oddKey"
-                  >
-                    <div
-                      class="betBlock"
-                      v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
-                        TeamData.SetFlag,
-                        menuData.WagerTypeIDs[wagerTypeKey].WagerTypeIds[0],
-                        oddData
-                      )"
-                      :class="betBlockSelectCSS(betIndex, oddData)"
-                      :key="menuKey + wagerIndex + betIndex"
-                      @click="goBet(betIndex, betData, oddData)"
-                    >
-                      <div class="betBlockTop">
-                        {{ betData.showMethod }}
-                      </div>
-                      <div class="betBlockBottom">
-                        <Odd
-                          :OddValue="betData.showOdd"
-                          :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
-                        />
+
+            <template v-for="(leagueData, leagueIndex) in gameData.List">
+              <template v-if="collapseItemNames.indexOf(gameData.ItemName) === -1">
+                <template v-for="(renderHeadData, renderHeadIndex) in leagueData.RenderHead">
+                  <div class="MoreGameListInRow" :key="gameIndex + leagueIndex + renderHeadIndex">
+                    <div class="wagerLabelBlock">
+                      {{ renderHeadData.HeadShowName }}
+                    </div>
+                    <div class="wagerPlayList">
+                      <div
+                        class="wagerPlayRow"
+                        v-for="(oddData, oddIndex) in renderHeadData.Odds"
+                        :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex"
+                      >
+                        <div
+                          class="betBlock"
+                          v-for="(betData, betIndex) in $SportLib.oddDataToMorePlayData(
+                            teamData.SetFlag,
+                            oddData.WagerTypeID,
+                            oddData
+                          )"
+                          :class="betBlockSelectCSS(betData.wagerPos, oddData)"
+                          :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex + betIndex"
+                          @click="goBet(betData, oddData, leagueData)"
+                        >
+                          <div class="betBlockTop">
+                            {{ betData.showMethod }}
+                          </div>
+                          <div class="betBlockBottom">
+                            <Odd
+                              :OddValue="betData.showOdd"
+                              :UniqueID="`MoreBet-${oddData.GameID}-${betIndex}`"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </template>
+              </template>
             </template>
           </div>
         </template>
@@ -88,142 +100,89 @@
 
 <script>
   import Odd from '@/components/Odd';
+  import BaseBall from '@/components/LiveBoard/BaseBall';
+  import Soccer from '@/components/LiveBoard/Soccer';
+  import BasketBall from './LiveBoard/BasketBall.vue';
   export default {
     name: 'MoreGame',
     components: {
       Odd,
+      Soccer,
+      BaseBall,
+      BasketBall,
     },
     data() {
       return {
-        isCollapse: false,
+        collapseItemNames: [],
+        selectItemKey: null,
+        intervalEvent: null,
       };
+    },
+    created() {
+      // 定時更新遊戲賠率
+      this.intervalEvent = setInterval(() => {
+        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
+      }, 6000);
+    },
+    beforeDestroy() {
+      clearInterval(this.intervalEvent);
     },
     computed: {
       moreGameData() {
-        return this.$store.state.MoreGame.moreGameData;
+        if (Object.keys(this.$store.state.MoreGame.moreGameData).length === 0) {
+          return null;
+        } else {
+          return this.$store.state.MoreGame.moreGameData;
+        }
       },
-      TeamData() {
-        return this.moreGameData.TeamData;
+      loading() {
+        return this.$store.state.MoreGame.loading;
       },
-      MenuHead() {
-        return this.moreGameData.MenuHead;
+      GameList() {
+        if (this.moreGameData === null) {
+          return [];
+        }
+        return this.moreGameData.List;
       },
-      CatID() {
-        return this.moreGameData.CatID;
+      gameTypeID() {
+        return this.$store.state.Game.selectGameType;
       },
-      getTeamData() {
+      selectCatID() {
+        return this.$store.state.Game.selectCatID;
+      },
+      teamData() {
+        return this.$store.state.MoreGame.teamData;
+      },
+      menuTabs() {
+        if (this.moreGameData === null) {
+          return [];
+        }
+        return this.moreGameData.Menu;
+      },
+      MoreGameStoreUpdateFlag() {
+        return this.$store.state.MoreGame.MoreGameStoreUpdateFlag;
+      },
+      getteamData() {
         let home = '';
         let away = '';
-        if (!this.TeamData.SetFlag) {
-          home = this.TeamData.AwayTeamStr;
-          away = this.TeamData.HomeTeamStr;
+        if (!this.teamData.SetFlag) {
+          home = this.teamData.AwayTeamStr;
+          away = this.teamData.HomeTeamStr;
         } else {
-          home = this.TeamData.HomeTeamStr;
-          away = this.TeamData.AwayTeamStr;
+          home = this.teamData.HomeTeamStr;
+          away = this.teamData.AwayTeamStr;
         }
         return {
           home,
           away,
         };
       },
-      arrowIconJudge() {
-        if (this.isCollapse) {
+      collapseAllArrowIconJudge() {
+        if (this.FinalGameList.length === this.collapseItemNames.length) {
           return 'el-icon-arrow-down';
         } else {
           return 'el-icon-arrow-up';
         }
-      },
-      dealGrpHead() {
-        return this.MenuHead.reduce((sum, it, index) => {
-          if (sum[it.WagerGrpName] === undefined) {
-            sum[it.WagerGrpName] = {
-              WagerGrpName: it.WagerGrpName,
-              WagerGrpID: it.WagerGrpIDs[0],
-              WagerTypeIDs: it.WagerTypeIDs,
-            };
-          } else {
-            const mergeData = [...sum[it.WagerGrpName].WagerTypeIDs, ...it.WagerTypeIDs];
-            sum[it.WagerGrpName].WagerTypeIDs = mergeData;
-          }
-          return sum;
-        }, {});
-      },
-      mergeMenuHeadData() {
-        const dealWagerHead = Object.keys(this.dealGrpHead)
-          .map((key) => {
-            return {
-              ...this.dealGrpHead[key],
-            };
-          })
-          .map((wagerGrpData) => {
-            const newWagerTypeIDs = wagerGrpData.WagerTypeIDs.reduce((sum, WagerTypeId) => {
-              const WagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
-                [WagerTypeId],
-                wagerGrpData.WagerGrpID,
-                true
-              );
-              if (sum[WagerTypeLabel] === undefined) {
-                sum[WagerTypeLabel] = {
-                  WagerTypeIds: [WagerTypeId],
-                  OddList: [],
-                };
-              } else {
-                if (sum[WagerTypeLabel].WagerTypeIds.indexOf(WagerTypeId) === -1) {
-                  sum[WagerTypeLabel].WagerTypeIds.push(WagerTypeId);
-                }
-              }
-              return sum;
-            }, {});
-            return {
-              ...wagerGrpData,
-              WagerTypeIDs: newWagerTypeIDs,
-            };
-          });
-
-        this.TeamData.Wager.forEach((wagerData) => {
-          const headGrpIndex = dealWagerHead.findIndex(
-            (headData) => headData.WagerGrpID === wagerData.WagerGrpID
-          );
-          if (headGrpIndex > -1) {
-            const wagerTypeLabel = this.$SportLib.WagerTypeIDandWagerGrpIDtoString(
-              [wagerData.WagerTypeID],
-              wagerData.WagerGrpID,
-              true
-            );
-            dealWagerHead[headGrpIndex].WagerTypeIDs[wagerTypeLabel].OddList.push(
-              ...wagerData.Odds.filter((it) => {
-                return it.Status === 1;
-              }).map((it) => {
-                it.WagerGrpID = wagerData.WagerGrpID;
-                it.WagerTypeID = wagerData.WagerTypeID;
-                return it;
-              })
-            );
-          } else {
-            if (!wagerData?.isNoData) {
-              console.error(`More Game 錯誤 ${wagerData.WagerGrpID} 無法對應head grp`);
-            }
-          }
-        });
-
-        const finallyData = dealWagerHead.reduce((sum, grpData) => {
-          let isValid = false;
-          Object.keys(grpData.WagerTypeIDs).every((wagerDataKey) => {
-            if (grpData.WagerTypeIDs[wagerDataKey].OddList.length !== 0) {
-              isValid = true;
-              return false;
-            } else {
-              return true;
-            }
-          });
-          if (isValid) {
-            sum.push(grpData);
-          }
-          return sum;
-        }, []);
-        console.log('dealWagerHead:', finallyData);
-
-        return finallyData;
       },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
@@ -234,8 +193,102 @@
         }
         return '';
       },
+      FinalGameList() {
+        if (this.GameList.length === 0) {
+          return [];
+        }
+        return this.GameList.filter((gameData) => {
+          return gameData.ItemKeys.indexOf(this.selectItemKey) > -1;
+        }).map((gameData) => {
+          const newList = gameData.List.map((LeagueData) => {
+            // 排列出Wager底下所有Odd
+            const Odds = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
+              const wagerOdds = WagerData.Odds.map((oddData) => {
+                const WagerTypeID = WagerData.WagerTypeID;
+                const headWagerData = gameData.BestHead.find((headData) => {
+                  const findIndex = headData.WagerTypeIDs.findIndex(
+                    (typeID) => typeID === WagerTypeID
+                  );
+                  if (findIndex > -1) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+                if (headWagerData) {
+                  return {
+                    ...oddData,
+                    WagerGrpID: WagerData.WagerGrpID,
+                    WagerTypeID,
+                    ShowName: gameData.ItemName + headWagerData.WagerTypeName,
+                  };
+                } else {
+                  // TODO List出現的數據 head卻沒有
+                  return {
+                    empty: true,
+                  };
+                }
+              });
+              return [...sum, ...wagerOdds];
+            }, []).filter((it) => it?.empty === undefined);
+
+            // 組成渲染head
+            let RenderHead = JSON.parse(JSON.stringify(gameData.BestHead)).map((it) => {
+              return {
+                ...it,
+                Odds: [],
+                HeadShowName: gameData.ItemName + it.WagerTypeName,
+              };
+            });
+
+            // 將Odd資料組進渲染head
+            Odds.forEach((OddData) => {
+              const oddWagerTypeID = OddData.WagerTypeID;
+              RenderHead.every((renderHeadData) => {
+                const isFind = renderHeadData.WagerTypeIDs.find((ID) => ID === oddWagerTypeID);
+                if (isFind && OddData.Status !== -1) {
+                  renderHeadData.Odds.push(OddData);
+                  return false;
+                }
+                return true;
+              });
+            });
+
+            RenderHead = RenderHead.filter((renderHeadData) => renderHeadData.Odds.length !== 0);
+
+            return {
+              ...LeagueData,
+              Team: LeagueData.Team[0],
+              RenderHead,
+            };
+          });
+          return {
+            ...gameData,
+            List: newList,
+          };
+        });
+      },
+    },
+    watch: {
+      MoreGameStoreUpdateFlag() {
+        this.resetData();
+      },
+      menuTabs() {
+        if (this.menuTabs.length !== 0) {
+          this.selectItemKey = this.menuTabs[0].ItemKey;
+        }
+      },
+      selectItemKey() {
+        this.collapseItemNames.length = 0;
+        this.collapseItemNames = [];
+      },
     },
     methods: {
+      resetData() {
+        this.collapseItemNames.length = 0;
+        this.collapseItemNames = [];
+        this.selectItemKey = null;
+      },
       titleArrowIconJudge(isCollapse) {
         if (!isCollapse) {
           return 'el-icon-arrow-down';
@@ -244,26 +297,35 @@
         }
       },
       titleClickHandler(WagerGrpID) {
-        const collapseIndex = this.$store.state.MoreGame.collapseGrpIDs.indexOf(WagerGrpID);
+        const collapseIndex = this.collapseItemNames.indexOf(WagerGrpID);
         if (collapseIndex > -1) {
-          this.$store.state.MoreGame.collapseGrpIDs.splice(collapseIndex, 1);
+          this.collapseItemNames.splice(collapseIndex, 1);
         } else {
-          this.$store.state.MoreGame.collapseGrpIDs.push(WagerGrpID);
+          this.collapseItemNames.push(WagerGrpID);
         }
       },
-      betBlockSelectCSS(clickPlayIndex, { GameID }) {
+      betBlockSelectCSS(wagerPos, { GameID }) {
         const compareData = this.betCartList.find((cartData) => {
           return cartData.GameID === GameID;
         });
 
-        if (compareData && compareData.clickPlayIndex === clickPlayIndex) {
+        if (compareData && compareData.wagerPos === wagerPos) {
           return 'betBlockSelect';
         } else {
           return '';
         }
       },
-      goBet(clickPlayIndex, betData, oddData) {
-        console.log(betData.wagerPos);
+      collapseAllIconClick() {
+        if (this.FinalGameList.length === this.collapseItemNames.length) {
+          this.collapseItemNames.length = 0;
+          this.collapseItemNames = [];
+        } else {
+          this.collapseItemNames.length = 0;
+          this.collapseItemNames = this.FinalGameList.map((it) => it.ItemName);
+        }
+      },
+      goBet(betData, oddData, leagueData) {
+        this.$emit('AddToCart');
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID
@@ -271,22 +333,22 @@
 
         const betInfoData = {
           OriginShowOdd: parseFloat(betData.showOdd),
-          clickPlayIndex,
           wagerPos: betData.wagerPos,
           GameTypeID: selectGameTypeID,
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,
-          CatID: this.CatID,
+          CatID: leagueData.CatID,
+          CatNameStr: leagueData.CatNameStr,
           LeagueNameStr: this.moreGameData.LeagueNameStr,
-          HomeTeamStr: this.getTeamData.home,
-          AwayTeamStr: this.getTeamData.away,
+          HomeTeamStr: this.getteamData.home,
+          AwayTeamStr: this.getteamData.away,
           WagerTypeID: oddData.WagerTypeID,
           WagerGrpID: oddData.WagerGrpID,
-          EvtID: this.TeamData.EvtID,
-          EvtStatus: this.TeamData.EvtStatus,
+          EvtID: this.teamData.EvtID,
+          EvtStatus: this.teamData.EvtStatus,
+          SetFlag: this.teamData.SetFlag,
           ...oddData,
         };
-        console.log('betInfoData:', betInfoData);
         this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
     },
@@ -300,11 +362,11 @@
     border-right: 2px solid #bbb;
     background-color: #eeeeee;
     $gameHeaderHeight: 35px;
-    $gameInfoHeight: 185px;
+    $gameInfoHeight: 150px;
     $gameChatHeight: 60px;
 
     &.mobile {
-      width: 100%;
+      min-width: 370px;
       border: 0;
     }
     .MoreGameHeader {
@@ -336,7 +398,8 @@
       }
     }
     .GameInfoBlock {
-      height: $gameInfoHeight;
+      height: fit-content;
+      min-height: $gameInfoHeight;
     }
     .leftArrowBlock {
       width: 50px;
@@ -360,6 +423,21 @@
         color: white;
         display: flex;
         align-items: center;
+        .menuTab {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          margin-right: 20px;
+          width: fit-content;
+          flex-wrap: wrap;
+
+          .active {
+            width: 100%;
+            height: 3px;
+            background-color: #caffed;
+            margin-top: 2px;
+          }
+        }
       }
       .MoreGameList {
         overflow-y: auto;
@@ -436,6 +514,9 @@
           }
         }
       }
+    }
+    .MoreGameBlockWithOutGameInfo {
+      height: calc(100% - $gameHeaderHeight - $gameChatHeight);
     }
     .GameChatBlock {
       height: $gameChatHeight;

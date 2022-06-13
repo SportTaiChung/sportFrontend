@@ -117,7 +117,6 @@
             isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
             lastClickInput = 2;
           "
-          @blur="fillEachWinAmountBlurHandler"
         />
         <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
       </div>
@@ -133,11 +132,18 @@
       <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
-          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
-          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
-          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+          <div
+            class="chip"
+            v-for="(chip, index) in currentChips"
+            :style="getChipImage(index)"
+            @click="onChipClick(index)"
+            :key="index"
+          ></div>
         </div>
-        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+        <i
+          class="el-icon-arrow-right"
+          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
+        ></i>
       </div>
 
       <div class="totalRow">
@@ -202,11 +208,18 @@
       <div class="betPlay_chip" v-if="!isMobileMode && !isLockMode">
         <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
         <div class="chips">
-          <div class="chip" :style="chipPosStyle(0)" @click="onChipClick(0)"></div>
-          <div class="chip" :style="chipPosStyle(1)" @click="onChipClick(1)"></div>
-          <div class="chip" :style="chipPosStyle(2)" @click="onChipClick(2)"></div>
+          <div
+            class="chip"
+            v-for="(chip, index) in currentChips"
+            :style="getChipImage(index)"
+            @click="onChipClick(index)"
+            :key="index"
+          ></div>
         </div>
-        <i class="el-icon-arrow-right" @click="chipPageIndex < maxChipPage && chipPageIndex++"></i>
+        <i
+          class="el-icon-arrow-right"
+          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
+        ></i>
       </div>
 
       <div class="totalRow">
@@ -302,7 +315,6 @@
         // 目前打開小鍵盤的 購物車item index
         currShowKeyboardIndex: -1,
 
-        chipsData: [1, 5, 10, 100, 500, 1000, 2000, 5000, 10000],
         chipPageIndex: 0,
         chipsNumPerPage: 3,
 
@@ -322,9 +334,20 @@
       }, 10000);
     },
     watch: {
+      // 有新增投注到購物車事件
       isAddNewToChart() {
         this.$nextTick(() => {
           this.$refs.BetViewList.scrollTop = 999999;
+          this.isLockMode = false;
+          this.reCalcBetChart();
+          if (
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 1 ||
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 2
+          ) {
+            this.strayBetAmount = parseInt(
+              this.$store.state.Setting.UserSetting.defaultStrayAmount.amount
+            );
+          }
         });
       },
       groupIndex: {
@@ -353,7 +376,6 @@
           // 驅動過關賠率計算
           this.reCalcStrayBetChart();
           this.$emit('betCartListChanged', this.showBetCartList);
-          this.isLockMode = false;
         },
       },
       strayOdd() {
@@ -369,11 +391,17 @@
       currShowKeyboardIndex(index) {
         this.isShowBetKB = index === -1;
       },
+      chipsData() {
+        this.chipPageIndex = 0;
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
     },
     computed: {
+      settings() {
+        return this.$store.state.Setting.UserSetting;
+      },
       showBetCartList() {
         return this.$store.getters['BetCart/showBetCartList'];
       },
@@ -390,18 +418,25 @@
         return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length > 1;
       },
       isShowStrayCantPlayTip() {
-        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length <= 1;
+        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length === 1;
       },
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
+      chipsData() {
+        const preferChips = this.settings.preferChips;
+        if (preferChips.length > 0 && preferChips.length <= 6) {
+          return this.$SportLib.chipsData.filter((chip) => preferChips.includes(chip.value));
+        }
+        return this.$SportLib.chipsData;
+      },
       maxChipPage() {
-        return Math.trunc(this.chipsData.length / this.chipsNumPerPage) - 1;
+        return Math.ceil(this.chipsData.length / this.chipsNumPerPage);
       },
       currentChips() {
         return this.chipsData.slice(
           this.chipPageIndex * this.chipsNumPerPage,
-          (this.chipPageIndex + 1) * this.chipsNumPerPage
+          this.chipPageIndex * this.chipsNumPerPage + 3
         );
       },
     },
@@ -472,11 +507,11 @@
             cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
           );
         });
+
+        this.fillEachWinAmountBlurHandler();
       },
       strayBetAmountInputChangeHandler() {
-        console.log('wtf1', this.strayBetAmount);
         this.strayBetAmount = parseFloat(this.strayBetAmount.replace(/[^\d]/g, ''));
-        console.log('wtf2', this.strayBetAmount);
         if (isNaN(this.strayBetAmount)) {
           this.strayBetAmount = 0;
         }
@@ -567,8 +602,7 @@
           const WagerPos = cartData.wagerPos;
           const HdpPos = cartData.HdpPos;
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
-          const oddKey = cartData.playData.playMethodData.showOdd[[cartData.clickPlayIndex]];
-          const OddValue = cartData.playData[oddKey];
+          const OddValue = this.$SportLib.cartDataToDisplayData(cartData).showOdd;
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
           if (cartData.BetMax === null && cartData.BetMin === null) {
             errorMessage = '尚未收到注格資訊,請稍後再試';
@@ -593,7 +627,7 @@
               CatId,
               WagerString,
               Amount: parseFloat(cartData.betAmount),
-              AcceptBetter: this.$store.state.Setting.acceptBetter,
+              AcceptBetter: this.$store.state.Setting.UserSetting.acceptBetter,
               BetType: 1,
             };
             list.push(listItem);
@@ -604,7 +638,7 @@
                 CatId,
                 WagerString,
                 Amount: parseFloat(strayBetAmount),
-                AcceptBetter: this.$store.state.Setting.acceptBetter,
+                AcceptBetter: this.$store.state.Setting.UserSetting.acceptBetter,
                 BetType: 99,
               };
               list.push(listItem);
@@ -632,7 +666,12 @@
         if (checkRes === null) {
           return;
         }
-        if (this.isLockMode) {
+
+        if (this.isLockMode || this.settings.showBetConfirm === false) {
+          // 多個投注時取最大的
+          this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
+            ...checkRes.map((checkRes) => checkRes.Amount)
+          );
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -652,7 +691,8 @@
         if (checkRes === null) {
           return;
         }
-        if (this.isLockMode) {
+        if (this.isLockMode || this.settings.showBetConfirm === false) {
+          this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -675,11 +715,11 @@
       onCartListItemKeyboardShow(index) {
         this.currShowKeyboardIndex = index;
       },
-      chipPosStyle(chipIndex) {
-        const n = this.chipsNumPerPage;
-        const x = 57 * (chipIndex + this.chipPageIndex * n);
+      getChipImage(pos) {
+        const chip = this.currentChips[pos];
+        const img = chip.img;
         return {
-          'background-position-x': -x + 'px',
+          'background-image': `url(${require('@/assets/img/pc/chips/' + img)})`,
         };
       },
       fillEachBetAmountBlurHandler() {
@@ -697,7 +737,9 @@
         this.lastBlurInput = lastBlurInputData;
       },
       onChipClick(index) {
-        const value = this.currentChips[index] > 0 ? this.currentChips[index] : null;
+        const chip = this.currentChips[index];
+        if (!chip) return;
+        const value = chip.value > 0 ? chip.value : null;
         this.processLastBlurInput(value);
       },
       keyBoardAddEvent(addNum) {
@@ -985,6 +1027,7 @@
         align-items: center;
         border-bottom: 1px solid #888;
         padding-bottom: 5px;
+        overflow: hidden;
 
         i {
           color: 000;
@@ -1014,7 +1057,7 @@
           .chip {
             cursor: pointer;
             flex: 0 0 57px;
-            background: url('~@/assets/img/pc/icon_chip.png') no-repeat;
+            background-repeat: no-repeat;
             background-size: auto 100%;
             width: 57px;
             height: 37px;
@@ -1025,11 +1068,6 @@
             }
             &:active {
               transform: translateY(-4px) scale(1.05);
-            }
-
-            $chip-width: 57px;
-            &:nth-child(2n + 1) {
-              background-position-x: -57px;
             }
           }
         }

@@ -31,31 +31,45 @@
                 <!-- 賽事 -->
                 <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
                   <div class="team-block">
-                    <!-- 判斷主客場對調 -->
-                    <template v-if="!teamData.SetFlag">
+                    <!-- 只需要顯示一個隊伍 -->
+                    <template v-if="teamData.AwayTeamStr === '.'">
                       <div>
-                        <div class="team">{{ teamData.AwayTeamStr }}</div>
-                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                        <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                       </div>
                     </template>
+                    <template v-else-if="teamData.HomeTeamStr === '.'">
+                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                    </template>
                     <template v-else>
-                      <div class="team">{{ teamData.HomeTeamStr }}</div>
-                      <div class="team">{{ teamData.AwayTeamStr }}</div>
+                      <!-- 判斷主客場對調 -->
+                      <template v-if="!teamData.SetFlag">
+                        <div class="team">{{ teamData.AwayTeamStr }}</div>
+                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                      </template>
+                      <template v-else>
+                        <div class="team">{{ teamData.HomeTeamStr }}</div>
+                        <div class="team">{{ teamData.AwayTeamStr }}</div>
+                      </template>
                     </template>
 
                     <!-- 是否顯示和局 -->
                     <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
-                  </div>
 
-                  <!-- 時間 -->
-                  <div class="time" v-if="rowIndex === 0">
-                    {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                    {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                  </div>
-
-                  <!-- 收藏 -->
-                  <div class="rightFavoriteBlock">
-                    <div class="star"></div>
+                    <!-- 時間 & 收藏按鈕 -->
+                    <div class="info-timeStarRow" v-if="rowIndex === 0">
+                      <!-- 時間 -->
+                      <div class="time">
+                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                      </div>
+                      <!-- 收藏 -->
+                      <div
+                        class="star"
+                        :class="starCSSJudge(teamData.EvtID)"
+                        @click="addFavoriteHandler(teamData.EvtID)"
+                      >
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -95,10 +109,36 @@
         isMounted: false,
       };
     },
+    mounted() {
+      this.isMounted = true;
+      this.$refs.collapseContainer.addEventListener('transitionstart', (e) => {
+        if (e.propertyName === 'height') {
+          // console.log('start');
+        }
+      });
+      this.$refs.collapseContainer.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'height') {
+          // console.log('end');
+          if (!this.isExpanded) {
+            this.$refs.collapseTarget.style.display = 'none';
+          }
+        }
+      });
+    },
     methods: {
       getCurrentHeight() {
         const { thead, collapseTarget } = this.$refs;
         return thead.offsetHeight + collapseTarget.offsetHeight;
+      },
+      starCSSJudge(EvtID) {
+        if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
+          return 'active';
+        } else {
+          return '';
+        }
+      },
+      addFavoriteHandler(EvtID) {
+        this.$store.commit('Setting/addFavorites', EvtID);
       },
     },
     computed: {
@@ -113,27 +153,6 @@
       hasMoreGame() {
         return this.selectWagerTypeKey === 1;
       },
-    },
-    mounted() {
-      this.isMounted = true;
-      this.$refs.collapseContainer.addEventListener('transitionstart', (e) => {
-        if (e.propertyName === 'height') {
-          // console.log('start');
-        }
-      });
-      this.$refs.collapseContainer.addEventListener('transitionend', (e) => {
-        if (e.propertyName === 'height') {
-          // console.log('end');
-          if (!this.isExpanded) {
-            this.$refs.collapseTarget.style.display = 'none';
-          } else {
-            // this.$refs.collapseContainer.style.height = 'auto';
-          }
-        }
-      });
-      if (!this.isExpanded) {
-        this.$refs.collapseTarget.style.display = 'none';
-      }
     },
     watch: {
       isExpanded(isExpanded) {
@@ -267,15 +286,32 @@
             white-space: nowrap;
             text-overflow: ellipsis;
           }
-        }
-        .time {
-          color: #888888;
-          font-size: $font-size * 0.75;
-          line-height: 1;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          margin: 0.2rem 0;
+          .info-timeStarRow {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+
+            .time {
+              color: #888888;
+              font-size: 0.75rem;
+              line-height: normal;
+            }
+            .star {
+              width: $font-size * 1.25;
+              height: $font-size * 1.25;
+              background: url('~@/assets/img/common/icon_star.svg') no-repeat center bottom;
+              background-size: 100% auto;
+              background-position: center bottom;
+              margin: auto 15px auto auto;
+              display: block;
+              cursor: pointer;
+
+              &:active,
+              &.active {
+                background-position: center top;
+              }
+            }
+          }
         }
       }
     }

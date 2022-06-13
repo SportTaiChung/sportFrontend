@@ -1,41 +1,4 @@
 /**
- * CatID 轉文本
- * @param {Number} val
- * @returns String
- */
-export function CatIDtoShowLabel(val) {
-  if (val === 1) {
-    return '足球';
-  } else if (val === 5) {
-    return '美足';
-  } else if (val === 21) {
-    return '乒乓球';
-  } else if (val === 22) {
-    return '羽毛球';
-  } else if (val === 31) {
-    return '世界杯';
-  } else if (val === 32) {
-    return '歐洲杯';
-  } else if (val === 4 || val === 12 || val === 13 || val === 14 || val === 101) {
-    return '棒球';
-  } else if (val === 102 || val === 3 || val === 16) {
-    return '籃球';
-  } else if (val === 55) {
-    return '网球';
-  } else if (val === 72) {
-    return '赛马赛狗';
-  } else if (val === 82) {
-    return '冰球';
-  } else if (val === 83) {
-    return '彩球';
-  } else if (val === 85) {
-    return 'ESports';
-  } else {
-    console.error(`catIDtoString ${val} no found`);
-  }
-}
-
-/**
  * Wager 轉 文本
  * @param {Empty} val
  * @param {Array} WagerTypeIDs WagerTypeIDs
@@ -133,8 +96,6 @@ export const PlayMethodData = {
   HandiCap: {
     name: 'HandiCap',
     typeIdList: [101, 103],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -143,8 +104,6 @@ export const PlayMethodData = {
   BigSmall: {
     name: 'BigSmall',
     typeIdList: [102, 104, 109],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function (oddData) {
       return oddData.OULine;
     },
@@ -153,8 +112,6 @@ export const PlayMethodData = {
   SoloWin: {
     name: 'SoloWin',
     typeIdList: [110, 111],
-    showMethod: [],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd', 'drewPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -163,8 +120,6 @@ export const PlayMethodData = {
   OddEven: {
     name: 'OddEven',
     typeIdList: [105, 113, 126, 129],
-    showMethod: ['topPlayMethod', 'bottomPlayMethod'],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -173,8 +128,6 @@ export const PlayMethodData = {
   Other: {
     name: 'Other',
     typeIdList: [106],
-    showMethod: [],
-    showOdd: ['topPlayOdd', 'bottomPlayOdd'],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -182,6 +135,9 @@ export const PlayMethodData = {
 };
 
 export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = null) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   if (PlayMethodData.HandiCap.typeIdList.indexOf(wagerTypeID) !== -1) {
     // 讓分
     const showHdp = oddData.HomeHdp === '' ? oddData.AwayHdp : oddData.HomeHdp;
@@ -343,6 +299,9 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
 
 // 將oddData轉成用來顯示的資料
 export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   let topPlayMethod = '';
   let topPlayOdd = '';
   let topWagerPos = '';
@@ -445,6 +404,9 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
  *     > single: 只顯示一個Odd
  */
 export function WagerDataToShowData(SetFlag, wagerData, rowIndex) {
+  if (SetFlag === undefined) {
+    console.error('SetFlag is undefined');
+  }
   if (!wagerData?.isNoData) {
     // 關閉狀態
     if (wagerData.Odds[rowIndex] === undefined || wagerData.Odds[rowIndex].Status !== 1) {
@@ -463,8 +425,17 @@ export function cartDataToDisplayData(cartData) {
   let showCutLine = '';
   let showOdd = '';
   const playData = cartData.playData;
+  const SetFlag = cartData.SetFlag;
+  let judgeWagerPos = cartData.wagerPos;
   if (playData.playMethodData.name === 'HandiCap') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       if (playData.topPlayMethod === '') {
         showCutLine = '+' + playData.bottomPlayMethod;
@@ -472,7 +443,7 @@ export function cartDataToDisplayData(cartData) {
         showCutLine = '-' + playData.topPlayMethod;
       }
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       if (playData.topPlayMethod === '') {
         showCutLine = '-' + playData.bottomPlayMethod;
@@ -480,44 +451,66 @@ export function cartDataToDisplayData(cartData) {
         showCutLine = '+' + playData.topPlayMethod;
       }
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
     if (playData.topPlayMethod === '0' || playData.bottomPlayMethod === '0') {
       showCutLine = '0';
     }
   } else if (playData.playMethodData.name === 'BigSmall') {
-    if (cartData.clickPlayIndex === 0) {
+    if (judgeWagerPos === 4) {
       showBetTitle = '大';
       showCutLine = playData.topPlayMethod;
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 5) {
       showBetTitle = '小';
       showCutLine = playData.topPlayMethod;
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'SoloWin') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
       showCutLine = 'PK';
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
       showCutLine = 'PK';
-    } else {
+    } else if (judgeWagerPos === 3) {
       showBetTitle = '和局';
       showOdd = playData.drewPlayOdd;
       showCutLine = '';
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'OddEven') {
-    if (cartData.clickPlayIndex === 0) {
+    if (judgeWagerPos === 4) {
       showBetTitle = '單';
       showOdd = playData.topPlayOdd;
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 5) {
       showBetTitle = '雙';
       showOdd = playData.bottomPlayOdd;
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'Other') {
-    if (cartData.clickPlayIndex === 0) {
+    if (!SetFlag) {
+      if (judgeWagerPos === 1) {
+        judgeWagerPos = 2;
+      } else if (judgeWagerPos === 2) {
+        judgeWagerPos = 1;
+      }
+    }
+    if (judgeWagerPos === 1) {
       showBetTitle = cartData.HomeTeamStr;
       showOdd = playData.topPlayOdd;
       if (cartData.HomeHdp === '') {
@@ -525,7 +518,7 @@ export function cartDataToDisplayData(cartData) {
       } else {
         showCutLine = '+' + cartData.HomeHdp;
       }
-    } else if (cartData.clickPlayIndex === 1) {
+    } else if (judgeWagerPos === 2) {
       showBetTitle = cartData.AwayTeamStr;
       showOdd = playData.bottomPlayOdd;
       if (cartData.AwayHdp === '') {
@@ -533,12 +526,13 @@ export function cartDataToDisplayData(cartData) {
       } else {
         showCutLine = '+' + cartData.AwayHdp;
       }
+    } else {
+      console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);
   }
 
-  const catIDLabel = CatIDtoShowLabel(cartData.CatID);
   let wagerGrpLabel = '';
 
   if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
@@ -550,7 +544,7 @@ export function cartDataToDisplayData(cartData) {
   ) {
     wagerGrpLabel = '- [上半]';
   }
-  const showGameTypeLabel = `${catIDLabel} ${wagerGrpLabel}`;
+  const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 
   return {
     showBetTitle,
@@ -560,3 +554,100 @@ export function cartDataToDisplayData(cartData) {
     wagerGrpLabel,
   };
 }
+
+// 以 catID 取得對應 menu icon
+export function getMenuIconByCatID(catID) {
+  const iconMap = Object.freeze({
+    1: 'icon_sportMenu_soccer.svg',
+    5: 'icon_sportMenu_soccer.svg',
+    21: 'icon_sportMenu_pingpong.svg',
+    22: 'icon_sportMenu_badminton.svg',
+    31: 'icon_sportMenu_worldCup.svg',
+    32: 'icon_sportMenu_UEFA.svg',
+    4: 'icon_sportMenu_baseball.svg',
+    12: 'icon_sportMenu_baseball.svg',
+    13: 'icon_sportMenu_baseball.svg',
+    14: 'icon_sportMenu_baseball.svg',
+    101: 'icon_sportMenu_baseball.svg',
+    102: 'icon_sportMenu_basketball.svg',
+    3: 'icon_sportMenu_basketball.svg',
+    16: 'icon_sportMenu_basketball.svg',
+    55: 'icon_sportMenu_tennis.svg',
+    72: '',
+    82: 'icon_sportMenu_hockey.svg',
+    83: '',
+    85: 'icon_sportMenu_pcgame.svg',
+    '-999': 'icon_sportMenu_star.svg',
+    default: 'icon_sportMenu_soccer.svg',
+  });
+
+  return iconMap[catID] || iconMap.default;
+}
+
+// 以 catID 取得對應 背景圖片順位
+export function getBackgroundIndexByCatId(catID) {
+  const backgroundIndexes = Object.freeze({
+    1: 0,
+    5: 0,
+    21: 9,
+    22: 7,
+    31: null,
+    32: null,
+    4: 2,
+    12: 2,
+    13: 2,
+    14: 2,
+    101: 2,
+    102: 1,
+    3: 1,
+    16: 1,
+    55: 3,
+    72: null,
+    82: 4,
+    83: null,
+    85: 10,
+    '-999': null,
+    default: null,
+  });
+
+  return backgroundIndexes[catID] || backgroundIndexes.default;
+}
+
+export const chipsData = [
+  {
+    value: 1,
+    img: 'icon_chip_01.png',
+  },
+  {
+    value: 5,
+    img: 'icon_chip_02.png',
+  },
+  {
+    value: 10,
+    img: 'icon_chip_03.png',
+  },
+  {
+    value: 100,
+    img: 'icon_chip_04.png',
+  },
+  {
+    value: 500,
+    img: 'icon_chip_05.png',
+  },
+  {
+    value: 1000,
+    img: 'icon_chip_06.png',
+  },
+  {
+    value: 2000,
+    img: 'icon_chip_07.png',
+  },
+  {
+    value: 5000,
+    img: 'icon_chip_08.png',
+  },
+  {
+    value: 10000,
+    img: 'icon_chip_09.png',
+  },
+];

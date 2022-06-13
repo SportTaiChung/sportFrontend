@@ -22,7 +22,7 @@
     </div>
     <el-menu
       ref="elMenu"
-      class="el-menu-vertical-demo color_text"
+      class="el-menu-vertical-demo"
       :default-active="menuActiveString"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"
@@ -39,7 +39,10 @@
       <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
           <template slot="title">
-            <i class="el-icon-basketball"></i>
+            <img
+              :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(menuData.catid))"
+              class="menu-icon"
+            />
             <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
               <span class="nav_text">{{ menuData.catName }}</span>
               <span class="nav_number">{{ menuData.count }}</span>
@@ -62,7 +65,13 @@
           </el-menu-item-group>
         </el-submenu>
         <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
-          <i class="el-icon-basketball"></i>
+          <img
+            :src="
+              require('@/assets/img/common/menuIcon/' +
+                getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
+            "
+            class="menu-icon"
+          />
           <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
             <span class="nav_text">{{ menuData.catName }}</span>
             <span class="nav_number">{{ menuData.count }}</span>
@@ -97,8 +106,11 @@
 
       // 定時更新遊戲賠率
       this.intervalEvent = setInterval(() => {
-        this.$store.dispatch('Game/GetGameDetailSmall');
-        this.$store.dispatch('MoreGame/GetMoreGameDetailSmall');
+        if (this.isFavoriteMode) {
+          this.$store.dispatch('Game/GetFavoriteGameDetailSmall');
+        } else {
+          this.$store.dispatch('Game/GetGameDetailSmall');
+        }
       }, 10000);
 
       // 定時更新遊戲Menu
@@ -130,6 +142,12 @@
       selectCatID() {
         return this.$store.state.Game.selectCatID;
       },
+      isCallGameDetailAPI() {
+        return this.$store.state.Game.isCallGameDetailAPI;
+      },
+      isFavoriteMode() {
+        return this.selectCatID === -999;
+      },
       selectWagerTypeKey() {
         return this.$store.state.Game.selectWagerTypeKey;
       },
@@ -144,14 +162,14 @@
         }
       },
       tableSort() {
-        return this.$store.state.Setting.tableSort;
+        return this.$store.state.Setting.UserSetting.tableSort;
       },
       includeFavoriteMenuList() {
         return [
           {
             Items: [],
             catName: '收藏',
-            count: this.$store.state.Setting.favorites.length,
+            count: this.$store.state.Setting.UserSetting.favorites.length,
             isFavorite: true,
           },
           ...this.gameStore.MenuList,
@@ -159,9 +177,18 @@
       },
     },
     watch: {
+      isCallGameDetailAPI: {
+        handler() {
+          this.callGetGameDetail(
+            this.gameStore.selectCatID,
+            this.gameStore.selectWagerTypeKey,
+            true
+          );
+        },
+      },
       tableSort: {
         handler() {
-          this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+          this.reCallGameDetailAPI();
         },
       },
       selectCatID: {
@@ -180,6 +207,9 @@
       },
     },
     methods: {
+      reCallGameDetailAPI() {
+        this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+      },
       initMenuActiveString() {
         const menuIndex = this.includeFavoriteMenuList.findIndex(
           (it) => it.catid === this.selectCatID
@@ -212,12 +242,16 @@
         if (menuData.LeftMenu.item.length !== 0) {
           catid = menuData.LeftMenu.item[0].catid;
         }
+        // GameType切換的時候, WagerTypeKey 不用送出
         this.callGetGameDetail(catid, null);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
         this.$store.commit('MoreGame/closeMoreGameList');
       },
-      callGetGameDetail(CatID, WagerTypeKey = null) {
-        this.$store.commit('SetLoading', true);
+      // updateBehind如果是true 則不會清除GameList和不會跑loading動畫
+      callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
 
         let postData = null;
         postData = {
@@ -225,43 +259,74 @@
           CatID,
           WagerTypeKey,
         };
-        this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { updateBehind, postData }).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
             this.gameTypeID,
             CatID,
             WagerTypeKey
           );
-          this.$store.commit('SetLoading', false);
+          if (!updateBehind) {
+            this.$store.commit('SetLoading', false);
+          }
         });
+      },
+      // 最愛
+      callGetFavoriteGameDetail() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetFavoriteGameDetail')
+          .then((res) => {})
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
       hideMenuChildren() {
         this.$refs.elMenu.openedMenus.length = 0;
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
-        let clickCatID = null;
-        let clickWagerTypeKey = null;
-        clickCatID = catData.catid;
-        // 父親層級被點
-        if (WagerTypeKey === null) {
-          // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
-          if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
-            this.hideMenuChildren();
-          }
+        this.$emit('ChangeCat');
+        this.$store.commit('Game/changeCatReset');
+        if (!catData.isFavorite) {
+          let clickCatID = null;
+          let clickWagerTypeKey = null;
+          clickCatID = catData.catid;
+          // 父親層級被點
+          if (WagerTypeKey === null) {
+            // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
+            if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
+              this.hideMenuChildren();
+            }
 
-          if (catData.Items.length === 0) {
-            clickWagerTypeKey = 1;
+            if (catData.Items.length === 0) {
+              clickWagerTypeKey = 1;
+            } else {
+              clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            }
           } else {
-            clickWagerTypeKey = catData.Items[0].WagerTypeKey;
+            clickWagerTypeKey = WagerTypeKey;
           }
-        } else {
-          clickWagerTypeKey = WagerTypeKey;
-        }
 
-        this.$store.commit('MoreGame/closeMoreGameList');
-        // 獲取遊戲detail
-        this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 獲取遊戲detail
+          this.callGetGameDetail(clickCatID, clickWagerTypeKey);
+        } else {
+          // 如果點擊選單的收藏
+          this.menuActiveString = '0';
+          this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
+            selectGameType: this.gameTypeID,
+            selectCatID: -999,
+            selectWagerTypeKey: null,
+          });
+          this.hideMenuChildren();
+          this.$store.commit('MoreGame/closeMoreGameList');
+          // 最愛遊戲
+          this.callGetFavoriteGameDetail();
+        }
+      },
+      getMenuIconByCatID(catId) {
+        return this.$SportLib.getMenuIconByCatID(catId);
       },
     },
   };
@@ -341,6 +406,11 @@
           @include hover_color();
         }
       }
+    }
+
+    .menu-icon {
+      width: 18px;
+      height: 18px;
     }
   }
 </style>

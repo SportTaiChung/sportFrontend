@@ -1,109 +1,148 @@
 import { getGameDetail, getGameDetailSmall } from '@/api/Game';
+import rootStore from '@/store';
+
 export default {
   namespaced: true,
   state: {
     isShowMoreGame: false,
-    // CatID
-    // CatNameStr
-    // LeagueID
-    // LeagueNameStr
-    // TeamData
-    // MenuHead
     moreGameData: {},
-    collapseGrpIDs: [],
+    teamData: {},
+    // 監聽此值發生變化,就能知道moreGameData重新被初始化
+    MoreGameStoreUpdateFlag: false,
+    GameScore: [],
+    loading: false,
   },
   mutations: {
     setIsShowMoreGame(state, val) {
       state.isShowMoreGame = val;
     },
-    setMoreGameData(state, val) {
-      state.moreGameData = JSON.parse(JSON.stringify(val));
-    },
     closeMoreGameList(state) {
       state.isShowMoreGame = false;
       state.moreGameData = {};
+      state.teamData = {};
+    },
+    updateMoreGameData(state, { updateOtherStore, updateData }) {
+      if (Object.keys(state.moreGameData).length !== 0 && updateData.length !== 0) {
+        updateData.forEach((newOddData) => {
+          const newGameID = newOddData.GameID;
+          const newWagerGrpID = newOddData.WagerGrpID;
+          const newWagerTypeID = newOddData.WagerTypeID;
+
+          state.moreGameData.List.every((gameData) => {
+            return gameData.List.every((leagueData) => {
+              if (leagueData.LeagueID === newOddData.LeagueID) {
+                const wagerIndex = leagueData.Team[0].Wager.findIndex(
+                  (wagerData) =>
+                    wagerData.WagerGrpID === newWagerGrpID &&
+                    wagerData.WagerTypeID === newWagerTypeID
+                );
+                if (wagerIndex > -1) {
+                  leagueData.Team[0].Wager[wagerIndex].Odds.every((oddData) => {
+                    if (oddData.GameID === newGameID) {
+                      oddData.HdpPos = newOddData.HdpPos;
+                      oddData.HomeHdp = newOddData.HomeHdp;
+                      oddData.AwayHdp = newOddData.AwayHdp;
+                      oddData.HomeHdpOdds = newOddData.HomeHdpOdds;
+                      oddData.AwayHdpOdds = newOddData.AwayHdpOdds;
+                      oddData.OULine = newOddData.OULine;
+                      oddData.OverOdds = newOddData.OverOdds;
+                      oddData.UnderOdds = newOddData.UnderOdds;
+                      oddData.HomeOdds = newOddData.HomeOdds;
+                      oddData.AwayOdds = newOddData.AwayOdds;
+                      oddData.DrewOdds = newOddData.DrewOdds;
+                      oddData.Status = newOddData.Status;
+                      state.teamData.EvtStatus = newOddData.EvtStatus;
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  });
+                }
+                return leagueData.Team[0].Wager;
+              }
+              return true;
+            });
+          });
+        });
+
+        if (updateOtherStore) {
+          // 更新主玩法data
+          rootStore.commit('Game/updateGameList', {
+            updateOtherStore: false,
+            updateData,
+          });
+        }
+      }
     },
   },
   actions: {
-    openMoreGameList(store, collapseData) {
-      store.state.collapseGrpIDs.length = 0;
+    openMoreGameList(store, { teamData }) {
+      store.state.MoreGameStoreUpdateFlag = !store.state.MoreGameStoreUpdateFlag;
+      store.state.teamData = teamData;
       store.commit('setIsShowMoreGame', true);
-      store.commit('setMoreGameData', collapseData);
-      store.dispatch('GetMoreGameDetail', collapseData);
+      store.dispatch('GetMoreGameDetail', teamData);
     },
     // 18-a. (赔率)游戏玩法资讯 更多
-    GetMoreGameDetail(store, collapseData) {
+    GetMoreGameDetail(store, teamData) {
       return new Promise((resolve, reject) => {
+        store.state.moreGameData.length = 0;
+        store.state.moreGameData = [];
+        store.state.loading = true;
         return getGameDetail({
-          CatID: collapseData.CatID,
-          GameType: collapseData.GameType,
           show: 2,
-          EvtIDs: collapseData.TeamData.EvtID,
           moreModel: true,
+          EvtIDs: teamData.EvtID.toString(),
         })
           .then((res) => {
-            if (res.data.List.length !== 0) {
-              const newTeamData = res.data.List[0].Team[0];
-              const newMenuData = res.data.Menu;
-              // 只更新目前打開更多的EvtID狀態
-              if (
-                Object.keys(store.state.moreGameData).length !== 0 &&
-                newTeamData.EvtID === store.state.moreGameData.TeamData.EvtID
-              ) {
-                store.state.moreGameData.TeamData = newTeamData;
-                store.state.moreGameData.MenuHead = newMenuData;
-              }
-            }
+            store.state.moreGameData = res.data;
+            // 比分假資料
+            store.state.GameScore = [
+              {
+                EvtID: 100076899,
+                S1: '',
+                S2: '',
+                S3: '',
+                S4: '',
+                S5: '',
+                S6: '',
+                S7: '',
+                S8: '',
+                S9: '',
+                OT: '',
+                FH: '0:2',
+                SH: '',
+                FinalScore: '',
+                Inings: '',
+                Pans: '',
+                GetFirst: '',
+                GetEnd: '',
+                YCard: '',
+                YCardFH: '',
+                Corner: '',
+                CornerFH: '',
+              },
+            ];
             resolve(res);
           })
-          .catch(reject);
+          .catch(reject)
+          .finally(() => {
+            store.state.loading = false;
+          });
       });
     },
-    GetMoreGameDetailSmall(store) {
+    GetMoreGameDetailSmall(store, EvtID) {
       return new Promise((resolve, reject) => {
         if (Object.keys(store.state.moreGameData).length === 0) {
           resolve();
           return;
         }
         return getGameDetailSmall({
-          CatID: store.state.moreGameData.CatID,
-          GameType: store.state.moreGameData.GameType,
-          moreModel: true,
+          EvtID,
         }).then((res) => {
-          if (Object.keys(store.state.moreGameData).length !== 0 && res.data.length !== 0) {
-            res.data.forEach((newOddData) => {
-              const newGameID = newOddData.GameID;
-              const newWagerGrpID = newOddData.WagerGrpID;
-              const newWagerTypeID = newOddData.WagerTypeID;
-
-              const wagerIndex = store.state.moreGameData.TeamData.Wager.findIndex(
-                (wagerData) =>
-                  wagerData.WagerGrpID === newWagerGrpID && wagerData.WagerTypeID === newWagerTypeID
-              );
-              if (wagerIndex > -1) {
-                store.state.moreGameData.TeamData.Wager[wagerIndex].Odds.every((oddData) => {
-                  if (oddData.GameID === newGameID) {
-                    oddData.HdpPos = newOddData.HdpPos;
-                    oddData.HomeHdp = newOddData.HomeHdp;
-                    oddData.AwayHdp = newOddData.AwayHdp;
-                    oddData.HomeHdpOdds = newOddData.HomeHdpOdds;
-                    oddData.AwayHdpOdds = newOddData.AwayHdpOdds;
-                    oddData.OULine = newOddData.OULine;
-                    oddData.OverOdds = newOddData.OverOdds;
-                    oddData.UnderOdds = newOddData.UnderOdds;
-                    oddData.HomeOdds = newOddData.HomeOdds;
-                    oddData.AwayOdds = newOddData.AwayOdds;
-                    oddData.DrewOdds = newOddData.DrewOdds;
-                    oddData.Status = newOddData.Status;
-                    store.state.moreGameData.TeamData.EvtStatus = newOddData.EvtStatus;
-                    return false;
-                  } else {
-                    return true;
-                  }
-                });
-              }
-            });
-          }
+          store.commit('updateMoreGameData', {
+            updateOtherStore: true,
+            updateData: res.data,
+          });
         });
       });
     },

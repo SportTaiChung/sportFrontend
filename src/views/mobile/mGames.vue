@@ -3,35 +3,25 @@
     <div class="main-layout">
       <!-- HEADER -->
       <MobileHeader
+        ref="header"
         :activeCollapse="activeCollapse"
         @toggleAllCollapse="toggleAllCollapse"
-        @openWagerTypePopup="isShowWagerTypePopup = true"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
       <div class="gameTableContainer">
-        <div style="display: flex">
-          <!-- 左半邊 - 隊伍資訊 -->
-          <div class="left-area">
-            <mGameInfo
-              v-for="(source, index) in GameList"
-              :key="index"
-              :source="source"
-              :isExpanded="isExpanded(index)"
-              @toggleCollapse="toggleCollapse(index)"
-            ></mGameInfo>
-          </div>
-          <!-- 右半邊 - 下注資訊-->
-          <div class="right-area">
-            <mGameBetting
-              v-for="(source, index) in GameList"
-              :key="index"
-              :source="source"
-              :isExpanded="isExpanded(index)"
-              @toggleCollapse="toggleCollapse(index)"
-            ></mGameBetting>
-          </div>
-        </div>
+        <template v-if="GameList.length">
+          <mGameTable
+            v-for="(gameData, index) in GameList"
+            :key="index"
+            :gameData="gameData"
+            :isExpanded="isExpanded(index)"
+            @openWagerTypePopup="isShowWagerTypePopup = true"
+          ></mGameTable>
+        </template>
+        <template v-else>
+          <div class="noData" v-if="!$store.state.isLoading"> NO DATA </div>
+        </template>
       </div>
 
       <!-- FOOTER -->
@@ -65,7 +55,11 @@
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
-      <mMorePanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMorePanel>
+      <mMenuPanel
+        v-show="isShowMorePanel"
+        @closeMorePanel="isShowMorePanel = false"
+        @updateGameDetail="$refs.header.reCallGameDetailAPI()"
+      ></mMenuPanel>
     </div>
   </div>
 </template>
@@ -73,13 +67,13 @@
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
-  import mGameInfo from './components/mGameInfo.vue';
-  import mGameBetting from './components/mGameBetting.vue';
+  import mGameTable from './components/mGameTable.vue';
+
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
-  import mMorePanel from './components/mMorePanel';
+  import mMenuPanel from './components/mMenuPanel';
   import MoreGame from '../../components/MoreGame.vue';
 
   export default {
@@ -87,13 +81,12 @@
     components: {
       MobileHeader,
       MobileFooter,
-      mGameInfo,
-      mGameBetting,
+      mGameTable,
       mGamesBetInfoAll,
       mGamesBetInfoSingle,
       mBetRecordView,
       mWagerTypePopup,
-      mMorePanel,
+      mMenuPanel,
       MoreGame,
     },
     data() {
@@ -108,7 +101,7 @@
     },
     computed: {
       GameList() {
-        return this.$store.getters['Game/gameListFinalData'];
+        return this.gameStore.GameList;
       },
       gameStore() {
         return this.$store.state.Game;
@@ -192,19 +185,12 @@
         overflow: auto;
         flex: 1;
 
-        .left-area {
-          width: 35%;
-          transition: width 600ms ease-out;
-
-          @media screen and(max-width: 480px) {
-            width: calc(200px);
-          }
-        }
-        .right-area {
-          flex: 1;
-          overflow-x: auto;
-          overflow-y: hidden;
-          box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
+        .noData {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
         }
       }
 

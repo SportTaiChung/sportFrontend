@@ -5,9 +5,10 @@
         <div class="dayBlock">{{ TimeCountDown.day }}</div>
         <div class="timeBlock">{{ TimeCountDown.time }}</div>
       </span>
+      <!-- 切換主題色 -->
       <div>
-        <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" />
-        <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" />
+        <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
+        <!-- <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" /> -->
       </div>
     </div>
     <div class="setUp_C">
@@ -16,7 +17,7 @@
         <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
       ></span>
       <el-divider direction="vertical"></el-divider>
-      <span class="yellow_color">聯盟選擇</span>
+      <span class="selectLeague" @click="showLeagueSelectDialog">聯盟選擇</span>
       <el-divider direction="vertical"></el-divider>
       <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
         <span class="el-dropdown-link">
@@ -59,6 +60,34 @@
       <el-switch v-model="quick_bet" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
       <i class="el-icon-question"></i>
     </div>
+
+    <el-dialog
+      class="LeagueSelectDialog"
+      title="聯盟選擇"
+      width="80%"
+      center
+      :visible.sync="isShowLeagueSelectDialog"
+    >
+      <div class="LeagueSelectDialogContent">
+        <div class="ContentHeader">
+          <el-checkbox size="medium" v-model="dialogData.selectAll" @change="dialogSelectAll">
+            全選
+          </el-checkbox>
+          <el-checkbox size="medium" v-model="dialogData.onlyShowCheck">只顯示已勾選</el-checkbox>
+        </div>
+        <div class="leagueItemContentList">
+          <div class="leagueItem" v-for="(leagueData, index) in LeagueListDataFilter" :key="index">
+            <el-checkbox size="medium" v-model="leagueData.isSelect">
+              {{ leagueData.LeagueName }}
+            </el-checkbox>
+          </div>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <div class="cancelBtn" @click="isShowLeagueSelectDialog = false">取 消</div>
+        <div class="submitBtn" type="primary" @click="leagueChooseSelectHandler">提 交</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,6 +112,12 @@
         ],
         currentTime: null,
         countInterval: null,
+        isShowLeagueSelectDialog: false,
+        dialogData: {
+          selectAll: false,
+          onlyShowCheck: false,
+        },
+        LeagueListData: [],
       };
     },
     mounted() {
@@ -103,19 +138,26 @@
         return this.$lib.timeFormatWithOutYY(this.currentTime);
       },
       tableSort() {
-        return this.$store.state.Setting.tableSort;
+        return this.$store.state.Setting.UserSetting.tableSort;
       },
       includePrincipal() {
-        return this.$store.state.Setting.includePrincipal;
+        return this.$store.state.Setting.UserSetting.includePrincipal;
       },
       acceptBetter() {
-        return this.$store.state.Setting.acceptBetter;
+        return this.$store.state.Setting.UserSetting.acceptBetter;
+      },
+      LeagueListDataFilter() {
+        if (this.dialogData.onlyShowCheck) {
+          return this.LeagueListData.filter((it) => it.isSelect);
+        } else {
+          return this.LeagueListData;
+        }
       },
     },
     watch: {
       TimeCountDown() {
         const dateTime = this.TimeCountDown.time;
-        if (dateTime === '12:00:00' || dateTime === '12:00:01') {
+        if (dateTime === '12:00:10') {
           location.reload();
         }
       },
@@ -149,6 +191,14 @@
           this.currentTime = new Date(res.data.replace(/-/g, '/')).getTime();
         });
       },
+      clearLeagueList() {
+        this.isShowLeagueSelectDialog = false;
+        this.dialogData = {
+          selectAll: false,
+          onlyShowCheck: false,
+        };
+        this.LeagueListData = [];
+      },
       changeTheme(value) {
         this.$store.commit('SetThemeInfo', value);
       },
@@ -167,12 +217,129 @@
       checkboxChangeHandler(val) {
         this.$store.commit('Setting/setAcceptBetter', val);
       },
+      showLeagueSelectDialog() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetGameResultLeagues')
+          .then((res) => {
+            this.LeagueListData = res.data.map((it) => {
+              const findIndex = this.$store.state.Game.selectLeagueIDs.findIndex(
+                (id) => id === it.LeagueID
+              );
+              let isSelect = false;
+              if (findIndex > -1) {
+                isSelect = true;
+              }
+              return { ...it, isSelect };
+            });
+
+            this.isShowLeagueSelectDialog = true;
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
+      dialogSelectAll(newVal) {
+        this.LeagueListData.forEach((it) => (it.isSelect = newVal));
+      },
+      leagueChooseSelectHandler() {
+        this.$store.commit(
+          'Game/setSelectLeagueIDs',
+          this.LeagueListData.filter((it) => it.isSelect).map((it) => it.LeagueID)
+        );
+        this.$emit('SelectLeague');
+        this.isShowLeagueSelectDialog = false;
+      },
     },
   };
 </script>
 
 <style lang="scss">
   #GamesSetup {
+    .LeagueSelectDialog {
+      .el-dialog {
+        max-width: 980px;
+        .el-dialog__header {
+          background-color: #3fa381;
+          padding: 8px;
+          .el-dialog__title {
+            color: white !important;
+            font-size: 15px;
+          }
+          .el-dialog__headerbtn {
+            right: 12px;
+            top: 10px;
+            .el-dialog__close {
+              font-size: 20px;
+              color: white;
+            }
+          }
+        }
+        .el-dialog__body {
+          min-height: 300px;
+          .el-checkbox {
+            display: flex;
+            align-items: center;
+            font-size: 19px;
+
+            .el-checkbox__input.is-checked + .el-checkbox__label {
+              color: #606266;
+            }
+          }
+          .ContentHeader {
+            margin-bottom: 25px;
+          }
+        }
+        .el-dialog__body,
+        .el-dialog__footer {
+          background-color: #eee;
+        }
+        .dialog-footer {
+          display: flex;
+          justify-content: center;
+          .cancelBtn,
+          .submitBtn {
+            width: 160px;
+            line-height: 40px;
+            height: 40px;
+            font-size: 15px;
+            text-align: center;
+            cursor: pointer;
+          }
+          .submitBtn {
+            background-color: #2f8be6;
+            &:hover {
+              background-color: #3a9dff;
+            }
+          }
+          .cancelBtn {
+            background-color: #929292;
+            margin-right: 10px;
+            &:hover {
+              background-color: #aaa;
+            }
+          }
+        }
+        .LeagueSelectDialogContent {
+          .ContentHeader {
+            display: flex;
+            justify-content: flex-end;
+          }
+          .leagueItemContentList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            .leagueItem {
+              width: 32%;
+              margin: 0 2px;
+              border: 1px solid #bebebe;
+              padding: 5px;
+              margin-bottom: 2px;
+            }
+          }
+        }
+      }
+    }
   }
 </style>
 
@@ -245,6 +412,10 @@
         i {
           margin-left: 5px;
         }
+      }
+      .selectLeague {
+        color: #ffea01;
+        cursor: pointer;
       }
     }
     .setUp_R {

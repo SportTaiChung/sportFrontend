@@ -58,7 +58,7 @@
           WagerTypeKey: catData.WagerTypeKey,
         };
 
-        this.$store.dispatch('Game/GetGameDetail', postData).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { postData }).then((res) => {
           console.log(
             'getGameDetail by popup',
             this.gameTypeID,

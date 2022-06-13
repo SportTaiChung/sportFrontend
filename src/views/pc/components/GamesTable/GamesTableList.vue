@@ -1,54 +1,58 @@
 <template>
-  <div id="GameTableList" :style="GameTableListStyleJudge()">
-    <template v-if="selectCatID !== null && gameStore.MenuList.length !== 0">
-      <table class="GameTableHeader" :style="GameTableHeaderStyleJudge()">
-        <tbody class="GameTableBody">
-          <td class="FirstCatNameBlock">
-            <div class="leftArrowBlock" @click="clickArrow">
-              <i :class="arrowIconJudge" />
-            </div>
-            {{ selectCatID | CatIDtoString }}
-          </td>
-          <td v-for="(it, key) in showTableHeaderList" :key="key" class="GameTableHeaderOtherTD">
-            <div class="borderWhiteBlock"></div>
-            {{ it.showName }}
-            <div></div>
-          </td>
-          <td v-if="selectWagerTypeKey === 1" class="GameTableHeaderMoreTD">
-            <div class="borderWhiteBlock"></div>
-            更多
-            <div></div>
-          </td>
-        </tbody>
-      </table>
-
-      <DynamicScroller
-        :items="GameList"
-        :min-item-size="10"
-        class="DynamicScroller"
-        ref="virtualList"
+  <div id="GameTableList" :style="GameTableListStyleJudge()" ref="GameTableList">
+    <template v-if="gameStore.MenuList.length !== 0 && GameList.length !== 0">
+      <!-- 收藏夾Header -->
+      <GameTableHeader
+        v-if="isFavoriteMode"
+        CatName="收藏夾"
+        :isCollapse="TopFavoriteIsCollapse()"
+        :isNavMenuCollapse="isNavMenuCollapse"
+        :BestHead="[]"
+        :isShowMoreGameEntryBtn="false"
+        @ArrowClick="TopFavoriteArrowClick()"
       >
-        <template v-slot="{ item, index, active }">
-          <DynamicScrollerItem
-            :item="item"
-            :active="active"
-            :size-dependencies="[item.LeagueID]"
-            :data-index="index"
-            :data-active="active"
+      </GameTableHeader>
+
+      <!-- 正常玩法Header -->
+      <GameTableHeader
+        v-else
+        :isCollapse="GameTableHeaderIsCollapse()"
+        :isNavMenuCollapse="isNavMenuCollapse"
+        :CatName="GameList[0].CatName"
+        :BestHead="GameList[0].Items.BestHead"
+        :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameList[0].CatID)"
+        @ArrowClick="GameTableHeaderTopArrowClick"
+      >
+      </GameTableHeader>
+
+      <div class="ScrollViewContainer">
+        <div class="gameContainer" v-for="(GameData, GameIndex) in GameList" :key="GameIndex">
+          <GameTableHeader
+            v-if="isFavoriteMode && GameData.Items.List.length !== 0"
+            :isCollapse="FavoriteGameTableHeaderIsCollapse(GameData.Items.List)"
+            :isNavMenuCollapse="isNavMenuCollapse"
+            :CatName="GameData.CatName"
+            :BestHead="GameData.Items.BestHead"
+            :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameData.CatID)"
+            @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
           >
+          </GameTableHeader>
+
+          <div v-for="(leagueData, leagueIndex) in GameData.Items.List" :key="leagueIndex">
             <GameCollapse
-              :index="index"
-              :source="item"
-              :isCollapse="activeCollapse.indexOf(item.LeagueID) > -1"
+              :index="leagueIndex"
+              :source="leagueData"
+              :isCollapse="activeCollapse.indexOf(leagueData.LeagueID) > -1"
+              :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameData.CatID)"
               @collapseChange="collapseChangeHandler"
               @AddToCart="$emit('AddToCart')"
             ></GameCollapse>
-          </DynamicScrollerItem>
-        </template>
-      </DynamicScroller>
+          </div>
+        </div>
+      </div>
     </template>
 
-    <template v-if="gameStore.MenuList.length === 0">
+    <template v-if="gameStore.MenuList.length === 0 || GameList.length === 0">
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
           <img alt="" src="@/assets/img/pc/icon_noGame.svg" />
@@ -62,14 +66,13 @@
 <script>
   import mixin from './GamesTableMixin';
   import GameCollapse from './GameCollapse.vue';
-  import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
+  import GameTableHeader from './GameTableHeader.vue';
   export default {
     mixins: [mixin],
     name: 'GameTableList',
     components: {
-      DynamicScroller,
-      DynamicScrollerItem,
       GameCollapse,
+      GameTableHeader,
     },
     props: {
       isNavMenuCollapse: {
@@ -81,6 +84,7 @@
       return {
         itemComponent: GameCollapse,
         activeCollapse: [],
+        collapseTimeoutEvent: null,
       };
     },
     created() {},
@@ -88,24 +92,125 @@
       selectCatID() {
         return this.gameStore.selectCatID;
       },
-      showTableHeaderList() {
-        return this.$store.getters['Game/showTableHeaderList'];
+      selectGameType() {
+        return this.gameStore.selectGameType;
+      },
+      isFavoriteMode() {
+        return this.selectCatID === -999;
       },
       GameList() {
-        return this.$store.getters['Game/gameListFinalData'];
-      },
-      arrowIconJudge() {
-        if (this.activeCollapse.length === this.GameList.length) {
-          return 'el-icon-arrow-down';
-        } else {
-          return 'el-icon-arrow-up';
-        }
+        return this.gameStore.GameList;
       },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
     },
+    watch: {
+      selectCatID() {
+        this.activeCollapse.length = 0;
+      },
+      selectGameType() {
+        this.activeCollapse.length = 0;
+      },
+    },
     methods: {
+      GameTableHeaderTopArrowClick() {
+        // 展開所有摺疊
+        if (this.activeCollapse.length === this.GameList[0].Items.List.length) {
+          this.$store.commit('SetLoading', true);
+          clearTimeout(this.collapseTimeoutEvent);
+          this.collapseTimeoutEvent = setTimeout(() => {
+            this.activeCollapse.length = 0;
+            this.activeCollapse = [];
+            this.$nextTick(() => {
+              this.$store.commit('SetLoading', false);
+            });
+          }, 100);
+        } else {
+          // 摺疊所有
+          this.activeCollapse.length = 0;
+          this.activeCollapse = new Array(this.GameList[0].Items.List.length)
+            .fill(null)
+            .map((it, index) => this.GameList[0].Items.List[index].LeagueID);
+        }
+      },
+      FavoriteGameTableHeaderIsCollapse(ChildListData) {
+        const childIDS = ChildListData.map((it) => it.LeagueID);
+        const childInActiveList = childIDS.filter((val) => {
+          return this.activeCollapse.indexOf(val) !== -1;
+        });
+        // 所有元素皆摺疊
+        if (childInActiveList.length === ChildListData.length) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      FavoriteGameTableHeaderBottomArrowClick(ChildListData) {
+        const childIDS = ChildListData.map((it) => it.LeagueID);
+        const childInActiveList = childIDS.filter((val) => {
+          return this.activeCollapse.indexOf(val) !== -1;
+        });
+        // 展開所有折疊
+        if (childInActiveList.length === ChildListData.length) {
+          this.$store.commit('SetLoading', true);
+          clearTimeout(this.collapseTimeoutEvent);
+          this.collapseTimeoutEvent = setTimeout(() => {
+            childInActiveList.forEach((childID) => {
+              const childIndex = this.activeCollapse.indexOf(childID);
+              if (childIndex > -1) {
+                this.activeCollapse.splice(childIndex, 1);
+              }
+            });
+            this.$nextTick(() => {
+              this.$store.commit('SetLoading', false);
+            });
+          }, 100);
+        } else {
+          childIDS.forEach((childID) => {
+            const childIndex = this.activeCollapse.indexOf(childID);
+            if (childIndex === -1) {
+              this.activeCollapse.push(childID);
+            }
+          });
+        }
+      },
+      TopFavoriteIsCollapse() {
+        const GetAllLeagueID = this.GameList.reduce((sum, gameData) => {
+          return [...sum, ...gameData.Items.List.map((LeagueData) => LeagueData.LeagueID)];
+        }, []);
+        if (GetAllLeagueID.length === this.activeCollapse.length) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      TopFavoriteArrowClick() {
+        const GetAllLeagueID = this.GameList.reduce((sum, gameData) => {
+          return [...sum, ...gameData.Items.List.map((LeagueData) => LeagueData.LeagueID)];
+        }, []);
+        if (GetAllLeagueID.length === this.activeCollapse.length) {
+          this.activeCollapse.length = 0;
+          this.activeCollapse = [];
+        } else {
+          this.activeCollapse.length = 0;
+          this.activeCollapse = GetAllLeagueID;
+        }
+      },
+      GameTableHeaderIsCollapse() {
+        if (!this.isFavoriteMode) {
+          if (this.activeCollapse.length === this.GameList[0].Items.List.length) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      },
+      isShowMoreGameEntryBtn(CatID) {
+        return this.selectWagerTypeKey === 1 && CatID !== 72 && CatID !== 83 && CatID !== 84;
+      },
       collapseChangeHandler(LeagueID) {
         const collapseIndex = this.activeCollapse.findIndex((it) => it === LeagueID);
         if (collapseIndex > -1) {
@@ -138,36 +243,6 @@
         }
         return `width: calc(100% - ${diffOffset}px);`;
       },
-      GameTableHeaderStyleJudge() {
-        if (this.isShowMoreGame) {
-          return `min-width:666px`;
-        } else if (this.isNavMenuCollapse) {
-          // 左側選單如果關閉時
-          return `min-width:836px`;
-        } else {
-          return `min-width:696px`;
-        }
-      },
-      clickArrow() {
-        // 開關大折疊面板時, scroll重新回到最上方;
-        if (this.$refs?.virtualList) {
-          this.$nextTick(() => {
-            this.$refs.virtualList.$el.scrollTop = 0;
-          });
-        }
-        if (this.activeCollapse.length === this.GameList.length) {
-          this.activeCollapse.length = 0;
-          this.activeCollapse = [];
-        } else {
-          this.CollapseAll();
-        }
-      },
-      CollapseAll() {
-        this.activeCollapse.length = 0;
-        this.activeCollapse = new Array(this.GameList.length)
-          .fill(null)
-          .map((it, index) => this.GameList[index].LeagueID);
-      },
     },
   };
 </script>
@@ -180,58 +255,17 @@
     border-right: 2px solid;
     width: fit-content;
     background-color: #d5d5d5;
-    @include main_bg_border_color();
-    .GameTableHeader {
-      width: 100%;
-      height: 35px;
-      display: flex;
-      align-items: center;
-      @include nav-headrtcolor();
-      @include nav-headrtBgcolor();
-      .GameTableBody {
-        width: 100%;
-        display: flex;
-        .FirstCatNameBlock {
-          display: flex;
-          .leftArrowBlock {
-            width: 50px;
-            margin-right: 5px;
-            display: flex;
-            justify-content: center;
-            .el-icon-arrow-up,
-            .el-icon-arrow-down {
-              font-size: 15px;
-              margin-top: -2px;
-              cursor: pointer;
-            }
-          }
-        }
-        .GameTableHeaderOtherTD,
-        .GameTableHeaderMoreTD {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          .borderWhiteBlock {
-            background-color: rgba(255, 255, 255, 0.25);
-            height: 15px;
-            width: 1px;
-          }
-        }
-        .GameTableHeaderMoreTD {
-          width: 60px;
-          min-width: 60px;
-          white-space: nowrap;
-        }
-      }
-    }
 
-    .DynamicScroller {
+    @include main_bg_border_color();
+
+    .ScrollViewContainer {
+      overflow-y: scroll;
       height: calc(100% - 35px);
-      background-color: #e8e8e8;
       &::-webkit-scrollbar {
         /*隱藏滾輪*/
         display: none;
+      }
+      .gameContainer {
       }
     }
 

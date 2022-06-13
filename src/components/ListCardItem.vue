@@ -198,7 +198,7 @@
         return this.cartData.Status !== 1 || this.cartData.EvtStatus !== 1;
       },
       includePrincipal() {
-        return this.$store.state.Setting.includePrincipal;
+        return this.$store.state.Setting.UserSetting.includePrincipal;
       },
       showBetCartList() {
         return this.$store.getters['BetCart/showBetCartList'];
