@@ -31,6 +31,11 @@ export default {
     selectLeagueIDs: [],
     // GamesNavMenu會去監聽此值,此值如果發生變化,會重新打detail API
     isCallGameDetailAPI: false,
+    // 是否快速投注
+    isQuickBet: {
+      isEnable: false,
+      amount: 10,
+    },
   },
   getters: {
     ...GameTypeListGetters,
@@ -39,6 +44,12 @@ export default {
     changeCatReset(state) {
       state.selectLeagueIDs.length = 0;
       state.selectLeagueIDs = [];
+    },
+    setQuickBetEnable(state, val) {
+      state.isQuickBet.isEnable = val;
+    },
+    setQuickBetAmount(state, val) {
+      state.isQuickBet.amount = val;
     },
     setGameTypeList(state, val) {
       state.GameTypeList.length = 0;
