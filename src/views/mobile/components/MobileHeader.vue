@@ -100,8 +100,14 @@
       clearInterval(this.intervalEvent2);
     },
     watch: {
-      isCallGameDetailAPI() {
-        this.callGetGameDetail();
+      isCallGameDetailAPI: {
+        handler() {
+          this.callGetGameDetail(
+            this.gameStore.selectCatID,
+            this.gameStore.selectWagerTypeKey,
+            true
+          );
+        },
       },
     },
     computed: {
