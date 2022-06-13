@@ -157,7 +157,7 @@
     watch: {
       TimeCountDown() {
         const dateTime = this.TimeCountDown.time;
-        if (dateTime === '12:00:03') {
+        if (dateTime === '12:00:10') {
           location.reload();
         }
       },
