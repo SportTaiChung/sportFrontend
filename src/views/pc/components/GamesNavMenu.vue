@@ -66,7 +66,10 @@
         </el-submenu>
         <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
           <img
-            :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(-999))"
+            :src="
+              require('@/assets/img/common/menuIcon/' +
+                getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
+            "
             class="menu-icon"
           />
           <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
