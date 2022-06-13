@@ -30,6 +30,9 @@
                   <template v-if="teamData.AwayTeamStr === '.'">
                     <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                   </template>
+                  <template v-else-if="teamData.HomeTeamStr === '.'">
+                    <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                  </template>
                   <template v-else>
                     <!-- 主客場對調 -->
                     <template v-if="!teamData.SetFlag">
