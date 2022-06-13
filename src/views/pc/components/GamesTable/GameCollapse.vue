@@ -30,6 +30,7 @@
                   <template v-if="teamData.AwayTeamStr === '.'">
                     <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
                   </template>
+                  <!-- 只需要顯示一個隊伍 -->
                   <template v-else-if="teamData.HomeTeamStr === '.'">
                     <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
                   </template>

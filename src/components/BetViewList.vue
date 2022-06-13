@@ -49,10 +49,19 @@
             </div>
             <div class="cardContentBlockRow"> {{ historyItem.dataBet[0].LeagueName }} </div>
             <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
-              <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
-              <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
+              <template v-if="historyItem.dataBet[0].AwayTeam === '.'">
+                <div class="teamRow">{{ historyItem.dataBet[0].HomeTeam }}</div>
+              </template>
+              <template v-else-if="historyItem.dataBet[0].HomeTeam === '.'">
+                <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
+              </template>
+              <template v-else>
+                <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
+                <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
+                <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
+              </template>
             </div>
+
             <div class="cardContentBlockRow">
               <div class="cardContentBlockWithHalfRow">投注: {{ historyItem.Amount }}</div>
               <div class="cardContentBlockWithHalfRow">
