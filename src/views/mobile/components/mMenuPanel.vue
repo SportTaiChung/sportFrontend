@@ -101,6 +101,7 @@
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('closeMorePanel');
+        this.isSecondaryPanelOpened = false;
       },
       onThemeSelect(themeName) {
         this.$store.commit('SetThemeInfo', themeName);

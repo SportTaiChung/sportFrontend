@@ -453,10 +453,11 @@
             cursor: pointer;
             opacity: 0.3;
             &:hover {
-              opacity: 0.8;
+              opacity: 0.7;
             }
             &:active {
-              transform: scale(1.2);
+              transform: scale(1.1);
+              opacity: 1;
             }
             &.active {
               opacity: 1;
@@ -486,10 +487,10 @@
           cursor: pointer;
 
           &:hover {
-            background-color: rgba(255, 235, 104, 0.9764705882);
+            background-color: rgba(255, 225, 27, 0.7);
           }
           &:active {
-            background-color: #ffdf1b;
+            background-color: #e1c300;
           }
         }
       }
