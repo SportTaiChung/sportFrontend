@@ -253,7 +253,7 @@
       </div>
     </div>
 
-    <div class="noData" v-if="groupIndex === 0 && childIndex === 1 && isShowStrayCantPlayTip">
+    <div class="noData" v-if="isShowStrayCantPlayTip">
       <div class="noDataItem">
         <div class="noDataItemImgContainer"> 通關投注至少選擇2場賽事 </div>
       </div>
@@ -418,7 +418,7 @@
         return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length > 1;
       },
       isShowStrayCantPlayTip() {
-        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length <= 1;
+        return this.groupIndex === 0 && this.childIndex === 1 && this.showBetCartList.length === 1;
       },
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';

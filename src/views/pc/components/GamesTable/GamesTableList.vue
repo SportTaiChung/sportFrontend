@@ -52,7 +52,7 @@
       </div>
     </template>
 
-    <template v-if="gameStore.MenuList.length === 0">
+    <template v-if="gameStore.MenuList.length === 0 || GameList.length === 0">
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
           <img alt="" src="@/assets/img/pc/icon_noGame.svg" />
