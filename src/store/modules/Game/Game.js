@@ -4,6 +4,7 @@ import {
   getMenuGameCatList,
   getGameDetail,
   getGameDetailSmall,
+  getLive,
 } from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
@@ -394,6 +395,13 @@ export default {
             updateOtherStore: true,
             updateData: res.data,
           });
+        });
+      });
+    },
+    GetLive(store) {
+      return new Promise((resolve, reject) => {
+        return getLive().then((res) => {
+          resolve(res);
         });
       });
     },

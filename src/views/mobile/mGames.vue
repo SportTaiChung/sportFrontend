@@ -33,7 +33,7 @@
     </div>
 
     <div class="fixed-container">
-      <MoreGame v-if="isShowMoreGame"></MoreGame>
+      <MoreGame v-if="isShowMoreGame" @onOpenBetRecordView="onOpenBetRecordView"></MoreGame>
 
       <mGamesBetInfoAll
         v-show="isShowBetInfo && betCartList.length !== 1"

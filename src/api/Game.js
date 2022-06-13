@@ -108,3 +108,15 @@ export function getBetHistory(postData = {}) {
     data: { lang: store.state.Lang, ...postData },
   });
 }
+
+// 26.取得直播線路
+export function getLive() {
+  return request({
+    url: `/GameInfo/Live`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang },
+  });
+}
