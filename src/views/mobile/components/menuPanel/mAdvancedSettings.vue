@@ -180,7 +180,6 @@
       <li class="item">
         <div class="title">
           自訂籌碼
-          <br />
           <span class="redTip"> 最多設置6個 </span>
         </div>
         <div class="content" style="padding: 1rem 0.8rem">
@@ -290,6 +289,11 @@
       activeChips() {
         this.saveSettings();
       },
+      'model.mTableSort': {
+        handler() {
+          this.$emit('updateGameDetail');
+        },
+      },
     },
   };
 </script>
@@ -370,6 +374,23 @@
           border: 1px solid #0169ff;
         }
       }
+    }
+
+    .amount-input {
+      width: calc(100%);
+      font-size: 1.2rem;
+      line-height: normal;
+      text-align: center;
+      margin-top: 5px;
+      padding: 3px;
+      border-radius: 3px;
+      border: 1px solid #3a8ee6;
+    }
+
+    .redTip {
+      color: #ed0000;
+      font-size: 80%;
+      margin-left: 1rem;
     }
   }
 </style>

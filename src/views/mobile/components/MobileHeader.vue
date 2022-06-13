@@ -99,6 +99,11 @@
       clearInterval(this.intervalEvent);
       clearInterval(this.intervalEvent2);
     },
+    watch: {
+      isCallGameDetailAPI() {
+        this.callGetGameDetail();
+      },
+    },
     computed: {
       gameStore() {
         return this.$store.state.Game;
@@ -120,6 +125,9 @@
       },
       hasFavorite() {
         return this.$store.state.Setting.UserSetting.favorites.length > 0;
+      },
+      isCallGameDetailAPI() {
+        return this.$store.state.Game.isCallGameDetailAPI;
       },
     },
     methods: {
@@ -158,6 +166,9 @@
           );
           this.$store.commit('SetLoading', false);
         });
+      },
+      reCallGameDetailAPI() {
+        this.callGetGameDetail(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
       },
       gameTypeClickHandler(gameType) {
         this.$store.commit('Game/setGameType', gameType);

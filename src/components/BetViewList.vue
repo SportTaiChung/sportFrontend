@@ -1057,7 +1057,6 @@
           .chip {
             cursor: pointer;
             flex: 0 0 57px;
-            background: url();
             background-repeat: no-repeat;
             background-size: auto 100%;
             width: 57px;

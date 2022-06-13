@@ -60,7 +60,10 @@
           <div class="title">{{ secondaryPanelTitle }}</div>
         </div>
         <div class="secondaryPanel-body">
-          <mAdvancedSettings v-if="isShowAdvancedSettings"></mAdvancedSettings>
+          <mAdvancedSettings
+            v-if="isShowAdvancedSettings"
+            @updateGameDetail="$emit('updateGameDetail')"
+          ></mAdvancedSettings>
         </div>
       </div>
     </div>

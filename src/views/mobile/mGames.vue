@@ -3,6 +3,7 @@
     <div class="main-layout">
       <!-- HEADER -->
       <MobileHeader
+        ref="header"
         :activeCollapse="activeCollapse"
         @toggleAllCollapse="toggleAllCollapse"
       ></MobileHeader>
@@ -54,7 +55,11 @@
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
-      <mMenuPanel v-show="isShowMorePanel" @closeMorePanel="isShowMorePanel = false"></mMenuPanel>
+      <mMenuPanel
+        v-show="isShowMorePanel"
+        @closeMorePanel="isShowMorePanel = false"
+        @updateGameDetail="$refs.header.reCallGameDetailAPI()"
+      ></mMenuPanel>
     </div>
   </div>
 </template>
