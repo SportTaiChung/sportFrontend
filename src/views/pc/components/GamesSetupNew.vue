@@ -269,6 +269,7 @@
             message: '修改成功',
           });
           this.$store.commit('SetLoading', false);
+          this.$emit('closeMe');
         }, 100);
       },
       // 籌碼點擊

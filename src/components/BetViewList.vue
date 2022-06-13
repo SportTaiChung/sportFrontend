@@ -253,7 +253,7 @@
       </div>
     </div>
 
-    <div class="noData" v-if="isShowStrayCantPlayTip">
+    <div class="noData" v-if="groupIndex === 0 && childIndex === 1 && isShowStrayCantPlayTip">
       <div class="noDataItem">
         <div class="noDataItemImgContainer"> 通關投注至少選擇2場賽事 </div>
       </div>
@@ -339,6 +339,15 @@
         this.$nextTick(() => {
           this.$refs.BetViewList.scrollTop = 999999;
           this.isLockMode = false;
+          this.reCalcBetChart();
+          if (
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 1 ||
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 2
+          ) {
+            this.strayBetAmount = parseInt(
+              this.$store.state.Setting.UserSetting.defaultStrayAmount.amount
+            );
+          }
         });
       },
       groupIndex: {
@@ -502,9 +511,7 @@
         this.fillEachWinAmountBlurHandler();
       },
       strayBetAmountInputChangeHandler() {
-        console.log('wtf1', this.strayBetAmount);
         this.strayBetAmount = parseFloat(this.strayBetAmount.replace(/[^\d]/g, ''));
-        console.log('wtf2', this.strayBetAmount);
         if (isNaN(this.strayBetAmount)) {
           this.strayBetAmount = 0;
         }
@@ -659,7 +666,12 @@
         if (checkRes === null) {
           return;
         }
-        if (this.isLockMode) {
+
+        if (this.isLockMode || this.settings.showBetConfirm === false) {
+          // 多個投注時取最大的
+          this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
+            ...checkRes.map((checkRes) => checkRes.Amount)
+          );
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -679,7 +691,8 @@
         if (checkRes === null) {
           return;
         }
-        if (this.isLockMode) {
+        if (this.isLockMode || this.settings.showBetConfirm === false) {
+          this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
