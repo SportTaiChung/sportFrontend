@@ -1,7 +1,7 @@
 <template>
   <div id="mobileFooter">
     <ul class="footer-container">
-      <li class="footer-item">
+      <li class="footer-item" @click="openLive()">
         <img class="icon" src="@/assets/img/mobile/icon_footer_palysvg.svg" alt="" />
         <span>直播</span>
       </li>
@@ -55,6 +55,17 @@
       },
       onOpenMorePanel() {
         this.$emit('onOpenMorePanel');
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLive')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
     },
   };

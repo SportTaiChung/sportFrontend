@@ -10,22 +10,126 @@
         @click="$store.commit('MoreGame/closeMoreGameList')"
       />
     </div>
+
     <div class="GameInfoBlock" v-if="gameTypeID === 2">
+      <!-- 滾球 上半部資訊 -->
+      <ul class="navList">
+        <li
+          v-if="isMobileMode"
+          class="item"
+          style="position: absolute; left: 10px; top: 17px"
+          @click="$store.commit('Setting/addFavorites', teamData.EvtID)"
+        >
+          <div class="star" :class="starCSSJudge(teamData.EvtID)"></div>
+        </li>
+
+        <li
+          class="item"
+          title="比分板"
+          :class="gameType2Page == 0 ? 'active' : ''"
+          @click="gameType2Page = 0"
+        >
+          <img src="@/assets/img/common/btn_VM_scoreBoard.svg" />
+        </li>
+        <!-- <li
+          class="item"
+          title="滾球數據"
+          :class="gameType2Page == 1 ? 'active' : ''"
+          @click="gameType2Page = 1"
+        >
+          <img src="@/assets/img/common/btn_VM_runData.svg" />
+        </li> -->
+        <li
+          class="item"
+          title="直播"
+          :class="gameType2Page == 2 ? 'active' : ''"
+          @click="gameType2Page = 2"
+        >
+          <img src="@/assets/img/common/btn_LiveTV.svg" />
+        </li>
+        <!-- <li
+          class="item"
+          title="賽事數據"
+          :class="gameType2Page == 3 ? 'active' : ''"
+          @click="gameType2Page = 3"
+        >
+          <img src="@/assets/img/common/btn_VM_gameData.svg" />
+        </li> -->
+      </ul>
+
+      <div v-show="gameType2Page == 2">
+        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
+      </div>
+
       <!-- 比分板區塊 -->
-      <Soccer v-if="selectCatID === 1"></Soccer>
-      <BaseBall
-        v-if="
-          selectCatID === 4 ||
-          selectCatID === 12 ||
-          selectCatID === 13 ||
-          selectCatID === 14 ||
-          selectCatID === 101
-        "
-      ></BaseBall>
-      <BasketBall
-        v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
-      ></BasketBall>
+      <div v-show="gameType2Page === 0">
+        <Soccer v-if="selectCatID === 1"></Soccer>
+        <BaseBall
+          v-if="
+            selectCatID === 4 ||
+            selectCatID === 12 ||
+            selectCatID === 13 ||
+            selectCatID === 14 ||
+            selectCatID === 101
+          "
+        ></BaseBall>
+        <BasketBall
+          v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
+        ></BasketBall>
+      </div>
     </div>
+
+    <div class="GameInfoBlock" v-if="gameTypeID === 1">
+      <!-- 今日 上半部資訊 -->
+      <ul class="navList">
+        <li
+          v-if="isMobileMode"
+          class="item"
+          style="position: absolute; left: 10px; top: 17px"
+          @click="$store.commit('Setting/addFavorites', teamData.EvtID)"
+        >
+          <div class="star" :class="starCSSJudge(teamData.EvtID)"></div>
+        </li>
+
+        <!-- <li
+          class="item"
+          title="比分板"
+          :class="gameType1Page == 0 ? 'active' : ''"
+          @click="gameType1Page = 0"
+        >
+          <img src="@/assets/img/common/btn_VM_scoreBoard.svg" />
+        </li> -->
+        <li
+          class="item"
+          title="滾球數據"
+          :class="gameType1Page == 1 ? 'active' : ''"
+          @click="gameType1Page = 1"
+        >
+          <img src="@/assets/img/common/btn_VM_runData.svg" />
+        </li>
+        <!-- <li
+          class="item"
+          title="直播"
+          :class="gameType1Page == 2 ? 'active' : ''"
+          @click="gameType1Page = 2"
+        >
+          <img src="@/assets/img/common/btn_LiveTV.svg" />
+        </li> -->
+        <li
+          class="item"
+          title="賽事數據"
+          :class="gameType1Page == 3 ? 'active' : ''"
+          @click="gameType1Page = 3"
+        >
+          <img src="@/assets/img/common/btn_VM_gameData.svg" />
+        </li>
+      </ul>
+
+      <div>
+        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
+      </div>
+    </div>
+
     <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
@@ -35,6 +139,13 @@
           <div @click="selectItemKey = menuData.ItemKey">{{ menuData.ItemName }}</div>
           <div class="active" v-if="menuData.ItemKey === selectItemKey"></div>
         </div>
+
+        <img
+          v-if="isMobileMode"
+          class="btn-record"
+          src="@/assets/img/common/btn_record.svg"
+          @click="$emit('onOpenBetRecordView')"
+        />
       </div>
       <div class="MoreGameList">
         <template v-for="(gameData, gameIndex) in FinalGameList">
@@ -116,6 +227,9 @@
         collapseItemNames: [],
         selectItemKey: null,
         intervalEvent: null,
+
+        gameType1Page: 1,
+        gameType2Page: 0,
       };
     },
     created() {
@@ -192,6 +306,9 @@
           return 'mobile';
         }
         return '';
+      },
+      isMobileMode() {
+        return process.env.VUE_APP_UI === 'mobile';
       },
       FinalGameList() {
         if (this.GameList.length === 0) {
@@ -351,6 +468,13 @@
         };
         this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
+      starCSSJudge(EvtID) {
+        if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
+          return 'active';
+        } else {
+          return '';
+        }
+      },
     },
   };
 </script>
@@ -365,6 +489,8 @@
     $gameInfoHeight: 150px;
     $gameChatHeight: 60px;
 
+    display: flex;
+    flex-flow: column nowrap;
     &.mobile {
       min-width: 370px;
       border: 0;
@@ -415,10 +541,13 @@
       }
     }
     .MoreGameBlock {
+      flex: 1;
+      overflow: auto;
       height: calc(100% - $gameHeaderHeight - $gameInfoHeight - $gameChatHeight);
       $MoreGameFilterBlockHeight: 35px;
       .MoreGameFilterBlock {
         height: $MoreGameFilterBlockHeight;
+        width: 100%;
         background-color: #666;
         color: white;
         display: flex;
@@ -521,6 +650,63 @@
     .GameChatBlock {
       height: $gameChatHeight;
       background-color: #333;
+    }
+
+    ul.navList {
+      position: relative;
+      background: #666;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      height: 35px;
+      li.item {
+        text-align: center;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        img {
+          opacity: 0.4;
+          height: 100%;
+          max-height: 30px;
+        }
+        &:hover,
+        &.active {
+          img {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    img.coming-soon {
+      width: 100%;
+      display: block;
+    }
+
+    .star {
+      position: absolute;
+      left: 0;
+      width: 25px;
+      height: 25px;
+      background: url('~@/assets/img/common/icon_star.svg') no-repeat center bottom;
+      background-size: 100% auto;
+      background-position: center bottom;
+      margin: auto 15px auto auto;
+      display: block;
+      cursor: pointer;
+
+      &:active,
+      &.active {
+        background-position: center top;
+      }
+    }
+    .btn-record {
+      width: 25px;
+      height: 25px;
+      margin-left: auto;
+      margin-right: 15px;
+      cursor: pointer;
     }
   }
 </style>
