@@ -49,7 +49,7 @@
             />
             先去逛逛
           </div> -->
-          <div class="item">
+          <div class="item" @click="isOpenServicePanel = true">
             <img
               src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6CAYAAADhu0ooAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6REI0RDc5NTc1RDQ4MTFFQ0FDRENEREM1RTlDRjg1MDUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6REI0RDc5NTg1RDQ4MTFFQ0FDRENEREM1RTlDRjg1MDUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEQjRENzk1NTVENDgxMUVDQUNEQ0REQzVFOUNGODUwNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEQjRENzk1NjVENDgxMUVDQUNEQ0REQzVFOUNGODUwNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pr+jBSsAAAb5SURBVHja7JsJbJRF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"
             />
@@ -58,17 +58,35 @@
         </div>
       </div>
     </div>
+
+    <!-- 客服面板 -->
+    <ServicePanel
+      :isOpen="isOpenServicePanel"
+      @closeMe="isOpenServicePanel = false"
+      @openServiceChat="openServiceChat"
+    ></ServicePanel>
+
+    <!-- 客服聊天室窗 -->
+    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
   </div>
 </template>
 
 <script>
+  import ServicePanel from '@/components/ServicePanel';
+  import ServiceChat from '@/components/ServiceChat';
   export default {
+    components: {
+      ServicePanel,
+      ServiceChat,
+    },
     data() {
       return {
         formData: {
           username: 'abcd_a13',
           password: '123456789',
         },
+        isOpenServicePanel: false,
+        isOpenServiceChat: false,
       };
     },
     computed: {
@@ -96,6 +114,10 @@
           .then((res) => {
             this.$router.replace({ name: 'Init' });
           });
+      },
+
+      openServiceChat(issue) {
+        this.isOpenServiceChat = true;
       },
     },
   };
@@ -155,7 +177,7 @@
         flex-direction: column;
         background-color: rgba(255, 255, 255, 0.3);
         width: calc(100vw - 50px);
-        min-width: 250px;
+        min-width: 370px;
         max-width: 480px;
         padding: 1.8rem;
         border-radius: 1rem;
