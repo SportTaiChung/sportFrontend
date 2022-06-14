@@ -409,7 +409,7 @@ export default {
         });
       });
     },
-    GetLive(store) {
+    GetLiveURL(store) {
       return new Promise((resolve, reject) => {
         return getLive().then((res) => {
           resolve(res);

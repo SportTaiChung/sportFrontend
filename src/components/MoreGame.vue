@@ -57,9 +57,13 @@
         </li> -->
       </ul>
 
-      <div v-show="gameType2Page == 2">
-        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
-      </div>
+      <!-- 即將推出 -->
+      <img
+        v-show="gameType2Page == 2"
+        class="coming-soon"
+        src="@/assets/img/common/coming_soon.jpg"
+        @click="onComingSoonClick()"
+      />
 
       <!-- 比分板區塊 -->
       <div v-show="gameType2Page === 0">
@@ -82,6 +86,7 @@
     <div class="GameInfoBlock" v-if="gameTypeID === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
+        <!-- 收藏按鈕 -->
         <li
           v-if="isMobileMode"
           class="item"
@@ -107,14 +112,14 @@
         >
           <img src="@/assets/img/common/btn_VM_runData.svg" />
         </li>
-        <!-- <li
+        <li
           class="item"
           title="直播"
           :class="gameType1Page == 2 ? 'active' : ''"
           @click="gameType1Page = 2"
         >
           <img src="@/assets/img/common/btn_LiveTV.svg" />
-        </li> -->
+        </li>
         <li
           class="item"
           title="賽事數據"
@@ -125,9 +130,13 @@
         </li>
       </ul>
 
-      <div>
-        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
-      </div>
+      <!-- 即將推出 -->
+      <img
+        v-show="true"
+        class="coming-soon"
+        src="@/assets/img/common/coming_soon.jpg"
+        @click="onComingSoonClick()"
+      />
     </div>
 
     <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
@@ -473,6 +482,27 @@
           return 'active';
         } else {
           return '';
+        }
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLiveURL')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
+      onComingSoonClick() {
+        console.log(this.gameTypeID);
+        if (this.gameTypeID === 2) {
+          // 滾球
+          if (this.gameType2Page === 2) {
+            // 直播
+            this.openLive();
+          }
         }
       },
     },
