@@ -562,6 +562,7 @@ export function getMenuIconByCatID(catID) {
     5: 'icon_sportMenu_soccer.svg',
     21: 'icon_sportMenu_pingpong.svg',
     22: 'icon_sportMenu_badminton.svg',
+    23: 'icon_sportMenu_volleyball.svg',
     31: 'icon_sportMenu_worldCup.svg',
     32: 'icon_sportMenu_UEFA.svg',
     4: 'icon_sportMenu_baseball.svg',
