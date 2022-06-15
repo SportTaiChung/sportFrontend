@@ -1,6 +1,14 @@
 import request from '@/utils/axios';
 import store from '@/store';
 
+// API共用-球類CatID唯一識別
+export function getCatList() {
+  return request({
+    url: `/GameInfo/GameOnlyCatID/${store.state.Lang}`,
+    method: 'get',
+  });
+}
+
 // API(15,18)共用-聯賽Items
 export function getGameResultLeagues(postData = {}) {
   return request({

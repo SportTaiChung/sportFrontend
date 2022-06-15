@@ -28,6 +28,7 @@
     methods: {
       callGetAllMenuData() {
         return Promise.all([
+          this.$store.dispatch('Game/GetCatList'),
           this.$store.dispatch('Game/GetMenuGameType'),
           this.$store.dispatch('Game/GetMenuGameCatList'),
         ]);

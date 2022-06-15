@@ -1,4 +1,5 @@
 import {
+  getCatList,
   getGameResultLeagues,
   getMenuGameType,
   getMenuGameCatList,
@@ -16,6 +17,10 @@ import rootStore from '@/store';
 export default {
   namespaced: true,
   state: {
+    // 大分類 array
+    CatList: [],
+    // map對應表
+    CatMapData: {},
     // 左邊側欄上方選單列表
     GameTypeList: [],
     // 側欄選單列表
@@ -44,6 +49,12 @@ export default {
     ...GameTypeListGetters,
   },
   mutations: {
+    setCatList(state, val) {
+      state.CatList = val;
+    },
+    setCatMapData(state, val) {
+      state.CatMapData = val;
+    },
     changeCatReset(state) {
       state.selectLeagueIDs.length = 0;
       state.selectLeagueIDs = [];
@@ -89,7 +100,7 @@ export default {
           return isLeagueEnable;
         })
           .map((it, index) => {
-            return { id: index, ...it };
+            return { ...it, id: index, CatNameStr: state.CatMapData[it.CatID].Name };
           })
           .map((listData) => {
             const newListData = JSON.parse(JSON.stringify(listData));
@@ -231,6 +242,30 @@ export default {
     },
   },
   actions: {
+    GetCatList(store) {
+      return new Promise((resolve, reject) => {
+        return getCatList()
+          .then((res) => {
+            const mapList = res.reduce((sum, it) => {
+              let appendObj = {};
+
+              it.GroupCatIDs.forEach((id) => {
+                appendObj = {
+                  ...appendObj,
+                  ...{
+                    [id]: it,
+                  },
+                };
+              });
+              return { ...sum, ...appendObj };
+            }, {});
+            store.commit('setCatList', res);
+            store.commit('setCatMapData', mapList);
+            resolve();
+          })
+          .catch(reject);
+      });
+    },
     // API(15,18)共用-聯賽Items
     GetGameResultLeagues(store) {
       return new Promise((resolve, reject) => {
@@ -335,7 +370,7 @@ export default {
               const newData = [
                 {
                   CatID: res.data.List[0].CatID,
-                  CatName: res.data.List[0].CatNameStr,
+                  CatName: store.state.CatMapData[res.data.List[0].CatID].Name,
                   Items: { ...res.data },
                 },
               ];
