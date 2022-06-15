@@ -26,7 +26,7 @@
                   </div>
                   <div class="msg">
                     <template v-if="msg.Content.indexOf('{{FileImage}}') >= 0">
-                      <img class="msgPhoto" :src="parseImgUrl(msg.Content)" />
+                      <img class="msgPhoto" :src="parseImgUrl(msg.Content)" @load="imgLoadDone()" />
                     </template>
                     <template v-else>
                       {{ msg.Content }}
@@ -153,6 +153,9 @@
       },
       parseImgUrl(str) {
         return str.split('{{FileImage}}')[1];
+      },
+      imgLoadDone() {
+        this.scrollToBottom();
       },
     },
     watch: {
