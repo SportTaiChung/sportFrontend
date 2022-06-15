@@ -1,5 +1,5 @@
 <template>
-  <div id="GamesSetupNew" @click.stop="onMaskClick">
+  <div id="GamesSettingDialog" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
         <div class="title"> 功能設定 </div>
@@ -9,48 +9,6 @@
 
       <div class="body">
         <ul class="list">
-          <!-- <li class="item">
-            <div class="title">賠率類型</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="includePrincipal"
-                    v-bind:value="true"
-                    v-model="mIncludePrincipal"
-                  />
-                  <span> 含本金 </span>
-                </label>
-                <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="includePrincipal"
-                    v-bind:value="false"
-                    v-model="mIncludePrincipal"
-                  />
-                  <span> 不含本金 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
-          <!-- <li class="item">
-            <div class="title">賽事排序</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input type="radio" name="tableSort" v-bind:value="0" v-model="mTableSort" />
-                  <span> 熱門 </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="tableSort" v-bind:value="1" v-model="mTableSort" />
-                  <span> 時間 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
           <li class="item">
             <div class="title">下注確認信息</div>
             <div class="content">
@@ -159,22 +117,6 @@
             </div>
           </li>
 
-          <!-- <li class="item">
-            <div class="title">自動接收最佳賠率</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input type="radio" name="acceptBetter" v-bind:value="true" v-model="mAcceptBetter" />
-                  <span> 是 </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="acceptBetter" v-bind:value="false" v-model="mAcceptBetter" />
-                  <span> 否 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
           <li class="item">
             <div class="title">
               自訂籌碼
@@ -205,7 +147,7 @@
 
 <script>
   export default {
-    name: 'GamesSetupNew',
+    name: 'GamesSettingDialog',
     data() {
       return {
         chipsData: this.$SportLib.chipsData,
@@ -302,7 +244,7 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  #GamesSetupNew {
+  #GamesSettingDialog {
     position: fixed;
     top: 0;
     left: 0;

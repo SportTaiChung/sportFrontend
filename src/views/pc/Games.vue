@@ -19,19 +19,18 @@
       <MoreGame v-if="isShowMoreGame" @AddToCart="AddToCartEvent()"></MoreGame>
       <GamesBetInfo
         ref="GamesBetInfo"
-        @openSetup="
-          isShowSetup = true;
-          $refs.GamesSetupNew.loadSettings();
+        @openSetting="
+          isShowSetting = true;
+          $refs.GamesSettingDialog.loadSettings();
         "
       />
     </div>
 
-    <GamesSetupNew
-      ref="GamesSetupNew"
-      v-show="isShowSetup"
-      @closeMe="isShowSetup = false"
-    ></GamesSetupNew>
-
+    <GamesSettingDialog
+      ref="GamesSettingDialog"
+      v-show="isShowSetting"
+      @closeMe="isShowSetting = false"
+    ></GamesSettingDialog>
     <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
   </div>
 </template>
@@ -39,7 +38,7 @@
 <script>
   import GamesHeader from './components/GamesHeader.vue';
   import GamesSetup from './components/GamesSetup.vue';
-  import GamesSetupNew from './components/GamesSetupNew.vue';
+  import GamesSettingDialog from './components/GamesSettingDialog.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import MoreGame from '../../components/MoreGame.vue';
@@ -50,7 +49,7 @@
     components: {
       GamesHeader,
       GamesSetup,
-      GamesSetupNew,
+      GamesSettingDialog,
       GamesNavMenu,
       GamesTableList,
       GamesBetInfo,
@@ -61,7 +60,7 @@
       return {
         // 左側選單是否縮起選單
         isNavMenuCollapse: false,
-        isShowSetup: false,
+        isShowSetting: false,
         isOpenServiceChat: false,
       };
     },

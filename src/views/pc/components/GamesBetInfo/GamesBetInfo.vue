@@ -27,7 +27,7 @@
         <div class="topHeaderIconItem">
           <img src="@/assets/img/pc/btn_count.svg" alt="" />
         </div>
-        <div class="topHeaderIconItem" @click="$emit('openSetup')">
+        <div class="topHeaderIconItem" @click="$emit('openSetting')">
           <img src="@/assets/img/pc/btn_funSet.svg" alt="" />
         </div>
       </div>
