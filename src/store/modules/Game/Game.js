@@ -7,6 +7,7 @@ import {
   getLive,
   getQAHistory,
   sendQAMessage,
+  sendQAFile,
 } from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
@@ -436,7 +437,7 @@ export default {
     },
     SendQAFile(store, { base64File, name }) {
       return new Promise((resolve, reject) => {
-        return sendQAMessage({
+        return sendQAFile({
           Content: base64File,
           FileName: name,
         }).then((res) => {

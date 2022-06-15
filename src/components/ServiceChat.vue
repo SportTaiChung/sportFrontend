@@ -25,7 +25,12 @@
                     <img src="@/assets/img/common/service/avatar8.png" />
                   </div>
                   <div class="msg">
-                    {{ msg.Content }}
+                    <template v-if="msg.Content.indexOf('{{FileImage}}') >= 0">
+                      <img class="msgPhoto" :src="parseImgUrl(msg.Content)" />
+                    </template>
+                    <template v-else>
+                      {{ msg.Content }}
+                    </template>
                   </div>
                 </div>
                 <div class="time">{{ msg.CreateTimestr }}</div>
@@ -36,7 +41,7 @@
           <div class="chat-input">
             <div class="btn-file-uploader" @click="$refs.fileInput.click()">
               <i class="el-icon-picture"></i>
-              <input type="file" ref="fileInput" style="display: none" />
+              <input type="file" ref="fileInput" accept="image/*" style="display: none" />
             </div>
             <div class="input">
               <input
@@ -50,6 +55,10 @@
               <i class="el-icon-s-promotion"></i>
             </div>
           </div>
+        </div>
+
+        <div class="loadingMask" :class="isLoading ? 'show' : ''">
+          <i class="el-icon-loading"></i>
         </div>
       </div>
     </div>
@@ -71,6 +80,7 @@
         historyTimer: null,
         history: [],
         fileInput: null,
+        isLoading: false,
       };
     },
     computed: {},
@@ -78,18 +88,23 @@
       this.fileInput = this.$refs.fileInput;
       this.fileInput.onchange = (e) => {
         var file = e.target.files[0];
+        if (file.size > 3000000) {
+          console.log('file is too large');
+          this.$notify.error({ message: '檔案大小需小於 3MB' });
+          return;
+        }
         var reader = new FileReader();
         reader.readAsDataURL(file); // read as base64
-
         reader.onload = (readerEvent) => {
-          var base64str = readerEvent.target.result;
-          console.log(base64str);
+          const base64str = readerEvent.target.result;
+          // console.log(base64str);
           const result = base64str.split(',')[1];
-          console.log(result);
+          // console.log(result);
           this.sendFile({ base64File: result, name: file.name });
         };
-        reader.error = (error) => {
+        reader.onerror = (error) => {
           console.error(error);
+          this.$notify.error({ message: error });
         };
       };
 
@@ -105,41 +120,39 @@
       },
       scrollToBottom() {
         const view = this.$refs.history;
-        view.scrollTop = view.scrollHeight;
+        // view.scrollTop = view.scrollHeight;
+        view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
       },
       getHistory() {
+        this.isLoading = true;
         this.$store
           .dispatch('Game/GetQAHistory')
-          .then((res) => {
-            console.log(res.data);
-            this.history = res.data.reverse();
-          })
+          .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
+            this.isLoading = false;
             this.scrollToBottom();
           });
       },
       sendMseeage() {
-        const message = this.modelInput.trim();
-        if (!message || typeof message !== 'string') {
-        } else {
+        if (!this.isLoading && this.modelInput.trim()) {
+          const message = this.modelInput;
           this.modelInput = '';
+          this.isLoading = true;
           this.$store
             .dispatch('Game/SendQAMessage', message)
-            .then((res) => {
-              console.log(res);
-              this.getHistory();
-            })
-            .finally(() => {});
+            .then((res) => this.getHistory())
+            .finally(() => (this.isLoading = false));
         }
       },
       sendFile({ base64File, name }) {
+        this.isLoading = true;
         this.$store
           .dispatch('Game/SendQAFile', { base64File, name })
-          .then((res) => {
-            console.log(res);
-            this.getHistory();
-          })
-          .finally(() => {});
+          .then(() => this.getHistory())
+          .finally(() => (this.isLoading = false));
+      },
+      parseImgUrl(str) {
+        return str.split('{{FileImage}}')[1];
       },
     },
     watch: {
@@ -190,8 +203,8 @@
       flex-direction: column;
       width: calc(100% - 50px);
       height: 70vh;
-      max-height: 700px;
-      max-width: 500px;
+      max-height: 800px;
+      max-width: 700px;
       overflow: hidden;
       margin: 15vh auto auto auto;
       border-radius: 6px;
@@ -236,17 +249,22 @@
         flex: 1;
         padding: 1.23rem;
         overflow: auto;
+        position: relative;
+
         .container {
           display: flex;
           flex-flow: column nowrap;
           height: 100%;
           padding: 8px;
+          position: relative;
 
           .chat-header {
             flex-shrink: 0;
             display: flex;
             padding-bottom: 20px;
             border-bottom: 2px solid #f4f7f6;
+            box-shadow: 0px 15px 10px -15px rgba(0, 0, 0, 0.4);
+            z-index: 1;
 
             img.avatar {
               width: 40px;
@@ -283,6 +301,7 @@
             .msg-wrap {
               display: inline-flex;
               flex-direction: column;
+              max-width: 400px;
               .msg-row {
                 display: flex;
                 flex-flow: row nowrap;
@@ -323,6 +342,11 @@
                     left: 0;
                     top: 30%;
                   }
+                }
+                .msgPhoto {
+                  display: block;
+                  max-width: 100%;
+                  margin: 0 auto;
                 }
               }
               .time {
@@ -415,6 +439,32 @@
                 padding: 0 1rem;
               }
             }
+          }
+        }
+
+        .loadingMask {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          // border-radius: 0.25rem;
+          background-color: rgba(0, 0, 0, 0.6);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10;
+          opacity: 0;
+          pointer-events: none;
+          transition: 200ms ease;
+
+          &.show {
+            opacity: 1;
+          }
+
+          i {
+            color: #fff;
+            font-size: 40px;
           }
         }
       }
