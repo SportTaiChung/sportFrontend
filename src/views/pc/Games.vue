@@ -23,6 +23,7 @@
           isShowSetting = true;
           $refs.GamesSettingDialog.loadSettings();
         "
+        @openStrayCount="isShowStrayCount = true"
       />
     </div>
 
@@ -31,6 +32,13 @@
       v-show="isShowSetting"
       @closeMe="isShowSetting = false"
     ></GamesSettingDialog>
+
+    <StrayCountDialog
+      ref="StrayCountDialog"
+      v-show="isShowStrayCount"
+      @closeMe="isShowStrayCount = false"
+    ></StrayCountDialog>
+
     <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
   </div>
 </template>
@@ -43,13 +51,16 @@
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import MoreGame from '../../components/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
+  import StrayCountDialog from './components/StrayCountDialog.vue';
   import ServiceChat from '@/components/ServiceChat';
+
   export default {
     name: 'PCGames',
     components: {
       GamesHeader,
       GamesSetup,
       GamesSettingDialog,
+      StrayCountDialog,
       GamesNavMenu,
       GamesTableList,
       GamesBetInfo,
@@ -60,7 +71,10 @@
       return {
         // 左側選單是否縮起選單
         isNavMenuCollapse: false,
+        // 顯示設定
         isShowSetting: false,
+        // 顯示過關計算器
+        isShowStrayCount: true,
         isOpenServiceChat: false,
       };
     },

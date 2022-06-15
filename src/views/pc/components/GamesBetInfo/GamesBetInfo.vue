@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="topHeaderIconItemGroup">
-        <div class="topHeaderIconItem">
+        <div class="topHeaderIconItem" @click="$emit('openStrayCount')">
           <img src="@/assets/img/pc/btn_count.svg" alt="" />
         </div>
         <div class="topHeaderIconItem" @click="$emit('openSetting')">

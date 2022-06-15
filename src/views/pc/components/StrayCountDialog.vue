@@ -7,14 +7,20 @@
         <div class="btn-help"> ? </div>
       </div>
 
-      <div class="body"> </div>
+      <div class="body">
+        <StrayCount></StrayCount>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+  import StrayCount from '@/components/StrayCount';
   export default {
-    name: 'GamesSettingDialog',
+    name: 'StrayCountDialog',
+    components: {
+      StrayCount,
+    },
     data() {
       return {};
     },
@@ -32,7 +38,7 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  #GamesSettingDialog {
+  #StrayCountDialog {
     position: fixed;
     top: 0;
     left: 0;

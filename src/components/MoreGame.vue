@@ -85,7 +85,7 @@
       </div>
     </div>
 
-    <div class="GameInfoBlock" v-if="gameTypeID === 1">
+    <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
         <!-- 收藏按鈕 -->
@@ -114,14 +114,14 @@
         >
           <img src="@/assets/img/common/btn_VM_runData.svg" />
         </li>
-        <li
+        <!-- <li
           class="item"
           title="直播"
           :class="gameType1Page == 2 ? 'active' : ''"
           @click="gameType1Page = 2"
         >
           <img src="@/assets/img/common/btn_LiveTV.svg" />
-        </li>
+        </li> -->
         <li
           class="item"
           title="賽事數據"
