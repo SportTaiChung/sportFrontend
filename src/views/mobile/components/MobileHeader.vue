@@ -25,7 +25,11 @@
           <div v-if="userCredit" class="creditText">$ {{ userCredit }}</div>
         </div>
 
-        <img src="@/assets/img/common/icon_header_service.svg" class="icon-service" />
+        <img
+          src="@/assets/img/common/icon_header_service.svg"
+          class="icon-service"
+          @click="openService()"
+        />
         <img src="@/assets/img/common/icon_header_logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
@@ -193,12 +197,6 @@
       getMenuIconByCatID(catId) {
         return this.$SportLib.getMenuIconByCatID(catId);
       },
-      logout() {
-        this.$store.commit('SetLoading', true);
-        this.$store.dispatch('User/Logout').finally(() => {
-          this.$store.commit('SetLoading', false);
-        });
-      },
       goFav() {
         this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
           selectGameType: this.gameTypeID,
@@ -217,6 +215,15 @@
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
+      },
+      openService() {
+        this.$emit('openService');
+      },
+      logout() {
+        this.$store.commit('SetLoading', true);
+        this.$store.dispatch('User/Logout').finally(() => {
+          this.$store.commit('SetLoading', false);
+        });
       },
     },
   };
@@ -337,6 +344,8 @@
         }
 
         img.menu-icon {
+          max-width: 20px;
+          height: auto;
           padding-top: 4px;
           filter: grayscale(1) brightness(3);
           opacity: 0.7;

@@ -1,7 +1,7 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader></GamesHeader>
+      <GamesHeader @openService="openService()"></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -31,6 +31,8 @@
       v-show="isShowSetup"
       @closeMe="isShowSetup = false"
     ></GamesSetupNew>
+
+    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
   </div>
 </template>
 
@@ -42,6 +44,7 @@
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import MoreGame from '../../components/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
+  import ServiceChat from '@/components/ServiceChat';
   export default {
     name: 'PCGames',
     components: {
@@ -52,12 +55,14 @@
       GamesTableList,
       GamesBetInfo,
       MoreGame,
+      ServiceChat,
     },
     data() {
       return {
         // 左側選單是否縮起選單
         isNavMenuCollapse: false,
         isShowSetup: false,
+        isOpenServiceChat: false,
       };
     },
     created() {
@@ -102,6 +107,9 @@
       },
       ChangeCat() {
         this.$refs.GamesSetup.clearLeagueList();
+      },
+      openService() {
+        this.isOpenServiceChat = true;
       },
     },
   };

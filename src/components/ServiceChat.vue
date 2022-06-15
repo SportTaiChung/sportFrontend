@@ -21,9 +21,9 @@
             <div class="msg-wrap">
               <div class="msg-row">
                 <div class="avatar"> </div>
-                <div class="msg"
-                  >您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務</div
-                >
+                <div class="msg">
+                  您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務
+                </div>
               </div>
               <div class="time">2分鐘前</div>
             </div>
@@ -31,9 +31,9 @@
             <div class="msg-wrap self">
               <div class="msg-row">
                 <div class="avatar"> </div>
-                <div class="msg"
-                  >您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務</div
-                >
+                <div class="msg">
+                  您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務
+                </div>
               </div>
               <div class="time">2分鐘前</div>
             </div>
