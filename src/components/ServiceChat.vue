@@ -10,43 +10,43 @@
       <div class="body">
         <div class="container">
           <div class="chat-header">
-            <img src="" class="avatar" />
+            <img src="@/assets/img/common/service/avatar8.png" class="avatar" />
             <div class="info">
               <div class="name"> 專屬客服 冰冰 </div>
               <div class="status"> 在線中 </div>
             </div>
           </div>
 
-          <div class="chat-history">
-            <div class="msg-wrap">
-              <div class="msg-row">
-                <div class="avatar"> </div>
-                <div class="msg">
-                  您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務
+          <div class="chat-history" ref="history">
+            <template v-for="(msg, index) in history">
+              <div class="msg-wrap" :class="true ? 'self' : ''" :key="index">
+                <div class="msg-row">
+                  <div class="avatar">
+                    <img src="@/assets/img/common/service/avatar8.png" />
+                  </div>
+                  <div class="msg">
+                    {{ msg.Content }}
+                  </div>
                 </div>
+                <div class="time">{{ msg.CreateTimestr }}</div>
               </div>
-              <div class="time">2分鐘前</div>
-            </div>
-
-            <div class="msg-wrap self">
-              <div class="msg-row">
-                <div class="avatar"> </div>
-                <div class="msg">
-                  您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務
-                </div>
-              </div>
-              <div class="time">2分鐘前</div>
-            </div>
+            </template>
           </div>
 
           <div class="chat-input">
-            <div class="btn-file-uploader">
+            <div class="btn-file-uploader" @click="$refs.fileInput.click()">
               <i class="el-icon-picture"></i>
+              <input type="file" ref="fileInput" style="display: none" />
             </div>
             <div class="input">
-              <input type="text" />
+              <input
+                type="text"
+                v-model="modelInput"
+                @keypress.enter="sendMseeage"
+                placeholder="輸入訊息"
+              />
             </div>
-            <div class="btn-submit">
+            <div class="btn-submit" @click="sendMseeage">
               <i class="el-icon-s-promotion"></i>
             </div>
           </div>
@@ -65,9 +65,88 @@
         default: false,
       },
     },
+    data() {
+      return {
+        modelInput: '',
+        historyTimer: null,
+        history: [],
+        fileInput: null,
+      };
+    },
+    computed: {},
+    mounted() {
+      this.fileInput = this.$refs.fileInput;
+      this.fileInput.onchange = (e) => {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(file); // read as base64
+
+        reader.onload = (readerEvent) => {
+          var base64str = readerEvent.target.result;
+          console.log(base64str);
+          const result = base64str.split(',')[1];
+          console.log(result);
+          this.sendFile({ base64File: result, name: file.name });
+        };
+        reader.error = (error) => {
+          console.error(error);
+        };
+      };
+
+      // 每10秒自動更新紀錄
+      this.historyTimer = setInterval(() => this.getHistory, 10000);
+    },
+    beforeDestroy() {
+      clearInterval(this.historyTimer);
+    },
     methods: {
       close() {
         this.$emit('closeMe');
+      },
+      scrollToBottom() {
+        const view = this.$refs.history;
+        view.scrollTop = view.scrollHeight;
+      },
+      getHistory() {
+        this.$store
+          .dispatch('Game/GetQAHistory')
+          .then((res) => {
+            console.log(res.data);
+            this.history = res.data.reverse();
+          })
+          .finally(() => {
+            this.scrollToBottom();
+          });
+      },
+      sendMseeage() {
+        const message = this.modelInput.trim();
+        if (!message || typeof message !== 'string') {
+        } else {
+          this.modelInput = '';
+          this.$store
+            .dispatch('Game/SendQAMessage', message)
+            .then((res) => {
+              console.log(res);
+              this.getHistory();
+            })
+            .finally(() => {});
+        }
+      },
+      sendFile({ base64File, name }) {
+        this.$store
+          .dispatch('Game/SendQAFile', { base64File, name })
+          .then((res) => {
+            console.log(res);
+            this.getHistory();
+          })
+          .finally(() => {});
+      },
+    },
+    watch: {
+      isOpen(newValue) {
+        if (newValue === true) {
+          this.getHistory();
+        }
       },
     },
   };
@@ -221,10 +300,10 @@
                 }
                 .msg {
                   color: #444;
-                  padding: 18px 20px;
+                  padding: 12px 20px;
                   line-height: 26px;
                   font-size: 16px;
-                  min-height: 60px;
+                  min-height: 50px;
                   border-radius: 7px;
                   display: inline-block;
                   position: relative;
@@ -276,6 +355,7 @@
           }
 
           .chat-input {
+            flex-shrink: 0;
             display: flex;
             align-items: stretch;
             height: 46px;
@@ -332,6 +412,7 @@
                 width: 100%;
                 height: 100%;
                 border: 0;
+                padding: 0 1rem;
               }
             }
           }

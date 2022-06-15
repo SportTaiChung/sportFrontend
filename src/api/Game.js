@@ -120,3 +120,38 @@ export function getLive() {
     data: { lang: store.state.Lang },
   });
 }
+
+// 12.获取在线咨询信息
+export function getQAHistory() {
+  return request({
+    url: `/GameInfo/QAMes/LiveList`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+  });
+}
+
+// 13.传送咨询-信息
+export function sendQAMessage(postData) {
+  return request({
+    url: `/GameInfo/QAMes/send`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}
+
+// 14.传送咨询-檔案信息
+export function sendQAFile(postData) {
+  return request({
+    url: `/GameInfo/QAMes/sendFile`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}

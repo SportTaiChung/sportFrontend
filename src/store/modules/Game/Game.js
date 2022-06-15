@@ -5,6 +5,8 @@ import {
   getGameDetail,
   getGameDetailSmall,
   getLive,
+  getQAHistory,
+  sendQAMessage,
 } from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
@@ -412,6 +414,32 @@ export default {
     GetLiveURL(store) {
       return new Promise((resolve, reject) => {
         return getLive().then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    GetQAHistory(store) {
+      return new Promise((resolve, reject) => {
+        return getQAHistory().then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    SendQAMessage(store, message) {
+      return new Promise((resolve, reject) => {
+        return sendQAMessage({
+          Content: message,
+        }).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    SendQAFile(store, { base64File, name }) {
+      return new Promise((resolve, reject) => {
+        return sendQAMessage({
+          Content: base64File,
+          FileName: name,
+        }).then((res) => {
           resolve(res);
         });
       });
