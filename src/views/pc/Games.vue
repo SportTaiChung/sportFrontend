@@ -35,7 +35,7 @@
 
     <StrayCountDialog
       ref="StrayCountDialog"
-      v-show="isShowStrayCount"
+      v-if="isShowStrayCount"
       @closeMe="isShowStrayCount = false"
     ></StrayCountDialog>
 
@@ -74,7 +74,7 @@
         // 顯示設定
         isShowSetting: false,
         // 顯示過關計算器
-        isShowStrayCount: true,
+        isShowStrayCount: false,
         isOpenServiceChat: false,
       };
     },

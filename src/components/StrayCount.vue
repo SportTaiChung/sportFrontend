@@ -14,23 +14,27 @@
             {{ index + 1 }}
           </td>
           <td class="oddRow">
-            <template v-if="index === 1">
+            <template>
               <el-input
-                class="componentHeight IsError"
+                class="componentHeight"
+                :class="data.errorType === 1 ? 'IsError' : ''"
                 v-model="data.odd"
                 @input="inputHandler(index, 'odd')"
               ></el-input>
-              <div class="oddEmpty"> 賠率不能為空 </div>
-            </template>
-
-            <template v-else>
-              <el-input class="componentHeight" v-model="data.odd"></el-input>
+              <div class="oddEmpty" v-if="data.errorType === 1"> 賠率不能為空 </div>
+              <div class="oddEmpty" v-if="data.errorType === 2"> 百分比未填寫 </div>
             </template>
           </td>
           <td class="row">
             <div class="firstText">分盤</div>
 
-            <el-select v-model="data.type" class="selectType" size="mini">
+            <el-select
+              v-model="data.type"
+              class="selectType"
+              :class="`selectType${data.type}`"
+              size="mini"
+              @change="selectChangeHandler(index)"
+            >
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -44,10 +48,11 @@
               class="componentHeight percentInput"
               v-model="data.percent"
               type="number"
+              :class="data.errorType === 2 ? 'IsError' : ''"
               :min="0"
               :max="100"
               :disabled="PercentDisable(data)"
-              @input="inputHandler(index, 'percent')"
+              @input="percentInputHandler(index, 'percent')"
             ></el-input>
             <div class="lastText">%</div>
           </td>
@@ -67,7 +72,26 @@
       </div>
       <div class="right">
         <div class="titleText">可贏金額</div>
-        <el-input class="resultInputBlock" size="mini" :disabled="true"></el-input>
+        <el-input
+          class="resultInputBlock resultWinInputBlock"
+          size="mini"
+          :disabled="true"
+          v-model="winAmount"
+        ></el-input>
+      </div>
+    </div>
+
+    <div class="formulaBlock" v-if="formulaResult !== ''">
+      <div class="formulaTitle"> 計算過程 </div>
+      <div> {{ formulaResult }} </div>
+    </div>
+
+    <div class="optionBlock">
+      <div class="left">
+        <div class="optionBtn" @click="reset">清 零</div>
+      </div>
+      <div class="right">
+        <div class="optionBtn countBtn" @click="countStart">計 算</div>
       </div>
     </div>
   </div>
@@ -109,14 +133,23 @@
           },
         ],
         countData: new Array(10).fill().map((it) => {
-          return { odd: '', percent: 100, type: TypeEnum.Win, isError: false };
+          return {
+            odd: '',
+            percent: 100,
+            type: TypeEnum.Win,
+            // 0 : 沒有錯誤
+            // 1 : 賠率未填寫
+            // 2 : 百分比未填寫
+            errorType: 0,
+          };
         }),
-        betAmount: '',
+        betAmount: 0,
+        winAmount: '',
+        formulaResult: '',
       };
     },
     methods: {
       PercentDisable(data) {
-        console.log(data.type);
         if (data.type === this.TypeEnum.Plus || data.type === this.TypeEnum.Reduce) {
           return false;
         } else {
@@ -124,8 +157,20 @@
         }
       },
       inputHandler(index, key) {
+        let currentData = this.countData[index][key].toString().match(/^\d+(?:\.\d{0,2})?/);
+        if (isNaN(currentData) || currentData === '') {
+          currentData = 0;
+        } else if (parseInt(currentData) < 0) {
+          currentData = 0;
+        }
+        this.countData[index][key] = parseFloat(currentData);
+        this.countData = this.countData.slice();
+      },
+      percentInputHandler(index, key) {
         let currentData = this.countData[index][key].replace(/[^\d]/g, '');
-        if (parseInt(currentData) > 100) {
+        if (isNaN(currentData) || currentData === '') {
+          currentData = 0;
+        } else if (parseInt(currentData) > 100) {
           currentData = 100;
         } else if (parseInt(currentData) < 0) {
           currentData = 0;
@@ -134,7 +179,106 @@
         this.countData = this.countData.slice();
       },
       betAmountInputHandler() {
-        this.betAmount = this.betAmount.replace(/[^\d]/g, '');
+        let newBetAmount = this.betAmount.replace(/[^\d]/g, '');
+        if (isNaN(newBetAmount) || newBetAmount === '') {
+          newBetAmount = 0;
+        }
+        this.betAmount = newBetAmount;
+      },
+      reset() {
+        this.betAmount = 0;
+        this.winAmount = '';
+        this.formulaResult = '';
+        this.countData.forEach((it) => (it.odd = ''));
+      },
+      check() {
+        let hasError = false;
+
+        // 檢查投注金額
+        if (this.betAmount === '') {
+          this.$message({
+            message: '請輸入投注金額',
+            type: 'error',
+          });
+          hasError = true;
+        }
+
+        // 檢查第一個賠率
+        if (this.countData.filter((it) => it.odd !== '').length === 0) {
+          this.countData[0].errorType = 1;
+          hasError = true;
+        }
+
+        // 檢查百分比
+        let isFindErrorType2 = false;
+        this.countData.forEach((it, index) => {
+          if (it.percent === '') {
+            this.countData[index].errorType = 2;
+            isFindErrorType2 = true;
+          }
+        });
+        if (isFindErrorType2) {
+          hasError = true;
+        }
+
+        if (hasError) {
+          this.countData = this.countData.slice();
+          return false;
+        }
+
+        return true;
+      },
+      countStart() {
+        this.countData.forEach((it) => (it.errorType = 0));
+        this.countData = this.countData.slice();
+        if (this.check()) {
+          console.log('開始計算');
+          const countList = this.countData.filter((it) => it.odd !== '');
+          const newFormulaResult = `${this.betAmount}*`;
+          let appendStr = '';
+          let sum = parseFloat(this.betAmount);
+          countList.forEach((it) => {
+            if (it.type === this.TypeEnum.Win) {
+              appendStr += `(1+${it.odd})`;
+              const addOneNum = this.$lib.trunc(1 + parseFloat(it.odd));
+              sum = this.$lib.trunc(sum * addOneNum);
+            } else if (it.type === this.TypeEnum.Loose) {
+              appendStr += `(1-1)`;
+              sum = 0;
+            } else if (it.type === this.TypeEnum.Draw) {
+              appendStr += `(1+0)`;
+            } else if (it.type === this.TypeEnum.Plus) {
+              const num = this.$lib.trunc(parseFloat(it.odd) * it.percent);
+              const percent = this.$lib.trunc(num / 100);
+              const addOneNum = this.$lib.trunc(1 + percent);
+              sum = this.$lib.trunc(sum * addOneNum);
+              appendStr += `(1+${percent})`;
+            } else if (it.type === this.TypeEnum.Reduce) {
+              const num = this.$lib.trunc(it.percent / 100);
+              const reduceOneNum = this.$lib.trunc(1 - num);
+              sum = this.$lib.trunc(sum * reduceOneNum);
+              appendStr += `(1-${num})`;
+            }
+          });
+
+          sum -= parseFloat(this.betAmount);
+          this.winAmount = sum;
+
+          this.formulaResult = `${newFormulaResult}${appendStr}-${this.betAmount}=${sum}`;
+        }
+      },
+      selectChangeHandler(changeIndex) {
+        if (this.countData[changeIndex].type === this.TypeEnum.Draw) {
+          this.countData[changeIndex].percent = 0;
+        } else if (
+          this.countData[changeIndex].type === this.TypeEnum.Plus ||
+          this.countData[changeIndex].type === this.TypeEnum.Reduce
+        ) {
+          this.countData[changeIndex].percent = '';
+        } else {
+          this.countData[changeIndex].percent = '100';
+        }
+        this.countData = this.countData.slice();
       },
     },
   };
@@ -158,6 +302,45 @@
     .IsError {
       .el-input__inner {
         border-color: #f56c6c !important;
+      }
+    }
+    .resultWinInputBlock {
+      .el-input__inner {
+        color: red !important;
+        font-size: 16px;
+        background-color: #ccc !important;
+      }
+    }
+    .selectType {
+      margin: 0 8px;
+      .el-input__inner {
+        font-weight: bold !important;
+        font-size: 14px !important;
+      }
+    }
+    .selectType1 {
+      .el-input__inner {
+        color: #0371fe !important;
+      }
+    }
+    .selectType2 {
+      .el-input__inner {
+        color: rgb(255, 0, 0) !important;
+      }
+    }
+    .selectType3 {
+      .el-input__inner {
+        color: black !important;
+      }
+    }
+    .selectType4 {
+      .el-input__inner {
+        color: #0371fe !important;
+      }
+    }
+    .selectType5 {
+      .el-input__inner {
+        color: rgb(255, 0, 0) !important;
       }
     }
   }
@@ -191,13 +374,7 @@
       td:nth-child(3) {
         width: 221px;
       }
-      // .trContainer {
-      //   display: flex;
-      //   align-items: center;
-      //   border-bottom: 1px solid black;
-      .selectType {
-        margin: 0 8px;
-      }
+
       .percentInput {
         input {
           width: 30px;
@@ -231,7 +408,6 @@
           margin-left: 5px;
         }
       }
-      // }
     }
     .resultBlock {
       display: flex;
@@ -254,6 +430,44 @@
       }
       .resultInputBlock {
         width: 100px;
+      }
+    }
+
+    .formulaBlock {
+      font-size: 14px;
+      text-align: left;
+      margin: 0 12px 10px;
+      border-radius: 3px;
+      box-sizing: border-box;
+      padding: 5px 10px 7px;
+      border: 2px dashed #999;
+      .formulaTitle {
+      }
+    }
+
+    .optionBlock {
+      display: flex;
+      justify-content: center;
+      .left,
+      .right {
+        width: 49%;
+        padding: 15px 10px;
+        padding-top: 0px;
+        .optionBtn {
+          padding: 10px 0px;
+          height: 40px;
+          background-color: #7e7e7e;
+          color: white;
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+        .countBtn {
+          background-color: #ffff1b;
+          color: black;
+        }
       }
     }
   }
