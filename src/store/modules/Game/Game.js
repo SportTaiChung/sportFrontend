@@ -162,7 +162,7 @@ export default {
       state.selectCatID = selectCatID;
       state.selectWagerTypeKey = selectWagerTypeKey;
     },
-    updateGameList(state, { updateOtherStore, updateData }) {
+    updateGameList(state, { isUpdateFromOtherStore, updateData }) {
       if (state.GameList.length !== 0) {
         const notFindData = [];
 
@@ -232,17 +232,15 @@ export default {
           }
         });
 
-        if (!updateOtherStore) {
+        // 自己store呼叫的 dispatch
+        if (!isUpdateFromOtherStore) {
           // 更新數據有,但是Table卻沒有時,要重新打detail API
           if (notFindData.length !== 0) {
             console.warn('update的資料,detail資料不存在,即將重打detail API', notFindData);
             state.isCallGameDetailAPI = !state.isCallGameDetailAPI;
           }
-        }
-
-        if (updateOtherStore) {
           rootStore.commit('MoreGame/updateMoreGameData', {
-            updateOtherStore: false,
+            isUpdateFromOtherStore: true,
             updateData,
           });
         }
@@ -430,7 +428,7 @@ export default {
               `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
             );
             store.commit('updateGameList', {
-              updateOtherStore: true,
+              isUpdateFromOtherStore: false,
               updateData: res.data,
             });
           });
@@ -449,7 +447,7 @@ export default {
           EvtIDs: rootStore.state.Setting.UserSetting.favorites.join(','),
         }).then((res) => {
           store.commit('updateGameList', {
-            updateOtherStore: true,
+            isUpdateFromOtherStore: false,
             updateData: res.data,
           });
         });

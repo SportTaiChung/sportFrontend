@@ -111,7 +111,7 @@
     methods: {
       setFakeUpdate(data) {
         this.$store.commit('Game/updateGameList', {
-          updateOtherStore: true,
+          isUpdateFromOtherStore: false,
           updateData: [data],
         });
       },
