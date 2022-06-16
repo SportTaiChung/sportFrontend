@@ -157,13 +157,9 @@
         }
       },
       inputHandler(index, key) {
-        let currentData = this.countData[index][key].toString().match(/^\d+(?:\.\d{0,2})?/);
-        if (isNaN(currentData) || currentData === '') {
-          currentData = 0;
-        } else if (parseInt(currentData) < 0) {
-          currentData = 0;
-        }
-        this.countData[index][key] = parseFloat(currentData);
+        const t = this.countData[index][key];
+        const currentData = t.toString().replace(/(\.\d\d)\d+|([\d.]*)[^\d.]/, '$1$2');
+        this.countData[index][key] = currentData;
         this.countData = this.countData.slice();
       },
       percentInputHandler(index, key) {
@@ -203,9 +199,24 @@
           hasError = true;
         }
 
-        // 檢查第一個賠率
-        if (this.countData.filter((it) => it.odd !== '').length === 0) {
-          this.countData[0].errorType = 1;
+        // 檢查賠率
+        let isFindErrorType1 = false;
+        let minIndex = 0;
+        let maxIndex = 0;
+        this.countData.forEach((it, index) => {
+          if (it.odd !== '' && minIndex === -1) {
+            minIndex = index;
+          } else if (it.odd !== '') {
+            maxIndex = index;
+          }
+        });
+        this.countData.forEach((it, index) => {
+          if (index <= maxIndex && it.odd === '') {
+            it.errorType = 1;
+            isFindErrorType1 = true;
+          }
+        });
+        if (isFindErrorType1) {
           hasError = true;
         }
 
