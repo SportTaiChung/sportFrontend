@@ -30,7 +30,7 @@
         /></li>
         <li>
           <img
-            src="@/assets/img/pc/icon_header_logout.svg"
+            src="@/assets/img/common/logout.svg"
             class="logoutIcon"
             title="登出"
             alt=""

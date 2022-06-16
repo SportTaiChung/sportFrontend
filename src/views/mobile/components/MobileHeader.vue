@@ -30,7 +30,7 @@
           class="icon-service"
           @click="openService()"
         />
-        <img src="@/assets/img/common/icon_header_logout.svg" class="icon-logout" @click="logout" />
+        <img src="@/assets/img/common/logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
 
