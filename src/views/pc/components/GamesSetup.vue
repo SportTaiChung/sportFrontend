@@ -70,7 +70,15 @@
         @change="quickBetEnableChangeHandler"
       >
       </el-switch>
-      <i class="el-icon-question"></i>
+      <el-popover popper-class="fastBet-help-popper" placement="bottom-start" trigger="hover">
+        <div class="help-title">快速投注說明</div>
+        <div class="help-detail">
+          1.設定投這金額<br />
+          2.點擊投注項目<br />
+          3.投注完成
+        </div>
+        <i class="el-icon-question" slot="reference"></i>
+      </el-popover>
     </div>
 
     <el-dialog
@@ -468,6 +476,25 @@
         outline: none;
         margin: 0 10px;
       }
+    }
+  }
+</style>
+
+<style lang="scss">
+  .fastBet-help-popper {
+    padding: 0;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+    .help-title {
+      color: #000;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding: 6px;
+    }
+    .help-detail {
+      color: #000;
+      font-size: 13px;
+      padding: 10px 20px;
     }
   }
 </style>

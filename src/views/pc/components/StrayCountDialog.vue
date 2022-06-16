@@ -4,7 +4,7 @@
       <div class="header">
         <div class="title"> 過關計算器 </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
-        <el-popover popper-class="help-popper" placement="bottom-start" trigger="hover">
+        <el-popover popper-class="calculator-help-popper" placement="bottom-start" trigger="hover">
           <div class="help-title">操作說明</div>
           <div class="help-detail">
             <table>
@@ -157,7 +157,7 @@
 </style>
 
 <style lang="scss">
-  .help-popper {
+  .calculator-help-popper {
     padding: 0;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
     .help-title {
