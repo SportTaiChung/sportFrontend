@@ -4,7 +4,28 @@
       <div class="header">
         <div class="title"> 過關計算器 </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
-        <div class="btn-help"> ? </div>
+        <el-popover popper-class="help-popper" placement="bottom-start" trigger="hover">
+          <div class="help-title">操作說明</div>
+          <div class="help-detail">
+            <table>
+              <tbody>
+                <tr>
+                  <td> 注 : </td>
+                  <td> 中洞需自行輸入分盤 </td>
+                </tr>
+                <tr>
+                  <td> 例 : </td>
+                  <td>
+                    <p> 洛杉磯湖人隊 10+80 洛杉磯道奇，比赛结束 117:105 </p>
+                    <p> 下注洛杉磯湖人隊：選擇 ( + ) 填入 80 </p>
+                    <p> 下注洛杉磯道奇：選擇 ( - ) 填入 80 </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="btn-help" slot="reference"> ? </div>
+        </el-popover>
       </div>
 
       <div class="body">
@@ -110,7 +131,7 @@
         display: flex;
         flex-direction: column;
         max-height: 70vh;
-        overflow: overlay;
+        overflow: auto;
         .btn-save {
           background-color: #ffdf1b;
           border-radius: 5px;
@@ -129,6 +150,38 @@
           &:active {
             background-color: #e1c300;
           }
+        }
+      }
+    }
+  }
+</style>
+
+<style lang="scss">
+  .help-popper {
+    padding: 0;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+    .help-title {
+      color: #000;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding: 6px;
+    }
+    .help-detail {
+      font-size: 13px;
+      padding: 10px;
+      table {
+        td:nth-child(1) {
+          min-width: 2rem;
+          vertical-align: top;
+        }
+        tr:nth-child(1) {
+          color: blue;
+        }
+
+        p {
+          margin: 0;
+          margin-bottom: 0;
         }
       }
     }

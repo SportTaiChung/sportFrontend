@@ -82,7 +82,17 @@
     </div>
 
     <div class="formulaBlock" v-if="formulaResult !== ''">
-      <div class="formulaTitle"> 計算過程 </div>
+      <div class="formulaTitle">
+        <span class="title"> 計算過程 </span>
+        <span class="help">
+          <i class="el-icon-question"></i>
+          <div class="formulaPromptBox">
+            過關計算方式：
+            <br />
+            投注金額 X (1+分洞%數X賠率) X (1+分洞%數X賠率) ... -投注金額
+          </div>
+        </span>
+      </div>
       <div> {{ formulaResult }} </div>
     </div>
 
@@ -319,6 +329,7 @@
       .el-input__inner {
         color: red !important;
         font-size: 16px;
+        font-weight: bold;
         background-color: #ccc !important;
       }
     }
@@ -362,9 +373,8 @@
     width: 100%;
     table {
       width: 100%;
-      border-collapse: separate;
+      border-collapse: collapse;
       border-spacing: 0;
-      border-bottom: 1px solid #bbb;
       thead {
         tr {
           background-color: #d8d8d8;
@@ -375,6 +385,9 @@
         font-size: 14px;
       }
       tbody {
+        tr {
+          border-bottom: 1px solid #bbb;
+        }
       }
       td:first-child {
         width: 60px;
@@ -410,7 +423,7 @@
         padding: 10px;
         display: flex;
         align-items: center;
-        height: 50px;
+        height: 46px;
         white-space: nowrap;
         .firstText {
           margin-left: 15px;
@@ -445,14 +458,60 @@
     }
 
     .formulaBlock {
-      font-size: 14px;
-      text-align: left;
       margin: 0 12px 10px;
       border-radius: 3px;
-      box-sizing: border-box;
-      padding: 5px 10px 7px;
+      padding: 5px 10px;
       border: 2px dashed #999;
+      font-size: 14px;
+      line-height: 1.5;
+
       .formulaTitle {
+        .title {
+          text-align: left;
+        }
+
+        .help {
+          position: relative;
+          &:hover {
+            .formulaPromptBox {
+              opacity: 1;
+            }
+          }
+          i {
+            font-size: 16px;
+            color: #c37f00;
+            cursor: pointer;
+          }
+          .formulaPromptBox {
+            position: absolute;
+            bottom: calc(100% + 9px);
+            left: -20px;
+            max-width: 220px;
+            min-width: 60px;
+            min-height: 40px;
+            margin-right: -180px;
+            padding: 8px 10px;
+            color: #000;
+            font-size: 13px;
+            line-height: 20px;
+            background-color: #ffffbd;
+            box-shadow: rgb(0 0 0 / 30%) 0px 0px 10px;
+            opacity: 0;
+            transition: 0.2s opacity 0.05s;
+            z-index: 1;
+            &::after {
+              content: '';
+              width: 0;
+              height: 0;
+              border-style: solid;
+              border-width: 11px 9px 0 9px;
+              border-color: #ffffbd transparent transparent transparent;
+              position: absolute;
+              top: 100%;
+              left: 20px;
+            }
+          }
+        }
       }
     }
 
@@ -474,10 +533,19 @@
           align-items: center;
           justify-content: center;
           cursor: pointer;
+          border-radius: 3px;
+          &:hover {
+            filter: brightness(1.1);
+          }
         }
         .countBtn {
-          background-color: #ffff1b;
           color: black;
+          border-radius: 3px;
+          background-color: #ffdf1b;
+          cursor: pointer;
+          &:hover {
+            filter: brightness(1.1);
+          }
         }
       }
     }
