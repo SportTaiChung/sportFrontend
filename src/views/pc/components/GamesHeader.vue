@@ -21,13 +21,22 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
-        <li
-          ><img
+        <li>
+          <img
             src="@/assets/img/common/icon_header_service.svg"
             class="icon-service"
             title="聯絡客服"
             @click="openService()"
-        /></li>
+          />
+        </li>
+        <li>
+          <img
+            src="@/assets/img/common/icon_header_user.svg"
+            class="icon-service"
+            title="個人設置"
+            @click="openPersonal()"
+          />
+        </li>
         <li>
           <img
             src="@/assets/img/common/logout.svg"
@@ -109,6 +118,9 @@
       },
       openService() {
         this.$emit('openService');
+      },
+      openPersonal() {
+        this.$emit('openPersonal');
       },
       logout() {
         this.$store.commit('SetLoading', true);

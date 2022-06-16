@@ -19,7 +19,7 @@ export default new Vuex.Store({
     nowThemeInfo: 'light', // 当前主题
     themes: ['light', 'dark'], // 所有主题
     // 當前語言都假定是簡體中文
-    Lang: 'cn',
+    Lang: 'tw',
   },
   mutations: {
     SetThemeInfo(state, theme) {

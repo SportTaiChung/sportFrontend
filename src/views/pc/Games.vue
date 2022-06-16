@@ -1,7 +1,7 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader @openService="openService()"></GamesHeader>
+      <GamesHeader @openService="openService()" @openPersonal="openPersonal()"></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -40,6 +40,9 @@
     ></StrayCountDialog>
 
     <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+
+    <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
+    </PersonalPanel>
   </div>
 </template>
 
@@ -53,6 +56,7 @@
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   import StrayCountDialog from './components/StrayCountDialog.vue';
   import ServiceChat from '@/components/ServiceChat';
+  import PersonalPanel from '@/components/PersonalPanel';
 
   export default {
     name: 'PCGames',
@@ -66,6 +70,7 @@
       GamesBetInfo,
       MoreGame,
       ServiceChat,
+      PersonalPanel,
     },
     data() {
       return {
@@ -75,7 +80,10 @@
         isShowSetting: false,
         // 顯示過關計算器
         isShowStrayCount: false,
+        // 顯示客服對話
         isOpenServiceChat: false,
+        // 顯示個人設置
+        isOpenPersonalPanel: false,
       };
     },
     created() {
@@ -126,6 +134,9 @@
       },
       openService() {
         this.isOpenServiceChat = true;
+      },
+      openPersonal() {
+        this.isOpenPersonalPanel = true;
       },
     },
   };
