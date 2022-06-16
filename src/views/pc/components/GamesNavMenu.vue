@@ -102,6 +102,8 @@
       if (this.gameStore.MenuList.length !== 0) {
         // 一進入頁面預設選取第一個
         this.menuItemClickHandler(this.gameStore.MenuList[0], null, 1);
+      } else {
+        this.$store.commit('SetLoading', false);
       }
 
       // 定時更新遊戲賠率

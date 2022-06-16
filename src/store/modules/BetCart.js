@@ -112,12 +112,11 @@ export default {
         return;
       }
 
-      // watch 此旗標就知道有新增投注到購物車
-      store.state.isAddNewToChart = !store.state.isAddNewToChart;
       let newBetData = JSON.parse(JSON.stringify(betData));
-
       let betAmount = null;
-      if (
+      if (rootStore.state.Game.isQuickBet.isEnable) {
+        betAmount = parseInt(rootStore.state.Game.isQuickBet.amount);
+      } else if (
         rootStore.state.Setting.UserSetting.defaultAmount.type === 1 ||
         rootStore.state.Setting.UserSetting.defaultAmount.type === 2
       ) {
@@ -133,6 +132,10 @@ export default {
       console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
       store.commit('pushCart', newBetData);
+
+      // watch 此旗標就知道有新增投注到購物車
+      store.state.isAddNewToChart = !store.state.isAddNewToChart;
+
       store.dispatch('callCartUpdateAPI', [betData.GameID]);
     },
     // 執行投注 API ,

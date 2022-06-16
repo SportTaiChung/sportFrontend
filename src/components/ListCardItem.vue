@@ -26,10 +26,20 @@
       </div>
       <div class="cardContentBlockRow"> {{ cartData.LeagueNameStr }} </div>
       <div class="cardContentBlockRow">
-        <div class="cardContentBlockRowText">{{ cartData.HomeTeamStr }}</div>
-        <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">(主)</div>
-        <div class="cardContentBlockRowText"> v {{ cartData.AwayTeamStr }}</div>
-        <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">(主)</div>
+        <!-- 只需要顯示一個隊伍 -->
+        <template v-if="cartData.AwayTeamStr === '.'">
+          <div class="teamRow">{{ cartData.HomeTeamStr }}</div>
+        </template>
+        <!-- 只需要顯示一個隊伍 -->
+        <template v-else-if="cartData.HomeTeamStr === '.'">
+          <div class="teamRow">{{ cartData.AwayTeamStr }}</div>
+        </template>
+        <template v-else>
+          <div class="cardContentBlockRowText">{{ cartData.HomeTeamStr }}</div>
+          <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">(主)</div>
+          <div class="cardContentBlockRowText"> v {{ cartData.AwayTeamStr }}</div>
+          <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">(主)</div>
+        </template>
       </div>
       <!-- 一般投注每一個item的各自金額 -->
       <div class="cardContentBlockRow" v-if="childIndex === 0">

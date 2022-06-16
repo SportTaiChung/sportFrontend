@@ -21,7 +21,7 @@ export default {
       state.moreGameData = {};
       state.teamData = {};
     },
-    updateMoreGameData(state, { updateOtherStore, updateData }) {
+    updateMoreGameData(state, { isUpdateFromOtherStore, updateData }) {
       if (Object.keys(state.moreGameData).length !== 0 && updateData.length !== 0) {
         updateData.forEach((newOddData) => {
           const newGameID = newOddData.GameID;
@@ -65,10 +65,11 @@ export default {
           });
         });
 
-        if (updateOtherStore) {
+        // 自己store呼叫的 dispatch
+        if (!isUpdateFromOtherStore) {
           // 更新主玩法data
           rootStore.commit('Game/updateGameList', {
-            updateOtherStore: false,
+            isUpdateFromOtherStore: true,
             updateData,
           });
         }
@@ -140,7 +141,7 @@ export default {
           EvtID,
         }).then((res) => {
           store.commit('updateMoreGameData', {
-            updateOtherStore: true,
+            isUpdateFromOtherStore: false,
             updateData: res.data,
           });
         });

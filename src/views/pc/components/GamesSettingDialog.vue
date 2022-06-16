@@ -1,56 +1,43 @@
 <template>
-  <div id="GamesSetupNew" @click.stop="onMaskClick">
+  <div id="GamesSettingDialog" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
         <div class="title"> 功能設定 </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
-        <div class="btn-help"> ? </div>
+        <el-popover popper-class="gameSetting-help-popper" placement="bottom-start" trigger="hover">
+          <div class="help-title">快速投注說明</div>
+          <div class="help-detail">
+            <!-- <h5>默認顯示類型</h5>
+            <p> 設定進入體育頁面默認顯示類型。 </p>
+
+            <h5>默認顯示球類</h5>
+            <p> 設定進入體育頁面默認顯示球類。 </p> -->
+
+            <h5>下注確認信息</h5>
+            <p> 設定投注時是否顯示下注確認信息。 </p>
+
+            <!-- <h5>默認排序</h5>
+            <p> 設定進入體育頁面默認排序方式。 </p> -->
+
+            <!-- <h5>投注成功信息</h5>
+            <p> 設定投注成功後是否顯示投注成功信息。 </p> -->
+
+            <h5>默認金額</h5>
+            <p>
+              最後投注：下注時將會預設為前次投注金額。
+              <br />
+              自訂：下注時將會預設為自訂金額。
+            </p>
+
+            <h5>自訂籌碼</h5>
+            <p> 設定投注頁面的顯示籌碼，最多設置6個。 </p>
+          </div>
+          <div class="btn-help" slot="reference"> ? </div>
+        </el-popover>
       </div>
 
       <div class="body">
         <ul class="list">
-          <!-- <li class="item">
-            <div class="title">賠率類型</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="includePrincipal"
-                    v-bind:value="true"
-                    v-model="mIncludePrincipal"
-                  />
-                  <span> 含本金 </span>
-                </label>
-                <label class="radio-item">
-                  <input
-                    type="radio"
-                    name="includePrincipal"
-                    v-bind:value="false"
-                    v-model="mIncludePrincipal"
-                  />
-                  <span> 不含本金 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
-          <!-- <li class="item">
-            <div class="title">賽事排序</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input type="radio" name="tableSort" v-bind:value="0" v-model="mTableSort" />
-                  <span> 熱門 </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="tableSort" v-bind:value="1" v-model="mTableSort" />
-                  <span> 時間 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
           <li class="item">
             <div class="title">下注確認信息</div>
             <div class="content">
@@ -159,22 +146,6 @@
             </div>
           </li>
 
-          <!-- <li class="item">
-            <div class="title">自動接收最佳賠率</div>
-            <div class="content">
-              <div class="radio-group">
-                <label class="radio-item">
-                  <input type="radio" name="acceptBetter" v-bind:value="true" v-model="mAcceptBetter" />
-                  <span> 是 </span>
-                </label>
-                <label class="radio-item">
-                  <input type="radio" name="acceptBetter" v-bind:value="false" v-model="mAcceptBetter" />
-                  <span> 否 </span>
-                </label>
-              </div>
-            </div>
-          </li> -->
-
           <li class="item">
             <div class="title">
               自訂籌碼
@@ -205,7 +176,7 @@
 
 <script>
   export default {
-    name: 'GamesSetupNew',
+    name: 'GamesSettingDialog',
     data() {
       return {
         chipsData: this.$SportLib.chipsData,
@@ -302,7 +273,7 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
-  #GamesSetupNew {
+  #GamesSettingDialog {
     position: fixed;
     top: 0;
     left: 0;
@@ -496,6 +467,36 @@
             background-color: #e1c300;
           }
         }
+      }
+    }
+  }
+</style>
+
+<style lang="scss">
+  .gameSetting-help-popper {
+    padding: 0;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+    .help-title {
+      color: #000;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding: 6px;
+    }
+    .help-detail {
+      color: #000;
+      font-size: 13px;
+      padding: 10px 20px;
+
+      h5 {
+        margin: 0;
+        font-weight: bold;
+        color: #336699;
+      }
+      p {
+        margin: 0;
+        line-height: 1.25;
+        margin-bottom: 1rem;
       }
     }
   }

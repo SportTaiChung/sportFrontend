@@ -1,10 +1,14 @@
 import {
+  getCatList,
   getGameResultLeagues,
   getMenuGameType,
   getMenuGameCatList,
   getGameDetail,
   getGameDetailSmall,
   getLive,
+  getQAHistory,
+  sendQAMessage,
+  sendQAFile,
 } from '@/api/Game';
 import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
@@ -13,6 +17,10 @@ import rootStore from '@/store';
 export default {
   namespaced: true,
   state: {
+    // 大分類 array
+    CatList: [],
+    // map對應表
+    CatMapData: {},
     // 左邊側欄上方選單列表
     GameTypeList: [],
     // 側欄選單列表
@@ -31,14 +39,31 @@ export default {
     selectLeagueIDs: [],
     // GamesNavMenu會去監聽此值,此值如果發生變化,會重新打detail API
     isCallGameDetailAPI: false,
+    // 是否快速投注
+    isQuickBet: {
+      isEnable: false,
+      amount: 10,
+    },
   },
   getters: {
     ...GameTypeListGetters,
   },
   mutations: {
+    setCatList(state, val) {
+      state.CatList = val;
+    },
+    setCatMapData(state, val) {
+      state.CatMapData = val;
+    },
     changeCatReset(state) {
       state.selectLeagueIDs.length = 0;
       state.selectLeagueIDs = [];
+    },
+    setQuickBetEnable(state, val) {
+      state.isQuickBet.isEnable = val;
+    },
+    setQuickBetAmount(state, val) {
+      state.isQuickBet.amount = val;
     },
     setGameTypeList(state, val) {
       state.GameTypeList.length = 0;
@@ -75,7 +100,7 @@ export default {
           return isLeagueEnable;
         })
           .map((it, index) => {
-            return { id: index, ...it };
+            return { ...it, id: index, CatNameStr: state.CatMapData[it.CatID].Name };
           })
           .map((listData) => {
             const newListData = JSON.parse(JSON.stringify(listData));
@@ -137,9 +162,10 @@ export default {
       state.selectCatID = selectCatID;
       state.selectWagerTypeKey = selectWagerTypeKey;
     },
-    updateGameList(state, { updateOtherStore, updateData }) {
+    updateGameList(state, { isUpdateFromOtherStore, updateData }) {
       if (state.GameList.length !== 0) {
         const notFindData = [];
+
         updateData.forEach((updateData) => {
           let isFind = false;
           state.GameList.every((GameData) => {
@@ -186,6 +212,13 @@ export default {
                     }
                   });
                 });
+                // 檢查League Data 的Team 是否EvtStatus 都為1,如果都是非1的話 就移除此League資料
+                const EvtStatusEnableList = GameData.Items.List[gameListIndex].Team.filter(
+                  (it) => it.EvtStatus === 1
+                );
+                if (EvtStatusEnableList.length === 0) {
+                  GameData.Items.List.splice(gameListIndex, 1);
+                }
               } catch (err) {
                 console.error('err:', err);
               }
@@ -199,17 +232,15 @@ export default {
           }
         });
 
-        if (!updateOtherStore) {
+        // 自己store呼叫的 dispatch
+        if (!isUpdateFromOtherStore) {
           // 更新數據有,但是Table卻沒有時,要重新打detail API
           if (notFindData.length !== 0) {
             console.warn('update的資料,detail資料不存在,即將重打detail API', notFindData);
             state.isCallGameDetailAPI = !state.isCallGameDetailAPI;
           }
-        }
-
-        if (updateOtherStore) {
           rootStore.commit('MoreGame/updateMoreGameData', {
-            updateOtherStore: false,
+            isUpdateFromOtherStore: true,
             updateData,
           });
         }
@@ -217,6 +248,30 @@ export default {
     },
   },
   actions: {
+    GetCatList(store) {
+      return new Promise((resolve, reject) => {
+        return getCatList()
+          .then((res) => {
+            const mapList = res.reduce((sum, it) => {
+              let appendObj = {};
+
+              it.GroupCatIDs.forEach((id) => {
+                appendObj = {
+                  ...appendObj,
+                  ...{
+                    [id]: it,
+                  },
+                };
+              });
+              return { ...sum, ...appendObj };
+            }, {});
+            store.commit('setCatList', res);
+            store.commit('setCatMapData', mapList);
+            resolve();
+          })
+          .catch(reject);
+      });
+    },
     // API(15,18)共用-聯賽Items
     GetGameResultLeagues(store) {
       return new Promise((resolve, reject) => {
@@ -321,7 +376,7 @@ export default {
               const newData = [
                 {
                   CatID: res.data.List[0].CatID,
-                  CatName: res.data.List[0].CatNameStr,
+                  CatName: store.state.CatMapData[res.data.List[0].CatID].Name,
                   Items: { ...res.data },
                 },
               ];
@@ -373,7 +428,7 @@ export default {
               `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
             );
             store.commit('updateGameList', {
-              updateOtherStore: true,
+              isUpdateFromOtherStore: false,
               updateData: res.data,
             });
           });
@@ -392,15 +447,41 @@ export default {
           EvtIDs: rootStore.state.Setting.UserSetting.favorites.join(','),
         }).then((res) => {
           store.commit('updateGameList', {
-            updateOtherStore: true,
+            isUpdateFromOtherStore: false,
             updateData: res.data,
           });
         });
       });
     },
-    GetLive(store) {
+    GetLiveURL(store) {
       return new Promise((resolve, reject) => {
         return getLive().then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    GetQAHistory(store) {
+      return new Promise((resolve, reject) => {
+        return getQAHistory().then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    SendQAMessage(store, message) {
+      return new Promise((resolve, reject) => {
+        return sendQAMessage({
+          Content: message,
+        }).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    SendQAFile(store, { base64File, name }) {
+      return new Promise((resolve, reject) => {
+        return sendQAFile({
+          Content: base64File,
+          FileName: name,
+        }).then((res) => {
           resolve(res);
         });
       });

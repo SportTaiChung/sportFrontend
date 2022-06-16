@@ -49,10 +49,19 @@
             </div>
             <div class="cardContentBlockRow"> {{ historyItem.dataBet[0].LeagueName }} </div>
             <div class="cardContentBlockRow">
-              <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
-              <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
-              <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
+              <template v-if="historyItem.dataBet[0].AwayTeam === '.'">
+                <div class="teamRow">{{ historyItem.dataBet[0].HomeTeam }}</div>
+              </template>
+              <template v-else-if="historyItem.dataBet[0].HomeTeam === '.'">
+                <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
+              </template>
+              <template v-else>
+                <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
+                <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
+                <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
+              </template>
             </div>
+
             <div class="cardContentBlockRow">
               <div class="cardContentBlockWithHalfRow">投注: {{ historyItem.Amount }}</div>
               <div class="cardContentBlockWithHalfRow">
@@ -348,6 +357,10 @@
               this.$store.state.Setting.UserSetting.defaultStrayAmount.amount
             );
           }
+
+          if (this.isQuickBetEnable) {
+            this.submitHandler();
+          }
         });
       },
       groupIndex: {
@@ -394,6 +407,12 @@
       chipsData() {
         this.chipPageIndex = 0;
       },
+      isQuickBetEnable(val) {
+        if (val) {
+          // 如果快速投注開啟時 清空購物車
+          this.cancelHandler();
+        }
+      },
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -438,6 +457,9 @@
           this.chipPageIndex * this.chipsNumPerPage,
           this.chipPageIndex * this.chipsNumPerPage + 3
         );
+      },
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
       },
     },
     methods: {
@@ -556,7 +578,6 @@
         // 扣掉本金 就可以得到串關賠率
         this.strayOdd = this.$lib.trunc(strayOdd - 1);
       },
-
       cancelHandler() {
         this.clearMemberData();
         this.$store.commit('BetCart/clearCart');
@@ -604,7 +625,7 @@
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
           const OddValue = this.$SportLib.cartDataToDisplayData(cartData).showOdd;
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-          if (cartData.BetMax === null && cartData.BetMin === null) {
+          if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
             errorMessage = '尚未收到注格資訊,請稍後再試';
             return false;
           }
@@ -667,7 +688,7 @@
           return;
         }
 
-        if (this.isLockMode || this.settings.showBetConfirm === false) {
+        if (this.isLockMode || this.settings.showBetConfirm === false || this.isQuickBetEnable) {
           // 多個投注時取最大的
           this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
             ...checkRes.map((checkRes) => checkRes.Amount)
@@ -675,7 +696,6 @@
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
-              console.log('!!submitBet done!!!');
               this.clearMemberData();
             })
             .catch((err) => {

@@ -6,6 +6,7 @@
         ref="header"
         :activeCollapse="activeCollapse"
         @toggleAllCollapse="toggleAllCollapse"
+        @openService="openService()"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
@@ -60,6 +61,8 @@
         @closeMorePanel="isShowMorePanel = false"
         @updateGameDetail="$refs.header.reCallGameDetailAPI()"
       ></mMenuPanel>
+
+      <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
     </div>
   </div>
 </template>
@@ -74,7 +77,8 @@
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup';
   import mMenuPanel from './components/mMenuPanel';
-  import MoreGame from '../../components/MoreGame.vue';
+  import MoreGame from '@/components/MoreGame';
+  import ServiceChat from '@/components/ServiceChat';
 
   export default {
     name: 'MobileGames',
@@ -88,6 +92,7 @@
       mWagerTypePopup,
       mMenuPanel,
       MoreGame,
+      ServiceChat,
     },
     data() {
       return {
@@ -97,6 +102,7 @@
         isShowBetRecordView: false,
         isShowWagerTypePopup: false,
         isShowMorePanel: false,
+        isOpenServiceChat: false,
       };
     },
     computed: {
@@ -138,6 +144,9 @@
       },
       onOpenMorePanel() {
         this.isShowMorePanel = true;
+      },
+      openService() {
+        this.isOpenServiceChat = true;
       },
     },
     watch: {

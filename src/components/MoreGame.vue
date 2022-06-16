@@ -57,8 +57,14 @@
         </li> -->
       </ul>
 
-      <div v-show="gameType2Page == 2">
-        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
+      <!-- 即將推出 -->
+      <div
+        v-show="gameType2Page == 2"
+        class="coming-soon"
+        src="@/assets/img/common/coming_soon.jpg"
+        @click="onComingSoonClick()"
+      >
+        <img src="@/assets/img/common/coming_soon.jpg" />
       </div>
 
       <!-- 比分板區塊 -->
@@ -79,9 +85,10 @@
       </div>
     </div>
 
-    <div class="GameInfoBlock" v-if="gameTypeID === 1">
+    <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
+        <!-- 收藏按鈕 -->
         <li
           v-if="isMobileMode"
           class="item"
@@ -125,8 +132,14 @@
         </li>
       </ul>
 
-      <div>
-        <img class="coming-soon" src="@/assets/img/common/coming_soon.jpg" alt="coming soon" />
+      <!-- 即將推出 -->
+      <div
+        v-show="true"
+        class="coming-soon"
+        src="@/assets/img/common/coming_soon.jpg"
+        @click="onComingSoonClick()"
+      >
+        <img src="@/assets/img/common/coming_soon.jpg" />
       </div>
     </div>
 
@@ -455,7 +468,7 @@
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,
           CatID: leagueData.CatID,
-          CatNameStr: leagueData.CatNameStr,
+          CatNameStr: this.$store.state.Game.CatMapData[leagueData.CatID].Name,
           LeagueNameStr: this.moreGameData.LeagueNameStr,
           HomeTeamStr: this.getteamData.home,
           AwayTeamStr: this.getteamData.away,
@@ -473,6 +486,27 @@
           return 'active';
         } else {
           return '';
+        }
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLiveURL')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
+      onComingSoonClick() {
+        console.log(this.gameTypeID);
+        if (this.gameTypeID === 2) {
+          // 滾球
+          if (this.gameType2Page === 2) {
+            // 直播
+            this.openLive();
+          }
         }
       },
     },
@@ -679,9 +713,14 @@
       }
     }
 
-    img.coming-soon {
-      width: 100%;
-      display: block;
+    div.coming-soon {
+      text-align: center;
+      background: #333;
+      img {
+        width: 100%;
+        max-width: 370px;
+        vertical-align: middle;
+      }
     }
 
     .star {

@@ -95,7 +95,7 @@ export const PlayMethodData = {
   // 讓分
   HandiCap: {
     name: 'HandiCap',
-    typeIdList: [101, 103],
+    typeIdList: [101, 103, 121],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -103,7 +103,7 @@ export const PlayMethodData = {
   // 大小
   BigSmall: {
     name: 'BigSmall',
-    typeIdList: [102, 104, 109],
+    typeIdList: [102, 104, 109, 122, 125],
     betCutLineDealFunc: function (oddData) {
       return oddData.OULine;
     },
@@ -111,7 +111,7 @@ export const PlayMethodData = {
   // 獨贏
   SoloWin: {
     name: 'SoloWin',
-    typeIdList: [110, 111],
+    typeIdList: [110, 111, 127],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -562,6 +562,7 @@ export function getMenuIconByCatID(catID) {
     5: 'icon_sportMenu_soccer.svg',
     21: 'icon_sportMenu_pingpong.svg',
     22: 'icon_sportMenu_badminton.svg',
+    23: 'icon_sportMenu_volleyball.svg',
     31: 'icon_sportMenu_worldCup.svg',
     32: 'icon_sportMenu_UEFA.svg',
     4: 'icon_sportMenu_baseball.svg',
@@ -573,9 +574,10 @@ export function getMenuIconByCatID(catID) {
     3: 'icon_sportMenu_basketball.svg',
     16: 'icon_sportMenu_basketball.svg',
     55: 'icon_sportMenu_tennis.svg',
-    72: '',
+    72: 'icon_horse.svg',
     82: 'icon_sportMenu_hockey.svg',
-    83: '',
+    83: 'icon_lottery.svg',
+    84: 'icon_invest.svg',
     85: 'icon_sportMenu_pcgame.svg',
     '-999': 'icon_sportMenu_star.svg',
     default: 'icon_sportMenu_soccer.svg',

@@ -59,7 +59,7 @@
       openLive() {
         this.$store.commit('SetLoading', true);
         this.$store
-          .dispatch('Game/GetLive')
+          .dispatch('Game/GetLiveURL')
           .then((res) => {
             window.open(res.data);
           })

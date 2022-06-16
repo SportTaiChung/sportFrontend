@@ -1,7 +1,7 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader></GamesHeader>
+      <GamesHeader @openService="openService()"></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -19,51 +19,69 @@
       <MoreGame v-if="isShowMoreGame" @AddToCart="AddToCartEvent()"></MoreGame>
       <GamesBetInfo
         ref="GamesBetInfo"
-        @openSetup="
-          isShowSetup = true;
-          $refs.GamesSetupNew.loadSettings();
+        @openSetting="
+          isShowSetting = true;
+          $refs.GamesSettingDialog.loadSettings();
         "
+        @openStrayCount="isShowStrayCount = true"
       />
     </div>
 
-    <GamesSetupNew
-      ref="GamesSetupNew"
-      v-show="isShowSetup"
-      @closeMe="isShowSetup = false"
-    ></GamesSetupNew>
+    <GamesSettingDialog
+      ref="GamesSettingDialog"
+      v-show="isShowSetting"
+      @closeMe="isShowSetting = false"
+    ></GamesSettingDialog>
+
+    <StrayCountDialog
+      ref="StrayCountDialog"
+      v-if="isShowStrayCount"
+      @closeMe="isShowStrayCount = false"
+    ></StrayCountDialog>
+
+    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
   </div>
 </template>
 
 <script>
   import GamesHeader from './components/GamesHeader.vue';
   import GamesSetup from './components/GamesSetup.vue';
-  import GamesSetupNew from './components/GamesSetupNew.vue';
+  import GamesSettingDialog from './components/GamesSettingDialog.vue';
   import GamesNavMenu from './components/GamesNavMenu.vue';
   import GamesTableList from './components/GamesTable/GamesTableList.vue';
   import MoreGame from '../../components/MoreGame.vue';
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
+  import StrayCountDialog from './components/StrayCountDialog.vue';
+  import ServiceChat from '@/components/ServiceChat';
+
   export default {
     name: 'PCGames',
     components: {
       GamesHeader,
       GamesSetup,
-      GamesSetupNew,
+      GamesSettingDialog,
+      StrayCountDialog,
       GamesNavMenu,
       GamesTableList,
       GamesBetInfo,
       MoreGame,
+      ServiceChat,
     },
     data() {
       return {
         // 左側選單是否縮起選單
         isNavMenuCollapse: false,
-        isShowSetup: false,
+        // 顯示設定
+        isShowSetting: false,
+        // 顯示過關計算器
+        isShowStrayCount: false,
+        isOpenServiceChat: false,
       };
     },
     created() {
       //* Test 可在控制台下這個,來測試更新賠率
       //   game.setFakeUpdate({
-      //     "LeagueID": 7859,
+      //     "LeagueID": 1247,
       //         "WagerTypeID": 101,
       //         "WagerGrpID": 0,
       //         "GameID": 100701236,
@@ -80,7 +98,7 @@
       //         "AwayOdds": "0",
       //         "DrewOdds": "0",
       //         "Status": 0,
-      //         "EvtStatus": 0
+      //         "EvtStatus": -1
       // })
       window.game = this;
       window.store = this.$store;
@@ -92,7 +110,10 @@
     },
     methods: {
       setFakeUpdate(data) {
-        this.$store.commit('Game/updateGameList', [data]);
+        this.$store.commit('Game/updateGameList', {
+          isUpdateFromOtherStore: false,
+          updateData: [data],
+        });
       },
       AddToCartEvent() {
         this.$refs.GamesBetInfo.resetGroupIndex();
@@ -102,6 +123,9 @@
       },
       ChangeCat() {
         this.$refs.GamesSetup.clearLeagueList();
+      },
+      openService() {
+        this.isOpenServiceChat = true;
       },
     },
   };

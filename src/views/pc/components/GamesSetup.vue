@@ -56,9 +56,29 @@
     </div>
     <div class="setUp_R">
       <span class="setUp_color">快速投註</span>
-      <input v-model="input" v-show="quick_bet" placeholder="請輸入金額" class="setUp_input" />
-      <el-switch v-model="quick_bet" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
-      <i class="el-icon-question"></i>
+      <input
+        v-model="quickBetAmount"
+        v-show="quickBetEnable"
+        placeholder="請輸入金額"
+        class="setUp_input"
+        @change="quickBetAmountChangeHandler"
+      />
+      <el-switch
+        v-model="quickBetEnable"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+        @change="quickBetEnableChangeHandler"
+      >
+      </el-switch>
+      <el-popover popper-class="fastBet-help-popper" placement="bottom-start" trigger="hover">
+        <div class="help-title">快速投注說明</div>
+        <div class="help-detail">
+          1.設定投這金額<br />
+          2.點擊投注項目<br />
+          3.投注完成
+        </div>
+        <i class="el-icon-question" slot="reference"></i>
+      </el-popover>
     </div>
 
     <el-dialog
@@ -96,9 +116,9 @@
     name: 'GamesSetup',
     data() {
       return {
-        quick_bet: false, // 快速投注开关
+        quickBetEnable: false, // 快速投注开关
+        quickBetAmount: 0,
         listValue: '含本金',
-        input: '',
         isAcceptBetter: null,
         sortValue: null,
         sortList: [
@@ -153,8 +173,18 @@
           return this.LeagueListData;
         }
       },
+      isQuickBet() {
+        return this.$store.state.Game.isQuickBet;
+      },
     },
     watch: {
+      isQuickBet: {
+        handler(val) {
+          this.quickBetEnable = val.isEnable;
+          this.quickBetAmount = val.amount;
+        },
+        immediate: true,
+      },
       TimeCountDown() {
         const dateTime = this.TimeCountDown.time;
         if (dateTime === '12:00:10') {
@@ -181,6 +211,12 @@
       },
     },
     methods: {
+      quickBetAmountChangeHandler() {
+        this.$store.commit('Game/setQuickBetAmount', parseInt(this.quickBetAmount));
+      },
+      quickBetEnableChangeHandler() {
+        this.$store.commit('Game/setQuickBetEnable', this.quickBetEnable);
+      },
       visibilitychangeEvent() {
         if (document.visibilityState === 'visible') {
           this.initTimeAPI();
@@ -440,6 +476,25 @@
         outline: none;
         margin: 0 10px;
       }
+    }
+  }
+</style>
+
+<style lang="scss">
+  .fastBet-help-popper {
+    padding: 0;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+    .help-title {
+      color: #000;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding: 6px;
+    }
+    .help-detail {
+      color: #000;
+      font-size: 13px;
+      padding: 10px 20px;
     }
   }
 </style>

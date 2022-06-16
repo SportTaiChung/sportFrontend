@@ -21,10 +21,18 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
+        <li
+          ><img
+            src="@/assets/img/common/icon_header_service.svg"
+            class="icon-service"
+            title="聯絡客服"
+            @click="openService()"
+        /></li>
         <li>
           <img
-            src="@/assets/img/pc/icon_header_logout.svg"
+            src="@/assets/img/common/logout.svg"
             class="logoutIcon"
+            title="登出"
             alt=""
             @click="logout"
           />
@@ -99,6 +107,9 @@
           this.activeIndex = '4';
         }, 1);
       },
+      openService() {
+        this.$emit('openService');
+      },
       logout() {
         this.$store.commit('SetLoading', true);
         this.$store.dispatch('User/Logout').finally(() => {
@@ -157,6 +168,13 @@
           cursor: pointer;
         }
         .logoutIcon {
+          width: 20px;
+          height: 20px;
+          margin-top: 24px;
+          color: white;
+          cursor: pointer;
+        }
+        .icon-service {
           width: 20px;
           height: 20px;
           margin-top: 24px;

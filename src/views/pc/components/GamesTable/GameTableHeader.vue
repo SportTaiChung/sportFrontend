@@ -1,8 +1,8 @@
 <template>
   <table class="GameTableHeader">
     <tbody class="GameTableBody">
-      <td class="FirstCatNameBlock">
-        <div class="leftArrowBlock" @click="clickArrow">
+      <td class="FirstCatNameBlock" @click="clickArrow">
+        <div class="leftArrowBlock">
           <i :class="arrowIconJudge" />
         </div>
         {{ CatName }}
@@ -66,6 +66,15 @@
 
 <style lang="scss" scoped>
   @import './GameTable.scss';
-  #GameTableHeader {
+  .GameTableHeader {
+    .GameTableBody {
+      height: 100%;
+      .FirstCatNameBlock {
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 </style>
