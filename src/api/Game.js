@@ -105,6 +105,18 @@ export function getBetInfo(postData = {}) {
   });
 }
 
+// 23.获取历史投注日统计数据
+export function getBetDayHistory(postData = {}) {
+  return request({
+    url: `/GameInfo/Ticket/betDayHistory`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang, ...postData },
+  });
+}
+
 // 24. 获取即时注单紀錄
 export function getBetHistory(postData = {}) {
   return request({

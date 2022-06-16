@@ -106,7 +106,7 @@
       },
       OpenPopupCenter() {
         const historyRecord = this.$router.resolve({
-          path: 'historyRecord',
+          path: 'HistoryRecord',
         });
         this.WindowOpen(historyRecord.href);
       },

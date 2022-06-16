@@ -74,6 +74,7 @@ export default async () => {
       store.state.isInit ||
       to.name === 'Init' ||
       to.name === 'Login' ||
+      to.name === 'HistoryRecord' ||
       to.name === 'TestOddData' ||
       to.name === 'TestTableData' ||
       to.name === 'TestVirtualList'
