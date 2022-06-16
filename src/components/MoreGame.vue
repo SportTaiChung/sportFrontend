@@ -468,7 +468,7 @@
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,
           CatID: leagueData.CatID,
-          CatNameStr: leagueData.CatNameStr,
+          CatNameStr: this.$store.state.Game.CatMapData[leagueData.CatID].Name,
           LeagueNameStr: this.moreGameData.LeagueNameStr,
           HomeTeamStr: this.getteamData.home,
           AwayTeamStr: this.getteamData.away,

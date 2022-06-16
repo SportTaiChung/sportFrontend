@@ -25,12 +25,14 @@
           ><img
             src="@/assets/img/common/icon_header_service.svg"
             class="icon-service"
+            title="聯絡客服"
             @click="openService()"
         /></li>
         <li>
           <img
             src="@/assets/img/pc/icon_header_logout.svg"
             class="logoutIcon"
+            title="登出"
             alt=""
             @click="logout"
           />
