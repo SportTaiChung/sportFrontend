@@ -165,6 +165,7 @@ export default {
     updateGameList(state, { updateOtherStore, updateData }) {
       if (state.GameList.length !== 0) {
         const notFindData = [];
+
         updateData.forEach((updateData) => {
           let isFind = false;
           state.GameList.every((GameData) => {
@@ -211,6 +212,13 @@ export default {
                     }
                   });
                 });
+                // 檢查League Data 的Team 是否EvtStatus 都為1,如果都是非1的話 就移除此League資料
+                const EvtStatusEnableList = GameData.Items.List[gameListIndex].Team.filter(
+                  (it) => it.EvtStatus === 1
+                );
+                if (EvtStatusEnableList.length === 0) {
+                  GameData.Items.List.splice(gameListIndex, 1);
+                }
               } catch (err) {
                 console.error('err:', err);
               }

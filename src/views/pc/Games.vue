@@ -81,7 +81,7 @@
     created() {
       //* Test 可在控制台下這個,來測試更新賠率
       //   game.setFakeUpdate({
-      //     "LeagueID": 7859,
+      //     "LeagueID": 1247,
       //         "WagerTypeID": 101,
       //         "WagerGrpID": 0,
       //         "GameID": 100701236,
@@ -98,7 +98,7 @@
       //         "AwayOdds": "0",
       //         "DrewOdds": "0",
       //         "Status": 0,
-      //         "EvtStatus": 0
+      //         "EvtStatus": -1
       // })
       window.game = this;
       window.store = this.$store;
@@ -110,7 +110,10 @@
     },
     methods: {
       setFakeUpdate(data) {
-        this.$store.commit('Game/updateGameList', [data]);
+        this.$store.commit('Game/updateGameList', {
+          updateOtherStore: true,
+          updateData: [data],
+        });
       },
       AddToCartEvent() {
         this.$refs.GamesBetInfo.resetGroupIndex();
