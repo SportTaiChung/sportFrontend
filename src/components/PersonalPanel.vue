@@ -16,7 +16,12 @@
         <div class="row">
           <div class="rowTitle"> 暱稱</div>
           <div class="rowContent">
-            <el-input v-model="nickName"></el-input>
+            <el-input
+              v-model="nickName"
+              :suffix-icon="inputIcon"
+              @focus="inputFocus"
+              @blur="inputBlur"
+            ></el-input>
           </div>
         </div>
         <div class="row">
@@ -45,6 +50,7 @@
     data() {
       return {
         nickName: '',
+        lastNickName: '',
         lang: 'tw',
         langOptions: [
           {
@@ -52,20 +58,66 @@
             label: '繁體中文',
           },
         ],
+        isFocus: false,
       };
     },
-    computed: {},
+    computed: {
+      inputIcon() {
+        if (this.isFocus) {
+          return 'el-icon-success';
+        } else {
+          return '';
+        }
+      },
+    },
     methods: {
       // 離開
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('closeMe');
       },
+      inputFocus() {
+        this.isFocus = true;
+      },
+      inputBlur() {
+        this.isFocus = false;
+
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('User/setNickName', {
+            Nickname: this.nickName,
+          })
+          .then((res) => {
+            this.lastNickName = this.nickName;
+            this.$notify({
+              title: '成功',
+              message: '修改成功',
+              type: 'success',
+            });
+          })
+          .catch(() => {
+            this.nickName = this.lastNickName;
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
     },
-    mounted() {},
+    created() {
+      this.nickName = this.$store.state.User.UserData.RealName;
+      this.lastNickName = this.nickName;
+    },
   };
 </script>
 
+<style lang="scss">
+  .el-input__suffix {
+    .el-input__icon {
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
+</style>
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
   #PersonalPanel {

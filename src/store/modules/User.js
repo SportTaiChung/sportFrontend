@@ -1,4 +1,4 @@
-import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
+import { login, logout, getUserInfoAbout, getUserInfoCash, setNickName } from '@/api/User';
 
 export default {
   namespaced: true,
@@ -74,6 +74,9 @@ export default {
           })
           .catch(reject);
       });
+    },
+    setNickName(store, postData) {
+      return setNickName(postData);
     },
   },
 };

@@ -42,3 +42,15 @@ export function getUserInfoCash() {
     },
   });
 }
+
+// 設置暱稱
+export function setNickName(postData) {
+  return request({
+    url: `/mb/info/setNickname`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}
