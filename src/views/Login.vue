@@ -107,6 +107,9 @@
         },
       },
     },
+    created() {
+      window.auto = this.auto;
+    },
     methods: {
       handleLogin() {
         this.$store.commit('SetLoading', true);
@@ -122,9 +125,20 @@
             this.$router.replace({ name: 'Init' });
           });
       },
-
       openServiceChat(issue) {
         this.isOpenServiceChat = true;
+      },
+      auto() {
+        this.$store
+          .dispatch('User/Login', {
+            mbID: 'abcd_a13',
+            pw: '123456789',
+            siteid: 1,
+            verCode: '5688',
+          })
+          .then((res) => {
+            this.$router.replace({ name: 'Init' });
+          });
       },
     },
   };

@@ -87,7 +87,8 @@
       WindowOpen(href) {
         const width = document.documentElement.clientWidth;
         const height = document.documentElement.clientHeight;
-        const popupwidth = width * 0.6;
+        // const popupwidth = width * 0.6;
+        const popupwidth = 1200;
         const popupheight = height * 0.6;
         const top = (height - popupheight + 20) / 2;
         const left = (width - popupwidth) / 2;

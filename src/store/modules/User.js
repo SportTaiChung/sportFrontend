@@ -28,7 +28,7 @@ export default {
   actions: {
     Login(store, postData) {
       return new Promise((resolve, reject) => {
-        return login({ udomain: document.domain.split('.').slice(-2).join('.'), ...postData })
+        return login(postData)
           .then(async (res) => {
             store.commit('SetMBID', res.data.mb.mbID);
             store.commit('SetToken', res.data.loginID);

@@ -7,11 +7,11 @@ export default {
   getters: {},
   mutations: {},
   actions: {
-    getBetDayHistory() {
-      return getBetDayHistory();
+    getBetDayHistory(store, postData) {
+      return getBetDayHistory(postData);
     },
-    getBetHistory() {
-      return getBetHistory();
+    getBetHistory(store, postData) {
+      return getBetHistory(postData);
     },
   },
 };

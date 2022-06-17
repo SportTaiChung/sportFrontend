@@ -559,7 +559,7 @@ export function cartDataToDisplayData(cartData) {
 export function getMenuIconByCatID(catID) {
   const iconMap = Object.freeze({
     1: 'icon_sportMenu_soccer.svg',
-    5: 'icon_sportMenu_soccer.svg',
+    5: 'icon_sportMenu_football.svg',
     21: 'icon_sportMenu_pingpong.svg',
     22: 'icon_sportMenu_badminton.svg',
     23: 'icon_sportMenu_volleyball.svg',
