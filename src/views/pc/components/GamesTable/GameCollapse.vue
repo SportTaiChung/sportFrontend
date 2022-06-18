@@ -28,21 +28,47 @@
                 <div class="centerTeamBlock">
                   <!-- 只需要顯示一個隊伍 -->
                   <template v-if="teamData.AwayTeamStr === '.'">
-                    <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                    <div class="teamRow">
+                      {{ teamData.HomeTeamStr }}
+                      <span class="teamPt">{{ teamData.HomePtNameStr }}</span>
+                    </div>
                   </template>
                   <!-- 只需要顯示一個隊伍 -->
                   <template v-else-if="teamData.HomeTeamStr === '.'">
-                    <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                    <div class="teamRow">
+                      {{ teamData.AwayTeamStr }}
+                      <span class="teamPt">{{ teamData.AwayPtNameStr }}</span>
+                    </div>
                   </template>
                   <template v-else>
                     <!-- 主客場對調 -->
                     <template v-if="!teamData.SetFlag">
-                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
-                      <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
+                      <div class="teamRow"
+                        >{{ teamData.AwayTeamStr }}
+                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                          -{{ teamData.AwayPtNameStr }}
+                        </span>
+                      </div>
+                      <div class="teamRow"
+                        >{{ teamData.HomeTeamStr }}
+                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                          -{{ teamData.HomePtNameStr }}
+                        </span>
+                      </div>
                     </template>
                     <template v-else>
-                      <div class="teamRow">{{ teamData.HomeTeamStr }}</div>
-                      <div class="teamRow">{{ teamData.AwayTeamStr }}</div>
+                      <div class="teamRow"
+                        >{{ teamData.HomeTeamStr }}
+                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                          -{{ teamData.HomePtNameStr }}
+                        </span>
+                      </div>
+                      <div class="teamRow"
+                        >{{ teamData.AwayTeamStr }}
+                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                          -{{ teamData.AwayPtNameStr }}
+                        </span>
+                      </div>
                     </template>
                   </template>
 
@@ -524,6 +550,9 @@
               white-space: nowrap;
               font-size: 13px;
               line-height: 18px;
+              .teamPt {
+                color: gray;
+              }
             }
           }
           .rightFavoriteBlock {

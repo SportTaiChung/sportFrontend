@@ -11,6 +11,7 @@
       />
     </div>
 
+    <!-- 滾球 -->
     <div class="GameInfoBlock" v-if="gameTypeID === 2">
       <!-- 滾球 上半部資訊 -->
       <ul class="navList">
@@ -64,7 +65,7 @@
         src="@/assets/img/common/coming_soon.jpg"
         @click="onComingSoonClick()"
       >
-        <img src="@/assets/img/common/coming_soon.jpg" />
+        <img src="@/assets/img/common/coming_soon.jpg" style="cursor: pointer" />
       </div>
 
       <!-- 比分板區塊 -->
@@ -85,6 +86,7 @@
       </div>
     </div>
 
+    <!-- 早盤、今日 -->
     <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
