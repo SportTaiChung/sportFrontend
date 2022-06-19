@@ -1,13 +1,45 @@
 <template>
-  <div id="GameResult">
+  <div id="GameResult" @click="onPageClick">
     <div class="main-title">
       <h3>賽果</h3>
     </div>
 
     <!-- 功能選單 -->
     <div class="function-bar">
-      <div class="date"> 日期 </div>
-      <div class="update"> 更新 </div>
+      <div class="date">
+        <i class="el-icon-arrow-left" @click="goPreviousDay()"></i>
+        <div class="text" ref="btnDatePicker" @click="isShowDatePicker = !isShowDatePicker">
+          {{ dateToString(selectedDate) }}
+        </div>
+        <i class="el-icon-arrow-right" @click="goNextDay()"></i>
+
+        <ul class="date-picker" v-show="isShowDatePicker">
+          <li
+            v-for="(date, i) in lastDays"
+            :key="i"
+            :class="selectedDateIndex === i ? 'active' : ''"
+            @click="selectedDateIndex = i"
+            >{{ dateToString(date) }}</li
+          >
+        </ul>
+      </div>
+      <div class="timer">
+        <div class="text" ref="btnTimer" @click="isShowTimerList = !isShowTimerList">
+          {{ timerType[timerTypeIndex] }}
+          <i class="el-icon-arrow-down"></i>
+        </div>
+
+        <ul class="updateTypeList" v-show="isShowTimerList">
+          <li
+            v-for="(type, i) in timerType"
+            :key="i"
+            :class="timerTypeIndex === i ? 'active' : ''"
+            @click="timerTypeIndex = i"
+            >{{ timerType[i] }}</li
+          >
+        </ul>
+      </div>
+      <div class="countdownSec" v-if="timerTypeIndex > 0"> {{ countdownSec }} </div>
       <div class="btn-refresh" @click="getGameResult()"> <i class="el-icon-refresh-right"></i></div>
       <div class="league-filter"> 聯盟選擇 </div>
     </div>
@@ -18,7 +50,6 @@
       <div class="gameTypeList">
         <div class="header">球賽列表</div>
         <ul class="list">
-          <!-- v-for me -->
           <li
             v-for="(cat, i) in CatList"
             :key="i"
@@ -56,7 +87,11 @@
           <!-- 賽果 TableList -->
           <div class="tableList" v-show="isShowTableList">
             <template v-for="(resultData, index) in resultDataArray">
-              <BaseBall v-if="selectedCatId === 1" :resultData="resultData" :key="index"></BaseBall>
+              <BaseBall
+                v-if="selectedCatId === 101"
+                :resultData="resultData"
+                :key="index"
+              ></BaseBall>
             </template>
           </div>
         </div>
@@ -68,6 +103,10 @@
 <script>
   // import 各球種模板
   import BaseBall from '@/components/GameResultTable/BaseBall.vue';
+  import headers from '@/components/GameResultTable/headers.js';
+  console.log(headers);
+  const today = new Date();
+  const dateRange = 10;
 
   export default {
     name: 'GameResult',
@@ -77,14 +116,39 @@
     data() {
       return {
         selectedCatId: null,
-        titles: ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'OT', '全場'],
         isShowTableList: true,
         resultDataArray: [],
+        today: today,
+        lastDays: new Array(dateRange).fill(0).map((it, index) => {
+          const result = new Date(today);
+          result.setDate(result.getDate() - index);
+          return result;
+        }),
+        selectedDateIndex: 0,
+        isShowDatePicker: false,
+        isShowTimerList: false,
+        sysTimer: null,
+        timerType: ['不更新', '每 30 秒', '每 60 秒'],
+        timerTypeSec: [null, 30, 60],
+        timerTypeIndex: 0,
+        countdownSec: null,
       };
     },
     computed: {
       CatList() {
         return this.$store.state.Game.CatList;
+      },
+      selectedDate() {
+        return this.lastDays[this.selectedDateIndex];
+      },
+      selectedDateYYYYMMDD() {
+        return this.dateToYYYYMMDD(this.selectedDate);
+      },
+      totalCountdownSec() {
+        return this.timerTypeSec[this.timerTypeIndex];
+      },
+      titles() {
+        return headers[this.selectedCatId];
       },
     },
     created() {
@@ -100,16 +164,34 @@
           this.$store.commit('SetLoading', false);
         });
     },
-
+    mounted() {
+      this.sysTimer = setInterval(() => {
+        const totalSec = this.totalCountdownSec;
+        if (totalSec > 0) {
+          if (this.countdownSec > 0) {
+            this.countdownSec--;
+            if (this.countdownSec === 0) {
+              this.countdownSec = totalSec;
+              this.getGameResult();
+            }
+          }
+        }
+      }, 1000);
+    },
+    destroyed() {
+      clearInterval(this.sysTimer);
+    },
     methods: {
       getMenuIconByCatID(catId) {
         return require('@/assets/img/common/menuIcon/' + this.$SportLib.getMenuIconByCatID(catId));
       },
       getGameResult() {
+        this.resultDataArray = [];
         const postData = {
           CatID: this.selectedCatId,
+          ScheduleTime: this.selectedDateYYYYMMDD,
         };
-
+        this.countdownSec = null;
         this.$store.commit('SetLoading', true);
         this.$store
           .dispatch('Game/GetGameResult', postData)
@@ -118,13 +200,54 @@
             this.resultDataArray = res.data;
           })
           .finally(() => {
+            this.countdownSec = this.totalCountdownSec;
             this.$store.commit('SetLoading', false);
           });
       },
+      dateToString(date) {
+        let mm = date.getMonth() + 1;
+        mm = mm < 10 ? '0' + mm : mm;
+        let dd = date.getDate();
+        dd = dd < 10 ? '0' + dd : dd;
+        const day = date.getDay();
+        const dayArr = ['日', '一', '二', '三', '四', '五', '六'];
+        return `${mm}-${dd} 星期${dayArr[day]}`;
+      },
+      dateToYYYYMMDD(date) {
+        const yyyy = date.getFullYear();
+        let mm = date.getMonth() + 1;
+        mm = mm < 10 ? '0' + mm : mm;
+        let dd = date.getDate();
+        dd = dd < 10 ? '0' + dd : dd;
+        return `${yyyy}-${mm}-${dd}`;
+      },
+      goNextDay() {
+        this.selectedDateIndex > 0 && this.selectedDateIndex--;
+      },
+      goPreviousDay() {
+        this.selectedDateIndex < dateRange - 1 && this.selectedDateIndex++;
+      },
+      onPageClick(e) {
+        const btnDatePicker = this.$refs.btnDatePicker;
+        const btnTimer = this.$refs.btnTimer;
+        if (e.target !== btnDatePicker) {
+          this.isShowDatePicker = false;
+        }
+        if (e.target !== btnTimer) {
+          this.isShowTimerList = false;
+        }
+      },
     },
     watch: {
-      selectedCatId(newValue, oldValue) {
+      selectedCatId() {
         this.getGameResult();
+      },
+      selectedDateIndex() {
+        this.getGameResult();
+        this.isShowDatePicker = false;
+      },
+      timerTypeIndex() {
+        this.countdownSec = this.totalCountdownSec;
       },
     },
   };
@@ -166,19 +289,56 @@
         position: relative;
         text-align: center;
         width: 170px;
-        color: #fff;
-        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0 0.8rem;
+
+        .el-icon-arrow-left {
+          margin-right: auto;
+          font-size: 17px;
+          font-weight: 500;
+          padding-right: 5px;
+          cursor: pointer;
+          &:hover {
+            color: #fff;
+          }
+        }
+        .el-icon-arrow-right {
+          margin-left: auto;
+          font-size: 17px;
+          font-weight: 500;
+          padding-left: 5px;
+          cursor: pointer;
+          &:hover {
+            color: #fff;
+          }
+        }
+        .text {
+          color: #fff;
+          overflow: hidden;
+          white-space: nowrap;
+          line-height: normal;
+          cursor: pointer;
+        }
       }
 
-      .update {
+      .timer {
         position: relative;
         text-align: center;
         width: 100px;
         cursor: pointer;
       }
 
+      .countdownSec {
+        color: orange;
+        padding-left: 1rem;
+        padding-right: 0.5rem;
+        font-weight: bold;
+        line-height: normal;
+      }
+
       .date,
-      .update {
+      .timer {
         &::after {
           content: '';
           position: absolute;
@@ -219,12 +379,56 @@
         }
       }
 
-      .date,
-      .update,
       .btn-refresh,
       .league-filter {
         &:hover {
           color: #fff;
+        }
+      }
+
+      ul.date-picker,
+      ul.updateTypeList {
+        position: absolute;
+        top: calc(100% + 20px);
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f0f0f0;
+        min-width: 130px;
+        z-index: 10;
+        box-shadow: rgb(0 0 0 / 30%) 0 0 10px;
+
+        &::before {
+          content: '';
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-width: 0 9px 11px 9px;
+          border-color: transparent transparent #f0f0f0 transparent;
+          position: absolute;
+          left: 0;
+          right: 0;
+          margin: 0 auto;
+          top: -10px;
+          z-index: 1;
+        }
+
+        li {
+          height: 36px;
+          line-height: 36px;
+          color: #000;
+          text-align: center;
+          padding: 0 15px;
+          background-color: #f0f0f0;
+          border-bottom: 1px solid #e0e0e0;
+
+          &.active {
+            color: #006ede;
+            background-color: #fff;
+          }
+
+          &:hover {
+            background-color: #fff;
+          }
         }
       }
     }
@@ -254,9 +458,10 @@
 
         ul.list {
           flex: 1;
-          border-right: 1px solid #bbb;
           overflow-x: hidden;
           overflow-y: auto;
+          background-color: #d5d5d5;
+          border-right: 1px solid #bbb;
           li {
             position: relative;
             height: 35px;
