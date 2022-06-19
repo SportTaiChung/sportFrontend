@@ -1,7 +1,7 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader @openService="openService()" @openPersonal="openPersonal()"></GamesHeader>
+      <GamesHeader @openService="openServicePanel()" @openPersonal="openPersonal()"></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -39,6 +39,14 @@
       @closeMe="isShowStrayCount = false"
     ></StrayCountDialog>
 
+    <!-- 客服面板 -->
+    <ServicePanel
+      :isOpen="isOpenServicePanel"
+      @closeMe="isOpenServicePanel = false"
+      @openServiceChat="openServiceChat"
+    ></ServicePanel>
+
+    <!-- 客服聊天室窗 -->
     <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
 
     <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
@@ -56,6 +64,7 @@
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   import StrayCountDialog from './components/StrayCountDialog.vue';
   import ServiceChat from '@/components/ServiceChat';
+  import ServicePanel from '@/components/ServicePanel';
   import PersonalPanel from '@/components/PersonalPanel';
 
   export default {
@@ -70,6 +79,7 @@
       GamesBetInfo,
       MoreGame,
       ServiceChat,
+      ServicePanel,
       PersonalPanel,
     },
     data() {
@@ -80,6 +90,8 @@
         isShowSetting: false,
         // 顯示過關計算器
         isShowStrayCount: false,
+        // 顯示客服選單面板
+        isOpenServicePanel: false,
         // 顯示客服對話
         isOpenServiceChat: false,
         // 顯示個人設置
@@ -132,7 +144,11 @@
       ChangeCat() {
         this.$refs.GamesSetup.clearLeagueList();
       },
-      openService() {
+      openServicePanel() {
+        this.isOpenServicePanel = true;
+      },
+      openServiceChat(issue) {
+        console.log(issue);
         this.isOpenServiceChat = true;
       },
       openPersonal() {

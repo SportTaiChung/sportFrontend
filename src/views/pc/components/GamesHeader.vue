@@ -12,7 +12,7 @@
         @select="handleSelect"
       >
         <el-menu-item index="1" @click="jumpLink('scoreLive')">即時比分</el-menu-item>
-        <el-menu-item index="2">賽果</el-menu-item>
+        <el-menu-item index="2" @click="OpenGameResultWindow">賽果</el-menu-item>
         <el-menu-item index="3" @click="jumpLink('rule')">規則</el-menu-item>
         <el-menu-item index="4" @click="OpenPopupCenter">投註記錄</el-menu-item>
       </el-menu>
@@ -108,6 +108,12 @@
       OpenPopupCenter() {
         const historyRecord = this.$router.resolve({
           path: 'HistoryRecord',
+        });
+        this.WindowOpen(historyRecord.href);
+      },
+      OpenGameResultWindow() {
+        const historyRecord = this.$router.resolve({
+          path: 'GameResult',
         });
         this.WindowOpen(historyRecord.href);
       },

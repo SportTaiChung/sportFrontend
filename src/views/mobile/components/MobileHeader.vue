@@ -158,8 +158,10 @@
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, WagerTypeKey);
       },
-      callGetGameDetail(CatID, WagerTypeKey = null) {
-        this.$store.commit('SetLoading', true);
+      callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
         let postData = null;
         postData = {
           GameType: this.gameTypeID,
@@ -167,7 +169,7 @@
           WagerTypeKey,
         };
 
-        this.$store.dispatch('Game/GetGameDetail', { postData }).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { postData, updateBehind }).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
             this.gameTypeID,
