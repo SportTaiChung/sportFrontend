@@ -199,7 +199,15 @@ export default {
         return getBetHistory(postData)
           .then((res) => {
             if (res.data?.list) {
-              store.commit('setBetHistoryList', res.data.list);
+              store.commit(
+                'setBetHistoryList',
+                res.data.list.map((it) => {
+                  return {
+                    ...it,
+                    isCollapse: false,
+                  };
+                })
+              );
             }
             resolve(res);
           })

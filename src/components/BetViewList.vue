@@ -76,7 +76,7 @@
         </template>
 
         <template v-if="historyItem.BetType === 99">
-          <div class="strayContentBlock">
+          <div class="strayContentBlock" @click="historyItem.isCollapse = !historyItem.isCollapse">
             <div class="strayContentBlockRow">
               <div>過關</div>
               <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
@@ -84,6 +84,49 @@
             </div>
             <div class="strayContentBlockRow">
               {{ `(每組${historyItem.Amount}元 x 1組) = ${historyItem.Amount}` }}
+            </div>
+
+            <!-- 過關詳細注單 -->
+
+            <template v-if="historyItem.isCollapse">
+              <div
+                class="strayDetailBlock"
+                v-for="(dataBet, dataBetIndex) in historyItem.dataBet"
+                :key="dataBetIndex"
+              >
+                <div class="strayDetailTitle">
+                  <span class="betPosName">{{ dataBet.WagerPosName }} </span>
+                  <span class="cutLine"> {{ dataBet.CutLine }}</span> @
+                  <span class="cutLine">{{ dataBet.PayoutOddsStr }}</span>
+                </div>
+                <div class="strayDetailLine"> </div>
+                <div class="strayDetailContentBlock">
+                  <div class="strayDetailContentBlockRow">
+                    {{ `${historyItem.catName} - [${dataBet.WagerGrpName}]` }}
+                  </div>
+                  <div class="strayDetailContentBlockRow">
+                    {{ dataBet.LeagueName }}
+                  </div>
+
+                  <div class="strayDetailContentBlockRow">
+                    <template v-if="dataBet.AwayTeam === '.'">
+                      <div class="">{{ dataBet.HomeTeam }}</div>
+                    </template>
+                    <template v-else-if="dataBet.HomeTeam === '.'">
+                      <div class="">{{ dataBet.AwayTeam }}</div>
+                    </template>
+                    <template v-else>
+                      <div class="">{{ dataBet.HomeTeam }} </div>
+                      <div class="HomeTeamSign">(主) </div>
+                      <div class="strayDetailContentBlockRowTeam"> v {{ dataBet.AwayTeam }}</div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <div class="rightArrowBlock">
+              <i :class="arrowIconJudge(historyItem.isCollapse)" />
             </div>
           </div>
         </template>
@@ -241,6 +284,18 @@
           class="el-icon-arrow-right"
           @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
         ></i>
+      </div>
+
+      <div
+        class="strayRow"
+        v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
+      >
+        <div class="strayRowTitle"> 過關 共1組 </div>
+        <div class="strayRowContent">
+          {{
+            `${showBetCartList.length}串1 X 1 (每組${strayBetAmount}元 X 1 組) = ${strayBetAmount}`
+          }}
+        </div>
       </div>
 
       <div class="totalRow">
@@ -524,6 +579,13 @@
       },
     },
     methods: {
+      arrowIconJudge(isCollapse) {
+        if (isCollapse) {
+          return 'el-icon-arrow-up';
+        } else {
+          return 'el-icon-arrow-down';
+        }
+      },
       resultCancelBtnClick() {
         this.$emit('setNewGroupIndex', 1);
         this.$emit('setNewChildIndex', 0);
@@ -1154,6 +1216,18 @@
         .halfItem {
           width: 50%;
           text-align: left;
+        }
+      }
+      .strayRow {
+        border: 1px solid gray;
+        text-align: left;
+        padding: 5px;
+        font-size: 14px;
+        line-height: 14px;
+        .strayRowTitle {
+          margin-bottom: 5px;
+        }
+        .strayRowContent {
         }
       }
       .betPlay_chip {
