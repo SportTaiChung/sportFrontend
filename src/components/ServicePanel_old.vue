@@ -3,30 +3,19 @@
     <div class="overlay" @click="close()"></div>
     <div class="panel">
       <div class="header">
-        <!-- <h5>專屬客服</h5> -->
+        <h5>專屬客服</h5>
         <div class="btn-close" @click="close()"></div>
       </div>
 
       <div class="body">
         <div class="container">
-          <img src="@/assets/img/common/service/chat-icon.png" alt="" />
-          <h5>UPG專屬客服</h5>
-
-          <div class="text-title">
-            <p>您好，歡迎來到新體育</p>
-            請先點擊以下問題分類，讓我能夠更快的為您服務
-          </div>
+          <p>您好，歡迎來到新體育，請先點擊以下問題分類，讓我能夠更快的為您服務</p>
 
           <div class="issues">
-            <div
-              class="issue-card"
-              v-for="(card, index) in cards"
-              :key="index"
-              @click="$emit('openServiceChat', card.issue)"
-            >
+            <div class="issue-card" v-for="(card, index) in cards" :key="index">
               <img class="card-img" :src="require('@/assets/img/common/service/' + card.img)" />
               <div class="card-body">
-                <div class="btn"> {{ card.issue }} </div>
+                <div class="btn" @click="$emit('openServiceChat', 0)"> {{ card.issue }} </div>
               </div>
             </div>
           </div>
@@ -49,24 +38,20 @@
       return {
         cards: [
           {
-            id: 0,
             issue: '點數問題',
-            img: 'issue_point.svg',
+            img: 'issue_point.png',
           },
           {
-            id: 1,
             issue: '球賽問題',
-            img: 'issue_sport.svg',
+            img: 'issue_sport.png',
           },
           {
-            id: 2,
             issue: '彩球遊戲',
-            img: 'issue_lottery.svg',
+            img: 'issue_lottery.png',
           },
           {
-            id: 3,
             issue: '其他問題',
-            img: 'issue_other.svg',
+            img: 'issue_other.png',
           },
         ],
       };
@@ -116,11 +101,9 @@
       flex-direction: column;
       width: 100%;
       height: 100%;
-      max-width: 480px;
+      max-width: 400px;
       overflow: hidden;
       background-color: rgba(255, 255, 255, 0.95);
-      background-image: url('~@/assets/img/common/service/panel.jpg');
-      background-size: cover;
       box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.4);
       font-size: 1.23rem;
       transform: translateX(-100%);
@@ -161,30 +144,11 @@
         overflow: auto;
         .container {
           padding: 0 0.923rem;
-          text-align: center;
         }
-        h5 {
-          color: #fff;
-          font-size: 20px;
-          font-weight: 700;
-          text-align: center;
-          padding: 10px 0;
-          margin: 0;
-        }
-        .text-title {
-          letter-spacing: -0.0089rem;
-          color: #fff;
-          font-size: 14px;
-          margin: 20px 0 50px 0;
-          text-align: center;
-
-          p {
-            font-size: 18px;
-            color: #fff;
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            line-height: 1.846rem;
-          }
+        p {
+          margin-top: 0;
+          margin-bottom: 1.23rem;
+          line-height: 1.846rem;
         }
 
         .issues {
@@ -195,23 +159,17 @@
             min-width: 50%;
             max-width: 150px;
             margin: 0.307rem auto;
-            // background-color: #fff;
-            // border: 1px solid rgba(0, 0, 0, 0.125);
-            // border-radius: 50rem;
-            // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.075);
-            cursor: pointer;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 50rem;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.075);
             img.card-img {
-              max-width: 93px;
-              // border-radius: 50rem;
-              // box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-              transition: 150ms ease;
-              &:hover {
-                filter: brightness(1.2);
-                transform: scale(1.1);
-              }
+              width: 100%;
+              border-radius: 50rem;
+              box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             }
             .card-body {
-              // padding: 1.23rem;
+              padding: 1.23rem;
               text-align: center;
               .btn {
                 color: #fff;
@@ -220,13 +178,13 @@
                 text-align: center;
                 line-height: normal;
                 padding: 6px 12px;
-                // background-color: #38a688;
+                background-color: #38a688;
                 margin-bottom: 0.615rem;
-                // border-radius: 50rem;
+                border-radius: 50rem;
                 display: inline-flex;
                 justify-content: center;
                 align-items: center;
-                // min-height: 2.923rem;
+                min-height: 2.923rem;
                 cursor: pointer;
                 &:hover {
                   filter: brightness(1.1);

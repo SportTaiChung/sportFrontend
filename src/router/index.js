@@ -80,6 +80,7 @@ export default async () => {
       to.name === 'Init' ||
       to.name === 'Login' ||
       to.name === 'HistoryRecord' ||
+      to.name === 'GameResult' ||
       to.name === 'TestOddData' ||
       to.name === 'TestTableData' ||
       to.name === 'TestVirtualList'
