@@ -88,8 +88,7 @@ export default {
         let hasMoreCount = false;
         const newBestHead = gameData.Items.BestHead.map((it) => {
           return {
-            originName: it.Name,
-            showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs[0]),
+            showName: it.Name,
             WagerGrpIDs: it.WagerGrpIDs,
             WagerTypeIDs: it.WagerTypeIDs,
           };
