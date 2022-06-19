@@ -53,7 +53,13 @@
         </div>
       </div>
 
-      <BetViewList :groupIndex="selectGroupIndex" :childIndex="selectChildIndex"> </BetViewList>
+      <BetViewList
+        :groupIndex="selectGroupIndex"
+        :childIndex="selectChildIndex"
+        @setNewGroupIndex="setNewGroupIndex"
+        @setNewChildIndex="setNewChildIndex"
+      >
+      </BetViewList>
     </div>
   </div>
 </template>
@@ -107,6 +113,12 @@
           this.selectGroupIndex = 0;
           this.selectChildIndex = 0;
         }
+      },
+      setNewGroupIndex(val) {
+        this.selectGroupIndex = val;
+      },
+      setNewChildIndex(val) {
+        this.selectChildIndex = val;
       },
     },
   };
