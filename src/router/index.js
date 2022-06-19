@@ -28,6 +28,11 @@ export default async () => {
       component: () => import(/* webpackChunkName: "Login" */ '../views/Login.vue'),
     },
     {
+      path: '/GameResult',
+      name: 'GameResult',
+      component: () => import(/* webpackChunkName: "GameResult" */ '../views/GameResult.vue'),
+    },
+    {
       path: '/TestOddData',
       name: 'TestOddData',
       component: () =>

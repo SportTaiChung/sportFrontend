@@ -1,0 +1,107 @@
+.league-result {
+  .league-collapse {
+    display: flex;
+    align-items: center;
+    height: 35px;
+    color: #000;
+    cursor: pointer;
+    background-color: #e8e8e8;
+
+    i.collapse-status {
+      color: #aaa;
+      font-size: 18px;
+      font-weight: bold;
+      width: 55px;
+      text-align: center;
+
+      &.expanded {
+        transform: scaleY(-1);
+      }
+    }
+
+    p.league-name {
+      height: 35px;
+      line-height: 35px;
+      color: #000;
+      margin-left: 1rem;
+    }
+
+    &:hover {
+      i.collapse-status {
+        color: #333;
+      }
+    }
+  }
+
+  table.table-summary {
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #fff;
+
+    &:hover {
+      background-color: #f7f7f7;
+    }
+
+    td:nth-child(1) {
+      width: 55px;
+    }
+    td:nth-child(2) {
+      width: 255px;
+    }
+
+    .cell-detail {
+      cursor: pointer;
+      i {
+        transform: scaleY(1);
+      }
+      &.active {
+        background-color: #cce6ff;
+        i {
+          transform: scaleY(-1);
+        }
+      }
+    }
+
+    td {
+      text-align: center;
+      border-left: 1px solid #f3f3f3;
+      border-bottom: 1px solid #eee;
+      line-height: 18px;
+      .time {
+      }
+      .teams {
+      }
+      .score {
+      }
+      .row {
+        padding: 3px 0;
+      }
+    }
+  }
+
+  table.table-details {
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #f8f8f8;
+
+    td.item {
+      height: 30px;
+      padding: 0 1rem;
+      border-right: 1px solid #ececec;
+      border-bottom: 1px solid #ececec;
+      .name {
+        float: left;
+        color: #000;
+      }
+      .value {
+        float: left;
+        color: #ff8800;
+        margin-left: 1rem;
+      }
+    }
+  }
+}
