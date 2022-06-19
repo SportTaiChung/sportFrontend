@@ -1,9 +1,9 @@
 <template>
   <!-- league 賽果 -->
-  <div class="league-result">
+  <div class="league-result" :class="isExpanded ? '' : 'closed'">
     <div class="league-collapse" @click="isExpanded = !isExpanded">
       <i class="el-icon-arrow-down collapse-status" :class="isExpanded ? 'expanded' : ''"></i>
-      <p class="league-name"> NPB 日本職棒 </p>
+      <p class="league-name"> {{ resultData.LeagueName }} </p>
     </div>
 
     <!-- 概要 -->
@@ -18,74 +18,74 @@
           </td>
           <td>
             <div class="teams">
-              <div class="row">東北樂天鷹</div>
-              <div class="row">福岡軟銀鷹</div>
+              <div class="row"> {{ resultData.HomeTeam }} </div>
+              <div class="row">{{ resultData.AwayTeam }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S1)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S1)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S2)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S2)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S3)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S3)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S4)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S4)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S5)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S5)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S6)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S6)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S7)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S7)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S8)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S8)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.S9)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S9)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.OT)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.OT)[1] }}</div>
             </div>
           </td>
           <td>
             <div class="score">
-              <div class="row">0</div>
-              <div class="row">1</div>
+              <div class="row">{{ parseScore(resultData.FH)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.FH)[1] }}</div>
             </div>
           </td>
           <td>
@@ -137,11 +137,27 @@
 <script>
   export default {
     name: 'BaseBall',
+    props: {
+      resultData: {
+        type: Object,
+        default() {
+          return {};
+        },
+      },
+    },
     data() {
       return {
         isExpanded: true,
         isShowDetails: false,
       };
+    },
+    methods: {
+      parseScore(str) {
+        if (str.indexOf(':') !== -1) {
+          return str.split(':');
+        }
+        return ['-', '-'];
+      },
     },
   };
 </script>

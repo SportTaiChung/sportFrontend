@@ -8,7 +8,7 @@
     <div class="function-bar">
       <div class="date"> 日期 </div>
       <div class="update"> 更新 </div>
-      <div class="btn-refresh"> <i class="el-icon-refresh-right"></i></div>
+      <div class="btn-refresh" @click="getGameResult()"> <i class="el-icon-refresh-right"></i></div>
       <div class="league-filter"> 聯盟選擇 </div>
     </div>
 
@@ -19,9 +19,14 @@
         <div class="header">球賽列表</div>
         <ul class="list">
           <!-- v-for me -->
-          <li :class="selectedCatId === 4 ? 'active' : ''">
-            <img class="menu-icon" :src="getMenuIconByCatID(4)" />
-            棒球
+          <li
+            v-for="(cat, i) in CatList"
+            :key="i"
+            :class="selectedCatId === cat.CatID ? 'active' : ''"
+            @click="selectedCatId = cat.CatID"
+          >
+            <img class="menu-icon" :src="getMenuIconByCatID(cat.CatID)" />
+            {{ cat.Name }}
           </li>
         </ul>
       </div>
@@ -49,13 +54,12 @@
           </div>
 
           <!-- 賽果 TableList -->
-          <div class="tableList">
-            <template v-if="isShowTableList">
-              <BaseBall></BaseBall>
+          <div class="tableList" v-show="isShowTableList">
+            <template v-for="(resultData, index) in resultDataArray">
+              <BaseBall v-if="selectedCatId === 1" :resultData="resultData" :key="index"></BaseBall>
             </template>
           </div>
         </div>
-        <!-- <BaseBall v-if="selectedCatId === 4"></BaseBall> -->
       </div>
     </div>
   </div>
@@ -72,14 +76,55 @@
     },
     data() {
       return {
-        selectedCatId: 4,
+        selectedCatId: null,
         titles: ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'OT', '全場'],
         isShowTableList: true,
+        resultDataArray: [],
       };
     },
+    computed: {
+      CatList() {
+        return this.$store.state.Game.CatList;
+      },
+    },
+    created() {
+      this.$store.commit('SetLoading', true);
+      this.$store
+        .dispatch('Game/GetCatList')
+        .then(() => {
+          if (this.CatList[0]) {
+            this.selectedCatId = this.CatList[0].CatID;
+          }
+        })
+        .finally(() => {
+          this.$store.commit('SetLoading', false);
+        });
+    },
+
     methods: {
       getMenuIconByCatID(catId) {
         return require('@/assets/img/common/menuIcon/' + this.$SportLib.getMenuIconByCatID(catId));
+      },
+      getGameResult() {
+        const postData = {
+          CatID: this.selectedCatId,
+        };
+
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetGameResult', postData)
+          .then((res) => {
+            console.log(res);
+            this.resultDataArray = res.data;
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
+      },
+    },
+    watch: {
+      selectedCatId(newValue, oldValue) {
+        this.getGameResult();
       },
     },
   };
@@ -301,7 +346,8 @@
           .tableList {
             flex-grow: 1;
             overflow-x: hidden;
-            overflow-y: auto;
+            overflow-y: overlay;
+            z-index: 10;
           }
         }
       }
