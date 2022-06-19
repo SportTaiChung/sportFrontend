@@ -12,8 +12,8 @@
         <tr>
           <td>
             <div class="time">
-              <div class="row">{{ parseDate(resultData.ScheduleTimeStr[0]) }}</div>
-              <div class="row">{{ parseDate(resultData.ScheduleTimeStr[1]) }}</div>
+              <div class="row">{{ parseDate(resultData.ScheduleTimeStr)[0] }}</div>
+              <div class="row">{{ parseDate(resultData.ScheduleTimeStr)[1] }}</div>
             </div>
           </td>
           <td>
@@ -30,62 +30,8 @@
           </td>
           <td>
             <div class="score">
-              <div class="row">{{ parseScore(resultData.S2)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S2)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S3)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S3)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S4)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S4)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S5)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S5)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S6)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S6)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S7)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S7)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S8)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S8)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.S9)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.S9)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.OT)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.OT)[1] }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="score">
-              <div class="row">{{ parseScore(resultData.FH)[0] }}</div>
-              <div class="row">{{ parseScore(resultData.FH)[1] }}</div>
+              <div class="row">{{ parseScore(resultData.S1)[0] }}</div>
+              <div class="row">{{ parseScore(resultData.S1)[1] }}</div>
             </div>
           </td>
           <td>
@@ -136,7 +82,7 @@
 
 <script>
   export default {
-    name: 'BaseBall',
+    name: 'Soccer',
     props: {
       resultData: {
         type: Object,
@@ -160,9 +106,19 @@
       },
       parseDate(str) {
         const d = new Date(str);
-        const date = d.getMonth() + 1 + '-' + d.getDate();
-        const time = d.getHours() + '-' + d.getMinutes();
-        return [date, time];
+        if (d instanceof Date && !isNaN(d)) {
+          const date =
+            (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) +
+            '-' +
+            (d.getDate() < 10 ? '0' + d.getDate() : d.getDate());
+
+          const time =
+            (d.getHours() < 10 ? '0' + d.getHours() : d.getHours()) +
+            ':' +
+            (d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes());
+          return [date, time];
+        }
+        return ['-', '-'];
       },
     },
   };

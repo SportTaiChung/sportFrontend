@@ -92,8 +92,15 @@
                 :resultData="resultData"
                 :key="index"
               ></BaseBall>
+
+              <Soccer v-if="selectedCatId === 1" :resultData="resultData" :key="index"></Soccer>
             </template>
           </div>
+        </div>
+
+        <div v-show="resultDataArray.length === 0" class="noResult">
+          <img src="@/assets/img/common/btn_GDV_scoreBoard.svg" alt="" />
+          暫無賽果
         </div>
       </div>
     </div>
@@ -101,10 +108,13 @@
 </template>
 
 <script>
+  // 各球種 header 欄位
+  import headers from '@/components/GameResultTable/headers.js';
+
   // import 各球種模板
   import BaseBall from '@/components/GameResultTable/BaseBall.vue';
-  import headers from '@/components/GameResultTable/headers.js';
-  console.log(headers);
+  import Soccer from '@/components/GameResultTable/Soccer.vue';
+
   const today = new Date();
   const dateRange = 10;
 
@@ -112,6 +122,7 @@
     name: 'GameResult',
     components: {
       BaseBall,
+      Soccer,
     },
     data() {
       return {
@@ -254,6 +265,7 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '@/assets/sass/theme/mixin.scss';
   #GameResult {
     display: flex;
     flex-flow: column nowrap;
@@ -265,7 +277,8 @@
       display: flex;
       align-items: center;
       height: 70px;
-      background-color: #30679e;
+      @include base-background();
+      // background-color: #30679e;
       h3 {
         margin: 0;
         color: #fff;
@@ -281,9 +294,13 @@
       flex-flow: row nowrap;
       align-items: center;
       height: 35px;
-      border-top: 1px solid #5082b3;
-      background-color: #30679e;
-      color: #9cf;
+      // border-top: 1px solid #5082b3;
+      border-top: 1px solid #34866a;
+
+      @include base-background();
+      // background-color: #30679e;
+      // color: #9cf;。
+      color: #eee;
 
       .date {
         position: relative;
@@ -348,7 +365,8 @@
           margin: auto 0;
           top: 0;
           bottom: 0;
-          background-color: #5082b3;
+          // background-color: #5082b3;
+          background-color: #34866a;
         }
       }
 
@@ -394,7 +412,7 @@
         transform: translateX(-50%);
         background-color: #f0f0f0;
         min-width: 130px;
-        z-index: 10;
+        z-index: 15;
         box-shadow: rgb(0 0 0 / 30%) 0 0 10px;
 
         &::before {
@@ -450,7 +468,8 @@
           width: 100%;
           height: 35px;
           line-height: 35px;
-          background-color: #4984bf;
+          // background-color: #4984bf;
+          background-color: #34866a;
           border-bottom: 1px solid #9fcfff;
           border-right: 1px solid #83a0bf;
           text-align: center;
@@ -510,7 +529,8 @@
             align-items: center;
             height: 35px;
             color: #fff;
-            background-color: #4984bf;
+            // background-color: #4984bf;
+            background-color: #34866a;
             border-bottom: 1px solid #9fcfff;
 
             table.table-header {
@@ -553,6 +573,21 @@
             overflow-x: hidden;
             overflow-y: overlay;
             z-index: 10;
+          }
+        }
+
+        .noResult {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          align-items: center;
+          font-size: 20px;
+
+          img {
+            width: 90px;
+            opacity: 0.7;
           }
         }
       }
