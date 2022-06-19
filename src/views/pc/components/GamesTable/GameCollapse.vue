@@ -270,7 +270,7 @@
                 </div>
               </td>
               <td
-                v-if="isShowMoreGameEntryBtn"
+                v-if="teamData.MoreCount !== 0"
                 class="GameTableHeaderMoreTD"
                 :class="isGameTableHeaderMoreSelect(teamData, rowIndex)"
               >
@@ -307,9 +307,6 @@
         },
       },
       isCollapse: {
-        type: Boolean,
-      },
-      isShowMoreGameEntryBtn: {
         type: Boolean,
       },
     },

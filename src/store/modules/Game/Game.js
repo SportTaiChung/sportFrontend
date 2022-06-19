@@ -85,6 +85,7 @@ export default {
       state.GameList.length = 0;
       const favoritesTmp = [];
       state.GameList = setData.data.map((gameData) => {
+        let hasMoreCount = false;
         const newBestHead = gameData.Items.BestHead.map((it) => {
           return {
             originName: it.Name,
@@ -135,6 +136,10 @@ export default {
               });
               newTeamData.Wager = newWagerData;
 
+              if (TeamData.MoreCount !== 0) {
+                hasMoreCount = true;
+              }
+
               return newTeamData;
             });
             return newListData;
@@ -145,6 +150,7 @@ export default {
           Items: {
             BestHead: newBestHead,
             List: newList,
+            hasMoreCount,
           },
         };
       });

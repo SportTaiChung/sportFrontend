@@ -111,7 +111,7 @@ export const PlayMethodData = {
   // 獨贏
   SoloWin: {
     name: 'SoloWin',
-    typeIdList: [110, 111, 127],
+    typeIdList: [110, 111, 123, 127],
     betCutLineDealFunc: function () {
       return 0;
     },
