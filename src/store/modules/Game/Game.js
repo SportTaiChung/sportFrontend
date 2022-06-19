@@ -10,7 +10,6 @@ import {
   sendQAMessage,
   sendQAFile,
 } from '@/api/Game';
-import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
 

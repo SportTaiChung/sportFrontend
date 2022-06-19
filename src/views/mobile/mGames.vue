@@ -21,7 +21,7 @@
           ></mGameTable>
         </template>
         <template v-else>
-          <div class="noData" v-if="!$store.state.isLoading"> NO DATA </div>
+          <div class="noData" v-if="!$store.state.isLoading"> 暫無賽事 </div>
         </template>
       </div>
 
