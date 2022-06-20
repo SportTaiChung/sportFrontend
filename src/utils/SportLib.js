@@ -509,33 +509,33 @@ export function getMenuIconByCatID(catID) {
   return iconMap[catID] || iconMap.default;
 }
 
-// 以 catID 取得對應 背景圖片順位
-export function getBackgroundIndexByCatId(catID) {
-  const backgroundIndexes = Object.freeze({
-    1: 0,
-    5: 0,
-    21: 9,
-    22: 7,
+// 以 catID 取得對應 背景圖
+export function getBoardImageByCatId(catID) {
+  const map = Object.freeze({
+    1: 'soccer.jpg',
+    5: 'soccer.jpg',
+    21: 'pingpong.jpg',
+    22: 'badminton.jpg',
     31: null,
     32: null,
-    4: 2,
-    12: 2,
-    13: 2,
-    14: 2,
-    101: 2,
-    102: 1,
-    3: 1,
-    16: 1,
-    55: 3,
+    4: 'baseball.jpg',
+    12: 'baseball.jpg',
+    13: 'baseball.jpg',
+    14: 'baseball.jpg',
+    101: 'baseball.jpg',
+    102: 'basketball.jpg',
+    3: 'basketball.jpg',
+    16: 'basketball.jpg',
+    55: 'tennis.jpg',
     72: null,
-    82: 4,
+    82: 'hockey.jpg',
     83: null,
-    85: 10,
+    85: 'pcgame.jpg',
     '-999': null,
     default: null,
   });
 
-  return backgroundIndexes[catID] || backgroundIndexes.default;
+  return map[catID] || map.default;
 }
 
 export const chipsData = [
