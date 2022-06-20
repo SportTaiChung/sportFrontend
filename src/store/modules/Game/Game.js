@@ -278,30 +278,32 @@ export default {
       });
     },
     // 12.获取在线咨询信息
-    GetQAHistory(store) {
+    GetQAHistory(store, { isGuestMode = false }) {
       return new Promise((resolve, reject) => {
-        return getQAHistory().then((res) => {
+        return getQAHistory({}, isGuestMode).then((res) => {
           resolve(res);
         });
       });
     },
     // 13.传送咨询-信息
-    SendQAMessage(store, message) {
+    SendQAMessage(store, { message, isGuestMode = false }) {
       return new Promise((resolve, reject) => {
-        return sendQAMessage({
+        const postData = {
           Content: message,
-        }).then((res) => {
+        };
+        return sendQAMessage(postData, isGuestMode).then((res) => {
           resolve(res);
         });
       });
     },
     // 14.传送咨询-檔案信息
-    SendQAFile(store, { base64File, name }) {
+    SendQAFile(store, { base64File, name, isGuestMode = false }) {
       return new Promise((resolve, reject) => {
-        return sendQAFile({
+        const postData = {
           Content: base64File,
           FileName: name,
-        }).then((res) => {
+        };
+        return sendQAFile(postData, isGuestMode).then((res) => {
           resolve(res);
         });
       });

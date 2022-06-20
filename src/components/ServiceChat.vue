@@ -19,7 +19,7 @@
 
           <div class="chat-history" ref="history">
             <template v-for="(msg, index) in history">
-              <div class="msg-wrap" :class="true ? 'self' : ''" :key="index">
+              <div class="msg-wrap" :class="isSelfMessage(msg.getName) ? 'self' : ''" :key="index">
                 <div class="msg-row">
                   <div class="avatar">
                     <img src="@/assets/img/common/service/avatar8.png" />
@@ -85,6 +85,11 @@
         isLoading: false,
       };
     },
+    computed: {
+      isGuestMode() {
+        return this.$router.currentRoute.name === 'Login';
+      },
+    },
     mounted() {
       this.fileInput = this.$refs.fileInput;
       this.fileInput.onchange = (e) => {
@@ -140,7 +145,7 @@
           this.isLoading = true;
         }
         this.$store
-          .dispatch('Game/GetQAHistory')
+          .dispatch('Game/GetQAHistory', { isGuestMode: this.isGuestMode })
           .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
             this.isLoading = false;
@@ -155,7 +160,7 @@
           this.modelInput = '';
           this.isLoading = true;
           this.$store
-            .dispatch('Game/SendQAMessage', message)
+            .dispatch('Game/SendQAMessage', { message, isGuestMode: this.isGuestMode })
             .then((res) => this.getHistory())
             .finally(() => (this.isLoading = false));
         }
@@ -163,7 +168,7 @@
       sendFile({ base64File, name }) {
         this.isLoading = true;
         this.$store
-          .dispatch('Game/SendQAFile', { base64File, name })
+          .dispatch('Game/SendQAFile', { base64File, name, isGuestMode: this.isGuestMode })
           .then(() => this.getHistory())
           .finally(() => (this.isLoading = false));
       },
@@ -172,6 +177,9 @@
       },
       imgLoadDone() {
         this.scrollToBottom();
+      },
+      isSelfMessage(name) {
+        return name !== 'Service';
       },
     },
     beforeDestroy() {
@@ -330,7 +338,9 @@
                   background-color: #333;
                   overflow: hidden;
                   margin-right: 20px;
-                  margin-top: 15px;
+                  img {
+                    width: 100%;
+                  }
                 }
                 .msg {
                   color: #444;

@@ -10,35 +10,35 @@ export function getCatList() {
 }
 
 // 12.获取在线咨询信息
-export function getQAHistory() {
+export function getQAHistory(postData, isGuestMode = false) {
   return request({
     url: `/GameInfo/QAMes/LiveList`,
     method: 'post',
     param: {
-      AddMemberToken: true,
+      AddMemberToken: !isGuestMode,
     },
   });
 }
 
 // 13.传送咨询-信息
-export function sendQAMessage(postData) {
+export function sendQAMessage(postData, isGuestMode = false) {
   return request({
     url: `/GameInfo/QAMes/send`,
     method: 'post',
     param: {
-      AddMemberToken: true,
+      AddMemberToken: !isGuestMode,
     },
     data: postData,
   });
 }
 
 // 14.传送咨询-檔案信息
-export function sendQAFile(postData) {
+export function sendQAFile(postData, isGuestMode = false) {
   return request({
     url: `/GameInfo/QAMes/sendFile`,
     method: 'post',
     param: {
-      AddMemberToken: true,
+      AddMemberToken: !isGuestMode,
     },
     data: postData,
   });
