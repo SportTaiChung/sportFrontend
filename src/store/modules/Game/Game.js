@@ -9,6 +9,8 @@ import {
   getQAHistory,
   sendQAMessage,
   sendQAFile,
+  getCountMes,
+  sendReadMes,
   getGameResult,
 } from '@/api/Game';
 import * as GameTypeListGetters from './getters/GameTypeList';
@@ -277,10 +279,26 @@ export default {
           .catch(reject);
       });
     },
-    // 12.获取在线咨询信息
+    // 12-1.获取在线咨询信息
     GetQAHistory(store, { isGuestMode = false }) {
       return new Promise((resolve, reject) => {
-        return getQAHistory({}, isGuestMode).then((res) => {
+        return getQAHistory(isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 12-2 未讀訊息數
+    GetCountMes(store, { isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        return getCountMes(isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 12-3 標示已讀
+    SendReadMes(store, { isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        return sendReadMes(isGuestMode).then((res) => {
           resolve(res);
         });
       });

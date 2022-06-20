@@ -1,7 +1,11 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader @openService="openServiceChat()" @openPersonal="openPersonal()"></GamesHeader>
+      <GamesHeader
+        :unreadQACount="unreadQACount"
+        @openService="openServiceChat()"
+        @openPersonal="openPersonal()"
+      ></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -43,7 +47,7 @@
     <ServiceChat
       :isOpen="isOpenServiceChat"
       @closeMe="isOpenServiceChat = false"
-      :serviceQuestion="serviceQuestion"
+      @updateUnreadCount="updateUnreadCount"
     ></ServiceChat>
 
     <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
@@ -89,7 +93,8 @@
         isOpenServiceChat: false,
         // 顯示個人設置
         isOpenPersonalPanel: false,
-        serviceQuestion: '',
+        // QA未讀數量
+        unreadQACount: 0,
       };
     },
     created() {
@@ -138,12 +143,14 @@
       ChangeCat() {
         this.$refs.GamesSetup.clearLeagueList();
       },
-      openServiceChat(issue) {
-        this.serviceQuestion = issue;
+      openServiceChat() {
         this.isOpenServiceChat = true;
       },
       openPersonal() {
         this.isOpenPersonalPanel = true;
+      },
+      updateUnreadCount(count) {
+        this.unreadQACount = count;
       },
     },
   };

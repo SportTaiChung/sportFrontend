@@ -28,6 +28,7 @@
             title="聯絡客服"
             @click="openService()"
           />
+          <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
         </li>
         <li>
           <img
@@ -56,6 +57,12 @@
 <script>
   export default {
     name: 'GamesHeader',
+    props: {
+      unreadQACount: {
+        type: Number,
+        default: 0,
+      },
+    },
     data() {
       return {
         activeIndex: '4',
@@ -65,7 +72,6 @@
       this.callUserInfoAbout();
       this.callGetUserInfoCash();
     },
-
     computed: {
       userName() {
         return this.$store.state.User.UserData?.Name;
@@ -179,6 +185,7 @@
       ul {
         display: inline-flex;
         li {
+          position: relative;
           margin-right: 15px;
         }
         i {
@@ -200,6 +207,24 @@
           color: white;
           cursor: pointer;
         }
+      }
+
+      .unreadMark {
+        position: absolute;
+        top: 5px;
+        left: calc(100% - 15px);
+        min-width: 20px;
+        min-height: 20px;
+        padding: 3px 6px;
+        background-color: #c84141;
+        border-radius: 50rem;
+        color: #fff;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        line-height: normal;
+        z-index: 5;
       }
     }
   }

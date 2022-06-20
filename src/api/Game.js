@@ -9,10 +9,32 @@ export function getCatList() {
   });
 }
 
-// 12.获取在线咨询信息
-export function getQAHistory(postData, isGuestMode = false) {
+// 12-1.获取在线咨询信息
+export function getQAHistory(isGuestMode = false) {
   return request({
     url: `/GameInfo/QAMes/LiveList`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+  });
+}
+
+// 12-2 未讀訊息數
+export function getCountMes(isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/CountMes`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+  });
+}
+
+// 12-3 標示已讀
+export function sendReadMes(isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/ReadMes`,
     method: 'post',
     param: {
       AddMemberToken: !isGuestMode,

@@ -83,6 +83,7 @@
         history: [],
         fileInput: null,
         isLoading: false,
+        unreadCount: 0,
       };
     },
     computed: {
@@ -114,10 +115,19 @@
         };
       };
 
-      // 每10秒自動更新紀錄
+      // 定時更新紀錄
       this.historyTimer = setInterval(() => {
-        this.getHistory(true);
+        if (this.isOpen) {
+          this.getHistory(true);
+        }
       }, 5000);
+
+      // 定時更新未讀數
+      this.checkUnreadTimer = setInterval(() => {
+        if (!this.isOpen) {
+          this.getCountMse();
+        }
+      }, 8000);
 
       this.modelInput = this.serviceQuestion;
     },
@@ -128,15 +138,20 @@
           this.modelInput = this.serviceQuestion;
         }
       },
+      unreadCount(newValue) {
+        this.$emit('updateUnreadCount', newValue);
+      },
     },
     methods: {
       close() {
         this.$emit('closeMe');
       },
-      scrollToBottom() {
+      scrollToBottom(callback) {
         const view = this.$refs.history;
         view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
+        callback && callback();
       },
+      // 取得對話紀錄
       getHistory(isBehindUpdate = false) {
         if (!this.isOpen) {
           return;
@@ -150,9 +165,24 @@
           .finally(() => {
             this.isLoading = false;
             if (!isBehindUpdate) {
-              this.scrollToBottom();
+              this.scrollToBottom(() => {
+                this.sendReadMes();
+              });
             }
           });
+      },
+      // 取得未讀數
+      getCountMse() {
+        this.$store
+          .dispatch('Game/GetCountMes', { isGuestMode: this.isGuestMode })
+          .then((res) => (this.unreadCount = res.data))
+          .finally(() => {});
+      },
+      // 標示已讀
+      sendReadMes() {
+        this.$store.dispatch('Game/SendReadMes', { isGuestMode: this.isGuestMode }).then(() => {
+          this.unreadCount = 0;
+        });
       },
       sendMseeage() {
         if (!this.isLoading && this.modelInput.trim()) {
@@ -184,6 +214,7 @@
     },
     beforeDestroy() {
       clearInterval(this.historyTimer);
+      clearInterval(this.checkUnreadTimer);
     },
   };
 </script>
