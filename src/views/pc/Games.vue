@@ -47,7 +47,11 @@
     ></ServicePanel>
 
     <!-- 客服聊天室窗 -->
-    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+    <ServiceChat
+      :isOpen="isOpenServiceChat"
+      @closeMe="isOpenServiceChat = false"
+      :serviceQuestion="serviceQuestion"
+    ></ServiceChat>
 
     <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
     </PersonalPanel>
@@ -96,6 +100,7 @@
         isOpenServiceChat: false,
         // 顯示個人設置
         isOpenPersonalPanel: false,
+        serviceQuestion: '',
       };
     },
     created() {
@@ -148,7 +153,7 @@
         this.isOpenServicePanel = true;
       },
       openServiceChat(issue) {
-        console.log(issue);
+        this.serviceQuestion = issue;
         this.isOpenServiceChat = true;
       },
       openPersonal() {

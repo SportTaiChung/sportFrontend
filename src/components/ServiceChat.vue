@@ -71,7 +71,9 @@
     props: {
       isOpen: {
         type: Boolean,
-        default: false,
+      },
+      serviceQuestion: {
+        type: String,
       },
     },
     data() {
@@ -83,7 +85,6 @@
         isLoading: false,
       };
     },
-    computed: {},
     mounted() {
       this.fileInput = this.$refs.fileInput;
       this.fileInput.onchange = (e) => {
@@ -109,7 +110,11 @@
       };
 
       // 每10秒自動更新紀錄
-      this.historyTimer = setInterval(() => this.getHistory, 10000);
+      this.historyTimer = setInterval(() => {
+        this.getHistory(true);
+      }, 5000);
+
+      this.modelInput = this.serviceQuestion;
     },
     beforeDestroy() {
       clearInterval(this.historyTimer);
@@ -120,17 +125,23 @@
       },
       scrollToBottom() {
         const view = this.$refs.history;
-        // view.scrollTop = view.scrollHeight;
         view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
       },
-      getHistory() {
-        this.isLoading = true;
+      getHistory(isBehindUpdate = false) {
+        if (!this.isOpen) {
+          return;
+        }
+        if (!isBehindUpdate) {
+          this.isLoading = true;
+        }
         this.$store
           .dispatch('Game/GetQAHistory')
           .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
             this.isLoading = false;
-            this.scrollToBottom();
+            if (!isBehindUpdate) {
+              this.scrollToBottom();
+            }
           });
       },
       sendMseeage() {
@@ -162,6 +173,7 @@
       isOpen(newValue) {
         if (newValue === true) {
           this.getHistory();
+          this.modelInput = this.serviceQuestion;
         }
       },
     },

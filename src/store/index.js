@@ -11,6 +11,10 @@ import { systemTime } from '@/api/Common';
 
 Vue.use(Vuex);
 
+let lang = localStorage.getItem('lang');
+if (lang === null) {
+  lang = 'tw';
+}
 export default new Vuex.Store({
   modules: { User, Game, BetCart, MoreGame, Setting, History },
   state: {
@@ -19,7 +23,6 @@ export default new Vuex.Store({
     isInit: false,
     nowThemeInfo: 'light', // 当前主题
     themes: ['light', 'dark'], // 所有主题
-    // 當前語言都假定是簡體中文
     Lang: 'tw',
   },
   mutations: {
