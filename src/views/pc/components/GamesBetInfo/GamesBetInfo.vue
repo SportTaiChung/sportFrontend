@@ -75,6 +75,7 @@
       return {
         selectGroupIndex: 0,
         selectChildIndex: 0,
+        lastCartLength: 0,
       };
     },
     computed: {
@@ -83,6 +84,25 @@
       },
       showBetHistoryList() {
         return this.$store.getters['BetCart/showBetHistoryList'];
+      },
+      betCartList() {
+        return this.$store.state.BetCart.betCartList;
+      },
+    },
+    watch: {
+      betCartList: {
+        handler() {
+          // 投注資訊 - 點選一個以上盤口賠率,右側投注模式直接跳過關投注
+          console.log('this.betCartList.length:', this.betCartList.length, this.lastCartLength);
+          if (this.selectGroupIndex === 0 && this.lastCartLength !== this.betCartList.length) {
+            if (this.betCartList.length <= 1) {
+              this.selectChildIndex = 0;
+            } else {
+              this.selectChildIndex = 1;
+            }
+          }
+          this.lastCartLength = this.betCartList.length;
+        },
       },
     },
     methods: {

@@ -189,6 +189,9 @@
         if (isNaN(cartData.betAmount)) {
           cartData.betAmount = 0;
         }
+        if (cartData.betAmount > this.UserCredit) {
+          cartData.betAmount = this.UserCredit;
+        }
         this.$emit('inputRowItemChangeHandler');
       },
       inputRowItemWinAmountChangeHandler(cartData, winAmountIndex) {
@@ -203,6 +206,9 @@
               cartData.betAmount = this.$lib.truncCeil(
                 cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
               );
+              if (cartData.betAmount > this.UserCredit) {
+                cartData.betAmount = this.UserCredit;
+              }
             }
           }
         });
@@ -244,6 +250,9 @@
       },
       panelMode() {
         return this.$store.state.BetCart.panelMode;
+      },
+      UserCredit() {
+        return this.$store.state.User.UserCredit;
       },
     },
   };

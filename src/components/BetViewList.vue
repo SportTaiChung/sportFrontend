@@ -80,7 +80,6 @@
             <div class="strayContentBlockRow">
               <div>過關</div>
               <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
-              <div class="strayTitleInfoTextTip">降量</div>
             </div>
             <div class="strayContentBlockRow">
               {{ `(每組${historyItem.Amount}元 x 1組) = ${historyItem.Amount}` }}
@@ -432,6 +431,7 @@
       this.intervalEvent2 = setInterval(() => {
         if (this.lastTraceCodeKey !== null) {
           this.callPlayStateAPI();
+          this.$store.dispatch('User/GetUserInfoCash');
         }
       }, 2000);
     },
@@ -577,6 +577,9 @@
       isWinAmountChangeColor() {
         return this.panelMode === PanelModeEnum.lock || this.panelMode === PanelModeEnum.result;
       },
+      UserCredit() {
+        return this.$store.state.User.UserCredit;
+      },
     },
     methods: {
       arrowIconJudge(isCollapse) {
@@ -645,6 +648,9 @@
         if (isNaN(this.fillEachBetAmount)) {
           this.fillEachBetAmount = 0;
         }
+        if (this.fillEachBetAmount > this.UserCredit) {
+          this.fillEachBetAmount = this.UserCredit;
+        }
 
         this.showBetCartList.forEach((cartData) => {
           cartData.betAmount = this.fillEachBetAmount;
@@ -664,6 +670,9 @@
           cartData.betAmount = this.$lib.truncCeil(
             cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
           );
+          if (cartData.betAmount > this.UserCredit) {
+            cartData.betAmount = this.UserCredit;
+          }
         });
 
         this.fillEachWinAmountBlurHandler();
@@ -672,6 +681,9 @@
         this.strayBetAmount = parseFloat(this.strayBetAmount.replace(/[^\d]/g, ''));
         if (isNaN(this.strayBetAmount)) {
           this.strayBetAmount = 0;
+        }
+        if (this.strayBetAmount > this.UserCredit) {
+          this.strayBetAmount = this.UserCredit;
         }
       },
       reCalcBetChart() {
@@ -888,9 +900,7 @@
       callPlayStateAPI() {
         this.$store
           .dispatch('BetCart/playState', this.lastTraceCodeKey)
-          .then((res) => {
-            console.log('res:', res.data);
-          })
+          .then((res) => {})
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
