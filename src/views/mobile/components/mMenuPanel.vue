@@ -18,19 +18,19 @@
             <img class="icon" src="@/assets/img/mobile/icon_live.svg" />
             <div class="text"> 現場轉播 </div>
           </li>
-          <li class="feature-item">
+          <li class="feature-item" @click="jumpLink('scoreLive')">
             <img class="icon" src="@/assets/img/mobile/icon_score.svg" />
             <div class="text"> 即時比分 </div>
           </li>
-          <li class="feature-item">
+          <li class="feature-item" @click="$emit('openStrayCount')">
             <img class="icon" src="@/assets/img/mobile/icon_count.svg" />
             <div class="text"> 過關計算器 </div>
           </li>
-          <li class="feature-item">
+          <li class="feature-item" @click="OpenGameResultWindow()">
             <img class="icon" src="@/assets/img/mobile/icon_result.svg" />
             <div class="text"> 賽果 </div>
           </li>
-          <li class="feature-item">
+          <li class="feature-item" @click="jumpLink('rule')">
             <img class="icon" src="@/assets/img/mobile/icon_rule.svg" />
             <div class="text"> 規則 </div>
           </li>
@@ -120,6 +120,36 @@
       },
       closeSecondaryPanel() {
         this.isSecondaryPanelOpened = false;
+      },
+      OpenGameResultWindow() {
+        const historyRecord = this.$router.resolve({
+          path: 'GameResult',
+        });
+        this.WindowOpen(historyRecord.href);
+      },
+      jumpLink(linkKey) {
+        this.WindowOpen(this.$conf.JumpLink[linkKey]);
+      },
+      WindowOpen(href) {
+        const width = document.documentElement.clientWidth;
+        const height = document.documentElement.clientHeight;
+        // const popupwidth = width * 0.6;
+        const popupwidth = 1200;
+        const popupheight = height * 0.6;
+        const top = (height - popupheight + 20) / 2;
+        const left = (width - popupwidth) / 2;
+        return window.open(
+          href,
+          '111',
+          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
+            popupwidth +
+            ', height=' +
+            popupheight +
+            ', top=' +
+            top +
+            ', left=' +
+            left
+        );
       },
     },
   };

@@ -69,6 +69,7 @@
         :isOpen="isOpenMenuPanel"
         @closeMe="isOpenMenuPanel = false"
         @updateGameDetail="$refs.header.reCallGameDetailAPI()"
+        @openStrayCount="isShowStrayCount = true"
       ></mMenuPanel>
 
       <!-- 聯盟選擇面板 -->
@@ -78,6 +79,13 @@
         @onLeaguesListChanged="$refs.header.reCallGameDetailAPI()"
         @hasLeagueFiltered="(val) => (hasLeagueFiltered = val)"
       ></mLeaguesPanel>
+
+      <!-- 過關計算器 -->
+      <StrayCountDialog
+        ref="StrayCountDialog"
+        v-if="isShowStrayCount"
+        @closeMe="isShowStrayCount = false"
+      ></StrayCountDialog>
 
       <!-- 客服聊天室窗 -->
       <ServiceChat
@@ -101,6 +109,7 @@
   import MoreGame from '@/components/MoreGame.vue';
   import ServiceChat from '@/components/ServiceChat.vue';
   import mLeaguesPanel from './components/mLeaguesPanel.vue';
+  import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
 
   export default {
     name: 'MobileGames',
@@ -116,6 +125,7 @@
       mLeaguesPanel,
       MoreGame,
       ServiceChat,
+      StrayCountDialog,
     },
     data() {
       return {
@@ -127,6 +137,7 @@
         isOpenMenuPanel: false,
         isOpenLeaguesPanel: false,
         isOpenServiceChat: false,
+        isShowStrayCount: false,
         // QA未讀數量
         unreadQACount: 0,
         hasLeagueFiltered: false,
