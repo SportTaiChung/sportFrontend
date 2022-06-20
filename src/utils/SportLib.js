@@ -282,7 +282,7 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       layoutType = 'single';
       playMethodData = PlayMethodData.Other;
     } else {
-      console.error('wagerTypeID not found:', wagerTypeID);
+      // console.error('wagerTypeID not found:', wagerTypeID);
     }
 
     // 處理主客場對調

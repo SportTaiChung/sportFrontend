@@ -54,10 +54,10 @@
               <ul>
                 <li>
                   {{ item.catName }} - {{ item.dataBet[0].LeagueName }} -
-                  {{ item.dataBet[0].HalfType === 0 ? '全場' : '半場' }}
+                  {{ item.dataBet[0].WagerGrpName }}
                 </li>
                 <li>
-                  {{ item.dataBet[0].HomeTeam }} (主) VS
+                  {{ item.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
                   {{ item.dataBet[0].AwayTeam }}
                 </li>
                 <li>
@@ -79,9 +79,12 @@
                 <ul>
                   <li>
                     {{ item.catName }} - {{ betlist.LeagueName }} -
-                    {{ betlist.HalfType === 0 ? '全場' : '半場' }}
+                    {{ betlist.WagerGrpName }}
                   </li>
-                  <li>{{ betlist.HomeTeam }} (主) VS {{ betlist.AwayTeam }}</li>
+                  <li
+                    >{{ betlist.HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                    {{ betlist.AwayTeam }}</li
+                  >
                   <li>
                     投注：
                     <span class="betTeamColor">
@@ -98,7 +101,7 @@
                   </li>
                   <li>
                     比賽時間:
-                    <span class="startGameTime">{{ betlist.ScheduleTimeStr }} : </span>
+                    <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
                   </li>
                 </ul>
               </div>
@@ -149,7 +152,6 @@
               <th width="100">可贏</th>
               <th width="100">返水</th>
               <th width="100">結果</th>
-              <th width="100">返還</th>
             </tr>
           </table>
 
@@ -162,11 +164,10 @@
                   <template v-if="i === 1"> 過關投注 </template>
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
-                <td width="130"></td>
+                <td width="130">{{ item.AfterAmounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
                 <td width="100">{{ item.RetAmts }}</td>
-                <td width="100">{{ item.results }}</td>
-                <td width="100"></td>
+                <td width="100">{{ item.ResultAmount }}</td>
               </tr>
             </table>
 
@@ -210,9 +211,12 @@
                     <ul>
                       <li>
                         {{ itemdata.catName }} - {{ betlist.LeagueName }} -
-                        {{ betlist.HalfType === 0 ? '全場' : '半場' }}
+                        {{ betlist.WagerGrpName }}
                       </li>
-                      <li> {{ betlist.HomeTeam }} (主) VS {{ betlist.AwayTeam }} </li>
+                      <li>
+                        {{ betlist.HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                        {{ betlist.AwayTeam }}
+                      </li>
                       <li>
                         投注：
                         <span class="betTeamColor">
@@ -239,10 +243,10 @@
                   <ul>
                     <li>
                       {{ itemdata.catName }} - {{ itemdata.dataBet[0].LeagueName }} -
-                      {{ itemdata.dataBet[0].HalfType === 0 ? '全場' : '半場' }}
+                      {{ itemdata.dataBet[0].WagerGrpName }}
                     </li>
                     <li>
-                      {{ itemdata.dataBet[0].HomeTeam }} (主) VS
+                      {{ itemdata.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
                       {{ itemdata.dataBet[0].AwayTeam }}
                     </li>
                     <li>
@@ -268,7 +272,6 @@
                 </td>
                 <td width="100" class="rt_betval">{{ itemdata.RetAmt }}</td>
                 <td width="100" class="rt_betval">{{ itemdata.ResultAmount }}</td>
-                <td width="100" class="rt_betval">0</td>
               </tr>
             </table>
           </div>
@@ -276,11 +279,10 @@
             <tr class="rt_foot">
               <td width="585">合計</td>
               <td width="100" class="betSumTotal">{{ gettotal.Amounts }}</td>
-              <td width="130"></td>
+              <td width="130">{{ gettotal.AfterAmounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
               <td width="100">{{ gettotal.RetAmts }}</td>
-              <td width="100">{{ gettotal.results }}</td>
-              <td width="100"></td>
+              <td width="100">{{ gettotal.ResultAmount }}</td>
             </tr>
           </table>
         </div>
@@ -379,10 +381,11 @@
         }
         dest.push(BetTypemap);
         dest.forEach((item) => {
-          var Amounts = 0;
-          var RetAmts = 0;
-          var results = 0;
-          var canwins = 0;
+          let Amounts = 0;
+          let AfterAmounts = 0;
+          let RetAmts = 0;
+          let results = 0;
+          let canwins = 0;
           item.data.forEach((itemdata) => {
             if (itemdata.BetType === 1) {
               canwins += Math.floor(itemdata.Amount * itemdata.dataBet[0].PayoutOddsStr);
@@ -418,10 +421,12 @@
             }
 
             Amounts += itemdata.Amount;
+            AfterAmounts += itemdata.AfterAmount;
             RetAmts += itemdata.RetAmt;
             results += itemdata.ResultAmount;
           });
           item.Amounts = Amounts;
+          item.AfterAmounts = AfterAmounts;
           item.RetAmts = RetAmts;
           item.results = results;
           item.canwins = canwins;
@@ -430,10 +435,11 @@
         return dest;
       },
       gettotal() {
-        var total = { Amounts: 0, RetAmts: 0, results: 0, canwins: 0 };
+        var total = { Amounts: 0, AfterAmounts: 0, RetAmts: 0, results: 0, canwins: 0 };
 
         this.gettodayDetails.forEach((item) => {
           total.Amounts += item.Amounts;
+          total.AfterAmounts += item.AfterAmounts;
           total.RetAmts += item.RetAmts;
           total.results += item.results;
           total.canwins += item.canwins;
@@ -525,6 +531,9 @@
     }
     .startGameTime {
       color: #666;
+    }
+    .HomeTeamSign {
+      color: #ff8800;
     }
     .Record_head {
       width: 100%;
