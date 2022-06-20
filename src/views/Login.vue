@@ -73,7 +73,11 @@
     ></ServicePanel>
 
     <!-- 客服聊天室窗 -->
-    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+    <ServiceChat
+      :isOpen="isOpenServiceChat"
+      :serviceQuestion="serviceQuestion"
+      @closeMe="isOpenServiceChat = false"
+    ></ServiceChat>
   </div>
 </template>
 
@@ -94,6 +98,7 @@
         isOpenServicePanel: false,
         isOpenServiceChat: false,
         isShowPassword: false,
+        serviceQuestion: '',
       };
     },
     computed: {
@@ -126,6 +131,7 @@
           });
       },
       openServiceChat(issue) {
+        this.serviceQuestion = issue;
         this.isOpenServiceChat = true;
       },
       auto() {

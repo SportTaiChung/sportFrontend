@@ -116,8 +116,13 @@
 
       this.modelInput = this.serviceQuestion;
     },
-    beforeDestroy() {
-      clearInterval(this.historyTimer);
+    watch: {
+      isOpen(newValue) {
+        if (newValue === true) {
+          this.getHistory();
+          this.modelInput = this.serviceQuestion;
+        }
+      },
     },
     methods: {
       close() {
@@ -169,13 +174,8 @@
         this.scrollToBottom();
       },
     },
-    watch: {
-      isOpen(newValue) {
-        if (newValue === true) {
-          this.getHistory();
-          this.modelInput = this.serviceQuestion;
-        }
-      },
+    beforeDestroy() {
+      clearInterval(this.historyTimer);
     },
   };
 </script>
