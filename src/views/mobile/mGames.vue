@@ -5,6 +5,7 @@
       <MobileHeader
         ref="header"
         :activeCollapse="activeCollapse"
+        :unreadQACount="unreadQACount"
         @toggleAllCollapse="toggleAllCollapse"
         @openService="openService()"
       ></MobileHeader>
@@ -63,7 +64,12 @@
         @updateGameDetail="$refs.header.reCallGameDetailAPI()"
       ></mMenuPanel>
 
-      <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+      <!-- 客服聊天室窗 -->
+      <ServiceChat
+        :isOpen="isOpenServiceChat"
+        @closeMe="isOpenServiceChat = false"
+        @updateUnreadCount="updateUnreadCount"
+      ></ServiceChat>
     </div>
   </div>
 </template>
@@ -104,6 +110,8 @@
         isShowWagerTypePopup: false,
         isShowMorePanel: false,
         isOpenServiceChat: false,
+        // QA未讀數量
+        unreadQACount: 0,
       };
     },
     computed: {
@@ -148,6 +156,9 @@
       },
       openService() {
         this.isOpenServiceChat = true;
+      },
+      updateUnreadCount(count) {
+        this.unreadQACount = count;
       },
     },
     watch: {

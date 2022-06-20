@@ -25,11 +25,14 @@
           <div v-if="userCredit" class="creditText">$ {{ userCredit }}</div>
         </div>
 
-        <img
-          src="@/assets/img/common/icon_header_service.svg"
-          class="icon-service"
-          @click="openService()"
-        />
+        <div class="service">
+          <img
+            src="@/assets/img/common/icon_header_service.svg"
+            class="icon-service"
+            @click="openService()"
+          />
+          <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
+        </div>
         <img src="@/assets/img/common/logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
@@ -70,7 +73,12 @@
 <script>
   export default {
     name: 'mobileHeader',
-    props: {},
+    props: {
+      unreadQACount: {
+        type: Number,
+        default: 0,
+      },
+    },
     data() {
       return {
         intervalEvent: null,
@@ -302,6 +310,27 @@
           opacity: 0.8;
           &:active {
             opacity: 1;
+          }
+        }
+
+        div.service {
+          position: relative;
+          .unreadMark {
+            position: absolute;
+            top: -6px;
+            left: calc(100% - 10px);
+            min-width: 20px;
+            min-height: 20px;
+            padding: 3px 6px;
+            background-color: hsla(0, 55%, 52%, 0.9);
+            border-radius: 50rem;
+            color: #fff;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            line-height: normal;
+            z-index: 5;
           }
         }
       }
