@@ -239,6 +239,12 @@
           return false;
         },
       },
+      hasMoreGame: {
+        type: Boolean,
+        default() {
+          return false;
+        },
+      },
     },
     data() {
       return {
@@ -256,9 +262,6 @@
         return {
           height: thead.offsetHeight + tbody.offsetHeight + 'px',
         };
-      },
-      hasMoreGame() {
-        return this.selectWagerTypeKey === 1;
       },
       hasMoreGameStyle() {
         return this.hasMoreGame ? 'hasMoreGame' : '';

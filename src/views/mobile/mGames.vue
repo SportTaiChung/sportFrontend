@@ -17,6 +17,7 @@
             :key="index"
             :gameData="gameData"
             :isExpanded="isExpanded(index)"
+            :hasMoreGame="gameData.Items.hasMoreCount"
             @openWagerTypePopup="isShowWagerTypePopup = true"
           ></mGameTable>
         </template>

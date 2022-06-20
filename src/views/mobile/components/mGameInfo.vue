@@ -134,6 +134,12 @@
           return false;
         },
       },
+      hasMoreGame: {
+        type: Boolean,
+        default() {
+          return false;
+        },
+      },
     },
     data() {
       return {
@@ -179,10 +185,6 @@
         return {
           height: this.getCurrentHeight() + 'px',
         };
-      },
-
-      hasMoreGame() {
-        return this.selectWagerTypeKey === 1;
       },
     },
     watch: {
