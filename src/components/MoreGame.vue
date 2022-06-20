@@ -159,7 +159,7 @@
           v-if="isMobileMode"
           class="btn-record"
           src="@/assets/img/common/btn_record.svg"
-          @click="$emit('onOpenBetRecordView')"
+          @click="$emit('openBetRecordView')"
         />
       </div>
       <div class="MoreGameList">

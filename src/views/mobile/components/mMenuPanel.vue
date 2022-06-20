@@ -1,5 +1,7 @@
 <template>
-  <div id="mMenuPanel" @click.stop="onMaskClick">
+  <div id="mMenuPanel" :class="isOpen ? 'open' : ''">
+    <div class="overlay" @click="close()"></div>
+
     <div class="panel">
       <div class="header-container">
         <img class="level" src="@/assets/img/mobile/icon_level1.svg" />
@@ -78,7 +80,11 @@
     components: {
       mAdvancedSettings,
     },
-
+    props: {
+      isOpen: {
+        type: Boolean,
+      },
+    },
     data() {
       return {
         isSecondaryPanelOpened: false,
@@ -98,9 +104,8 @@
       },
     },
     methods: {
-      onMaskClick(e) {
-        if (e.target !== e.currentTarget) return;
-        this.$emit('closeMorePanel');
+      close() {
+        this.$emit('closeMe');
         this.isSecondaryPanelOpened = false;
       },
       onThemeSelect(themeName) {
@@ -122,14 +127,38 @@
 
 <style lang="scss" scoped>
   @import '@/assets/sass/theme/mixin.scss';
+
   #mMenuPanel {
-    position: fixed;
-    top: 0;
+    position: absolute;
     left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     z-index: 20;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    overflow: hidden;
+
+    &.open {
+      pointer-events: auto;
+      .overlay {
+        opacity: 1;
+      }
+      .panel {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      opacity: 0;
+      transition: 350ms ease;
+    }
 
     .panel {
       position: relative;
@@ -142,6 +171,9 @@
       flex-direction: column;
       background-color: #e4e4e4;
       overflow: hidden;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: 350ms ease;
 
       .header-container {
         height: 3.5rem;
