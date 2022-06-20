@@ -1071,7 +1071,10 @@
   #BetViewList {
     height: calc(100% - 35px);
     overflow: auto;
-
+    &::-webkit-scrollbar {
+      /*隱藏滾輪*/
+      display: none;
+    }
     .redErrorStyle {
       background-color: #deb7b7;
       .cardHeaderRow {

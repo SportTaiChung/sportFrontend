@@ -8,282 +8,351 @@
         {{ source.LeagueNameStr }}
       </div>
     </div>
-    <table v-if="!isCollapse">
-      <tbody>
-        <template v-for="(teamData, teamIndex) in source.Team">
-          <template v-if="teamData.EvtStatus === 1">
-            <tr
-              v-for="(teamDataRowNum, rowIndex) in teamData.Row"
-              :key="`${teamIndex}-${rowIndex}`"
-            >
-              <td class="FirstCatNameBlock">
-                <div class="leftTimeBlock">
-                  <div class="timeRow" v-if="rowIndex === 0">
-                    {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                  </div>
-                  <div class="timeRow" v-if="rowIndex === 0">
-                    {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                  </div>
-                </div>
-                <div class="centerTeamBlock">
-                  <!-- 只需要顯示一個隊伍 -->
-                  <template v-if="teamData.AwayTeamStr === '.'">
-                    <div class="teamRow">
-                      {{ teamData.HomeTeamStr }}
-                      <span class="teamPt">{{ teamData.HomePtNameStr }}</span>
-                    </div>
-                  </template>
-                  <!-- 只需要顯示一個隊伍 -->
-                  <template v-else-if="teamData.HomeTeamStr === '.'">
-                    <div class="teamRow">
-                      {{ teamData.AwayTeamStr }}
-                      <span class="teamPt">{{ teamData.AwayPtNameStr }}</span>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <!-- 主客場對調 -->
-                    <template v-if="!teamData.SetFlag">
-                      <div class="teamRow"
-                        >{{ teamData.AwayTeamStr }}
-                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                          -{{ teamData.AwayPtNameStr }}
-                        </span>
-                      </div>
-                      <div class="teamRow"
-                        >{{ teamData.HomeTeamStr }}
-                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                          -{{ teamData.HomePtNameStr }}
-                        </span>
-                      </div>
-                    </template>
-                    <template v-else>
-                      <div class="teamRow"
-                        >{{ teamData.HomeTeamStr }}
-                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                          -{{ teamData.HomePtNameStr }}
-                        </span>
-                      </div>
-                      <div class="teamRow"
-                        >{{ teamData.AwayTeamStr }}
-                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                          -{{ teamData.AwayPtNameStr }}
-                        </span>
-                      </div>
-                    </template>
-                  </template>
 
-                  <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
-                </div>
-                <div class="rightFavoriteBlock" v-if="rowIndex === 0">
-                  <div
-                    class="star"
-                    :class="starCSSJudge(teamData.EvtID)"
-                    @click="addFavoriteHandler(teamData.EvtID)"
-                  ></div>
-                </div>
-              </td>
-
-              <td
-                class="GameTableHeaderOtherTD"
-                v-for="(wagerData, wagerIndex) in teamData.Wager"
-                :key="wagerIndex"
-                :set="
-                  ((sportData = $SportLib.WagerDataToShowData(
-                    teamData.SetFlag,
-                    wagerData,
-                    rowIndex
-                  )),
-                  (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
-                  (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
-                "
+    <template v-if="!isCollapse">
+      <!-- 波膽 -->
+      <template v-if="selectCatID === 1 && selectWagerTypeKey === 2">
+        <div
+          class="boldTablePanel"
+          v-for="(teamData, teamIndex) in source.Team"
+          :key="`${teamIndex}`"
+        >
+          <div class="boldTableTitleBlock">
+            <div class="timeBlock">
+              <div class="timeText">{{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }} </div>
+              <div class="timeText">{{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }} </div>
+            </div>
+            <div class="teamBlock">
+              <div class="teamText">{{ teamData.HomeTeamStr }}</div>
+              <div class="teamText">vs</div>
+              <div class="teamText"> {{ teamData.AwayTeamStr }}</div>
+            </div>
+          </div>
+          <div class="boldTableBetList">
+            <div class="boldTableBetListLeftContainer">
+              <div
+                class="boldTableBetBlock"
+                v-for="(OULine, OULineIndex) in boldRenderLeftTemplate"
+                :key="OULineIndex"
               >
-                <div class="WagerList">
-                  <template v-if="wagerData.isNoData">
-                    <!-- 如果有和 -->
-                    <template v-if="isShowDrewOdd">
-                      <div class="WagerRow"> </div>
-                      <div class="WagerRow"> </div>
-                      <div class="WagerRow"> </div>
-                    </template>
-                    <template v-else>
-                      <div class="WagerRow"> </div>
-                      <div class="WagerRow"> </div>
-                    </template>
-                  </template>
+                <div class="betBlockTop">{{ OULine }} </div>
+                <div class="betBlockBottom">
+                  {{ boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds }}
+                </div>
+              </div>
+            </div>
 
-                  <template v-else>
-                    <!-- 只有單一個Odd Layout -->
-                    <template v-if="sportData.layoutType === 'single'">
-                      <div
-                        class="WagerRow"
-                        :class="
-                          WagerRowIsSelectInCartCSS(
-                            GameID,
-                            sportData.topPlayOdd,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topWagerPos
-                          )
-                        "
-                        @click="
-                          goBet(
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topPlayOdd,
-                            teamData,
-                            wagerData,
-                            rowIndex,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topWagerPos
-                          )
-                        "
-                      >
-                        <div class="WagerCenterItem">
-                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
-                        </div>
-                      </div>
-                      <div
-                        class="WagerRow"
-                        :class="
-                          WagerRowIsSelectInCartCSS(
-                            GameID,
-                            sportData.bottomPlayOdd,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomWagerPos
-                          )
-                        "
-                        @click="
-                          goBet(
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomPlayOdd,
-                            teamData,
-                            wagerData,
-                            rowIndex,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomWagerPos
-                          )
-                        "
-                      >
-                        <div class="WagerCenterItem">
-                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
-                        </div>
-                      </div>
-                    </template>
-                    <!-- 其他正常Layout -->
-                    <template v-else>
-                      <div
-                        class="WagerRow"
-                        :class="
-                          WagerRowIsSelectInCartCSS(
-                            GameID,
-                            sportData.topPlayOdd,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topWagerPos
-                          )
-                        "
-                        @click="
-                          goBet(
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topPlayOdd,
-                            teamData,
-                            wagerData,
-                            rowIndex,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .topWagerPos
-                          )
-                        "
-                      >
-                        <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
-                        <div class="WagerItem">
-                          <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
-                        </div>
-                      </div>
-                      <div
-                        class="WagerRow"
-                        :class="
-                          WagerRowIsSelectInCartCSS(
-                            GameID,
-                            sportData.bottomPlayOdd,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomWagerPos
-                          )
-                        "
-                        @click="
-                          goBet(
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomPlayOdd,
-                            teamData,
-                            wagerData,
-                            rowIndex,
-                            $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                              .bottomWagerPos
-                          )
-                        "
-                      >
-                        <div class="WagerItem">
-                          {{ sportData.bottomPlayMethod }}
-                        </div>
-                        <div class="WagerItem">
-                          <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`"
-                        /></div>
-                      </div>
-                    </template>
+            <div class="boldTableBetListRightContainer">
+              <div
+                class="boldTableBetBlock"
+                v-for="(OULine, OULineIndex) in boldRenderRightTemplate"
+                :key="OULineIndex"
+              >
+                <div class="betBlockTop">{{ OULine }} </div>
+                <div class="betBlockBottom">
+                  {{ boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
 
-                    <!-- '和' 玩法顯示 -->
-                    <template v-if="isShowDrewOdd">
-                      <template
-                        v-if="
-                          wagerData.Odds[0].DrewOdds === '0' ||
-                          wagerData.Odds[0].DrewOdds === '0.00' ||
-                          wagerData.Odds[0].Status !== 1
-                        "
-                      >
-                        <div class="WagerRow"> </div>
+      <!-- 非波膽 -->
+      <template v-else>
+        <table class="normalTablePanel">
+          <tbody>
+            <template v-for="(teamData, teamIndex) in source.Team">
+              <template v-if="teamData.EvtStatus === 1">
+                <tr
+                  v-for="(teamDataRowNum, rowIndex) in teamData.Row"
+                  :key="`${teamIndex}-${rowIndex}`"
+                >
+                  <td class="FirstCatNameBlock">
+                    <div class="leftTimeBlock">
+                      <div class="timeRow" v-if="rowIndex === 0">
+                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                      </div>
+                      <div class="timeRow" v-if="rowIndex === 0">
+                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                      </div>
+                    </div>
+                    <div class="centerTeamBlock">
+                      <!-- 只需要顯示一個隊伍 -->
+                      <template v-if="teamData.AwayTeamStr === '.'">
+                        <div class="teamRow">
+                          {{ teamData.HomeTeamStr }}
+                          <span class="teamPt">{{ teamData.HomePtNameStr }}</span>
+                        </div>
+                      </template>
+                      <!-- 只需要顯示一個隊伍 -->
+                      <template v-else-if="teamData.HomeTeamStr === '.'">
+                        <div class="teamRow">
+                          {{ teamData.AwayTeamStr }}
+                          <span class="teamPt">{{ teamData.AwayPtNameStr }}</span>
+                        </div>
                       </template>
                       <template v-else>
-                        <div
-                          class="WagerRow"
-                          :class="
-                            WagerRowIsSelectInCartCSS(
-                              GameID,
-                              wagerData.Odds[0].DrewOdds,
-                              $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                .drewWagerPos
-                            )
-                          "
-                          @click="
-                            goBet(
-                              wagerData.Odds[0].DrewOdds,
-                              teamData,
-                              wagerData,
-                              rowIndex,
-                              $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                .drewWagerPos
-                            )
-                          "
-                        >
-                          <div class="WagerCenterItem">
-                            <Odd :OddValue="wagerData.Odds[0].DrewOdds" :UniqueID="`${GameID}-2`" />
+                        <!-- 主客場對調 -->
+                        <template v-if="!teamData.SetFlag">
+                          <div class="teamRow"
+                            >{{ teamData.AwayTeamStr }}
+                            <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                              -{{ teamData.AwayPtNameStr }}
+                            </span>
                           </div>
-                        </div>
+                          <div class="teamRow"
+                            >{{ teamData.HomeTeamStr }}
+                            <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                              -{{ teamData.HomePtNameStr }}
+                            </span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="teamRow"
+                            >{{ teamData.HomeTeamStr }}
+                            <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                              -{{ teamData.HomePtNameStr }}
+                            </span>
+                          </div>
+                          <div class="teamRow"
+                            >{{ teamData.AwayTeamStr }}
+                            <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                              -{{ teamData.AwayPtNameStr }}
+                            </span>
+                          </div>
+                        </template>
                       </template>
-                    </template>
-                  </template>
-                </div>
-              </td>
-              <td
-                v-if="teamData.MoreCount !== 0"
-                class="GameTableHeaderMoreTD"
-                :class="isGameTableHeaderMoreSelect(teamData, rowIndex)"
-              >
-                <div class="moreGame" @click="moreGameClickHandler(teamData)" v-if="rowIndex === 0">
-                  更多
-                  {{ teamData.MoreCount }}
-                </div>
-              </td>
-            </tr>
-          </template>
-        </template>
-      </tbody>
-    </table>
+
+                      <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0">
+                        和局
+                      </div>
+                    </div>
+                    <div class="rightFavoriteBlock" v-if="rowIndex === 0">
+                      <div
+                        class="star"
+                        :class="starCSSJudge(teamData.EvtID)"
+                        @click="addFavoriteHandler(teamData.EvtID)"
+                      ></div>
+                    </div>
+                  </td>
+
+                  <td
+                    class="GameTableHeaderOtherTD"
+                    v-for="(wagerData, wagerIndex) in teamData.Wager"
+                    :key="wagerIndex"
+                    :set="
+                      ((sportData = $SportLib.WagerDataToShowData(
+                        teamData.SetFlag,
+                        wagerData,
+                        rowIndex
+                      )),
+                      (isShowDrewOdd = teamData.hasDrewOdds && rowIndex === 0),
+                      (GameID = wagerRoIndexToGameID(wagerData, rowIndex)))
+                    "
+                  >
+                    <div class="WagerList">
+                      <template v-if="wagerData.isNoData">
+                        <!-- 如果有和 -->
+                        <template v-if="isShowDrewOdd">
+                          <div class="WagerRow"> </div>
+                          <div class="WagerRow"> </div>
+                          <div class="WagerRow"> </div>
+                        </template>
+                        <template v-else>
+                          <div class="WagerRow"> </div>
+                          <div class="WagerRow"> </div>
+                        </template>
+                      </template>
+
+                      <template v-else>
+                        <!-- 只有單一個Odd Layout -->
+                        <template v-if="sportData.layoutType === 'single'">
+                          <div
+                            class="WagerRow"
+                            :class="
+                              WagerRowIsSelectInCartCSS(
+                                GameID,
+                                sportData.topPlayOdd,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topWagerPos
+                              )
+                            "
+                            @click="
+                              goBet(
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topPlayOdd,
+                                teamData,
+                                wagerData,
+                                rowIndex,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topWagerPos
+                              )
+                            "
+                          >
+                            <div class="WagerCenterItem">
+                              <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
+                            </div>
+                          </div>
+                          <div
+                            class="WagerRow"
+                            :class="
+                              WagerRowIsSelectInCartCSS(
+                                GameID,
+                                sportData.bottomPlayOdd,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomWagerPos
+                              )
+                            "
+                            @click="
+                              goBet(
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomPlayOdd,
+                                teamData,
+                                wagerData,
+                                rowIndex,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomWagerPos
+                              )
+                            "
+                          >
+                            <div class="WagerCenterItem">
+                              <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`" />
+                            </div>
+                          </div>
+                        </template>
+                        <!-- 其他正常Layout -->
+                        <template v-else>
+                          <div
+                            class="WagerRow"
+                            :class="
+                              WagerRowIsSelectInCartCSS(
+                                GameID,
+                                sportData.topPlayOdd,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topWagerPos
+                              )
+                            "
+                            @click="
+                              goBet(
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topPlayOdd,
+                                teamData,
+                                wagerData,
+                                rowIndex,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .topWagerPos
+                              )
+                            "
+                          >
+                            <div class="WagerItem"> {{ sportData.topPlayMethod }} </div>
+                            <div class="WagerItem">
+                              <Odd :OddValue="sportData.topPlayOdd" :UniqueID="`${GameID}-0`" />
+                            </div>
+                          </div>
+                          <div
+                            class="WagerRow"
+                            :class="
+                              WagerRowIsSelectInCartCSS(
+                                GameID,
+                                sportData.bottomPlayOdd,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomWagerPos
+                              )
+                            "
+                            @click="
+                              goBet(
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomPlayOdd,
+                                teamData,
+                                wagerData,
+                                rowIndex,
+                                $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
+                                  .bottomWagerPos
+                              )
+                            "
+                          >
+                            <div class="WagerItem">
+                              {{ sportData.bottomPlayMethod }}
+                            </div>
+                            <div class="WagerItem">
+                              <Odd :OddValue="sportData.bottomPlayOdd" :UniqueID="`${GameID}-1`"
+                            /></div>
+                          </div>
+                        </template>
+
+                        <!-- '和' 玩法顯示 -->
+                        <template v-if="isShowDrewOdd">
+                          <template
+                            v-if="
+                              wagerData.Odds[0].DrewOdds === '0' ||
+                              wagerData.Odds[0].DrewOdds === '0.00' ||
+                              wagerData.Odds[0].Status !== 1
+                            "
+                          >
+                            <div class="WagerRow"> </div>
+                          </template>
+                          <template v-else>
+                            <div
+                              class="WagerRow"
+                              :class="
+                                WagerRowIsSelectInCartCSS(
+                                  GameID,
+                                  wagerData.Odds[0].DrewOdds,
+                                  $SportLib.WagerDataToShowData(
+                                    teamData.SetFlag,
+                                    wagerData,
+                                    rowIndex
+                                  ).drewWagerPos
+                                )
+                              "
+                              @click="
+                                goBet(
+                                  wagerData.Odds[0].DrewOdds,
+                                  teamData,
+                                  wagerData,
+                                  rowIndex,
+                                  $SportLib.WagerDataToShowData(
+                                    teamData.SetFlag,
+                                    wagerData,
+                                    rowIndex
+                                  ).drewWagerPos
+                                )
+                              "
+                            >
+                              <div class="WagerCenterItem">
+                                <Odd
+                                  :OddValue="wagerData.Odds[0].DrewOdds"
+                                  :UniqueID="`${GameID}-2`"
+                                />
+                              </div>
+                            </div>
+                          </template>
+                        </template>
+                      </template>
+                    </div>
+                  </td>
+                  <td
+                    v-if="teamData.MoreCount !== 0"
+                    class="GameTableHeaderMoreTD"
+                    :class="isGameTableHeaderMoreSelect(teamData, rowIndex)"
+                  >
+                    <div
+                      class="moreGame"
+                      @click="moreGameClickHandler(teamData)"
+                      v-if="rowIndex === 0"
+                    >
+                      更多
+                      {{ teamData.MoreCount }}
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </template>
+          </tbody>
+        </table>
+      </template>
+    </template>
   </div>
 </template>
 
@@ -311,9 +380,36 @@
       },
     },
     data() {
-      return {};
+      return {
+        boldRenderLeftTemplate: [
+          '1-0',
+          '2-0',
+          '2-1',
+          '3-0',
+          '3-1',
+          '3-2',
+          '4-0',
+          '4-1',
+          '4-2',
+          '4-3',
+          '0-1',
+          '0-2',
+          '1-2',
+          '0-3',
+          '1-3',
+          '2-3',
+          '0-4',
+          '1-4',
+          '2-4',
+          '3-4',
+        ],
+        boldRenderRightTemplate: ['0-0', '1-1', '2-2', '3-3', '4-4', 'other'],
+      };
     },
     computed: {
+      GameList() {
+        return this.gameStore.GameList;
+      },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
@@ -333,6 +429,12 @@
         } else {
           return null;
         }
+      },
+      selectCatID() {
+        return this.gameStore.selectCatID;
+      },
+      selectGameType() {
+        return this.gameStore.selectGameType;
       },
     },
     methods: {
@@ -383,6 +485,17 @@
         this.$store.dispatch('MoreGame/openMoreGameList', {
           teamData,
         });
+      },
+      boldOddToMapData(boldOdd) {
+        const res = boldOdd.reduce((sum, it, index) => {
+          return {
+            ...sum,
+            ...{
+              [it.OULine]: it,
+            },
+          };
+        }, {});
+        return res;
       },
       goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
         if (showOdd === '') {
@@ -503,7 +616,77 @@
         align-items: center;
       }
     }
-    table {
+    .boldTablePanel {
+      width: 100%;
+      .boldTableTitleBlock {
+        background-color: #ddd;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        .timeBlock {
+          display: flex;
+          .timeText {
+            margin-left: 10px;
+            color: #777;
+          }
+        }
+        .teamBlock {
+          display: flex;
+          margin-left: 10px;
+          .teamText {
+            margin-left: 8px;
+          }
+        }
+      }
+      .boldTableBetList {
+        display: flex;
+        width: 100%;
+        .boldTableBetBlock {
+          display: flex;
+          flex-wrap: wrap;
+          text-align: center;
+          background-color: white;
+          cursor: pointer;
+          .betBlockTop {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+          }
+          .betBlockBottom {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            color: #30679e;
+            font-weight: bold;
+          }
+        }
+        .boldTableBetListLeftContainer {
+          display: flex;
+          width: 62.5%;
+          flex-wrap: wrap;
+          .boldTableBetBlock {
+            width: 10%;
+          }
+        }
+        .boldTableBetListRightContainer {
+          display: flex;
+          width: 37.5%;
+          flex-wrap: wrap;
+          .boldTableBetBlock {
+            width: 16.6666%;
+            display: flex;
+            align-items: center;
+            .betBlockTop {
+              line-height: 55px;
+            }
+            .betBlockBottom {
+              line-height: 0;
+            }
+          }
+        }
+      }
+    }
+    .normalTablePanel {
       width: 100%;
       border-collapse: collapse;
       tbody {
