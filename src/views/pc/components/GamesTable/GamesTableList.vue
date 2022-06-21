@@ -230,7 +230,7 @@
           // 減掉 右邊注單 300px;
           // 加上 卷軸寬度17px;
           // 因此減掉 483px;
-          diffOffset = 500;
+          diffOffset = 480;
           // return `width: calc(100% - 483px);`;
         }
         // 更多投注 寬度370px
