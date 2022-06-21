@@ -25,11 +25,14 @@
           <div v-if="userCredit" class="creditText">$ {{ userCredit }}</div>
         </div>
 
-        <img
-          src="@/assets/img/common/icon_header_service.svg"
-          class="icon-service"
-          @click="openService()"
-        />
+        <div class="service">
+          <img
+            src="@/assets/img/common/icon_header_service.svg"
+            class="icon-service"
+            @click="openService()"
+          />
+          <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
+        </div>
         <img src="@/assets/img/common/logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
@@ -70,7 +73,12 @@
 <script>
   export default {
     name: 'mobileHeader',
-    props: {},
+    props: {
+      unreadQACount: {
+        type: Number,
+        default: 0,
+      },
+    },
     data() {
       return {
         intervalEvent: null,
@@ -106,11 +114,15 @@
     watch: {
       isCallGameDetailAPI: {
         handler() {
-          this.callGetGameDetail(
-            this.gameStore.selectCatID,
-            this.gameStore.selectWagerTypeKey,
-            true
-          );
+          if (this.isFavoriteMode) {
+            this.callGetFavoriteGameDetail(true);
+          } else {
+            this.callGetGameDetail(
+              this.gameStore.selectCatID,
+              this.gameStore.selectWagerTypeKey,
+              true
+            );
+          }
         },
       },
     },
@@ -158,8 +170,10 @@
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, WagerTypeKey);
       },
-      callGetGameDetail(CatID, WagerTypeKey = null) {
-        this.$store.commit('SetLoading', true);
+      callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
         let postData = null;
         postData = {
           GameType: this.gameTypeID,
@@ -167,7 +181,7 @@
           WagerTypeKey,
         };
 
-        this.$store.dispatch('Game/GetGameDetail', { postData }).then((res) => {
+        this.$store.dispatch('Game/GetGameDetail', { postData, updateBehind }).then((res) => {
           console.log(
             'getGameDetail done GameType CatID WagerTypeKey',
             this.gameTypeID,
@@ -207,13 +221,17 @@
         this.callGetFavoriteGameDetail();
       },
       // 最愛
-      callGetFavoriteGameDetail() {
-        this.$store.commit('SetLoading', true);
+      callGetFavoriteGameDetail(isUpdateBehind = false) {
+        if (!isUpdateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
         this.$store
           .dispatch('Game/GetFavoriteGameDetail')
           .then((res) => {})
           .finally(() => {
-            this.$store.commit('SetLoading', false);
+            if (!isUpdateBehind) {
+              this.$store.commit('SetLoading', false);
+            }
           });
       },
       openService() {
@@ -300,6 +318,27 @@
           opacity: 0.8;
           &:active {
             opacity: 1;
+          }
+        }
+
+        div.service {
+          position: relative;
+          .unreadMark {
+            position: absolute;
+            top: -6px;
+            left: calc(100% - 10px);
+            min-width: 20px;
+            min-height: 20px;
+            padding: 3px 6px;
+            background-color: hsla(0, 55%, 52%, 0.9);
+            border-radius: 50rem;
+            color: #fff;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            line-height: normal;
+            z-index: 5;
           }
         }
       }

@@ -9,6 +9,75 @@ export function getCatList() {
   });
 }
 
+// 12-1.获取在线咨询信息
+export function getQAHistory(isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/LiveList`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+  });
+}
+
+// 12-2 未讀訊息數
+export function getCountMes(isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/CountMes`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+  });
+}
+
+// 12-3 標示已讀
+export function sendReadMes(isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/ReadMes`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+  });
+}
+
+// 13.传送咨询-信息
+export function sendQAMessage(postData, isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/send`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+    data: postData,
+  });
+}
+
+// 14.传送咨询-檔案信息
+export function sendQAFile(postData, isGuestMode = false) {
+  return request({
+    url: `/GameInfo/QAMes/sendFile`,
+    method: 'post',
+    param: {
+      AddMemberToken: !isGuestMode,
+    },
+    data: postData,
+  });
+}
+
+// 15.賽事結果
+export function getGameResult(postData = {}) {
+  return request({
+    url: `/GameInfo/GameResult`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang, ...postData },
+  });
+}
+
 // API(15,18)共用-聯賽Items
 export function getGameResultLeagues(postData = {}) {
   return request({
@@ -105,6 +174,18 @@ export function getBetInfo(postData = {}) {
   });
 }
 
+// 23.获取历史投注日统计数据
+export function getBetDayHistory(postData = {}) {
+  return request({
+    url: `/GameInfo/Ticket/betDayHistory`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: { lang: store.state.Lang, ...postData },
+  });
+}
+
 // 24. 获取即时注单紀錄
 export function getBetHistory(postData = {}) {
   return request({
@@ -126,40 +207,5 @@ export function getLive() {
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang },
-  });
-}
-
-// 12.获取在线咨询信息
-export function getQAHistory() {
-  return request({
-    url: `/GameInfo/QAMes/LiveList`,
-    method: 'post',
-    param: {
-      AddMemberToken: true,
-    },
-  });
-}
-
-// 13.传送咨询-信息
-export function sendQAMessage(postData) {
-  return request({
-    url: `/GameInfo/QAMes/send`,
-    method: 'post',
-    param: {
-      AddMemberToken: true,
-    },
-    data: postData,
-  });
-}
-
-// 14.传送咨询-檔案信息
-export function sendQAFile(postData) {
-  return request({
-    url: `/GameInfo/QAMes/sendFile`,
-    method: 'post',
-    param: {
-      AddMemberToken: true,
-    },
-    data: postData,
   });
 }

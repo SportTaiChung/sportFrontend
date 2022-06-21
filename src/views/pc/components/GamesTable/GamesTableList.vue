@@ -20,7 +20,7 @@
         :isNavMenuCollapse="isNavMenuCollapse"
         :CatName="GameList[0].CatName"
         :BestHead="GameList[0].Items.BestHead"
-        :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameList[0].CatID)"
+        :isShowMoreGameEntryBtn="GameList[0].Items.hasMoreCount"
         @ArrowClick="GameTableHeaderTopArrowClick"
       >
       </GameTableHeader>
@@ -33,7 +33,7 @@
             :isNavMenuCollapse="isNavMenuCollapse"
             :CatName="GameData.CatName"
             :BestHead="GameData.Items.BestHead"
-            :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameData.CatID)"
+            :isShowMoreGameEntryBtn="GameData.Items.hasMoreCount"
             @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
           >
           </GameTableHeader>
@@ -43,7 +43,6 @@
               :index="leagueIndex"
               :source="leagueData"
               :isCollapse="activeCollapse.indexOf(leagueData.LeagueID) > -1"
-              :isShowMoreGameEntryBtn="isShowMoreGameEntryBtn(GameData.CatID)"
               @collapseChange="collapseChangeHandler"
               @AddToCart="$emit('AddToCart')"
             ></GameCollapse>
@@ -208,9 +207,6 @@
           return false;
         }
       },
-      isShowMoreGameEntryBtn(CatID) {
-        return this.selectWagerTypeKey === 1 && CatID !== 72 && CatID !== 83 && CatID !== 84;
-      },
       collapseChangeHandler(LeagueID) {
         const collapseIndex = this.activeCollapse.findIndex((it) => it === LeagueID);
         if (collapseIndex > -1) {
@@ -234,7 +230,7 @@
           // 減掉 右邊注單 300px;
           // 加上 卷軸寬度17px;
           // 因此減掉 483px;
-          diffOffset = 500;
+          diffOffset = 480;
           // return `width: calc(100% - 483px);`;
         }
         // 更多投注 寬度370px

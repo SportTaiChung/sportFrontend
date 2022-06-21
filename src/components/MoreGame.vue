@@ -11,6 +11,7 @@
       />
     </div>
 
+    <!-- 滾球 -->
     <div class="GameInfoBlock" v-if="gameTypeID === 2">
       <!-- 滾球 上半部資訊 -->
       <ul class="navList">
@@ -64,27 +65,33 @@
         src="@/assets/img/common/coming_soon.jpg"
         @click="onComingSoonClick()"
       >
-        <img src="@/assets/img/common/coming_soon.jpg" />
+        <img src="@/assets/img/common/coming_soon.jpg" style="cursor: pointer" />
       </div>
 
       <!-- 比分板區塊 -->
-      <div v-show="gameType2Page === 0">
-        <Soccer v-if="selectCatID === 1"></Soccer>
+      <div v-if="gameType2Page === 0 && isShowLiveScore">
+        <Soccer
+          v-if="judgeGameLiveScore(1, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
+        ></Soccer>
         <BaseBall
-          v-if="
-            selectCatID === 4 ||
-            selectCatID === 12 ||
-            selectCatID === 13 ||
-            selectCatID === 14 ||
-            selectCatID === 101
-          "
+          v-if="judgeGameLiveScore(101, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
         ></BaseBall>
         <BasketBall
-          v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
+          v-if="judgeGameLiveScore(102, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
         ></BasketBall>
       </div>
     </div>
 
+    <!-- 早盤、今日 -->
     <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
@@ -157,7 +164,7 @@
           v-if="isMobileMode"
           class="btn-record"
           src="@/assets/img/common/btn_record.svg"
-          @click="$emit('onOpenBetRecordView')"
+          @click="$emit('openBetRecordView')"
         />
       </div>
       <div class="MoreGameList">
@@ -323,6 +330,12 @@
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
+      CatList() {
+        return this.$store.state.Game.CatList;
+      },
+      isShowLiveScore() {
+        return this.moreGameData?.GameScore !== undefined;
+      },
       FinalGameList() {
         if (this.GameList.length === 0) {
           return [];
@@ -414,6 +427,12 @@
       },
     },
     methods: {
+      judgeGameLiveScore(templateCatID, selectCatID) {
+        const findCatData = this.CatList.find((catData) => {
+          return catData.CatID === templateCatID;
+        });
+        return findCatData.GroupCatIDs.findIndex((it) => it === selectCatID) !== -1;
+      },
       resetData() {
         this.collapseItemNames.length = 0;
         this.collapseItemNames = [];

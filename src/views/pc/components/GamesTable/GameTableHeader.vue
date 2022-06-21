@@ -7,16 +7,21 @@
         </div>
         {{ CatName }}
       </td>
-      <td v-for="(it, key) in BestHead" :key="key" class="GameTableHeaderOtherTD">
-        <div class="borderWhiteBlock"></div>
-        {{ it.showName }}
-        <div></div>
-      </td>
-      <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
-        <div class="borderWhiteBlock"></div>
-        更多
-        <div></div>
-      </td>
+      <!-- 波膽 -->
+      <template v-if="selectCatID !== 1 && selectWagerTypeKey !== 2"> </template>
+      <!-- 其他 -->
+      <template v-else>
+        <td v-for="(it, key) in BestHead" :key="key" class="GameTableHeaderOtherTD">
+          <div class="borderWhiteBlock"></div>
+          {{ it.showName }}
+          <div></div>
+        </td>
+        <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
+          <div class="borderWhiteBlock"></div>
+          更多
+          <div></div>
+        </td>
+      </template>
     </tbody>
   </table>
 </template>
@@ -54,6 +59,12 @@
         } else {
           return 'el-icon-arrow-up';
         }
+      },
+      selectCatID() {
+        return this.gameStore.selectCatID;
+      },
+      selectGameType() {
+        return this.gameStore.selectGameType;
       },
     },
     methods: {

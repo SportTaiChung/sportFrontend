@@ -9,8 +9,10 @@ import {
   getQAHistory,
   sendQAMessage,
   sendQAFile,
+  getCountMes,
+  sendReadMes,
+  getGameResult,
 } from '@/api/Game';
-import { WagerTypeIDandWagerGrpIDtoString } from '@/utils/SportLib';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
 
@@ -85,10 +87,10 @@ export default {
       state.GameList.length = 0;
       const favoritesTmp = [];
       state.GameList = setData.data.map((gameData) => {
+        let hasMoreCount = false;
         const newBestHead = gameData.Items.BestHead.map((it) => {
           return {
-            originName: it.Name,
-            showName: WagerTypeIDandWagerGrpIDtoString(it.WagerTypeIDs, it.WagerGrpIDs[0]),
+            showName: it.Name,
             WagerGrpIDs: it.WagerGrpIDs,
             WagerTypeIDs: it.WagerTypeIDs,
           };
@@ -135,6 +137,10 @@ export default {
               });
               newTeamData.Wager = newWagerData;
 
+              if (TeamData.MoreCount !== 0) {
+                hasMoreCount = true;
+              }
+
               return newTeamData;
             });
             return newListData;
@@ -145,6 +151,7 @@ export default {
           Items: {
             BestHead: newBestHead,
             List: newList,
+            hasMoreCount,
           },
         };
       });
@@ -268,6 +275,73 @@ export default {
             store.commit('setCatList', res);
             store.commit('setCatMapData', mapList);
             resolve();
+          })
+          .catch(reject);
+      });
+    },
+    // 12-1.获取在线咨询信息
+    GetQAHistory(store, { isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        return getQAHistory(isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 12-2 未讀訊息數
+    GetCountMes(store, { isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        return getCountMes(isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 12-3 標示已讀
+    SendReadMes(store, { isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        return sendReadMes(isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 13.传送咨询-信息
+    SendQAMessage(store, { message, isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        const postData = {
+          Content: message,
+        };
+        return sendQAMessage(postData, isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 14.传送咨询-檔案信息
+    SendQAFile(store, { base64File, name, isGuestMode = false }) {
+      return new Promise((resolve, reject) => {
+        const postData = {
+          Content: base64File,
+          FileName: name,
+        };
+        return sendQAFile(postData, isGuestMode).then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    // 15.賽事結果
+    GetGameResult(store, { CatID, ScheduleTime, LeagueID, EvtID }) {
+      return new Promise((resolve, reject) => {
+        let postData = {};
+        if (EvtID) {
+          postData = { EvtID };
+        } else {
+          postData = {
+            CatID,
+            LeagueID,
+            ScheduleTime,
+          };
+        }
+        return getGameResult(postData)
+          .then(async (res) => {
+            resolve(res);
           })
           .catch(reject);
       });
@@ -456,32 +530,6 @@ export default {
     GetLiveURL(store) {
       return new Promise((resolve, reject) => {
         return getLive().then((res) => {
-          resolve(res);
-        });
-      });
-    },
-    GetQAHistory(store) {
-      return new Promise((resolve, reject) => {
-        return getQAHistory().then((res) => {
-          resolve(res);
-        });
-      });
-    },
-    SendQAMessage(store, message) {
-      return new Promise((resolve, reject) => {
-        return sendQAMessage({
-          Content: message,
-        }).then((res) => {
-          resolve(res);
-        });
-      });
-    },
-    SendQAFile(store, { base64File, name }) {
-      return new Promise((resolve, reject) => {
-        return sendQAFile({
-          Content: base64File,
-          FileName: name,
-        }).then((res) => {
           resolve(res);
         });
       });

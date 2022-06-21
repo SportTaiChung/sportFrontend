@@ -153,7 +153,7 @@
             errorType: 0,
           };
         }),
-        betAmount: 0,
+        betAmount: '',
         winAmount: '',
         formulaResult: '',
       };
@@ -415,7 +415,8 @@
         .oddEmpty {
           position: absolute;
           color: red;
-          bottom: -7px;
+          bottom: -1px;
+          font-size: 12px;
         }
       }
 
@@ -423,7 +424,7 @@
         padding: 10px;
         display: flex;
         align-items: center;
-        height: 46px;
+        height: 60px;
         white-space: nowrap;
         .firstText {
           margin-left: 15px;

@@ -1,4 +1,4 @@
-import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
+import { login, logout, getUserInfoAbout, getUserInfoCash, setNickName } from '@/api/User';
 
 export default {
   namespaced: true,
@@ -28,7 +28,7 @@ export default {
   actions: {
     Login(store, postData) {
       return new Promise((resolve, reject) => {
-        return login({ udomain: document.domain.split('.').slice(-2).join('.'), ...postData })
+        return login(postData)
           .then(async (res) => {
             store.commit('SetMBID', res.data.mb.mbID);
             store.commit('SetToken', res.data.loginID);
@@ -74,6 +74,9 @@ export default {
           })
           .catch(reject);
       });
+    },
+    setNickName(store, postData) {
+      return setNickName(postData);
     },
   },
 };

@@ -12,7 +12,7 @@
         @select="handleSelect"
       >
         <el-menu-item index="1" @click="jumpLink('scoreLive')">即時比分</el-menu-item>
-        <el-menu-item index="2">賽果</el-menu-item>
+        <el-menu-item index="2" @click="OpenGameResultWindow">賽果</el-menu-item>
         <el-menu-item index="3" @click="jumpLink('rule')">規則</el-menu-item>
         <el-menu-item index="4" @click="OpenPopupCenter">投註記錄</el-menu-item>
       </el-menu>
@@ -21,13 +21,23 @@
       <ul>
         <li>{{ userName }}</li>
         <li v-if="userCredit">$ {{ userCredit }}</li>
-        <li
-          ><img
+        <li>
+          <img
             src="@/assets/img/common/icon_header_service.svg"
             class="icon-service"
             title="聯絡客服"
             @click="openService()"
-        /></li>
+          />
+          <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
+        </li>
+        <li>
+          <img
+            src="@/assets/img/common/icon_header_user.svg"
+            class="icon-service"
+            title="個人設置"
+            @click="openPersonal()"
+          />
+        </li>
         <li>
           <img
             src="@/assets/img/common/logout.svg"
@@ -47,6 +57,12 @@
 <script>
   export default {
     name: 'GamesHeader',
+    props: {
+      unreadQACount: {
+        type: Number,
+        default: 0,
+      },
+    },
     data() {
       return {
         activeIndex: '4',
@@ -56,7 +72,6 @@
       this.callUserInfoAbout();
       this.callGetUserInfoCash();
     },
-
     computed: {
       userName() {
         return this.$store.state.User.UserData?.Name;
@@ -78,7 +93,8 @@
       WindowOpen(href) {
         const width = document.documentElement.clientWidth;
         const height = document.documentElement.clientHeight;
-        const popupwidth = width * 0.6;
+        // const popupwidth = width * 0.6;
+        const popupwidth = 1200;
         const popupheight = height * 0.6;
         const top = (height - popupheight + 20) / 2;
         const left = (width - popupwidth) / 2;
@@ -97,7 +113,13 @@
       },
       OpenPopupCenter() {
         const historyRecord = this.$router.resolve({
-          path: 'historyRecord',
+          path: 'HistoryRecord',
+        });
+        this.WindowOpen(historyRecord.href);
+      },
+      OpenGameResultWindow() {
+        const historyRecord = this.$router.resolve({
+          path: 'GameResult',
         });
         this.WindowOpen(historyRecord.href);
       },
@@ -109,6 +131,9 @@
       },
       openService() {
         this.$emit('openService');
+      },
+      openPersonal() {
+        this.$emit('openPersonal');
       },
       logout() {
         this.$store.commit('SetLoading', true);
@@ -160,6 +185,7 @@
       ul {
         display: inline-flex;
         li {
+          position: relative;
           margin-right: 15px;
         }
         i {
@@ -181,6 +207,24 @@
           color: white;
           cursor: pointer;
         }
+      }
+
+      .unreadMark {
+        position: absolute;
+        top: 5px;
+        left: calc(100% - 15px);
+        min-width: 20px;
+        min-height: 20px;
+        padding: 3px 6px;
+        background-color: #c84141;
+        border-radius: 50rem;
+        color: #fff;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        line-height: normal;
+        z-index: 5;
       }
     }
   }

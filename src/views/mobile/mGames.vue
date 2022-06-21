@@ -5,7 +5,8 @@
       <MobileHeader
         ref="header"
         :activeCollapse="activeCollapse"
-        @toggleAllCollapse="toggleAllCollapse"
+        :unreadQACount="unreadQACount"
+        @toggleAllCollapse="toggleAllCollapse()"
         @openService="openService()"
       ></MobileHeader>
 
@@ -17,52 +18,81 @@
             :key="index"
             :gameData="gameData"
             :isExpanded="isExpanded(index)"
+            :hasMoreGame="gameData.Items.hasMoreCount"
             @openWagerTypePopup="isShowWagerTypePopup = true"
           ></mGameTable>
         </template>
         <template v-else>
-          <div class="noData" v-if="!$store.state.isLoading"> NO DATA </div>
+          <div class="noData" v-if="!$store.state.isLoading"> 暫無賽事 </div>
         </template>
       </div>
 
       <!-- FOOTER -->
       <MobileFooter
-        @onOpenBetInfoPopup="onOpenBetInfoPopup"
-        @onOpenBetRecordView="onOpenBetRecordView"
-        @onOpenMorePanel="onOpenMorePanel"
+        :hasLeagueFiltered="hasLeagueFiltered"
+        @openBetInfoPopup="openBetInfoPopup()"
+        @openBetRecordView="openBetRecordView()"
+        @openMenuPanel="openMenuPanel()"
+        @openLeaguesPanel="openLeaguesPanel()"
       ></MobileFooter>
     </div>
 
     <div class="fixed-container">
-      <MoreGame v-if="isShowMoreGame" @onOpenBetRecordView="onOpenBetRecordView"></MoreGame>
+      <MoreGame v-if="isShowMoreGame" @openBetRecordView="openBetRecordView()"></MoreGame>
 
+      <!-- 下注面板 (多注時) -->
       <mGamesBetInfoAll
         v-show="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
 
+      <!-- 下注面板 (單注時) -->
       <mGamesBetInfoSingle
         v-show="betCartList.length === 1 && isShowBetInfoSingle"
         @onHide="isShowBetInfoSingle = false"
       ></mGamesBetInfoSingle>
 
+      <!-- 投注紀錄面板 -->
       <mBetRecordView
         v-if="isShowBetRecordView"
         @onCloseBetRecordView="isShowBetRecordView = false"
       ></mBetRecordView>
 
+      <!-- 玩法選擇彈窗 -->
       <mWagerTypePopup
         v-if="isShowWagerTypePopup"
         @closeWagerTypePopup="isShowWagerTypePopup = false"
       ></mWagerTypePopup>
 
+      <!-- 功能選單 -->
       <mMenuPanel
-        v-show="isShowMorePanel"
-        @closeMorePanel="isShowMorePanel = false"
+        :isOpen="isOpenMenuPanel"
+        @closeMe="isOpenMenuPanel = false"
         @updateGameDetail="$refs.header.reCallGameDetailAPI()"
+        @openStrayCount="isShowStrayCount = true"
       ></mMenuPanel>
 
-      <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+      <!-- 聯盟選擇面板 -->
+      <mLeaguesPanel
+        :isOpen="isOpenLeaguesPanel"
+        @closeMe="isOpenLeaguesPanel = false"
+        @onLeaguesListChanged="$refs.header.reCallGameDetailAPI()"
+        @hasLeagueFiltered="(val) => (hasLeagueFiltered = val)"
+      ></mLeaguesPanel>
+
+      <!-- 過關計算器 -->
+      <StrayCountDialog
+        ref="StrayCountDialog"
+        v-if="isShowStrayCount"
+        @closeMe="isShowStrayCount = false"
+      ></StrayCountDialog>
+
+      <!-- 客服聊天室窗 -->
+      <ServiceChat
+        :isOpen="isOpenServiceChat"
+        @closeMe="isOpenServiceChat = false"
+        @updateUnreadCount="updateUnreadCount"
+      ></ServiceChat>
     </div>
   </div>
 </template>
@@ -71,14 +101,15 @@
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
   import mGameTable from './components/mGameTable.vue';
-
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
-  import mWagerTypePopup from './components/mWagerTypePopup';
-  import mMenuPanel from './components/mMenuPanel';
-  import MoreGame from '@/components/MoreGame';
-  import ServiceChat from '@/components/ServiceChat';
+  import mWagerTypePopup from './components/mWagerTypePopup.vue';
+  import mMenuPanel from './components/mMenuPanel.vue';
+  import MoreGame from '@/components/MoreGame.vue';
+  import ServiceChat from '@/components/ServiceChat.vue';
+  import mLeaguesPanel from './components/mLeaguesPanel.vue';
+  import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
 
   export default {
     name: 'MobileGames',
@@ -91,8 +122,10 @@
       mBetRecordView,
       mWagerTypePopup,
       mMenuPanel,
+      mLeaguesPanel,
       MoreGame,
       ServiceChat,
+      StrayCountDialog,
     },
     data() {
       return {
@@ -101,8 +134,13 @@
         isShowBetInfoSingle: true,
         isShowBetRecordView: false,
         isShowWagerTypePopup: false,
-        isShowMorePanel: false,
+        isOpenMenuPanel: false,
+        isOpenLeaguesPanel: false,
         isOpenServiceChat: false,
+        isShowStrayCount: false,
+        // QA未讀數量
+        unreadQACount: 0,
+        hasLeagueFiltered: false,
       };
     },
     computed: {
@@ -136,17 +174,27 @@
       isExpanded(index) {
         return this.activeCollapse.includes(index);
       },
-      onOpenBetInfoPopup() {
-        this.isShowBetInfo = true;
+      openBetInfoPopup() {
+        if (this.betCartList.length === 1) {
+          this.isShowBetInfoSingle = true;
+        } else {
+          this.isShowBetInfo = true;
+        }
       },
-      onOpenBetRecordView() {
+      openBetRecordView() {
         this.isShowBetRecordView = true;
       },
-      onOpenMorePanel() {
-        this.isShowMorePanel = true;
+      openMenuPanel() {
+        this.isOpenMenuPanel = true;
+      },
+      openLeaguesPanel() {
+        this.isOpenLeaguesPanel = true;
       },
       openService() {
         this.isOpenServiceChat = true;
+      },
+      updateUnreadCount(count) {
+        this.unreadQACount = count;
       },
     },
     watch: {

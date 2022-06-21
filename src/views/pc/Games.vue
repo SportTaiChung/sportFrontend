@@ -1,7 +1,11 @@
 <template>
   <div id="PCGames">
     <div class="head">
-      <GamesHeader @openService="openService()"></GamesHeader>
+      <GamesHeader
+        :unreadQACount="unreadQACount"
+        @openService="openServiceChat()"
+        @openPersonal="openPersonal()"
+      ></GamesHeader>
     </div>
     <div class="setUp">
       <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
@@ -39,7 +43,15 @@
       @closeMe="isShowStrayCount = false"
     ></StrayCountDialog>
 
-    <ServiceChat :isOpen="isOpenServiceChat" @closeMe="isOpenServiceChat = false"></ServiceChat>
+    <!-- 客服聊天室窗 -->
+    <ServiceChat
+      :isOpen="isOpenServiceChat"
+      @closeMe="isOpenServiceChat = false"
+      @updateUnreadCount="updateUnreadCount"
+    ></ServiceChat>
+
+    <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
+    </PersonalPanel>
   </div>
 </template>
 
@@ -53,6 +65,7 @@
   import GamesBetInfo from './components/GamesBetInfo/GamesBetInfo.vue';
   import StrayCountDialog from './components/StrayCountDialog.vue';
   import ServiceChat from '@/components/ServiceChat';
+  import PersonalPanel from '@/components/PersonalPanel';
 
   export default {
     name: 'PCGames',
@@ -66,6 +79,7 @@
       GamesBetInfo,
       MoreGame,
       ServiceChat,
+      PersonalPanel,
     },
     data() {
       return {
@@ -75,7 +89,12 @@
         isShowSetting: false,
         // 顯示過關計算器
         isShowStrayCount: false,
+        // 顯示客服對話
         isOpenServiceChat: false,
+        // 顯示個人設置
+        isOpenPersonalPanel: false,
+        // QA未讀數量
+        unreadQACount: 0,
       };
     },
     created() {
@@ -124,8 +143,14 @@
       ChangeCat() {
         this.$refs.GamesSetup.clearLeagueList();
       },
-      openService() {
+      openServiceChat() {
         this.isOpenServiceChat = true;
+      },
+      openPersonal() {
+        this.isOpenPersonalPanel = true;
+      },
+      updateUnreadCount(count) {
+        this.unreadQACount = count;
       },
     },
   };

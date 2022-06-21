@@ -37,6 +37,7 @@
         </el-menu-item-group>
       </el-submenu>
       <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
+        <!-- 有兒子的menu Item -->
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
           <template slot="title">
             <img
@@ -50,6 +51,7 @@
           </template>
           <el-menu-item-group v-show="menuData.Items.length > 0">
             <el-menu-item
+              class="childMenuItem"
               v-for="(Items, y) in menuData.Items"
               :key="y"
               :index="i + '-' + y"
@@ -64,6 +66,7 @@
             </el-menu-item>
           </el-menu-item-group>
         </el-submenu>
+        <!-- 沒有兒子的menuItem -->
         <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
           <img
             :src="
@@ -113,6 +116,7 @@
         } else {
           this.$store.dispatch('Game/GetGameDetailSmall');
         }
+        this.$store.dispatch('User/GetUserInfoCash');
       }, 10000);
 
       // 定時更新遊戲Menu
@@ -160,7 +164,7 @@
         if (this.isNavMenuCollapse) {
           return 'width:64px;min-width:64px';
         } else {
-          return 'width:200px;min-width:200px';
+          return 'width:180px;min-width:180px';
         }
       },
       tableSort() {
@@ -181,11 +185,15 @@
     watch: {
       isCallGameDetailAPI: {
         handler() {
-          this.callGetGameDetail(
-            this.gameStore.selectCatID,
-            this.gameStore.selectWagerTypeKey,
-            true
-          );
+          if (this.isFavoriteMode) {
+            this.callGetFavoriteGameDetail(true);
+          } else {
+            this.callGetGameDetail(
+              this.gameStore.selectCatID,
+              this.gameStore.selectWagerTypeKey,
+              true
+            );
+          }
         },
       },
       tableSort: {
@@ -274,13 +282,17 @@
         });
       },
       // 最愛
-      callGetFavoriteGameDetail() {
-        this.$store.commit('SetLoading', true);
+      callGetFavoriteGameDetail(updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
         this.$store
           .dispatch('Game/GetFavoriteGameDetail')
           .then((res) => {})
           .finally(() => {
-            this.$store.commit('SetLoading', false);
+            if (!updateBehind) {
+              this.$store.commit('SetLoading', false);
+            }
           });
       },
       hideMenuChildren() {
@@ -363,6 +375,18 @@
     .el-menu {
       border: 0px;
 
+      .childMenuItem {
+        padding: 0px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        display: flex;
+        justify-content: flex-end;
+        .nav_bottom_item {
+          width: 140px;
+          padding: 0px 20px;
+          padding-right: 22px;
+        }
+      }
       .el-menu-item {
         padding-right: 0px !important;
       }
@@ -484,7 +508,7 @@
     width: 100%;
     display: inline-flex;
     justify-content: space-between;
-    padding: 0 15px 0 25px;
+    padding: 0 0 0 25px;
   }
   .nav_text {
     @include nav-TopTextcolor();

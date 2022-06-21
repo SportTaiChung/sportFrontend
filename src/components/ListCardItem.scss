@@ -2,6 +2,32 @@
   background-color: #eaeaea;
   margin-bottom: 5px;
   position: relative;
+  .betResultBlock {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    .betResultImgIcon {
+      display: block;
+      width: 18px;
+      height: 18px;
+      margin-right: 5px;
+    }
+    .success,
+    .info,
+    .error {
+      display: flex;
+      align-items: center;
+    }
+    .success {
+      color: green;
+    }
+    .info {
+      color: blue;
+    }
+    .error {
+      color: red;
+    }
+  }
   .cardHeaderRow {
     display: flex;
     padding: 7px 10px;
@@ -111,6 +137,8 @@
   }
   .strayContentBlock {
     padding: 8px 10px;
+    position: relative;
+    cursor: pointer;
     .strayContentBlockRow {
       display: flex;
       flex-wrap: wrap;
@@ -124,6 +152,52 @@
       }
       .strayTitleInfoTextTip {
         color: #f00;
+      }
+    }
+    .rightArrowBlock {
+      position: absolute;
+      right: 10px;
+      top: 20px;
+      i {
+        font-size: 15px;
+      }
+    }
+
+    .strayDetailBlock {
+      margin-bottom: 5px;
+      border: 1px solid rgb(164, 164, 164);
+      text-align: left;
+      background-color: #f3f3f3;
+
+      .betPosName {
+        color: #005aff;
+      }
+      .cutLine {
+        color: #f00;
+      }
+      .strayDetailTitle {
+        padding: 5px;
+      }
+      .strayDetailLine {
+        width: 100%;
+        height: 1px;
+        background-color: rgb(164, 164, 164);
+      }
+      .strayDetailContentBlock {
+        padding: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        .strayDetailContentBlockRow {
+          width: 100%;
+          display: flex;
+          margin-bottom: 5px;
+          .strayDetailContentBlockRowTeam {
+            margin-left: 2px;
+          }
+        }
+        .HomeTeamSign {
+          color: #ff8800;
+        }
       }
     }
   }

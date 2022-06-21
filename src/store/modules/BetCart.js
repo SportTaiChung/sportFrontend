@@ -1,14 +1,19 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
 import { Notification } from 'element-ui';
+import { PanelModeEnum } from '@/enum/BetPanelMode';
 import rootStore from '@/store';
 export default {
   namespaced: true,
   state: {
     betCartList: [],
     betHistoryList: [],
+    // 是否有新的注單加入到購物車
     isAddNewToChart: false,
+    // 是否需要去清除BetViewList的資料
+    isClearMemberData: false,
     strayOdd: null,
+    panelMode: PanelModeEnum.normal,
   },
   getters: {
     showBetCartList(state) {
@@ -19,6 +24,12 @@ export default {
     },
   },
   mutations: {
+    setPanelMode(state, val) {
+      state.panelMode = val;
+    },
+    setIsClearMemberData(state, val) {
+      state.isClearMemberData = val;
+    },
     setStrayOdd(state, val) {
       state.strayOdd = val;
     },
@@ -29,6 +40,9 @@ export default {
       state.betCartList.length = 0;
       state.betCartList = [];
     },
+    clearCartBetResult(state) {
+      state.betCartList.forEach((it) => (it.betResult = null));
+    },
     removeCartByGameID(state, gameID) {
       const cartIndex = state.betCartList.findIndex((cartData) => cartData.GameID === gameID);
       if (cartIndex > -1) {
@@ -38,6 +52,13 @@ export default {
     setBetHistoryList(state, list) {
       state.betHistoryList.length = 0;
       state.betHistoryList = list;
+    },
+    updateBetCartListBetResult(state, resultList) {
+      if (state.betCartList.length !== 0 && state.panelMode === PanelModeEnum.result) {
+        resultList.forEach((it, index) => {
+          state.betCartList[index].betResult = it;
+        });
+      }
     },
   },
   actions: {
@@ -98,6 +119,13 @@ export default {
     },
     // 加入到購物車
     addToCart(store, betData) {
+      // 當在顯示結算面板時,點擊新的投注則會清空
+      if (store.state.panelMode === PanelModeEnum.result) {
+        store.commit('clearCart');
+        store.commit('setPanelMode', PanelModeEnum.Normal);
+        store.commit('setIsClearMemberData', !store.state.isClearMemberData);
+      }
+
       // 是否在購物車內找到完全相同的自己
       const isSelfJustRemove =
         store.state.betCartList.findIndex(
@@ -128,6 +156,7 @@ export default {
         BetMin: null,
         betAmount,
         winAmount: null,
+        betResult: null,
       };
       console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
@@ -142,9 +171,16 @@ export default {
     // betType : 1  一般投注
     // betType : 99 過關投注
     submitBet(store, list) {
-      store.commit('SetLoading', true, { root: true });
-      return playBet(list).then((res) => {
-        return store.dispatch('playState', res.data.traceCodeKey);
+      return new Promise((resolve, reject) => {
+        store.commit('SetLoading', true, { root: true });
+        return playBet(list)
+          .then((res) => {
+            if (res.data?.ticket) {
+              store.commit('updateBetCartListBetResult', res.data.ticket);
+            }
+            resolve(res);
+          })
+          .catch(reject);
       });
     },
     // 檢查投注狀態
@@ -152,32 +188,8 @@ export default {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey)
           .then((res) => {
-            if (res.data.length === 0) {
-              setTimeout(() => {
-                resolve();
-                return store.dispatch('playState', traceCodeKey);
-              }, 1000);
-            } else if (res.data[0].code === 201) {
-              setTimeout(() => {
-                resolve();
-                return store.dispatch('playState', traceCodeKey);
-              }, 1000);
-              store.commit('SetLoading', true, { root: true });
-            } else if (res.data[0].code === 200) {
-              store.commit('clearCart');
-              Notification.success({
-                message: res.data[0].Message,
-              });
-              store.dispatch('User/GetUserInfoCash', null, { root: true });
-              store.commit('SetLoading', false, { root: true });
-              resolve(res);
-            } else {
-              Notification.error({
-                message: res.data[0].Message,
-              });
-              store.commit('SetLoading', false, { root: true });
-              reject(res);
-            }
+            store.commit('updateBetCartListBetResult', res.data);
+            resolve(res);
           })
           .catch(reject);
       });
@@ -187,7 +199,15 @@ export default {
         return getBetHistory(postData)
           .then((res) => {
             if (res.data?.list) {
-              store.commit('setBetHistoryList', res.data.list);
+              store.commit(
+                'setBetHistoryList',
+                res.data.list.map((it) => {
+                  return {
+                    ...it,
+                    isCollapse: false,
+                  };
+                })
+              );
             }
             resolve(res);
           })

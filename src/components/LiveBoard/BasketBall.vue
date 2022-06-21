@@ -1,6 +1,6 @@
 <template>
   <div id="BasketBall">
-    <div class="table-wrapper" :style="backgroundY">
+    <div class="table-wrapper" :style="background">
       <table>
         <thead>
           <tr>
@@ -44,11 +44,11 @@
     methods: {},
     computed: {
       // 背景圖
-      backgroundY() {
-        const index = this.$SportLib.getBackgroundIndexByCatId(102);
-        const y = (index > 0 ? index * 150 : 0) * -1;
+      background() {
+        const board = this.$SportLib.getBoardImageByCatId(3);
+        const url = require('@/assets/img/common/liveBoard/boards/' + board);
         return {
-          'background-position-y': y + 'px',
+          'background-image': `url(${url})`,
         };
       },
       // board 資訊
@@ -93,7 +93,6 @@
       max-width: 370px;
       padding: 20px 15px 0 15px;
       margin: auto;
-      background-image: url('~@/assets/img/common/liveBoard/backgrounds.jpg');
       background-position-x: center;
       background-repeat: no-repeat;
       background-size: 370px auto;

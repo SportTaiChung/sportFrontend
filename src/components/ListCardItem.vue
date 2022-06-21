@@ -15,6 +15,7 @@
 
       <i
         class="el-icon-close"
+        v-if="panelMode !== PanelModeEnum.result"
         :style="isShowBlackMask ? 'color:white;' : ''"
         @click="cancelSingleHandler(cartData.GameID)"
       ></i>
@@ -43,7 +44,10 @@
       </div>
       <!-- 一般投注每一個item的各自金額 -->
       <div class="cardContentBlockRow" v-if="childIndex === 0">
-        <div class="lockRowInfo" v-if="isLockMode">
+        <div
+          class="lockRowInfo"
+          v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
+        >
           <div class="infoItem">
             <div class="infoItemTitle">投注 :</div>
             <div class="infoItemVal"> {{ cartData.betAmount }}</div>
@@ -83,13 +87,32 @@
           >
         </div>
       </div>
-      <div class="cardContentBlockRow limitText" v-if="!isLockMode">
+
+      <div class="cardContentBlockRow limitText" v-if="panelMode === PanelModeEnum.normal">
         本場上限 : {{ cartData.BetMax }}
+      </div>
+
+      <div
+        class="betResultBlock"
+        v-if="panelMode === PanelModeEnum.result && cartData.betResult !== null && childIndex === 0"
+      >
+        <div class="success" v-if="cartData.betResult.code === 200">
+          <img class="betResultImgIcon" src="@/assets/img/common/betView/ok.png" alt="" />
+          {{ cartData.betResult.Message }}
+        </div>
+        <div class="info" v-else-if="cartData.betResult.code === 201">
+          <img class="betResultImgIcon" src="@/assets/img/common/betView/info.png" alt="" />
+          {{ cartData.betResult.Message }}
+        </div>
+        <div class="error" v-else>
+          <img class="betResultImgIcon" src="@/assets/img/common/betView/error.png" alt="" />
+          {{ cartData.betResult.Message }}
+        </div>
       </div>
 
       <!-- 小鍵盤 -->
       <mBetKeyboard
-        v-if="isMobileMode && isShowKeyboard && !isLockMode"
+        v-if="isMobileMode && isShowKeyboard && panelMode === PanelModeEnum.normal"
         @Add="(data) => $emit('Add', data)"
         @Assign="(data) => $emit('Assign', data)"
       ></mBetKeyboard>
@@ -103,7 +126,7 @@
 
 <script>
   import mBetKeyboard from '@/components/mBetKeyboard';
-
+  import { PanelModeEnum } from '@/enum/BetPanelMode';
   export default {
     name: 'ListCardItem',
     components: {
@@ -130,9 +153,11 @@
         type: String,
         default: '',
       },
-      isLockMode: {
-        type: Boolean,
-      },
+    },
+    data() {
+      return {
+        PanelModeEnum,
+      };
     },
     methods: {
       betAmountBlur(GameID) {
@@ -164,6 +189,9 @@
         if (isNaN(cartData.betAmount)) {
           cartData.betAmount = 0;
         }
+        if (cartData.betAmount > this.UserCredit) {
+          cartData.betAmount = this.UserCredit;
+        }
         this.$emit('inputRowItemChangeHandler');
       },
       inputRowItemWinAmountChangeHandler(cartData, winAmountIndex) {
@@ -178,6 +206,9 @@
               cartData.betAmount = this.$lib.truncCeil(
                 cartData.winAmount / this.$lib.trunc(parseFloat(displayData.showOdd))
               );
+              if (cartData.betAmount > this.UserCredit) {
+                cartData.betAmount = this.UserCredit;
+              }
             }
           }
         });
@@ -216,6 +247,12 @@
       isShowKeyboard() {
         // 單項投注 & 點擊了此item的input
         return this.childIndex === 0 && this.currShowKeyboardIndex === this.cartIndex;
+      },
+      panelMode() {
+        return this.$store.state.BetCart.panelMode;
+      },
+      UserCredit() {
+        return this.$store.state.User.UserCredit;
       },
     },
   };

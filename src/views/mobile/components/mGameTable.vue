@@ -30,6 +30,7 @@
           :key="index"
           :source="source"
           :isExpanded="isLeagueExpanded(index)"
+          :hasMoreGame="hasMoreGame"
           @toggleCollapse="toggleCollapse(index)"
         ></mGameInfo>
       </div>
@@ -40,6 +41,7 @@
             :source="source"
             :bestHead="gameData.Items.BestHead"
             :isExpanded="isLeagueExpanded(index)"
+            :hasMoreGame="hasMoreGame"
             @toggleCollapse="toggleCollapse(index)"
           ></mGameBetting>
         </div>
@@ -63,6 +65,12 @@
       isExpanded: {
         type: Boolean,
         default: false,
+      },
+      hasMoreGame: {
+        type: Boolean,
+        default() {
+          return false;
+        },
       },
     },
     data() {

@@ -5,8 +5,14 @@
         <img class="icon" src="@/assets/img/mobile/icon_footer_palysvg.svg" alt="" />
         <span>直播</span>
       </li>
-      <li class="footer-item">
-        <img class="icon" src="@/assets/img/mobile/icon_footer_league.svg" alt="" />
+      <li class="footer-item" @click="openLeaguesPanel()">
+        <img
+          class="icon"
+          :src="
+            require(`@/assets/img/mobile/icon_footer_league${hasLeagueFiltered ? '_on' : ''}.svg`)
+          "
+          alt=""
+        />
         <span>其他聯盟</span>
       </li>
       <li class="footer-item" @click="onBetViewClick">
@@ -19,7 +25,7 @@
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
         <span>投注紀錄</span>
       </li>
-      <li class="footer-item" @click="onOpenMorePanel">
+      <li class="footer-item" @click="openMenuPanel">
         <img class="icon" src="@/assets/img/mobile/icon_footer_more.svg" alt="" />
         <span>更 多</span>
       </li>
@@ -30,6 +36,12 @@
 <script>
   export default {
     name: 'mobileFooter',
+    props: {
+      hasLeagueFiltered: {
+        type: Boolean,
+        default: false,
+      },
+    },
     computed: {
       betCartStore() {
         return this.$store.state.BetCart;
@@ -48,13 +60,13 @@
     },
     methods: {
       onBetViewClick() {
-        this.hasBetItem && this.$emit('onOpenBetInfoPopup');
+        this.hasBetItem && this.$emit('openBetInfoPopup');
       },
       onBetRecordViewClick() {
-        this.$emit('onOpenBetRecordView');
+        this.$emit('openBetRecordView');
       },
-      onOpenMorePanel() {
-        this.$emit('onOpenMorePanel');
+      openMenuPanel() {
+        this.$emit('openMenuPanel');
       },
       openLive() {
         this.$store.commit('SetLoading', true);
@@ -66,6 +78,9 @@
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
+      },
+      openLeaguesPanel() {
+        this.$emit('openLeaguesPanel');
       },
     },
   };

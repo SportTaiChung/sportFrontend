@@ -19,7 +19,7 @@
 
           <div class="chat-history" ref="history">
             <template v-for="(msg, index) in history">
-              <div class="msg-wrap" :class="true ? 'self' : ''" :key="index">
+              <div class="msg-wrap" :class="isSelfMessage(msg.getName) ? 'self' : ''" :key="index">
                 <div class="msg-row">
                   <div class="avatar">
                     <img src="@/assets/img/common/service/avatar8.png" />
@@ -71,7 +71,9 @@
     props: {
       isOpen: {
         type: Boolean,
-        default: false,
+      },
+      serviceQuestion: {
+        type: String,
       },
     },
     data() {
@@ -81,9 +83,14 @@
         history: [],
         fileInput: null,
         isLoading: false,
+        unreadCount: 0,
       };
     },
-    computed: {},
+    computed: {
+      isGuestMode() {
+        return this.$router.currentRoute.name === 'Login';
+      },
+    },
     mounted() {
       this.fileInput = this.$refs.fileInput;
       this.fileInput.onchange = (e) => {
@@ -108,30 +115,74 @@
         };
       };
 
-      // 每10秒自動更新紀錄
-      this.historyTimer = setInterval(() => this.getHistory, 10000);
+      // 定時更新紀錄
+      this.historyTimer = setInterval(() => {
+        if (this.isOpen) {
+          this.getHistory(true);
+        }
+      }, 5000);
+
+      // 定時更新未讀數
+      this.checkUnreadTimer = setInterval(() => {
+        if (!this.isOpen) {
+          this.getCountMse();
+        }
+      }, 8000);
+
+      this.modelInput = this.serviceQuestion;
     },
-    beforeDestroy() {
-      clearInterval(this.historyTimer);
+    watch: {
+      isOpen(newValue) {
+        if (newValue === true) {
+          this.getHistory();
+          this.modelInput = this.serviceQuestion;
+        }
+      },
+      unreadCount(newValue) {
+        this.$emit('updateUnreadCount', newValue);
+      },
     },
     methods: {
       close() {
         this.$emit('closeMe');
       },
-      scrollToBottom() {
+      scrollToBottom(callback) {
         const view = this.$refs.history;
-        // view.scrollTop = view.scrollHeight;
         view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
+        callback && callback();
       },
-      getHistory() {
-        this.isLoading = true;
+      // 取得對話紀錄
+      getHistory(isBehindUpdate = false) {
+        if (!this.isOpen) {
+          return;
+        }
+        if (!isBehindUpdate) {
+          this.isLoading = true;
+        }
         this.$store
-          .dispatch('Game/GetQAHistory')
+          .dispatch('Game/GetQAHistory', { isGuestMode: this.isGuestMode })
           .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
             this.isLoading = false;
-            this.scrollToBottom();
+            if (!isBehindUpdate) {
+              this.scrollToBottom(() => {
+                this.sendReadMes();
+              });
+            }
           });
+      },
+      // 取得未讀數
+      getCountMse() {
+        this.$store
+          .dispatch('Game/GetCountMes', { isGuestMode: this.isGuestMode })
+          .then((res) => (this.unreadCount = res.data))
+          .finally(() => {});
+      },
+      // 標示已讀
+      sendReadMes() {
+        this.$store.dispatch('Game/SendReadMes', { isGuestMode: this.isGuestMode }).then(() => {
+          this.unreadCount = 0;
+        });
       },
       sendMseeage() {
         if (!this.isLoading && this.modelInput.trim()) {
@@ -139,7 +190,7 @@
           this.modelInput = '';
           this.isLoading = true;
           this.$store
-            .dispatch('Game/SendQAMessage', message)
+            .dispatch('Game/SendQAMessage', { message, isGuestMode: this.isGuestMode })
             .then((res) => this.getHistory())
             .finally(() => (this.isLoading = false));
         }
@@ -147,7 +198,7 @@
       sendFile({ base64File, name }) {
         this.isLoading = true;
         this.$store
-          .dispatch('Game/SendQAFile', { base64File, name })
+          .dispatch('Game/SendQAFile', { base64File, name, isGuestMode: this.isGuestMode })
           .then(() => this.getHistory())
           .finally(() => (this.isLoading = false));
       },
@@ -157,13 +208,13 @@
       imgLoadDone() {
         this.scrollToBottom();
       },
-    },
-    watch: {
-      isOpen(newValue) {
-        if (newValue === true) {
-          this.getHistory();
-        }
+      isSelfMessage(name) {
+        return name !== 'Service';
       },
+    },
+    beforeDestroy() {
+      clearInterval(this.historyTimer);
+      clearInterval(this.checkUnreadTimer);
     },
   };
 </script>
@@ -318,7 +369,9 @@
                   background-color: #333;
                   overflow: hidden;
                   margin-right: 20px;
-                  margin-top: 15px;
+                  img {
+                    width: 100%;
+                  }
                 }
                 .msg {
                   color: #444;

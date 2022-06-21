@@ -2,14 +2,12 @@
   <div id="mBetKeyboard">
     <!-- 快選 -->
     <ul class="quick-add">
-      <li class="btn-quick-add" @click="Add(10)">+10</li>
-      <li class="btn-quick-add" @click="Add(100)">+100</li>
-      <li class="btn-quick-add" @click="Add(500)">+500</li>
-      <li class="btn-quick-add" @click="Add(1000)">+1000</li>
+      <li class="btn-quick-add" v-for="(chip, i) in preferChips" :key="i" @click="Add(chip)"
+        >+{{ chip }}</li
+      >
 
       <!-- <li class="max-num-tip">999999</li> -->
     </ul>
-
     <!-- 數字鍵盤 -->
     <div class="num-input-pad">
       <div class="input-item" @click="Assign(1)">1</div>
@@ -30,6 +28,11 @@
 <script>
   export default {
     name: 'mBetKeyboard',
+    computed: {
+      preferChips() {
+        return this.$store.state.Setting.UserSetting.preferChips;
+      },
+    },
     methods: {
       Add(addNum) {
         this.$emit('Add', addNum);

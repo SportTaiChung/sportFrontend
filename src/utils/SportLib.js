@@ -1,81 +1,4 @@
 /**
- * Wager 轉 文本
- * @param {Empty} val
- * @param {Array} WagerTypeIDs WagerTypeIDs
- * @param {Number} grpId WagerGrpID
- * @returns { String } 用來顯示的文本
- */
-export function WagerTypeIDandWagerGrpIDtoString(WagerTypeIDs, grpId, isMoreGameMode = false) {
-  let WagerGrp = '';
-  let WagerType = '';
-  let text = '';
-  if (grpId === 0 || grpId === 10 || grpId === 20) {
-    WagerGrp = '全場';
-  } else if (grpId === 1 || grpId === 11 || grpId === 21) {
-    WagerGrp = '上半';
-  } else {
-    WagerGrp = '';
-  }
-  if ([101, 103].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    WagerType = '讓球';
-    if (isMoreGameMode) {
-      text = WagerType;
-    } else {
-      text = WagerGrp + WagerType;
-    }
-  } else if ([102, 104, 109].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    WagerType = '大小';
-    if (isMoreGameMode) {
-      text = WagerType;
-    } else {
-      text = WagerGrp + WagerType;
-    }
-  } else if ([111, 110].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    WagerType = '獨贏';
-    if (isMoreGameMode) {
-      text = WagerType;
-    } else {
-      text = WagerGrp + WagerType;
-    }
-  } else if ([105, 113].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    WagerType = '單雙';
-    if (isMoreGameMode) {
-      text = WagerType;
-    } else {
-      text = WagerGrp + WagerType;
-    }
-  } else if ([106].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    WagerType = '一输';
-    if (isMoreGameMode) {
-      text = WagerType;
-    } else {
-      text = WagerGrp + WagerType;
-    }
-  } else if ([121].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '局數讓球';
-  } else if ([122].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '局數大小';
-  } else if ([128].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '總分讓球';
-  } else if ([129].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '總分單雙';
-  } else if ([126].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '局數單雙';
-  } else if ([127].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '局數獨贏';
-  } else if ([125].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '總分大小';
-  } else if ([123].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '盤數獨贏';
-  } else if ([124].find((typeID) => WagerTypeIDs.includes(typeID))) {
-    text = '盤數讓球';
-  } else {
-    console.error(`SportLib error ${WagerTypeIDs} not found`);
-  }
-  return text;
-}
-
-/**
  * 所有玩法數據的資料
  * WagerPos : 1主 2客 3和 4大 5小 4單 5雙
  *  name: 'HandiCap',
@@ -111,7 +34,7 @@ export const PlayMethodData = {
   // 獨贏
   SoloWin: {
     name: 'SoloWin',
-    typeIdList: [110, 111, 127],
+    typeIdList: [110, 111, 123, 127],
     betCutLineDealFunc: function () {
       return 0;
     },
@@ -359,7 +282,7 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       layoutType = 'single';
       playMethodData = PlayMethodData.Other;
     } else {
-      console.error('wagerTypeID not found:', wagerTypeID);
+      // console.error('wagerTypeID not found:', wagerTypeID);
     }
 
     // 處理主客場對調
@@ -559,7 +482,7 @@ export function cartDataToDisplayData(cartData) {
 export function getMenuIconByCatID(catID) {
   const iconMap = Object.freeze({
     1: 'icon_sportMenu_soccer.svg',
-    5: 'icon_sportMenu_soccer.svg',
+    5: 'icon_sportMenu_football.svg',
     21: 'icon_sportMenu_pingpong.svg',
     22: 'icon_sportMenu_badminton.svg',
     23: 'icon_sportMenu_volleyball.svg',
@@ -586,33 +509,33 @@ export function getMenuIconByCatID(catID) {
   return iconMap[catID] || iconMap.default;
 }
 
-// 以 catID 取得對應 背景圖片順位
-export function getBackgroundIndexByCatId(catID) {
-  const backgroundIndexes = Object.freeze({
-    1: 0,
-    5: 0,
-    21: 9,
-    22: 7,
+// 以 catID 取得對應 背景圖
+export function getBoardImageByCatId(catID) {
+  const map = Object.freeze({
+    1: 'soccer.jpg',
+    5: 'soccer.jpg',
+    21: 'pingpong.jpg',
+    22: 'badminton.jpg',
     31: null,
     32: null,
-    4: 2,
-    12: 2,
-    13: 2,
-    14: 2,
-    101: 2,
-    102: 1,
-    3: 1,
-    16: 1,
-    55: 3,
+    4: 'baseball.jpg',
+    12: 'baseball.jpg',
+    13: 'baseball.jpg',
+    14: 'baseball.jpg',
+    101: 'baseball.jpg',
+    102: 'basketball.jpg',
+    3: 'basketball.jpg',
+    16: 'basketball.jpg',
+    55: 'tennis.jpg',
     72: null,
-    82: 4,
+    82: 'hockey.jpg',
     83: null,
-    85: 10,
+    85: 'pcgame.jpg',
     '-999': null,
     default: null,
   });
 
-  return backgroundIndexes[catID] || backgroundIndexes.default;
+  return map[catID] || map.default;
 }
 
 export const chipsData = [
