@@ -69,19 +69,24 @@
       </div>
 
       <!-- 比分板區塊 -->
-      <div v-show="gameType2Page === 0">
-        <Soccer v-if="selectCatID === 1"></Soccer>
+      <div v-if="gameType2Page === 0 && isShowLiveScore">
+        <Soccer
+          v-if="judgeGameLiveScore(1, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
+        ></Soccer>
         <BaseBall
-          v-if="
-            selectCatID === 4 ||
-            selectCatID === 12 ||
-            selectCatID === 13 ||
-            selectCatID === 14 ||
-            selectCatID === 101
-          "
+          v-if="judgeGameLiveScore(101, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
         ></BaseBall>
         <BasketBall
-          v-if="selectCatID === 102 || selectCatID === 3 || selectCatID === 16"
+          v-if="judgeGameLiveScore(102, selectCatID)"
+          :gameScoreData="moreGameData.GameScore"
+          :homeTeam="getteamData.home"
+          :awayTeam="getteamData.away"
         ></BasketBall>
       </div>
     </div>
@@ -325,6 +330,12 @@
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
+      CatList() {
+        return this.$store.state.Game.CatList;
+      },
+      isShowLiveScore() {
+        return this.moreGameData?.GameScore !== undefined;
+      },
       FinalGameList() {
         if (this.GameList.length === 0) {
           return [];
@@ -416,6 +427,12 @@
       },
     },
     methods: {
+      judgeGameLiveScore(templateCatID, selectCatID) {
+        const findCatData = this.CatList.find((catData) => {
+          return catData.CatID === templateCatID;
+        });
+        return findCatData.GroupCatIDs.findIndex((it) => it === selectCatID) !== -1;
+      },
       resetData() {
         this.collapseItemNames.length = 0;
         this.collapseItemNames = [];

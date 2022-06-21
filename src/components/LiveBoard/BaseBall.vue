@@ -21,34 +21,34 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ team1Info.name }}</td>
-            <td>{{ team1Info.item1 }}</td>
-            <td>{{ team1Info.item2 }}</td>
-            <td>{{ team1Info.item3 }}</td>
-            <td>{{ team1Info.item4 }}</td>
-            <td>{{ team1Info.item5 }}</td>
-            <td>{{ team1Info.item6 }}</td>
-            <td>{{ team1Info.item7 }}</td>
-            <td>{{ team1Info.item8 }}</td>
-            <td>{{ team1Info.item9 }}</td>
-            <td>{{ team1Info.item10 }}</td>
-            <td>{{ team1Info.item11 }}</td>
-            <td>{{ team1Info.item12 }}</td>
+            <td>{{ homeTeam }}</td>
+            <td>{{ keyNameToShow('S1', 0) }}</td>
+            <td>{{ keyNameToShow('S2', 0) }}</td>
+            <td>{{ keyNameToShow('S3', 0) }}</td>
+            <td>{{ keyNameToShow('S4', 0) }}</td>
+            <td>{{ keyNameToShow('S5', 0) }}</td>
+            <td>{{ keyNameToShow('S6', 0) }}</td>
+            <td>{{ keyNameToShow('S7', 0) }}</td>
+            <td>{{ keyNameToShow('S8', 0) }}</td>
+            <td>{{ keyNameToShow('S9', 0) }}</td>
+            <td>{{ keyNameToShow('OT', 0) }}</td>
+            <td>{{ keyNameToShow('FH', 0) }}</td>
+            <td>{{ '-' }}</td>
           </tr>
           <tr>
-            <td>{{ team2Info.name }}</td>
-            <td>{{ team2Info.item1 }}</td>
-            <td>{{ team2Info.item2 }}</td>
-            <td>{{ team2Info.item3 }}</td>
-            <td>{{ team2Info.item4 }}</td>
-            <td>{{ team2Info.item5 }}</td>
-            <td>{{ team2Info.item6 }}</td>
-            <td>{{ team2Info.item7 }}</td>
-            <td>{{ team2Info.item8 }}</td>
-            <td>{{ team2Info.item9 }}</td>
-            <td>{{ team2Info.item10 }}</td>
-            <td>{{ team2Info.item11 }}</td>
-            <td>{{ team2Info.item12 }}</td>
+            <td>{{ awayTeam }}</td>
+            <td>{{ keyNameToShow('S1', 1) }}</td>
+            <td>{{ keyNameToShow('S2', 1) }}</td>
+            <td>{{ keyNameToShow('S3', 1) }}</td>
+            <td>{{ keyNameToShow('S4', 1) }}</td>
+            <td>{{ keyNameToShow('S5', 1) }}</td>
+            <td>{{ keyNameToShow('S6', 1) }}</td>
+            <td>{{ keyNameToShow('S7', 1) }}</td>
+            <td>{{ keyNameToShow('S8', 1) }}</td>
+            <td>{{ keyNameToShow('S9', 1) }}</td>
+            <td>{{ keyNameToShow('OT', 1) }}</td>
+            <td>{{ keyNameToShow('FH', 1) }}</td>
+            <td>{{ '-' }}</td>
           </tr>
         </tbody>
       </table>
@@ -57,9 +57,10 @@
 </template>
 
 <script>
+  import base from './LiveBoardMixin';
   export default {
+    mixins: [base],
     name: 'BaseBall',
-    methods: {},
     computed: {
       // 背景圖
       background() {
@@ -76,7 +77,7 @@
       // 隊伍1 資訊
       team1Info() {
         return {
-          name: '隊伍1',
+          name: this.homeTeam,
           item1: '0',
           item2: '1',
           item3: '0',
@@ -94,7 +95,7 @@
       // 隊伍2 資訊
       team2Info() {
         return {
-          name: '隊伍2',
+          name: this.awayTeam,
           item1: '2',
           item2: '4',
           item3: '0',
@@ -108,6 +109,22 @@
           item11: '0',
           item12: '0',
         };
+      },
+    },
+    methods: {
+      keyNameToShow(key, renderType) {
+        const scoreData = this.gameScoreData[0];
+        if (scoreData) {
+          if (scoreData[key] === '') {
+            return '';
+          } else {
+            if (renderType === 0) {
+              return scoreData[key].split(':')[0];
+            } else {
+              return scoreData[key].split(':')[1];
+            }
+          }
+        }
       },
     },
   };
