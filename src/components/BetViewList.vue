@@ -592,6 +592,7 @@
       resultCancelBtnClick() {
         this.$emit('setNewGroupIndex', 1);
         this.$emit('setNewChildIndex', 0);
+        this.lastBlurInput = { name: 'fillEachBetAmount' };
         this.cancelHandler();
       },
       showOddValue(oddValue) {
