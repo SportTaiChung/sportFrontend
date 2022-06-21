@@ -114,11 +114,15 @@
     watch: {
       isCallGameDetailAPI: {
         handler() {
-          this.callGetGameDetail(
-            this.gameStore.selectCatID,
-            this.gameStore.selectWagerTypeKey,
-            true
-          );
+          if (this.isFavoriteMode) {
+            this.callGetFavoriteGameDetail(true);
+          } else {
+            this.callGetGameDetail(
+              this.gameStore.selectCatID,
+              this.gameStore.selectWagerTypeKey,
+              true
+            );
+          }
         },
       },
     },
@@ -217,13 +221,17 @@
         this.callGetFavoriteGameDetail();
       },
       // 最愛
-      callGetFavoriteGameDetail() {
-        this.$store.commit('SetLoading', true);
+      callGetFavoriteGameDetail(isUpdateBehind = false) {
+        if (!isUpdateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
         this.$store
           .dispatch('Game/GetFavoriteGameDetail')
           .then((res) => {})
           .finally(() => {
-            this.$store.commit('SetLoading', false);
+            if (!isUpdateBehind) {
+              this.$store.commit('SetLoading', false);
+            }
           });
       },
       openService() {
