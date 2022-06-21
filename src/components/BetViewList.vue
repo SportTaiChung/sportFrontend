@@ -134,7 +134,7 @@
 
     <div
       class="cardOptionBlock"
-      v-if="isMobileMode && !isShowCardOptionBlock && panelMode === PanelModeEnum.normal"
+      v-if="isMobileMode && !isShowCardOptionBlock && panelMode !== PanelModeEnum.result"
     >
       <div class="buttonRow">
         <div class="submitBtn" style="text-align: center" @click="submitHandler">確認下注</div>
