@@ -175,7 +175,11 @@
         return this.activeCollapse.includes(index);
       },
       openBetInfoPopup() {
-        this.isShowBetInfo = true;
+        if (this.betCartList.length === 1) {
+          this.isShowBetInfoSingle = true;
+        } else {
+          this.isShowBetInfo = true;
+        }
       },
       openBetRecordView() {
         this.isShowBetRecordView = true;
