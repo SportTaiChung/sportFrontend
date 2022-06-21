@@ -27,7 +27,7 @@
         <div class="row">
           <div class="rowTitle"> 語系</div>
           <div class="rowContent">
-            <el-select v-model="lang">
+            <el-select v-model="lang" @change="newLang">
               <el-option
                 v-for="item in langOptions"
                 :key="item.value"
@@ -57,9 +57,18 @@
             value: 'tw',
             label: '繁體中文',
           },
+          {
+            value: 'cn',
+            label: '简体中文',
+          },
         ],
         isFocus: false,
       };
+    },
+    created() {
+      this.nickName = this.$store.state.User.UserData.RealName;
+      this.lastNickName = this.nickName;
+      this.lang = this.$store.state.Lang;
     },
     computed: {
       inputIcon() {
@@ -71,6 +80,10 @@
       },
     },
     methods: {
+      newLang(lang) {
+        this.$store.commit('SetLang', lang);
+        location.reload();
+      },
       // 離開
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
@@ -102,10 +115,6 @@
             this.$store.commit('SetLoading', false);
           });
       },
-    },
-    created() {
-      this.nickName = this.$store.state.User.UserData.RealName;
-      this.lastNickName = this.nickName;
     },
   };
 </script>

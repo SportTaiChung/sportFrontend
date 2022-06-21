@@ -7,7 +7,10 @@
         </div>
         {{ CatName }}
       </td>
-      <template v-if="selectCatID !== 1 && selectWagerTypeKey !== 2">
+      <!-- 波膽 -->
+      <template v-if="selectCatID !== 1 && selectWagerTypeKey !== 2"> </template>
+      <!-- 其他 -->
+      <template v-else>
         <td v-for="(it, key) in BestHead" :key="key" class="GameTableHeaderOtherTD">
           <div class="borderWhiteBlock"></div>
           {{ it.showName }}
