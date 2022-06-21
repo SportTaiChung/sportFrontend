@@ -126,12 +126,18 @@ export default {
               const newWagerData = new Array(newBestHead.length).fill({
                 isNoData: true,
               });
+              // debugger;
               newBestHead.forEach((headData, headIndex) => {
                 oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
-                  if (headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID) !== -1) {
+                  const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
+                  const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID);
+
+                  if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
                     newWagerData[headIndex] = oldWagerData;
                     oldWagerDatas.splice(oldWagerDataIndex, 1);
                     return false;
+                  } else {
+                    return true;
                   }
                 });
               });

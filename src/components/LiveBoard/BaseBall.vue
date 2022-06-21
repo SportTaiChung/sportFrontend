@@ -74,42 +74,6 @@
       title() {
         return '9';
       },
-      // 隊伍1 資訊
-      team1Info() {
-        return {
-          name: this.homeTeam,
-          item1: '0',
-          item2: '1',
-          item3: '0',
-          item4: '0',
-          item5: '0',
-          item6: '1',
-          item7: '1',
-          item8: '4',
-          item9: '0',
-          item10: '4',
-          item11: '5',
-          item12: '2',
-        };
-      },
-      // 隊伍2 資訊
-      team2Info() {
-        return {
-          name: this.awayTeam,
-          item1: '2',
-          item2: '4',
-          item3: '0',
-          item4: '1',
-          item5: '0',
-          item6: '2',
-          item7: '1',
-          item8: '1',
-          item9: '0',
-          item10: '0',
-          item11: '0',
-          item12: '0',
-        };
-      },
     },
     methods: {
       keyNameToShow(key, renderType) {
