@@ -879,6 +879,7 @@
         }
         if (this.panelMode === this.PanelModeEnum.lock || this.settings.showBetConfirm === false) {
           this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -886,11 +887,13 @@
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
                 this.callPlayStateAPI();
+                this.$notify.success({
+                  message: '下注成功',
+                });
               }
             })
             .catch((err) => {
               console.error(err);
-
               this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.normal);
               this.$store.commit('SetLoading', false);
             });
@@ -1136,10 +1139,10 @@
           }
         }
         .closeBtn {
-          background-color: #3a86de;
+          background-color: #3fa381;
           color: white;
           &:hover {
-            background-color: #569cec;
+            background-color: #62b096;
           }
         }
       }

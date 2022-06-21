@@ -450,7 +450,7 @@
         }
       }
       .selectLeague {
-        color: #ffea01;
+        color: white;
         cursor: pointer;
       }
     }

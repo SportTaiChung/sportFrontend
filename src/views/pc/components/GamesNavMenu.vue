@@ -495,7 +495,7 @@
   }
   .Collapse_i {
     font-size: 13px;
-    color: #ffffff;
+    color: black;
   }
 
   .nav_bottom {

@@ -70,12 +70,19 @@
                 >
                   <td class="FirstCatNameBlock">
                     <div class="leftTimeBlock">
-                      <div class="timeRow" v-if="rowIndex === 0">
-                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                      </div>
-                      <div class="timeRow" v-if="rowIndex === 0">
-                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                      </div>
+                      <template v-if="rowIndex === 0 && selectGameType !== 2">
+                        <div class="timeRow">
+                          {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                        </div>
+                        <div class="timeRow">
+                          {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="timeRow">
+                          {{ teamData.TimeAct }}
+                        </div>
+                      </template>
                     </div>
                     <div class="centerTeamBlock">
                       <!-- 只需要顯示一個隊伍 -->

@@ -74,7 +74,7 @@
     },
     computed: {
       userName() {
-        return this.$store.state.User.UserData?.Name;
+        return this.$store.state.User.UserData?.mbID;
       },
       userCredit() {
         return this.$store.state.User.UserCredit;
@@ -235,8 +235,8 @@
   }
 
   .el-menu--horizontal > .el-menu-item.is-active {
-    color: #ffea01;
     border-bottom: 2px solid #fff;
+    color: white;
   }
   .el-menu-item:hover {
     @include base-background();
