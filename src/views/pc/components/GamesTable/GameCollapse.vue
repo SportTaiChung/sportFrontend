@@ -485,7 +485,6 @@
         }
       },
       addFavoriteHandler(EvtID) {
-        console.log(EvtID);
         this.$store.commit('Setting/addFavorites', EvtID);
       },
       clickArrow() {
@@ -538,6 +537,8 @@
         }
       },
       goBoldBet(showOdd, oddData, teamData) {
+        this.$emit('AddToCart');
+
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
           (it) => it.key === selectGameTypeID

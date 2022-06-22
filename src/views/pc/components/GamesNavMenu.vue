@@ -28,14 +28,25 @@
       :unique-opened="true"
       :collapse-transition="false"
     >
-      <el-submenu index="状态" class="collapse_GameType" v-show="isNavMenuCollapse">
-        <template slot="title">
-          <i class="Collapse_i">{{ showHiddenCollapseText }}</i>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item v-for="(item, i) in []" :key="i">{{ item.value }}</el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+      <div class="CollapseMenuTitleBlock" v-if="isNavMenuCollapse">
+        <!-- <VDropdown :triggers="['click']" placements="right" :autoHide="false">
+          <div class="CurrentGameType">{{ showHiddenCollapseText }}</div>
+          <template #popper>
+            <button>Guide</button>
+            <button>API Reference</button>
+          </template>
+        </VDropdown> -->
+
+        <NavMenuGameType :triggers="['click']">
+          <div class="CurrentGameType">{{ showHiddenCollapseText }}</div>
+          <template #popper>
+            <div class="GamesNavMenu_PopperGameTypeList">
+              <div class="GamesNavMenu_PopperGameTypeItem"> asd </div>
+              <div class="GamesNavMenu_PopperGameTypeItem"> 123 </div>
+            </div>
+          </template>
+        </NavMenuGameType>
+      </div>
       <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
         <!-- 有兒子的menu Item -->
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
@@ -86,7 +97,11 @@
 </template>
 
 <script>
+  import NavMenuGameType from '@/components/NavMenuGameType';
   export default {
+    components: {
+      NavMenuGameType,
+    },
     name: 'GamesNavMenu',
     props: {
       isNavMenuCollapse: {
@@ -309,7 +324,12 @@
           // 父親層級被點
           if (WagerTypeKey === null) {
             // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
-            if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
+            // 以及自己不能再次隱藏
+            if (
+              this.$refs.elMenu.openedMenus?.length > 0 &&
+              !isDefaultSystemSelect &&
+              parseInt(this.$refs.elMenu.openedMenus[0]) !== catIndex
+            ) {
               this.hideMenuChildren();
             }
 
@@ -366,6 +386,30 @@
       .el-menu-item.is-active {
         .nav_text {
           color: $nav_submenu_active_text1 !important;
+        }
+      }
+    }
+  }
+
+  .v-popper--theme-nav-menu-game-type {
+    .v-popper__wrapper {
+      box-shadow: 0px 1px 4px 3px rgb(0 0 0 / 30%) !important;
+      .GamesNavMenu_PopperGameTypeList {
+        background: #e8e8e8;
+        .GamesNavMenu_PopperGameTypeItem {
+          background-color: #e8e8e8;
+          width: 125px;
+          height: 36px;
+          line-height: 36px;
+          padding: 0 20px;
+          border-bottom: rgba(179, 179, 179, 0.807) 1px solid;
+          cursor: pointer;
+          &:hover {
+            background-color: white;
+          }
+          &:last-child {
+            border-bottom: 0px;
+          }
         }
       }
     }
@@ -493,10 +537,6 @@
     width: 63px;
     border-bottom: 1px solid #88b4a5;
   }
-  .Collapse_i {
-    font-size: 13px;
-    color: black;
-  }
 
   .nav_bottom {
     width: 100%;
@@ -533,5 +573,23 @@
 
   .el-menu {
     @include nav-TopBgcolor();
+  }
+
+  .CollapseMenuTitleBlock {
+    width: 100%;
+    height: 35px;
+    background-color: #136146;
+    color: white;
+    cursor: pointer;
+    .v-popper {
+      width: 100%;
+      .CurrentGameType {
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
 </style>

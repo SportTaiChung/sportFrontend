@@ -1,6 +1,5 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
-import { Notification } from 'element-ui';
 import { PanelModeEnum } from '@/enum/BetPanelMode';
 import rootStore from '@/store';
 export default {
