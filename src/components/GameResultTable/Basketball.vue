@@ -42,38 +42,20 @@
       </td>
       <td>
         <div class="score">
-          <div class="cell">{{ parseScore('S5')[0] }}</div>
-          <div class="cell">{{ parseScore('S5')[1] }}</div>
-        </div>
-      </td>
-      <td>
-        <div class="score">
-          <div class="cell">{{ parseScore('S6')[0] }}</div>
-          <div class="cell">{{ parseScore('S6')[1] }}</div>
-        </div>
-      </td>
-      <td>
-        <div class="score">
-          <div class="cell">{{ parseScore('S7')[0] }}</div>
-          <div class="cell">{{ parseScore('S7')[1] }}</div>
-        </div>
-      </td>
-      <td>
-        <div class="score">
-          <div class="cell">{{ parseScore('S8')[0] }}</div>
-          <div class="cell">{{ parseScore('S8')[1] }}</div>
-        </div>
-      </td>
-      <td>
-        <div class="score">
-          <div class="cell">{{ parseScore('S9')[0] }}</div>
-          <div class="cell">{{ parseScore('S9')[1] }}</div>
-        </div>
-      </td>
-      <td>
-        <div class="score">
           <div class="cell">{{ parseScore('OT')[0] }}</div>
           <div class="cell">{{ parseScore('OT')[1] }}</div>
+        </div>
+      </td>
+      <td>
+        <div class="score">
+          <div class="cell">{{ parseScore('FH')[0] }}</div>
+          <div class="cell">{{ parseScore('FH')[1] }}</div>
+        </div>
+      </td>
+      <td>
+        <div class="score">
+          <div class="cell">{{ parseScore('SH')[0] }}</div>
+          <div class="cell">{{ parseScore('SH')[1] }}</div>
         </div>
       </td>
       <td>
@@ -89,7 +71,7 @@
 <script>
   import base from './TableMixin.js';
   export default {
-    name: 'Baseball',
+    name: 'Basketball',
     mixins: [base],
   };
 </script>
