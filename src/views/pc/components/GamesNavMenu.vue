@@ -23,26 +23,46 @@
     <el-menu
       ref="elMenu"
       class="el-menu-vertical-demo"
+      popper-class="popperMenu"
       :default-active="menuActiveString"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"
       :collapse-transition="false"
     >
-      <div class="CollapseMenuTitleBlock" v-if="isNavMenuCollapse">
-        <!-- <VDropdown :triggers="['click']" placements="right" :autoHide="false">
-          <div class="CurrentGameType">{{ showHiddenCollapseText }}</div>
-          <template #popper>
-            <button>Guide</button>
-            <button>API Reference</button>
-          </template>
-        </VDropdown> -->
+      <div
+        class="CollapseMenuTitleBlock"
+        v-if="isNavMenuCollapse"
+        @click="isShowNavMenuGameType = true"
+        @mouseenter="isShowNavMenuGameType = true"
+      >
+        <NavMenuGameType
+          :triggers="[]"
+          :shown="isShowNavMenuGameType"
+          :autoHide="false"
+          :distance="4"
+          @mouseenter="isShowNavMenuGameType = true"
+        >
+          <div class="CurrentGameTypeBlock">
+            <div class="CurrentGameTypeText">
+              {{ showHiddenCollapseText }}
+            </div>
 
-        <NavMenuGameType :triggers="['click']">
-          <div class="CurrentGameType">{{ showHiddenCollapseText }}</div>
+            <div class="CurrentGameTypeBorder"></div>
+          </div>
+
           <template #popper>
-            <div class="GamesNavMenu_PopperGameTypeList">
-              <div class="GamesNavMenu_PopperGameTypeItem"> asd </div>
-              <div class="GamesNavMenu_PopperGameTypeItem"> 123 </div>
+            <div
+              class="GamesNavMenu_PopperGameTypeList"
+              @mouseleave="isShowNavMenuGameType = false"
+            >
+              <div
+                class="GamesNavMenu_PopperGameTypeItem"
+                v-for="(GameTypeData, GameTypeIndex) in showGameTypeList"
+                :key="GameTypeIndex"
+                @click="PopperGameTypeItemClick(GameTypeData.key)"
+              >
+                {{ GameTypeData.value }}
+              </div>
             </div>
           </template>
         </NavMenuGameType>
@@ -114,6 +134,7 @@
         menuActiveString: '',
         intervalEvent: null,
         intervalEvent2: null,
+        isShowNavMenuGameType: false,
       };
     },
     mounted() {
@@ -362,6 +383,10 @@
       getMenuIconByCatID(catId) {
         return this.$SportLib.getMenuIconByCatID(catId);
       },
+      PopperGameTypeItemClick(key) {
+        this.gameTypeClickHandler(key);
+        this.isShowNavMenuGameType = false;
+      },
     },
   };
 </script>
@@ -392,6 +417,7 @@
   }
 
   .v-popper--theme-nav-menu-game-type {
+    outline: 0;
     .v-popper__wrapper {
       box-shadow: 0px 1px 4px 3px rgb(0 0 0 / 30%) !important;
       .GamesNavMenu_PopperGameTypeList {
@@ -534,8 +560,8 @@
     }
   }
   .nav_header1 {
-    width: 63px;
-    border-bottom: 1px solid #88b4a5;
+    width: 64px;
+    border-bottom: 1px solid rgba(109, 109, 109, 0.488);
   }
 
   .nav_bottom {
@@ -583,12 +609,24 @@
     cursor: pointer;
     .v-popper {
       width: 100%;
-      .CurrentGameType {
+      .CurrentGameTypeBlock {
         width: 100%;
         height: 35px;
         display: flex;
+
+        flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+        .CurrentGameTypeText {
+          width: 100%;
+          text-align: center;
+        }
+        .CurrentGameTypeBorder {
+          width: 36px;
+          height: 3px;
+          background-color: #caffed;
+          margin-top: -8px;
+        }
       }
     }
   }

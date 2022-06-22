@@ -8,8 +8,10 @@
   };
 </script>
 
-<style>
-  .v-popper__arrow-inner {
-    border-color: #e8e8e8 !important;
+<style lang="scss">
+  .v-popper--theme-nav-menu-game-type {
+    .v-popper__arrow-inner {
+      border-color: #e8e8e8 !important;
+    }
   }
 </style>
