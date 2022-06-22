@@ -27,13 +27,31 @@
               <div class="teamText">vs</div>
               <div class="teamText"> {{ teamData.AwayTeamStr }}</div>
             </div>
+            <div
+              class="star"
+              :class="starCSSJudge(teamData.EvtID)"
+              @click="addFavoriteHandler(teamData.EvtID)"
+            ></div>
           </div>
           <div class="boldTableBetList">
             <div class="boldTableBetListLeftContainer">
               <div
                 class="boldTableBetBlock"
+                :class="
+                  boldTableBetBlockIsSelect(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    OULine
+                  )
+                "
                 v-for="(OULine, OULineIndex) in boldRenderLeftTemplate"
                 :key="OULineIndex"
+                @click="
+                  goBoldBet(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    teamData
+                  )
+                "
               >
                 <div class="betBlockTop">{{ OULine }} </div>
                 <div class="betBlockBottom">
@@ -47,6 +65,13 @@
                 class="boldTableBetBlock"
                 v-for="(OULine, OULineIndex) in boldRenderRightTemplate"
                 :key="OULineIndex"
+                @click="
+                  goBoldBet(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    teamData
+                  )
+                "
               >
                 <div class="betBlockTop">{{ OULine }} </div>
                 <div class="betBlockBottom">
@@ -79,7 +104,7 @@
                         </div>
                       </template>
                       <template v-else>
-                        <div class="timeRow">
+                        <div class="timeRow" v-if="rowIndex === 0">
                           {{ teamData.TimeAct }}
                         </div>
                       </template>
@@ -504,6 +529,41 @@
         }, {});
         return res;
       },
+      boldTableBetBlockIsSelect(oddData, OULine) {
+        const compareData = this.betCartList.find((cartData) => cartData.GameID === oddData.GameID);
+        if (compareData && compareData.OULine === OULine) {
+          return 'boldTableBetBlockSelect';
+        } else {
+          return '';
+        }
+      },
+      goBoldBet(showOdd, oddData, teamData) {
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(showOdd),
+          wagerPos: 3,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: oddData.GameID,
+          CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
+          LeagueNameStr: this.source.LeagueNameStr,
+          HomeTeamStr: teamData.HomeTeamStr,
+          AwayTeamStr: teamData.AwayTeamStr,
+          WagerGrpID: 10,
+          WagerTypeID: 112,
+          EvtID: teamData.EvtID,
+          EvtStatus: teamData.EvtStatus,
+          SetFlag: teamData.SetFlag,
+          ...oddData,
+        };
+
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
+      },
       goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
         if (showOdd === '') {
           return;
@@ -599,6 +659,20 @@
     &:last-child {
       margin-bottom: 0px;
     }
+    $starSize: 19px;
+    .star {
+      width: $starSize;
+      height: $starSize;
+      background-size: 100% auto;
+      background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
+      cursor: pointer;
+    }
+    .starActive {
+      width: $starSize;
+      height: $starSize;
+      background-size: 100% auto;
+      background: url(~@/assets/img/pc/icon_star.svg) no-repeat center top;
+    }
     .collapseTitleBlock {
       width: 100%;
       height: 35px;
@@ -644,6 +718,9 @@
             margin-left: 8px;
           }
         }
+        .star {
+          margin-left: 10px;
+        }
       }
       .boldTableBetList {
         display: flex;
@@ -654,6 +731,9 @@
           text-align: center;
           background-color: white;
           cursor: pointer;
+          &:hover {
+            background-color: #ffe1ae;
+          }
           .betBlockTop {
             width: 100%;
             height: 30px;
@@ -666,6 +746,9 @@
             color: #30679e;
             font-weight: bold;
           }
+        }
+        .boldTableBetBlockSelect {
+          background-color: #ffd5d5;
         }
         .boldTableBetListLeftContainer {
           display: flex;
@@ -747,20 +830,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            $starSize: 19px;
-            .star {
-              width: $starSize;
-              height: $starSize;
-              background-size: 100% auto;
-              background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
-              cursor: pointer;
-            }
-            .starActive {
-              width: $starSize;
-              height: $starSize;
-              background-size: 100% auto;
-              background: url(~@/assets/img/pc/icon_star.svg) no-repeat center top;
-            }
           }
         }
         .GameTableHeaderOtherTD,

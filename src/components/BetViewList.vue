@@ -780,7 +780,7 @@
           const WagerPos = cartData.wagerPos;
           const HdpPos = cartData.HdpPos;
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
-          const OddValue = this.$SportLib.cartDataToDisplayData(cartData).showOdd;
+          const OddValue = parseFloat(this.$SportLib.cartDataToDisplayData(cartData).showOdd);
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
           if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
             errorMessage = '尚未收到注格資訊,請稍後再試';
