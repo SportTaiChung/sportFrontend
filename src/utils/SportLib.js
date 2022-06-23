@@ -442,7 +442,6 @@ export function cartDataToDisplayData(cartData) {
       console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
   } else if (playData.playMethodData.name === 'Bold') {
-    console.log('cartData:', cartData);
     showBetTitle = cartData.OULine;
     showOdd = cartData.DrewOdds;
   } else if (playData.playMethodData.name === 'Other') {
@@ -479,11 +478,10 @@ export function cartDataToDisplayData(cartData) {
   let wagerGrpLabel = '';
   let wagerBoldLabel = '';
   // 波膽處理
-  if (cartData.wagerTypeID === 112) {
+  if (cartData.WagerTypeID === 112) {
     wagerBoldLabel = '-波膽';
   }
 
-  console.log('wagerBoldLabel:', wagerBoldLabel, cartData);
   if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
     wagerGrpLabel = `- [全場${wagerBoldLabel}]`;
   } else if (

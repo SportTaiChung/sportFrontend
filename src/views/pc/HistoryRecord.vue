@@ -17,6 +17,7 @@
     </div>
     <div class="Record_main">
       <div class="Record_mainContainer">
+        <!-- 未結算注單 -->
         <table v-show="active === 0" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <th width="200">注單訊息</th>
@@ -120,6 +121,7 @@
           </tr>
         </table>
 
+        <!-- 已結算注單 -->
         <table v-show="active === 1" border="0" cellspacing="0" cellpadding="0" class="weektable">
           <tr>
             <th>比賽日期</th>
@@ -135,13 +137,16 @@
             <td>{{ item.accdate.substr(5) }} {{ item.weekLang }}</td>
             <td>{{ item.amount }}</td>
             <td>{{ item.RetAmt }}</td>
-            <td v-if="item.weekLang.indexOf('合計') > 0">{{ item.result }}</td>
+            <td v-if="item.weekLang.indexOf('合計') > 0">{{ item.ResultAmount }}</td>
             <td v-else>
-              <el-link type="primary" @click="goThisWeek(item.accdate)">{{ item.result }}</el-link>
+              <el-link type="primary" @click="goThisWeek(item.accdate)">{{
+                item.ResultAmount
+              }}</el-link>
             </td>
           </tr>
         </table>
 
+        <!-- 已結算注單詳細 -->
         <div v-show="active === 2">
           <table border="0" cellspacing="0" cellpadding="0">
             <tr>
@@ -167,7 +172,7 @@
                 <td width="130">{{ item.AfterAmounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
                 <td width="100">{{ item.RetAmts }}</td>
-                <td width="100">{{ item.ResultAmount }}</td>
+                <td width="100">{{ item.ResultAmounts }}</td>
               </tr>
             </table>
 
@@ -282,7 +287,7 @@
               <td width="130">{{ gettotal.AfterAmounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
               <td width="100">{{ gettotal.RetAmts }}</td>
-              <td width="100">{{ gettotal.ResultAmount }}</td>
+              <td width="100">{{ gettotal.ResultAmounts }}</td>
             </tr>
           </table>
         </div>
@@ -306,7 +311,7 @@
 
     computed: {
       totalAmount() {
-        var total = 0;
+        let total = 0;
         this.betHistoryData.forEach((item) => {
           total += item.Amount;
         });
@@ -384,7 +389,7 @@
           let Amounts = 0;
           let AfterAmounts = 0;
           let RetAmts = 0;
-          let results = 0;
+          let ResultAmounts = 0;
           let canwins = 0;
           item.data.forEach((itemdata) => {
             if (itemdata.BetType === 1) {
@@ -423,25 +428,25 @@
             Amounts += itemdata.Amount;
             AfterAmounts += itemdata.AfterAmount;
             RetAmts += itemdata.RetAmt;
-            results += itemdata.ResultAmount;
+            ResultAmounts += itemdata.ResultAmount;
           });
           item.Amounts = Amounts;
           item.AfterAmounts = AfterAmounts;
           item.RetAmts = RetAmts;
-          item.results = results;
+          item.ResultAmounts = ResultAmounts;
           item.canwins = canwins;
           item.active = false;
         });
         return dest;
       },
       gettotal() {
-        var total = { Amounts: 0, AfterAmounts: 0, RetAmts: 0, results: 0, canwins: 0 };
+        const total = { Amounts: 0, AfterAmounts: 0, RetAmts: 0, ResultAmounts: 0, canwins: 0 };
 
         this.gettodayDetails.forEach((item) => {
           total.Amounts += item.Amounts;
           total.AfterAmounts += item.AfterAmounts;
           total.RetAmts += item.RetAmts;
-          total.results += item.results;
+          total.ResultAmounts += item.ResultAmounts;
           total.canwins += item.canwins;
         });
         return total;
