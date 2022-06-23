@@ -126,18 +126,30 @@ export default {
               const newWagerData = new Array(newBestHead.length).fill({
                 isNoData: true,
               });
-              // debugger;
+
               newBestHead.forEach((headData, headIndex) => {
                 oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
-                  const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
-                  const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID);
+                  // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
+                  if (headData.WagerGrpIDs[0] !== 128) {
+                    const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
+                    const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(
+                      oldWagerData.WagerTypeID
+                    );
 
-                  if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
-                    newWagerData[headIndex] = oldWagerData;
-                    oldWagerDatas.splice(oldWagerDataIndex, 1);
-                    return false;
+                    if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
+                      newWagerData[headIndex] = oldWagerData;
+                      oldWagerDatas.splice(oldWagerDataIndex, 1);
+                      return false;
+                    } else {
+                      return true;
+                    }
                   } else {
-                    return true;
+                    // 如果 WagerGrpID 是128, 只要檢查 WagerTypeIDs 就好
+                    if (headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID) !== -1) {
+                      newWagerData[headIndex] = oldWagerData;
+                      oldWagerDatas.splice(oldWagerDataIndex, 1);
+                      return false;
+                    }
                   }
                 });
               });
