@@ -18,7 +18,7 @@ export const PlayMethodData = {
   // 讓分
   HandiCap: {
     name: 'HandiCap',
-    typeIdList: [101, 103, 121, 124, 128],
+    typeIdList: [101, 103, 121, 124, 129],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -42,7 +42,7 @@ export const PlayMethodData = {
   // 單雙
   OddEven: {
     name: 'OddEven',
-    typeIdList: [105, 113, 126, 129],
+    typeIdList: [105, 113, 126, 128],
     betCutLineDealFunc: function () {
       return 0;
     },

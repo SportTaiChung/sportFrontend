@@ -881,7 +881,9 @@
               if (res?.data?.traceCodeKey) {
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
-                this.callPlayStateAPI(true);
+                setTimeout(() => {
+                  this.callPlayStateAPI(true);
+                }, 1000);
               }
             })
             .catch((err) => {
@@ -895,21 +897,11 @@
       },
       callPlayStateAPI(isStray = false) {
         this.$store
-          .dispatch('BetCart/playState', this.lastTraceCodeKey)
-          .then((res) => {
-            // 只有過關投注才能提示
-            if (isStray && res.data.length !== 0) {
-              if (res.data[0].code === 200) {
-                this.$notify.success({
-                  message: res.data[0].Message,
-                });
-              } else {
-                this.$notify.error({
-                  message: res.data[0].Message,
-                });
-              }
-            }
+          .dispatch('BetCart/playState', {
+            traceCodeKey: this.lastTraceCodeKey,
+            isStray,
           })
+          .then((res) => {})
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });

@@ -102,18 +102,23 @@
           </el-menu-item-group>
         </el-submenu>
         <!-- 沒有兒子的menuItem -->
-        <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
-          <img
-            :src="
-              require('@/assets/img/common/menuIcon/' +
-                getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
-            "
-            class="menu-icon"
-            @mouseenter="isShowNavMenuGameType = false"
-          />
-          <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
-            <span class="nav_text">{{ menuData.catName }}</span>
-            <span class="nav_number">{{ menuData.count }}</span>
+        <el-menu-item v-else class="singleMenuItem" :key="i.toSt" :index="i.toString()">
+          <div
+            class="singleMenuItemContainer"
+            @click.stop="menuItemClickHandler(menuData, null, i)"
+          >
+            <img
+              :src="
+                require('@/assets/img/common/menuIcon/' +
+                  getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
+              "
+              class="menu-icon"
+              @mouseenter="isShowNavMenuGameType = false"
+            />
+            <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
+              <span class="nav_text">{{ menuData.catName }}</span>
+              <span class="nav_number">{{ menuData.count }}</span>
+            </div>
           </div>
         </el-menu-item>
       </template>
@@ -500,11 +505,20 @@
       }
       .singleMenuItem {
         border-bottom: 1px solid #bbb;
+        // padding: 0px !important;
+        width: 100%;
         .nav_bottom {
           width: calc(100% - 20px);
         }
         &:hover {
           @include hover_color();
+        }
+        .singleMenuItemContainer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
         }
       }
     }

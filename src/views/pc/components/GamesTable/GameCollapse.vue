@@ -63,6 +63,12 @@
             <div class="boldTableBetListRightContainer">
               <div
                 class="boldTableBetBlock"
+                :class="
+                  boldTableBetBlockIsSelect(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    OULine
+                  )
+                "
                 v-for="(OULine, OULineIndex) in boldRenderRightTemplate"
                 :key="OULineIndex"
                 @click="
