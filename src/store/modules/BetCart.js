@@ -187,7 +187,15 @@ export default {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey)
           .then((res) => {
-            store.commit('updateBetCartListBetResult', res.data);
+            if (res?.data) {
+              // 如果有找到201 就重新打一次playState
+              if (res.data.find((it) => it.code === 201)) {
+                setTimeout(() => {
+                  store.dispatch('playState', traceCodeKey);
+                }, 500);
+              }
+              store.commit('updateBetCartListBetResult', res.data);
+            }
             resolve(res);
           })
           .catch(reject);

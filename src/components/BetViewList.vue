@@ -427,13 +427,6 @@
           });
         }
       }, 10000);
-
-      this.intervalEvent2 = setInterval(() => {
-        if (this.lastTraceCodeKey !== null) {
-          this.callPlayStateAPI();
-          this.$store.dispatch('User/GetUserInfoCash');
-        }
-      }, 2000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -860,7 +853,9 @@
               if (res?.data?.traceCodeKey) {
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
-                this.callPlayStateAPI();
+                setTimeout(() => {
+                  this.callPlayStateAPI();
+                }, 1000);
               }
             })
             .catch((err) => {
@@ -886,10 +881,7 @@
               if (res?.data?.traceCodeKey) {
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
-                this.callPlayStateAPI();
-                this.$notify.success({
-                  message: '下注成功',
-                });
+                this.callPlayStateAPI(true);
               }
             })
             .catch((err) => {
@@ -901,10 +893,23 @@
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
       },
-      callPlayStateAPI() {
+      callPlayStateAPI(isStray = false) {
         this.$store
           .dispatch('BetCart/playState', this.lastTraceCodeKey)
-          .then((res) => {})
+          .then((res) => {
+            // 只有過關投注才能提示
+            if (isStray && res.data.length !== 0) {
+              if (res.data[0].code === 200) {
+                this.$notify.success({
+                  message: res.data[0].Message,
+                });
+              } else {
+                this.$notify.error({
+                  message: res.data[0].Message,
+                });
+              }
+            }
+          })
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });

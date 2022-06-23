@@ -15,7 +15,11 @@
         <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
-    <div class="nav_header nav_header1" v-show="isNavMenuCollapse">
+    <div
+      class="nav_header nav_header1"
+      v-show="isNavMenuCollapse"
+      @mouseenter="isShowNavMenuGameType = false"
+    >
       <div class="Collapse C_hide">
         <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
@@ -105,6 +109,7 @@
                 getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
             "
             class="menu-icon"
+            @mouseenter="isShowNavMenuGameType = false"
           />
           <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
             <span class="nav_text">{{ menuData.catName }}</span>
