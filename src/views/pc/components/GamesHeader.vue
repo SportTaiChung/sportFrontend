@@ -20,7 +20,7 @@
     <div class="headerTop_userinfo">
       <ul>
         <li>{{ userName }}</li>
-        <li v-if="userCredit">$ {{ userCredit }}</li>
+        <li v-if="userCredit" style="white-space: nowrap">$ {{ userCredit }}</li>
         <li>
           <img
             src="@/assets/img/common/icon_header_service.svg"
@@ -163,7 +163,6 @@
       flex: 1;
       display: inline-flex;
       align-items: center;
-      padding-right: 100px;
       justify-content: center;
       .el-menu {
         @include base-background();
