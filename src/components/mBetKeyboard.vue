@@ -15,7 +15,7 @@
       <div class="input-item" @click="Assign(3)">3</div>
       <div class="input-item" @click="Assign(4)">4</div>
       <div class="input-item" @click="Assign(5)">5</div>
-      <div class="input-item" @click="Assign(-1)">🠔</div>
+      <div class="input-item" @click="Assign(-1)">←</div>
       <div class="input-item" @click="Assign(6)">6</div>
       <div class="input-item" @click="Assign(7)">7</div>
       <div class="input-item" @click="Assign(8)">8</div>

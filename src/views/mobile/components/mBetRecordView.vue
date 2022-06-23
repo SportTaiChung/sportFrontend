@@ -9,10 +9,10 @@
       <li :class="tabIndex === 0 ? 'active' : ''" @click="onTabClick(0)">
         <div class="text">未結算</div>
       </li>
-      <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(2)">
+      <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(1)">
         <div class="text">已結算</div>
       </li>
-      <!-- <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(1)">
+      <!-- <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(2)">
         <div class="text">可兌現</div>
       </li> -->
       <!-- <li :class="tabIndex === 3 ? 'active' : ''" @click="onTabClick(3)">
