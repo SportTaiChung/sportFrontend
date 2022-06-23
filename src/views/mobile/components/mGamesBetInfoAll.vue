@@ -68,8 +68,8 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
 
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 
     .popup {
       width: calc(100vw - 50px);
@@ -128,7 +128,7 @@
         }
       }
       .body {
-        max-height: 70vh;
+        max-height: 70%;
         background-color: #d4d4d4;
         padding: 5px;
         padding-bottom: 10px;

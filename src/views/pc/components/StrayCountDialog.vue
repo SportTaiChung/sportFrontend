@@ -130,7 +130,7 @@
       .body {
         display: flex;
         flex-direction: column;
-        max-height: 70vh;
+        max-height: 70%;
         overflow: auto;
         .btn-save {
           background-color: #ffdf1b;

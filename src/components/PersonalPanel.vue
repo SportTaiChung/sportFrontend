@@ -200,7 +200,7 @@
       .body {
         display: flex;
         flex-direction: column;
-        max-height: 70vh;
+        max-height: 70%;
         overflow: auto;
         padding: 15px 20px;
         .row {

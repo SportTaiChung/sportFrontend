@@ -152,8 +152,8 @@
 
 <style lang="scss" scoped>
   .login-container {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -192,7 +192,6 @@
       align-items: center;
       z-index: 10;
       width: 100%;
-      margin-bottom: 20vh;
 
       img.logo {
         margin-top: -1.5rem;

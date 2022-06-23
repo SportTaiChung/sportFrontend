@@ -123,7 +123,7 @@
         }
       }
       .body {
-        max-height: 70vh;
+        max-height: 70%;
         background-color: #d4d4d4;
         padding: 5px;
         padding-bottom: 10px;
