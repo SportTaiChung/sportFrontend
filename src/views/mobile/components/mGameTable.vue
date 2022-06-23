@@ -9,7 +9,7 @@
       <!-- 玩法類型 -->
       <div class="playTypeBtn" @click="!isFavoriteMode && openWagerTypePopup()">
         <template v-if="!isFavoriteMode">
-          {{ gameData.CatName + ' - ' + (currentWagerType ? currentWagerType.WagerTypeName : '') }}
+          {{ gameNameWithWagerType }}
         </template>
         <template v-else>
           {{ gameData.CatName }}
@@ -110,6 +110,13 @@
       isFavoriteMode() {
         return this.gameStore.selectCatID === -999;
       },
+      gameNameWithWagerType() {
+        const gameName = this.gameData.CatName;
+        const wagerTypeName = this.currentWagerType
+          ? ' - ' + this.currentWagerType.WagerTypeName
+          : '';
+        return gameName + wagerTypeName;
+      },
     },
     methods: {
       onToggleAllCollapseClick(e) {
@@ -133,7 +140,9 @@
             : new Array(this.gameData.Items.List.length).fill(0).map((it, index) => index);
       },
       openWagerTypePopup() {
-        this.$emit('openWagerTypePopup');
+        if (this.currentCatData.Items.length) {
+          this.$emit('openWagerTypePopup');
+        }
       },
     },
   };
