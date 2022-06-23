@@ -21,7 +21,7 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ homeTeam }}</td>
+            <td>{{ teamData.HomeTeamStr }}</td>
             <td>{{ keyNameToShow('S1', 0) }}</td>
             <td>{{ keyNameToShow('S2', 0) }}</td>
             <td>{{ keyNameToShow('S3', 0) }}</td>
@@ -36,7 +36,7 @@
             <td>{{ '-' }}</td>
           </tr>
           <tr>
-            <td>{{ awayTeam }}</td>
+            <td>{{ teamData.AwayTeamStr }}</td>
             <td>{{ keyNameToShow('S1', 1) }}</td>
             <td>{{ keyNameToShow('S2', 1) }}</td>
             <td>{{ keyNameToShow('S3', 1) }}</td>

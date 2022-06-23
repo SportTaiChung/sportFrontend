@@ -5,11 +5,8 @@ const LiveBoardMixin = {
     gameScoreData: {
       type: Array,
     },
-    homeTeam: {
-      type: String,
-    },
-    awayTeam: {
-      type: String,
+    teamData: {
+      type: Object,
     },
   },
 };

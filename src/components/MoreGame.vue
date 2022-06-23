@@ -2,7 +2,19 @@
   <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
       <div class="teamName">{{ getteamData.home }}</div>
-      <div class="teamVS">vs</div>
+      <!-- 非滾球 -->
+      <template v-if="selectGameType !== 2">
+        <div class="teamVS">vs</div>
+      </template>
+
+      <!-- 滾球 -->
+      <template v-else>
+        <div class="teamVSLive">
+          <div class="topBlock"> {{ teamData.TimeAct }} </div>
+          <div class="bottomBlock"> {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }} </div>
+        </div>
+      </template>
+
       <div class="teamName">{{ getteamData.away }}</div>
       <img
         class="closeBtn"
@@ -12,7 +24,7 @@
     </div>
 
     <!-- 滾球 -->
-    <div class="GameInfoBlock" v-if="gameTypeID === 2">
+    <div class="GameInfoBlock" v-if="selectGameType === 2">
       <!-- 滾球 上半部資訊 -->
       <ul class="navList">
         <li
@@ -70,7 +82,14 @@
 
       <!-- 比分板區塊 -->
       <div v-if="gameType2Page === 0 && isShowLiveScore">
-        <Soccer
+        <components
+          :is="LiveBoardComponentName"
+          :gameScoreData="moreGameData.GameScore"
+          :teamData="teamData"
+        >
+        </components>
+
+        <!-- <Soccer
           v-if="judgeGameLiveScore(1, selectCatID)"
           :gameScoreData="moreGameData.GameScore"
           :homeTeam="getteamData.home"
@@ -87,12 +106,12 @@
           :gameScoreData="moreGameData.GameScore"
           :homeTeam="getteamData.home"
           :awayTeam="getteamData.away"
-        ></BasketBall>
+        ></BasketBall> -->
       </div>
     </div>
 
     <!-- 早盤、今日 -->
-    <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
+    <div class="GameInfoBlock" v-if="selectGameType === 0 || selectGameType === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
         <!-- 收藏按鈕 -->
@@ -150,7 +169,7 @@
       </div>
     </div>
 
-    <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
+    <div class="MoreGameBlock" :class="selectGameType !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
           <i :class="collapseAllArrowIconJudge" @click="collapseAllIconClick" />
@@ -250,6 +269,12 @@
 
         gameType1Page: 1,
         gameType2Page: 0,
+
+        ComponentMapList: {
+          1: 'Soccer',
+          101: 'BaseBall',
+          102: 'BasketBall',
+        },
       };
     },
     created() {
@@ -278,7 +303,7 @@
         }
         return this.moreGameData.List;
       },
-      gameTypeID() {
+      selectGameType() {
         return this.$store.state.Game.selectGameType;
       },
       selectCatID() {
@@ -411,6 +436,23 @@
           };
         });
       },
+      LiveBoardComponentName() {
+        const findCatData = this.CatList.find((catData) => {
+          return catData.CatID === this.selectCatID;
+        });
+        if (findCatData) {
+          const componentName = this.ComponentMapList[this.selectCatID];
+          if (componentName) {
+            return componentName;
+          } else {
+            console.error(`${this.selectCatID} 的球種 還沒製作`);
+            return null;
+          }
+        } else {
+          console.error(`${this.selectCatID} 的球種 不在彩種列表內`);
+          return null;
+        }
+      },
     },
     watch: {
       MoreGameStoreUpdateFlag() {
@@ -519,8 +561,7 @@
           });
       },
       onComingSoonClick() {
-        console.log(this.gameTypeID);
-        if (this.gameTypeID === 2) {
+        if (this.selectGameType === 2) {
           // 滾球
           if (this.gameType2Page === 2) {
             // 直播
@@ -564,6 +605,17 @@
         color: #ffdf1b;
         font-size: 15px;
         padding: 0 8px;
+      }
+      .teamVSLive {
+        padding: 0 8px;
+        .topBlock {
+          color: #c5f0c5;
+          text-align: center;
+        }
+        .bottomBlock {
+          color: white;
+          text-align: center;
+        }
       }
       .closeBtn {
         width: 13px;
@@ -714,9 +766,10 @@
       height: 35px;
       li.item {
         text-align: center;
-        padding: 0 12px;
+        padding: 4px 8px;
         display: flex;
         align-items: center;
+
         cursor: pointer;
         img {
           opacity: 0.4;

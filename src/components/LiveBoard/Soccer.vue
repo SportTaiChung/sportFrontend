@@ -4,7 +4,7 @@
       <table>
         <thead>
           <tr>
-            <td>{{ title }}</td>
+            <td>{{ teamData.TimeAct }}</td>
             <td>
               <img
                 class="icon-redCard"
@@ -19,16 +19,16 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ team1Info.name }}</td>
-            <td>{{ team1Info.item1 }}</td>
-            <td>{{ team1Info.item2 }}</td>
-            <td>{{ team1Info.item3 }}</td>
+            <td>{{ teamData.HomeTeamStr }}</td>
+            <td>{{ teamData.HomeRCard }}</td>
+            <td>-</td>
+            <td>{{ teamData.HomeScore }}</td>
           </tr>
           <tr>
-            <td>{{ team2Info.name }}</td>
-            <td>{{ team2Info.item1 }}</td>
-            <td>{{ team2Info.item2 }}</td>
-            <td>{{ team2Info.item3 }}</td>
+            <td>{{ teamData.AwayTeamStr }}</td>
+            <td>{{ teamData.AwayRCard }}</td>
+            <td>-</td>
+            <td>{{ teamData.AwayScore }}</td>
           </tr>
         </tbody>
       </table>
@@ -37,7 +37,9 @@
 </template>
 
 <script>
+  import base from './LiveBoardMixin';
   export default {
+    mixins: [base],
     name: 'Soccer',
     methods: {},
     computed: {
@@ -48,10 +50,6 @@
         return {
           'background-image': `url(${url})`,
         };
-      },
-      // board 資訊
-      title() {
-        return "下半場 38'";
       },
       // 隊伍1 資訊
       team1Info() {
