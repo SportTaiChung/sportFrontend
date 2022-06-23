@@ -142,7 +142,7 @@ export default {
         }).then((res) => {
           store.commit('updateMoreGameData', {
             isUpdateFromOtherStore: false,
-            updateData: res.data,
+            updateData: res.data.List,
           });
         });
       });

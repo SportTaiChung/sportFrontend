@@ -200,10 +200,10 @@ export default {
 
             if (gameListIndex !== -1) {
               try {
-                GameData.Items.List[gameListIndex].Team.every((teamData) => {
+                GameData.Items.List[gameListIndex].Team.every((teamData, teamIndex) => {
                   return teamData.Wager.every((wagerData) => {
                     if (wagerData?.isNoData) {
-                      return false;
+                      return true;
                     } else {
                       return wagerData.Odds.every((oddData) => {
                         if (oddData.GameID === updateData.GameID) {
@@ -441,8 +441,6 @@ export default {
           });
         }
 
-        window.OddData.clear();
-
         let newWagerTypeKey = 1;
         if (postData.WagerTypeKey !== null) {
           newWagerTypeKey = postData.WagerTypeKey;
@@ -514,14 +512,14 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
-            const EvtStatusList = res.data.map((it) => it.EvtStatus);
+            const EvtStatusList = res.data.List.map((it) => it.EvtStatus);
             console.log('DetailSmall 內所有資料的EvtStatus:', EvtStatusList);
             console.log(
               `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
             );
             store.commit('updateGameList', {
               isUpdateFromOtherStore: false,
-              updateData: res.data,
+              updateData: res.data.List,
             });
           });
         } else {
@@ -540,7 +538,7 @@ export default {
         }).then((res) => {
           store.commit('updateGameList', {
             isUpdateFromOtherStore: false,
-            updateData: res.data,
+            updateData: res.data.List,
           });
         });
       });

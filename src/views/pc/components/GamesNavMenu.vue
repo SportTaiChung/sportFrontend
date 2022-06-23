@@ -346,6 +346,7 @@
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
+        window.OddData.clear();
         this.$emit('ChangeCat');
         this.$store.commit('Game/changeCatReset');
         if (!catData.isFavorite) {
