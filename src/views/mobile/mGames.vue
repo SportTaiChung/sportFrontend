@@ -8,6 +8,7 @@
         :unreadQACount="unreadQACount"
         @toggleAllCollapse="toggleAllCollapse()"
         @openService="openService()"
+        @ChangeCat="ChangeCat()"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
@@ -74,6 +75,7 @@
 
       <!-- 聯盟選擇面板 -->
       <mLeaguesPanel
+        ref="leaguesPanel"
         :isOpen="isOpenLeaguesPanel"
         @closeMe="isOpenLeaguesPanel = false"
         @onLeaguesListChanged="$refs.header.reCallGameDetailAPI()"
@@ -195,6 +197,9 @@
       },
       updateUnreadCount(count) {
         this.unreadQACount = count;
+      },
+      ChangeCat() {
+        this.$refs.leaguesPanel.clearLeagueList();
       },
     },
     watch: {

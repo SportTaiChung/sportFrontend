@@ -69,15 +69,15 @@
       },
     },
     computed: {
+      selectedLeagues() {
+        return this.LeagueListData.filter((it) => it.isSelect);
+      },
       leagueListDataFiltered() {
         if (this.options.onlyShowCheck) {
-          return this.LeagueListData.filter((it) => it.isSelect);
+          return this.selectedLeagues;
         } else {
           return this.LeagueListData;
         }
-      },
-      selectedLeagues() {
-        return this.LeagueListData.filter((it) => it.isSelect);
       },
       hasLeagueFiltered() {
         return (
@@ -236,6 +236,7 @@
           align-items: center;
           line-height: normal;
           input[type='checkbox'] {
+            flex-shrink: 0;
             width: 1.5rem;
             height: 1.5rem;
             margin: 0 8px 0 0;

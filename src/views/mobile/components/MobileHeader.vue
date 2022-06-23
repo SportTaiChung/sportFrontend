@@ -41,10 +41,9 @@
     <ul class="gameTypeNav">
       <li
         v-if="hasFavorite || gameStore.selectCatID == -999"
-        class="gameTypeItem"
+        class="gameTypeItem fav"
         :class="gameStore.selectCatID == -999 ? 'active' : ''"
         @click="goFav"
-        style="background-color: #6da9e5; position: sticky; left: 0"
       >
         <img
           :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(-999))"
@@ -157,6 +156,9 @@
         this.$router.push(-1);
       },
       menuItemClickHandler(catData, WagerTypeKey) {
+        // 清除聯盟篩選
+        this.$emit('ChangeCat');
+
         const clickCatID = catData.catid;
 
         if (WagerTypeKey === null) {
@@ -388,6 +390,14 @@
           padding-top: 4px;
           filter: grayscale(1) brightness(3);
           opacity: 0.7;
+        }
+
+        &.fav {
+          position: sticky;
+          left: 0;
+          z-index: 1;
+          background-color: #6da9e5;
+          box-shadow: 1px 0px 6px rgb(0 0 0 / 10%);
         }
       }
     }
