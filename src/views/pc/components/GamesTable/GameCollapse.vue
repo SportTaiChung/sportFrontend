@@ -112,14 +112,14 @@
                     <div class="centerTeamBlock">
                       <!-- 只需要顯示一個隊伍 -->
                       <template v-if="teamData.AwayTeamStr === '.'">
-                        <div class="teamRow">
+                        <div class="teamRow" :title="teamData.HomeTeamStr">
                           {{ teamData.HomeTeamStr }}
                           <span class="teamPt">{{ teamData.HomePtNameStr }}</span>
                         </div>
                       </template>
                       <!-- 只需要顯示一個隊伍 -->
                       <template v-else-if="teamData.HomeTeamStr === '.'">
-                        <div class="teamRow">
+                        <div class="teamRow" :title="teamData.AwayTeamStr">
                           {{ teamData.AwayTeamStr }}
                           <span class="teamPt">{{ teamData.AwayPtNameStr }}</span>
                         </div>
@@ -127,28 +127,28 @@
                       <template v-else>
                         <!-- 主客場對調 -->
                         <template v-if="!teamData.SetFlag">
-                          <div class="teamRow"
-                            >{{ teamData.AwayTeamStr }}
+                          <div class="teamRow" :title="teamData.AwayTeamStr">
+                            {{ teamData.AwayTeamStr }}
                             <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
                               -{{ teamData.AwayPtNameStr }}
                             </span>
                           </div>
-                          <div class="teamRow"
-                            >{{ teamData.HomeTeamStr }}
+                          <div class="teamRow" :title="teamData.HomeTeamStr">
+                            {{ teamData.HomeTeamStr }}
                             <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
                               -{{ teamData.HomePtNameStr }}
                             </span>
                           </div>
                         </template>
                         <template v-else>
-                          <div class="teamRow"
-                            >{{ teamData.HomeTeamStr }}
+                          <div class="teamRow" :title="teamData.HomeTeamStr">
+                            {{ teamData.HomeTeamStr }}
                             <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
                               -{{ teamData.HomePtNameStr }}
                             </span>
                           </div>
-                          <div class="teamRow"
-                            >{{ teamData.AwayTeamStr }}
+                          <div class="teamRow" :title="teamData.AwayTeamStr">
+                            {{ teamData.AwayTeamStr }}
                             <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
                               -{{ teamData.AwayPtNameStr }}
                             </span>
