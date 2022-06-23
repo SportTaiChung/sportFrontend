@@ -9,12 +9,12 @@
       <li :class="tabIndex === 0 ? 'active' : ''" @click="onTabClick(0)">
         <div class="text">未結算</div>
       </li>
-      <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(1)">
-        <div class="text">可兌現</div>
-      </li>
-      <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(2)">
+      <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(2)">
         <div class="text">已結算</div>
       </li>
+      <!-- <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(1)">
+        <div class="text">可兌現</div>
+      </li> -->
       <!-- <li :class="tabIndex === 3 ? 'active' : ''" @click="onTabClick(3)">
         <div class="text">贈禮</div>
       </li> -->
@@ -89,7 +89,7 @@
 
     ul.navList {
       height: 40px;
-      background-color: #6da9e5;
+      background-color: #3fa381;
       display: flex;
       flex-shrink: 0;
       justify-content: flex-start;
