@@ -164,11 +164,9 @@
           .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
             this.isLoading = false;
-            if (!isBehindUpdate) {
-              this.scrollToBottom(() => {
-                this.sendReadMes();
-              });
-            }
+            this.scrollToBottom(() => {
+              this.sendReadMes();
+            });
           });
       },
       // 取得未讀數
