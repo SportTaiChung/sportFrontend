@@ -937,9 +937,15 @@
           height: 100%;
           display: flex;
           justify-content: center;
+          flex-direction: row;
           align-items: center;
           &:hover {
             background-color: #e8e8e8;
+          }
+
+          img {
+            max-width: 0.9rem;
+            margin-left: 0.5rem;
           }
         }
       }
