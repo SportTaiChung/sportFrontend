@@ -184,7 +184,10 @@
             <template v-for="(leagueData, leagueIndex) in gameData.List">
               <template v-if="collapseItemNames.indexOf(gameData.ItemName) === -1">
                 <template v-for="(renderHeadData, renderHeadIndex) in leagueData.RenderHead">
-                  <div class="MoreGameListInRow" :key="gameIndex + leagueIndex + renderHeadIndex">
+                  <div
+                    class="MoreGameListInRow"
+                    :key="'MoreGameListInRow' + gameIndex + leagueIndex + renderHeadIndex"
+                  >
                     <div class="wagerLabelBlock">
                       {{ renderHeadData.HeadShowName }}
                     </div>
@@ -192,7 +195,7 @@
                       <div
                         class="wagerPlayRow"
                         v-for="(oddData, oddIndex) in renderHeadData.Odds"
-                        :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex"
+                        :key="'wagerPlayRow' + gameIndex + leagueIndex + renderHeadIndex + oddIndex"
                       >
                         <div
                           class="betBlock"
@@ -202,7 +205,14 @@
                             oddData
                           )"
                           :class="betBlockSelectCSS(betData.wagerPos, oddData)"
-                          :key="gameIndex + leagueIndex + renderHeadIndex + oddIndex + betIndex"
+                          :key="
+                            'betBlock' +
+                            gameIndex +
+                            leagueIndex +
+                            renderHeadIndex +
+                            oddIndex +
+                            betIndex
+                          "
                           @click="goBet(betData, oddData, leagueData)"
                         >
                           <div class="betBlockTop">
