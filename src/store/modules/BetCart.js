@@ -1,8 +1,8 @@
 import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
-import { Notification } from 'element-ui';
 import { PanelModeEnum } from '@/enum/BetPanelMode';
 import rootStore from '@/store';
+import { Notification } from 'element-ui';
 export default {
   namespaced: true,
   state: {
@@ -39,6 +39,7 @@ export default {
     clearCart(state) {
       state.betCartList.length = 0;
       state.betCartList = [];
+      state.strayOdd = null;
     },
     clearCartBetResult(state) {
       state.betCartList.forEach((it) => (it.betResult = null));
@@ -184,11 +185,32 @@ export default {
       });
     },
     // 檢查投注狀態
-    playState(store, traceCodeKey) {
+    playState(store, { traceCodeKey, isStray }) {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey)
           .then((res) => {
-            store.commit('updateBetCartListBetResult', res.data);
+            if (res?.data) {
+              // 如果有找到201 就重新打一次playState
+              if (res.data.find((it) => it.code === 201)) {
+                setTimeout(() => {
+                  store.dispatch('playState', { traceCodeKey, isStray });
+                }, 500);
+              }
+
+              // 只有過關投注才能提示
+              if (isStray && res.data.length !== 0) {
+                if (res.data[0].code === 200) {
+                  Notification.success({
+                    message: res.data[0].Message,
+                  });
+                } else {
+                  Notification.error({
+                    message: res.data[0].Message,
+                  });
+                }
+              }
+              store.commit('updateBetCartListBetResult', res.data);
+            }
             resolve(res);
           })
           .catch(reject);

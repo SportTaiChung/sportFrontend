@@ -20,7 +20,7 @@
     <div class="headerTop_userinfo">
       <ul>
         <li>{{ userName }}</li>
-        <li v-if="userCredit">$ {{ userCredit }}</li>
+        <li v-if="userCredit" style="white-space: nowrap">$ {{ userCredit }}</li>
         <li>
           <img
             src="@/assets/img/common/icon_header_service.svg"
@@ -74,7 +74,7 @@
     },
     computed: {
       userName() {
-        return this.$store.state.User.UserData?.Name;
+        return this.$store.state.User.UserData?.mbID;
       },
       userCredit() {
         return this.$store.state.User.UserCredit;
@@ -163,7 +163,6 @@
       flex: 1;
       display: inline-flex;
       align-items: center;
-      padding-right: 100px;
       justify-content: center;
       .el-menu {
         @include base-background();
@@ -235,8 +234,8 @@
   }
 
   .el-menu--horizontal > .el-menu-item.is-active {
-    color: #ffea01;
     border-bottom: 2px solid #fff;
+    color: white;
   }
   .el-menu-item:hover {
     @include base-background();

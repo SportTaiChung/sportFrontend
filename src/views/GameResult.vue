@@ -25,21 +25,23 @@
       </div>
       <div class="timer">
         <div class="text" ref="btnTimer" @click="isShowTimerList = !isShowTimerList">
-          {{ timerType[timerTypeIndex] }}
+          {{ timerTypeName }}
           <i class="el-icon-arrow-down"></i>
         </div>
 
         <ul class="updateTypeList" v-show="isShowTimerList">
           <li
-            v-for="(type, i) in timerType"
+            v-for="(type, i) in timerTypes"
             :key="i"
-            :class="timerTypeIndex === i ? 'active' : ''"
-            @click="timerTypeIndex = i"
-            >{{ timerType[i] }}</li
+            :class="timerIndex === i ? 'active' : ''"
+            @click="timerIndex = i"
           >
+            <template v-if="timerTypes[i] > 0"> 每 {{ timerTypes[i] }} 秒 </template>
+            <template v-else> 不更新 </template>
+          </li>
         </ul>
       </div>
-      <div class="countdownSec" v-if="timerTypeIndex > 0"> {{ countdownSec }} </div>
+      <div class="countdownSec" v-if="timerIndex > 0"> {{ countdownSec }} </div>
       <div class="btn-refresh" @click="getGameResult()"> <i class="el-icon-refresh-right"></i></div>
       <div class="league-filter"> 聯盟選擇 </div>
     </div>
@@ -66,39 +68,52 @@
       <div class="gameResultList">
         <div class="game-result-container">
           <!-- header -->
-          <div class="header" @click="isShowTableList = !isShowTableList">
+          <div class="header" @click="toggleAllLeagues()">
             <table class="table-header">
               <tbody>
                 <tr>
                   <td>
                     <i
-                      class="el-icon-arrow-down collapse-status"
-                      :class="isShowTableList ? 'active' : ''"
+                      class="el-icon-arrow-down arrow"
+                      :class="expandedLeagues.length > 0 ? 'active' : ''"
                     ></i>
                   </td>
                   <td>賽事</td>
                   <td v-for="(str, i) in titles" :key="i">{{ str }}</td>
-                  <td>資訊</td>
+                  <!-- <td>資訊</td> -->
                 </tr>
               </tbody>
             </table>
           </div>
 
           <!-- 賽果 TableList -->
-          <div class="tableList" v-show="isShowTableList">
-            <template v-for="(resultData, index) in resultDataArray">
-              <BaseBall
-                v-if="selectedCatId === 101"
-                :resultData="resultData"
-                :key="index"
-              ></BaseBall>
+          <div class="tableList">
+            <div
+              v-for="(league, i) in leagueList"
+              :key="i"
+              :set="(isExpanded = expandedLeagues.includes(i))"
+            >
+              <!-- League Collapse -->
+              <div
+                class="league-collapse"
+                :class="isExpanded ? '' : 'closed'"
+                @click="toggleLeague(i)"
+              >
+                <i class="el-icon-arrow-down arrow" :class="isExpanded ? 'expanded' : ''"></i>
+                <p class="league-name"> {{ league.LeagueName }} </p>
+              </div>
 
-              <Soccer v-if="selectedCatId === 1" :resultData="resultData" :key="index"></Soccer>
-            </template>
+              <!-- Table Templates -->
+              <div v-for="(teamData, j) in league.List" :key="j">
+                <Soccer :teamData="teamData" v-if="isExpanded && selectedCatId === 1" />
+                <Baseball :teamData="teamData" v-if="isExpanded && selectedCatId === 101" />
+                <Basketball :teamData="teamData" v-if="isExpanded && selectedCatId === 102" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div v-show="resultDataArray.length === 0" class="noResult">
+        <div v-show="leagueList.length === 0 && !$store.state.isLoading" class="noResult">
           <img src="@/assets/img/common/btn_GDV_scoreBoard.svg" alt="" />
           暫無賽果
         </div>
@@ -108,12 +123,9 @@
 </template>
 
 <script>
-  // 各球種 header 欄位
-  import headers from '@/components/GameResultTable/headers.js';
-
-  // import 各球種模板
-  import BaseBall from '@/components/GameResultTable/BaseBall.vue';
   import Soccer from '@/components/GameResultTable/Soccer.vue';
+  import Baseball from '@/components/GameResultTable/Baseball.vue';
+  import Basketball from '@/components/GameResultTable/Basketball.vue';
 
   const today = new Date();
   const dateRange = 10;
@@ -121,14 +133,18 @@
   export default {
     name: 'GameResult',
     components: {
-      BaseBall,
       Soccer,
+      Baseball,
+      Basketball,
     },
     data() {
       return {
         selectedCatId: null,
         isShowTableList: true,
-        resultDataArray: [],
+        rawData: {
+          BestHead: [],
+          List: [],
+        },
         today: today,
         lastDays: new Array(dateRange).fill(0).map((it, index) => {
           const result = new Date(today);
@@ -139,15 +155,21 @@
         isShowDatePicker: false,
         isShowTimerList: false,
         sysTimer: null,
-        timerType: ['不更新', '每 30 秒', '每 60 秒'],
-        timerTypeSec: [null, 30, 60],
-        timerTypeIndex: 0,
+        timerTypes: [null, 30, 60],
+        timerIndex: 0,
         countdownSec: null,
+        expandedLeagues: [],
       };
     },
     computed: {
       CatList() {
         return this.$store.state.Game.CatList;
+      },
+      titles() {
+        return this.rawData?.BestHead || [];
+      },
+      leagueList() {
+        return this.rawData?.List || [];
       },
       selectedDate() {
         return this.lastDays[this.selectedDateIndex];
@@ -156,10 +178,11 @@
         return this.dateToYYYYMMDD(this.selectedDate);
       },
       totalCountdownSec() {
-        return this.timerTypeSec[this.timerTypeIndex];
+        return this.timerTypes[this.timerIndex];
       },
-      titles() {
-        return headers[this.selectedCatId];
+      timerTypeName() {
+        const sec = this.totalCountdownSec;
+        return sec > 0 ? `每 ${sec} 秒` : '不更新';
       },
     },
     created() {
@@ -197,7 +220,7 @@
         return require('@/assets/img/common/menuIcon/' + this.$SportLib.getMenuIconByCatID(catId));
       },
       getGameResult() {
-        this.resultDataArray = [];
+        this.rawData = null;
         const postData = {
           CatID: this.selectedCatId,
           ScheduleTime: this.selectedDateYYYYMMDD,
@@ -208,7 +231,8 @@
           .dispatch('Game/GetGameResult', postData)
           .then((res) => {
             console.log(res);
-            this.resultDataArray = res.data;
+            this.rawData = res.data;
+            this.expandedLeagues = new Array(this.rawData.List.length).fill(null).map((_, i) => i);
           })
           .finally(() => {
             this.countdownSec = this.totalCountdownSec;
@@ -238,6 +262,17 @@
       goPreviousDay() {
         this.selectedDateIndex < dateRange - 1 && this.selectedDateIndex++;
       },
+
+      toggleLeague(index) {
+        if (this.expandedLeagues.includes(index)) {
+          this.expandedLeagues = this.expandedLeagues.filter((it) => it !== index);
+        } else {
+          this.expandedLeagues.push(index);
+        }
+      },
+      toggleAllLeagues() {
+        this.expandedLeagues = this.expandedLeagues.length ? [] : this.leagueList.map((_, i) => i);
+      },
       onPageClick(e) {
         const btnDatePicker = this.$refs.btnDatePicker;
         const btnTimer = this.$refs.btnTimer;
@@ -257,7 +292,7 @@
         this.getGameResult();
         this.isShowDatePicker = false;
       },
-      timerTypeIndex() {
+      timerIndex() {
         this.countdownSec = this.totalCountdownSec;
       },
     },
@@ -347,7 +382,7 @@
       }
 
       .countdownSec {
-        color: orange;
+        color: gold;
         padding-left: 1rem;
         padding-right: 0.5rem;
         font-weight: bold;
@@ -550,7 +585,7 @@
                 width: 255px;
               }
 
-              i.collapse-status {
+              i.arrow {
                 color: #ccc;
                 font-size: 18px;
                 font-weight: bold;
@@ -561,7 +596,7 @@
               }
 
               &:hover {
-                i.collapse-status {
+                i.arrow {
                   color: #f0f0f0;
                 }
               }
@@ -573,6 +608,53 @@
             overflow-x: hidden;
             overflow-y: overlay;
             z-index: 10;
+
+            .league-collapse {
+              display: flex;
+              align-items: center;
+              height: 35px;
+              color: #000;
+              cursor: pointer;
+              background-color: #e8e8e8;
+              position: sticky;
+              top: 0;
+              left: 0;
+
+              i.arrow {
+                color: #aaa;
+                font-size: 18px;
+                font-weight: bold;
+                width: 55px;
+                text-align: center;
+
+                &.expanded {
+                  transform: scaleY(-1);
+                }
+              }
+
+              p.league-name {
+                color: #000;
+                margin-left: 1rem;
+              }
+
+              &:hover {
+                i.arrow {
+                  color: #333;
+                }
+              }
+
+              &.closed {
+                &::after {
+                  content: '';
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 1px;
+                  background-color: #ccc;
+                }
+              }
+            }
           }
         }
 

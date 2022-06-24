@@ -8,6 +8,7 @@
         :unreadQACount="unreadQACount"
         @toggleAllCollapse="toggleAllCollapse()"
         @openService="openService()"
+        @ChangeCat="ChangeCat()"
       ></MobileHeader>
 
       <!-- 主遊戲 table 容器 -->
@@ -42,6 +43,7 @@
 
       <!-- 下注面板 (多注時) -->
       <mGamesBetInfoAll
+        ref="betInfoAll"
         v-show="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
@@ -74,6 +76,7 @@
 
       <!-- 聯盟選擇面板 -->
       <mLeaguesPanel
+        ref="leaguesPanel"
         :isOpen="isOpenLeaguesPanel"
         @closeMe="isOpenLeaguesPanel = false"
         @onLeaguesListChanged="$refs.header.reCallGameDetailAPI()"
@@ -179,6 +182,7 @@
           this.isShowBetInfoSingle = true;
         } else {
           this.isShowBetInfo = true;
+          this.$refs.betInfoAll.tabIndex = 1;
         }
       },
       openBetRecordView() {
@@ -195,6 +199,9 @@
       },
       updateUnreadCount(count) {
         this.unreadQACount = count;
+      },
+      ChangeCat() {
+        this.$refs.leaguesPanel.clearLeagueList();
       },
     },
     watch: {
@@ -221,13 +228,13 @@
 
   html,
   body {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
   }
 
   #MobileGames {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 
     .main-layout {
       position: absolute;

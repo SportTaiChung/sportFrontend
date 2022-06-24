@@ -7,7 +7,7 @@ console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
 console.log('process VUE_APP_UI', process.env.VUE_APP_UI);
 console.log('process.env.VUE_APP_BASE_API:', process.env.VUE_APP_BASE_API);
 const instance = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '/data/API' : process.env.VUE_APP_BASE_API,
+  baseURL: process.env.NODE_ENV === 'development' ? '/data/api' : process.env.VUE_APP_BASE_API,
   timeout: 15000,
   withCredentials: true,
 });
@@ -53,6 +53,9 @@ instance.interceptors.response.use(
     }
   },
   (err, data) => {
+    store.commit('SetLoading', false);
+    console.error('axios catch err:', err);
+    message.error(err);
     return Promise.reject(err);
   }
 );

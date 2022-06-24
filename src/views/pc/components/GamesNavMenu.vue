@@ -15,7 +15,11 @@
         <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
-    <div class="nav_header nav_header1" v-show="isNavMenuCollapse">
+    <div
+      class="nav_header nav_header1"
+      v-show="isNavMenuCollapse"
+      @mouseenter="isShowNavMenuGameType = false"
+    >
       <div class="Collapse C_hide">
         <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
@@ -23,19 +27,50 @@
     <el-menu
       ref="elMenu"
       class="el-menu-vertical-demo"
+      popper-class="popperMenu"
       :default-active="menuActiveString"
       :collapse="isNavMenuCollapse"
       :unique-opened="true"
       :collapse-transition="false"
     >
-      <el-submenu index="状态" class="collapse_GameType" v-show="isNavMenuCollapse">
-        <template slot="title">
-          <i class="Collapse_i">{{ showHiddenCollapseText }}</i>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item v-for="(item, i) in []" :key="i">{{ item.value }}</el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+      <div
+        class="CollapseMenuTitleBlock"
+        v-if="isNavMenuCollapse"
+        @click="isShowNavMenuGameType = true"
+        @mouseenter="isShowNavMenuGameType = true"
+      >
+        <NavMenuGameType
+          :triggers="[]"
+          :shown="isShowNavMenuGameType"
+          :autoHide="false"
+          :distance="4"
+          @mouseenter="isShowNavMenuGameType = true"
+        >
+          <div class="CurrentGameTypeBlock">
+            <div class="CurrentGameTypeText">
+              {{ showHiddenCollapseText }}
+            </div>
+
+            <div class="CurrentGameTypeBorder"></div>
+          </div>
+
+          <template #popper>
+            <div
+              class="GamesNavMenu_PopperGameTypeList"
+              @mouseleave="isShowNavMenuGameType = false"
+            >
+              <div
+                class="GamesNavMenu_PopperGameTypeItem"
+                v-for="(GameTypeData, GameTypeIndex) in showGameTypeList"
+                :key="GameTypeIndex"
+                @click="PopperGameTypeItemClick(GameTypeData.key)"
+              >
+                {{ GameTypeData.value }}
+              </div>
+            </div>
+          </template>
+        </NavMenuGameType>
+      </div>
       <template v-for="(menuData, i) in includeFavoriteMenuList" :index="i + ''">
         <!-- 有兒子的menu Item -->
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
@@ -67,17 +102,23 @@
           </el-menu-item-group>
         </el-submenu>
         <!-- 沒有兒子的menuItem -->
-        <el-menu-item v-else :key="i.toSt" :index="i.toString()" class="singleMenuItem">
-          <img
-            :src="
-              require('@/assets/img/common/menuIcon/' +
-                getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
-            "
-            class="menu-icon"
-          />
-          <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
-            <span class="nav_text">{{ menuData.catName }}</span>
-            <span class="nav_number">{{ menuData.count }}</span>
+        <el-menu-item v-else class="singleMenuItem" :key="i.toSt" :index="i.toString()">
+          <div
+            class="singleMenuItemContainer"
+            @click.stop="menuItemClickHandler(menuData, null, i)"
+          >
+            <img
+              :src="
+                require('@/assets/img/common/menuIcon/' +
+                  getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
+              "
+              class="menu-icon"
+              @mouseenter="isShowNavMenuGameType = false"
+            />
+            <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
+              <span class="nav_text">{{ menuData.catName }}</span>
+              <span class="nav_number">{{ menuData.count }}</span>
+            </div>
           </div>
         </el-menu-item>
       </template>
@@ -86,7 +127,11 @@
 </template>
 
 <script>
+  import NavMenuGameType from '@/components/NavMenuGameType';
   export default {
+    components: {
+      NavMenuGameType,
+    },
     name: 'GamesNavMenu',
     props: {
       isNavMenuCollapse: {
@@ -99,6 +144,7 @@
         menuActiveString: '',
         intervalEvent: null,
         intervalEvent2: null,
+        isShowNavMenuGameType: false,
       };
     },
     mounted() {
@@ -300,6 +346,7 @@
         this.$refs.elMenu.openedMenus = [];
       },
       menuItemClickHandler(catData, WagerTypeKey, catIndex, isDefaultSystemSelect = false) {
+        window.OddData.clear();
         this.$emit('ChangeCat');
         this.$store.commit('Game/changeCatReset');
         if (!catData.isFavorite) {
@@ -309,7 +356,12 @@
           // 父親層級被點
           if (WagerTypeKey === null) {
             // 除了系統預設選擇的,點選單父層時,需要關閉其他球類已展開的兒子
-            if (this.$refs.elMenu.openedMenus?.length && !isDefaultSystemSelect) {
+            // 以及自己不能再次隱藏
+            if (
+              this.$refs.elMenu.openedMenus?.length > 0 &&
+              !isDefaultSystemSelect &&
+              parseInt(this.$refs.elMenu.openedMenus[0]) !== catIndex
+            ) {
               this.hideMenuChildren();
             }
 
@@ -342,6 +394,10 @@
       getMenuIconByCatID(catId) {
         return this.$SportLib.getMenuIconByCatID(catId);
       },
+      PopperGameTypeItemClick(key) {
+        this.gameTypeClickHandler(key);
+        this.isShowNavMenuGameType = false;
+      },
     },
   };
 </script>
@@ -366,6 +422,31 @@
       .el-menu-item.is-active {
         .nav_text {
           color: $nav_submenu_active_text1 !important;
+        }
+      }
+    }
+  }
+
+  .v-popper--theme-nav-menu-game-type {
+    outline: 0;
+    .v-popper__wrapper {
+      box-shadow: 0px 1px 4px 3px rgb(0 0 0 / 30%) !important;
+      .GamesNavMenu_PopperGameTypeList {
+        background: #e8e8e8;
+        .GamesNavMenu_PopperGameTypeItem {
+          background-color: #e8e8e8;
+          width: 125px;
+          height: 36px;
+          line-height: 36px;
+          padding: 0 20px;
+          border-bottom: rgba(179, 179, 179, 0.807) 1px solid;
+          cursor: pointer;
+          &:hover {
+            background-color: white;
+          }
+          &:last-child {
+            border-bottom: 0px;
+          }
         }
       }
     }
@@ -425,11 +506,20 @@
       }
       .singleMenuItem {
         border-bottom: 1px solid #bbb;
+        // padding: 0px !important;
+        width: 100%;
         .nav_bottom {
           width: calc(100% - 20px);
         }
         &:hover {
           @include hover_color();
+        }
+        .singleMenuItemContainer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
         }
       }
     }
@@ -490,12 +580,8 @@
     }
   }
   .nav_header1 {
-    width: 63px;
-    border-bottom: 1px solid #88b4a5;
-  }
-  .Collapse_i {
-    font-size: 13px;
-    color: #ffffff;
+    width: 64px;
+    border-bottom: 1px solid rgba(109, 109, 109, 0.488);
   }
 
   .nav_bottom {
@@ -533,5 +619,35 @@
 
   .el-menu {
     @include nav-TopBgcolor();
+  }
+
+  .CollapseMenuTitleBlock {
+    width: 100%;
+    height: 35px;
+    background-color: #136146;
+    color: white;
+    cursor: pointer;
+    .v-popper {
+      width: 100%;
+      .CurrentGameTypeBlock {
+        width: 100%;
+        height: 35px;
+        display: flex;
+
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        .CurrentGameTypeText {
+          width: 100%;
+          text-align: center;
+        }
+        .CurrentGameTypeBorder {
+          width: 36px;
+          height: 3px;
+          background-color: #caffed;
+          margin-top: -8px;
+        }
+      }
+    }
   }
 </style>

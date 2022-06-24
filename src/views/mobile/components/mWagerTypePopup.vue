@@ -84,8 +84,8 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
 
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 
     .popup {
       width: calc(100vw - 50px);
@@ -112,7 +112,7 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        max-height: 70vh;
+        max-height: 70%;
         padding: 1.5rem;
         overflow: auto;
 

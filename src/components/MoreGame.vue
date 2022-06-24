@@ -1,9 +1,21 @@
 <template>
   <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
-      <div class="teamName">{{ getteamData.home }}</div>
-      <div class="teamVS">vs</div>
-      <div class="teamName">{{ getteamData.away }}</div>
+      <div class="teamName home" :title="getteamData.home">{{ getteamData.home }}</div>
+      <!-- 非滾球 -->
+      <template v-if="selectGameType !== 2">
+        <div class="teamVS">vs</div>
+      </template>
+
+      <!-- 滾球 -->
+      <template v-else>
+        <div class="teamVSLive">
+          <div class="topBlock"> {{ teamData.TimeAct }} </div>
+          <div class="bottomBlock"> {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }} </div>
+        </div>
+      </template>
+
+      <div class="teamName away" :title="getteamData.away">{{ getteamData.away }}</div>
       <img
         class="closeBtn"
         src="@/assets/img/pc/btn_close_w.svg"
@@ -12,7 +24,7 @@
     </div>
 
     <!-- 滾球 -->
-    <div class="GameInfoBlock" v-if="gameTypeID === 2">
+    <div class="GameInfoBlock" v-if="selectGameType === 2">
       <!-- 滾球 上半部資訊 -->
       <ul class="navList">
         <li
@@ -70,29 +82,17 @@
 
       <!-- 比分板區塊 -->
       <div v-if="gameType2Page === 0 && isShowLiveScore">
-        <Soccer
-          v-if="judgeGameLiveScore(1, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></Soccer>
-        <BaseBall
-          v-if="judgeGameLiveScore(101, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></BaseBall>
-        <BasketBall
-          v-if="judgeGameLiveScore(102, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></BasketBall>
+        <components
+          :is="LiveBoardComponentName"
+          :gameScoreData="gameScoreData"
+          :teamData="teamData"
+        >
+        </components>
       </div>
     </div>
 
     <!-- 早盤、今日 -->
-    <div class="GameInfoBlock" v-if="gameTypeID === 0 || gameTypeID === 1">
+    <div class="GameInfoBlock" v-if="selectGameType === 0 || selectGameType === 1">
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
         <!-- 收藏按鈕 -->
@@ -150,7 +150,7 @@
       </div>
     </div>
 
-    <div class="MoreGameBlock" :class="gameTypeID !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
+    <div class="MoreGameBlock" :class="selectGameType !== 2 ? 'MoreGameBlockWithOutGameInfo' : ''">
       <div class="MoreGameFilterBlock">
         <div class="leftArrowBlock">
           <i :class="collapseAllArrowIconJudge" @click="collapseAllIconClick" />
@@ -247,9 +247,16 @@
         collapseItemNames: [],
         selectItemKey: null,
         intervalEvent: null,
+        intervalEvent2: null,
 
         gameType1Page: 1,
         gameType2Page: 0,
+
+        ComponentMapList: {
+          1: 'Soccer',
+          101: 'BaseBall',
+          102: 'BasketBall',
+        },
       };
     },
     created() {
@@ -257,9 +264,17 @@
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
       }, 6000);
+
+      // 某些滾球數據,需要輪詢,像是棒球
+      if (this.isGameScoreRefresh) {
+        this.intervalEvent2 = setInterval(() => {
+          this.$store.dispatch('MoreGame/GetGameLiveResult', this.teamData.EvtID);
+        }, 5000);
+      }
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
+      clearInterval(this.intervalEvent2);
     },
     computed: {
       moreGameData() {
@@ -278,7 +293,7 @@
         }
         return this.moreGameData.List;
       },
-      gameTypeID() {
+      selectGameType() {
         return this.$store.state.Game.selectGameType;
       },
       selectCatID() {
@@ -286,6 +301,9 @@
       },
       teamData() {
         return this.$store.state.MoreGame.teamData;
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
       menuTabs() {
         if (this.moreGameData === null) {
@@ -411,6 +429,34 @@
           };
         });
       },
+      LiveBoardComponentName() {
+        const findCatData = this.CatList.find((catData) => {
+          return catData.CatID === this.selectCatID;
+        });
+        if (findCatData) {
+          const componentName = this.ComponentMapList[this.selectCatID];
+          if (componentName) {
+            return componentName;
+          } else {
+            console.error(`${this.selectCatID} 的球種 還沒製作`);
+            return null;
+          }
+        } else {
+          console.error(`${this.selectCatID} 的球種 不在彩種列表內`);
+          return null;
+        }
+      },
+      isGameScoreRefresh() {
+        const catData = this.CatMapData[this.selectCatID];
+        return catData && catData.GameScoreRefresh && this.selectGameType === 2;
+      },
+      gameScoreData() {
+        if (this.isGameScoreRefresh) {
+          return this.moreGameData.GameScore;
+        } else {
+          return this.moreGameData.GameScoreHead;
+        }
+      },
     },
     watch: {
       MoreGameStoreUpdateFlag() {
@@ -519,8 +565,7 @@
           });
       },
       onComingSoonClick() {
-        console.log(this.gameTypeID);
-        if (this.gameTypeID === 2) {
+        if (this.selectGameType === 2) {
           // 滾球
           if (this.gameType2Page === 2) {
             // 直播
@@ -549,21 +594,54 @@
       border: 0;
     }
     .MoreGameHeader {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 1fr 70px 1fr;
       background-color: #136146;
       border-bottom-color: #136146;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: $gameHeaderHeight;
       width: 100%;
       position: relative;
       .teamName {
+        line-height: 35px;
         color: #fff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0 1rem;
+        &.home {
+          text-align: right;
+        }
+        &.away {
+          text-align: left;
+          padding-right: 2rem;
+        }
       }
       .teamVS {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 0 8px;
+        overflow: hidden;
         color: #ffdf1b;
         font-size: 15px;
+      }
+      .teamVSLive {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         padding: 0 8px;
+        overflow: hidden;
+        .topBlock {
+          color: #c5f0c5;
+          text-align: center;
+        }
+        .bottomBlock {
+          color: white;
+          text-align: center;
+        }
       }
       .closeBtn {
         width: 13px;
@@ -714,9 +792,10 @@
       height: 35px;
       li.item {
         text-align: center;
-        padding: 0 12px;
+        padding: 4px 8px;
         display: flex;
         align-items: center;
+
         cursor: pointer;
         img {
           opacity: 0.4;

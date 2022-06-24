@@ -200,7 +200,12 @@
                 class="moreGame-holder"
                 @click="moreGameClickHandler(teamData)"
               >
-                {{ teamData.MoreCount }}+
+                {{ teamData.MoreCount }}
+                <img
+                  style="width: 14px; height: 14px"
+                  src="@/assets/img/common/moreGameIcon.svg"
+                  alt=""
+                />
               </td>
             </tr>
           </template>

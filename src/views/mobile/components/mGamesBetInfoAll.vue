@@ -68,15 +68,18 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
 
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 
     .popup {
+      display: flex;
+      flex-flow: column nowrap;
       width: calc(100vw - 50px);
       max-width: 560px;
-      max-height: 80%;
+      max-height: 70%;
 
       .header {
+        flex-shrink: 0;
         display: flex;
         background-color: #6da9e5;
         color: #fff;
@@ -128,7 +131,7 @@
         }
       }
       .body {
-        max-height: 70vh;
+        flex-grow: 1;
         background-color: #d4d4d4;
         padding: 5px;
         padding-bottom: 10px;

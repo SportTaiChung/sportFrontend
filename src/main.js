@@ -6,6 +6,7 @@ import ElementUI from 'element-ui';
 import VueCarousel from 'vue-carousel';
 import axios from 'axios';
 import VueVirtualScroller from 'vue-virtual-scroller';
+import FloatingVue from 'floating-vue';
 
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';
@@ -14,6 +15,7 @@ import * as conf from '@/Config/index';
 
 import '@/assets/sass/global.scss';
 import '@/assets/sass/elementChange.scss';
+import 'floating-vue/dist/style.css';
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -34,6 +36,15 @@ Promise.all([router()]).then(async (res) => {
   Vue.prototype.$lib = lib;
   Vue.prototype.$conf = conf;
 
+  Vue.use(FloatingVue, {
+    themes: {
+      'nav-menu-game-type': {
+        $extend: 'dropdown',
+        // Other options (see the 'Global options' section)
+        placement: 'right-start',
+      },
+    },
+  });
   Vue.use(ElementUI);
   Vue.use(VueCarousel);
   Vue.config.productionTip = false;

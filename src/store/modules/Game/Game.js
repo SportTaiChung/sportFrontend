@@ -126,18 +126,30 @@ export default {
               const newWagerData = new Array(newBestHead.length).fill({
                 isNoData: true,
               });
-              // debugger;
+
               newBestHead.forEach((headData, headIndex) => {
                 oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
-                  const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
-                  const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID);
+                  // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
+                  if (headData.WagerGrpIDs[0] !== 128) {
+                    const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
+                    const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(
+                      oldWagerData.WagerTypeID
+                    );
 
-                  if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
-                    newWagerData[headIndex] = oldWagerData;
-                    oldWagerDatas.splice(oldWagerDataIndex, 1);
-                    return false;
+                    if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
+                      newWagerData[headIndex] = oldWagerData;
+                      oldWagerDatas.splice(oldWagerDataIndex, 1);
+                      return false;
+                    } else {
+                      return true;
+                    }
                   } else {
-                    return true;
+                    // 如果 WagerGrpID 是128, 只要檢查 WagerTypeIDs 就好
+                    if (headData.WagerTypeIDs.indexOf(oldWagerData.WagerTypeID) !== -1) {
+                      newWagerData[headIndex] = oldWagerData;
+                      oldWagerDatas.splice(oldWagerDataIndex, 1);
+                      return false;
+                    }
                   }
                 });
               });
@@ -188,10 +200,10 @@ export default {
 
             if (gameListIndex !== -1) {
               try {
-                GameData.Items.List[gameListIndex].Team.every((teamData) => {
+                GameData.Items.List[gameListIndex].Team.every((teamData, teamIndex) => {
                   return teamData.Wager.every((wagerData) => {
                     if (wagerData?.isNoData) {
-                      return false;
+                      return true;
                     } else {
                       return wagerData.Odds.every((oddData) => {
                         if (oddData.GameID === updateData.GameID) {
@@ -257,6 +269,38 @@ export default {
             updateData,
           });
         }
+      }
+    },
+    updateTeamData(state, { isUpdateFromOtherStore, updateData }) {
+      if (state.GameList.length !== 0) {
+        updateData.forEach((updateData) => {
+          state.GameList.every((GameData) => {
+            const gameListIndex = GameData.Items.List.findIndex(
+              (LeagueData) => LeagueData.LeagueID === updateData.LeagueID
+            );
+
+            if (gameListIndex !== -1) {
+              try {
+                GameData.Items.List[gameListIndex].Team.every((teamData, teamIndex) => {
+                  if (
+                    teamData.AwayID === updateData.AwayID &&
+                    teamData.HomeID === updateData.HomeID
+                  ) {
+                    teamData = { ...teamData, ...updateData };
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+              } catch (err) {
+                console.error('updateTeamData:', err);
+              }
+              return false;
+            } else {
+              return true;
+            }
+          });
+        });
       }
     },
   },
@@ -429,8 +473,6 @@ export default {
           });
         }
 
-        window.OddData.clear();
-
         let newWagerTypeKey = 1;
         if (postData.WagerTypeKey !== null) {
           newWagerTypeKey = postData.WagerTypeKey;
@@ -502,15 +544,22 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
-            const EvtStatusList = res.data.map((it) => it.EvtStatus);
+            const EvtStatusList = res.data.List.map((it) => it.EvtStatus);
             console.log('DetailSmall 內所有資料的EvtStatus:', EvtStatusList);
             console.log(
               `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
             );
             store.commit('updateGameList', {
               isUpdateFromOtherStore: false,
-              updateData: res.data,
+              updateData: res.data.List,
             });
+
+            if (res.data.GameScoreHead.length !== 0) {
+              store.commit('updateTeamData', {
+                isUpdateFromOtherStore: false,
+                updateData: res.data.GameScoreHead,
+              });
+            }
           });
         } else {
           resolve();
@@ -528,7 +577,7 @@ export default {
         }).then((res) => {
           store.commit('updateGameList', {
             isUpdateFromOtherStore: false,
-            updateData: res.data,
+            updateData: res.data.List,
           });
         });
       });

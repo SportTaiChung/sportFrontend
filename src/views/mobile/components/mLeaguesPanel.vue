@@ -19,9 +19,13 @@
           </label>
         </div>
         <ul class="leagueList">
-          <li class="leagueItem" v-for="(leagueData, index) in leagueListDataFiltered" :key="index">
+          <li
+            class="leagueItem"
+            v-for="leagueData in leagueListDataFiltered"
+            :key="leagueData.LeagueID"
+          >
             <label>
-              <input type="checkbox" v-model="leagueData.isSelect" />
+              <input type="checkbox" v-model="leagueData.isSelect" @change="onLeagueChanged" />
               {{ leagueData.LeagueName }}
             </label>
           </li>
@@ -51,7 +55,7 @@
     },
     watch: {
       selectedLeagues() {
-        this.saveLeaguesSetting();
+        // this.saveLeaguesSetting();
       },
       isOpen(newVal) {
         if (newVal) {
@@ -61,6 +65,7 @@
       'options.selectAll': {
         handler(isChecked) {
           this.LeagueListData.forEach((it) => (it.isSelect = isChecked));
+          this.saveLeaguesSetting();
         },
         immediate: true,
       },
@@ -69,15 +74,15 @@
       },
     },
     computed: {
+      selectedLeagues() {
+        return this.LeagueListData.filter((it) => it.isSelect);
+      },
       leagueListDataFiltered() {
         if (this.options.onlyShowCheck) {
-          return this.LeagueListData.filter((it) => it.isSelect);
+          return this.selectedLeagues;
         } else {
           return this.LeagueListData;
         }
-      },
-      selectedLeagues() {
-        return this.LeagueListData.filter((it) => it.isSelect);
       },
       hasLeagueFiltered() {
         return (
@@ -125,6 +130,9 @@
           onlyShowCheck: false,
         };
         this.LeagueListData = [];
+      },
+      onLeagueChanged() {
+        this.saveLeaguesSetting();
       },
     },
   };
@@ -236,6 +244,7 @@
           align-items: center;
           line-height: normal;
           input[type='checkbox'] {
+            flex-shrink: 0;
             width: 1.5rem;
             height: 1.5rem;
             margin: 0 8px 0 0;

@@ -1,4 +1,4 @@
-import { getGameDetail, getGameDetailSmall } from '@/api/Game';
+import { getGameDetail, getGameDetailSmall, getGameResult } from '@/api/Game';
 import rootStore from '@/store';
 
 export default {
@@ -9,7 +9,6 @@ export default {
     teamData: {},
     // 監聽此值發生變化,就能知道moreGameData重新被初始化
     MoreGameStoreUpdateFlag: false,
-    GameScore: [],
     loading: false,
   },
   mutations: {
@@ -20,6 +19,16 @@ export default {
       state.isShowMoreGame = false;
       state.moreGameData = {};
       state.teamData = {};
+    },
+    updateGameScoreHead(state, newGameScore) {
+      if (Object.keys(state.moreGameData).length !== 0) {
+        state.moreGameData.GameScoreHead = newGameScore;
+      }
+    },
+    updateTeamData(state, newTeamData) {
+      if (Object.keys(state.teamData).length !== 0) {
+        state.teamData = { ...state.teamData, ...newTeamData };
+      }
     },
     updateMoreGameData(state, { isUpdateFromOtherStore, updateData }) {
       if (Object.keys(state.moreGameData).length !== 0 && updateData.length !== 0) {
@@ -96,33 +105,6 @@ export default {
         })
           .then((res) => {
             store.state.moreGameData = res.data;
-            // 比分假資料
-            store.state.GameScore = [
-              {
-                EvtID: 100076899,
-                S1: '',
-                S2: '',
-                S3: '',
-                S4: '',
-                S5: '',
-                S6: '',
-                S7: '',
-                S8: '',
-                S9: '',
-                OT: '',
-                FH: '0:2',
-                SH: '',
-                FinalScore: '',
-                Inings: '',
-                Pans: '',
-                GetFirst: '',
-                GetEnd: '',
-                YCard: '',
-                YCardFH: '',
-                Corner: '',
-                CornerFH: '',
-              },
-            ];
             resolve(res);
           })
           .catch(reject)
@@ -140,11 +122,30 @@ export default {
         return getGameDetailSmall({
           EvtID,
         }).then((res) => {
+          if (res.data.GameScore.length !== 0) {
+            // 不要懷疑,這邊API拿到的key 是GameScore,但卻要拿去更新GameScoreHead的key
+            store.commit('updateGameScoreHead', res.data.GameScore);
+            store.commit('updateTeamData', res.data.GameScore[0]);
+          }
           store.commit('updateMoreGameData', {
             isUpdateFromOtherStore: false,
-            updateData: res.data,
+            updateData: res.data.List,
           });
         });
+      });
+    },
+    // 15.即時比分數據
+    GetGameLiveResult(store, EvtID) {
+      return new Promise((resolve, reject) => {
+        return getGameResult({ EvtID })
+          .then(async (res) => {
+            console.log('res:', res);
+            if (Object.keys(store.state.moreGameData).length === 0) {
+              // store.state.moreGameData.GameScore=res
+            }
+            resolve(res);
+          })
+          .catch(reject);
       });
     },
   },

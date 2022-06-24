@@ -164,11 +164,9 @@
           .then((res) => (this.history = res.data.reverse()))
           .finally(() => {
             this.isLoading = false;
-            if (!isBehindUpdate) {
-              this.scrollToBottom(() => {
-                this.sendReadMes();
-              });
-            }
+            this.scrollToBottom(() => {
+              this.sendReadMes();
+            });
           });
       },
       // 取得未讀數
@@ -229,6 +227,7 @@
     z-index: 10;
     pointer-events: none;
     overflow: hidden;
+    display: flex;
 
     &.open {
       pointer-events: auto;
@@ -256,11 +255,11 @@
       display: flex;
       flex-direction: column;
       width: calc(100% - 50px);
-      height: 70vh;
+      height: 70%;
       max-height: 800px;
       max-width: 700px;
       overflow: hidden;
-      margin: 15vh auto auto auto;
+      margin: auto;
       border-radius: 6px;
       background-color: #fff;
       box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.4);

@@ -18,7 +18,7 @@ export const PlayMethodData = {
   // 讓分
   HandiCap: {
     name: 'HandiCap',
-    typeIdList: [101, 103, 121],
+    typeIdList: [101, 103, 121, 124, 129],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -42,9 +42,17 @@ export const PlayMethodData = {
   // 單雙
   OddEven: {
     name: 'OddEven',
-    typeIdList: [105, 113, 126, 129],
+    typeIdList: [105, 113, 126, 128],
     betCutLineDealFunc: function () {
       return 0;
+    },
+  },
+  // 波膽
+  Bold: {
+    name: 'Bold',
+    typeIdList: [112],
+    betCutLineDealFunc: function (oddData) {
+      return oddData.OULine;
     },
   },
   // 其他:
@@ -273,6 +281,14 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       bottomPlayOdd = oddData.UnderOdds;
       bottomWagerPos = 5;
       playMethodData = PlayMethodData.OddEven;
+    } else if (PlayMethodData.Bold.typeIdList.indexOf(wagerTypeID) !== -1) {
+      // 其他
+      topPlayOdd = null;
+      topWagerPos = null;
+      bottomPlayOdd = null;
+      bottomWagerPos = null;
+      layoutType = null;
+      playMethodData = PlayMethodData.Bold;
     } else if (PlayMethodData.Other.typeIdList.indexOf(wagerTypeID) !== -1) {
       // 其他
       topPlayOdd = oddData.HomeHdpOdds;
@@ -282,7 +298,7 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       layoutType = 'single';
       playMethodData = PlayMethodData.Other;
     } else {
-      // console.error('wagerTypeID not found:', wagerTypeID);
+      console.error('wagerTypeID not found:', wagerTypeID);
     }
 
     // 處理主客場對調
@@ -425,6 +441,9 @@ export function cartDataToDisplayData(cartData) {
     } else {
       console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
     }
+  } else if (playData.playMethodData.name === 'Bold') {
+    showBetTitle = cartData.OULine;
+    showOdd = cartData.DrewOdds;
   } else if (playData.playMethodData.name === 'Other') {
     if (!SetFlag) {
       if (judgeWagerPos === 1) {
@@ -457,15 +476,20 @@ export function cartDataToDisplayData(cartData) {
   }
 
   let wagerGrpLabel = '';
+  let wagerBoldLabel = '';
+  // 波膽處理
+  if (cartData.WagerTypeID === 112) {
+    wagerBoldLabel = '-波膽';
+  }
 
   if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
-    wagerGrpLabel = '- [全場]';
+    wagerGrpLabel = `- [全場${wagerBoldLabel}]`;
   } else if (
     cartData.WagerGrpID === 1 ||
     cartData.WagerGrpID === 11 ||
     cartData.WagerGrpID === 21
   ) {
-    wagerGrpLabel = '- [上半]';
+    wagerGrpLabel = `- [上半${wagerBoldLabel}]`;
   }
   const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 

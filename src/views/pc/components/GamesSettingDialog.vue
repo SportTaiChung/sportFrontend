@@ -344,7 +344,7 @@
       .body {
         display: flex;
         flex-direction: column;
-        max-height: 70vh;
+        max-height: 70%;
         overflow: overlay;
 
         ul.list {

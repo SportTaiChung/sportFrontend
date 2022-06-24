@@ -27,13 +27,31 @@
               <div class="teamText">vs</div>
               <div class="teamText"> {{ teamData.AwayTeamStr }}</div>
             </div>
+            <div
+              class="star"
+              :class="starCSSJudge(teamData.EvtID)"
+              @click="addFavoriteHandler(teamData.EvtID)"
+            ></div>
           </div>
           <div class="boldTableBetList">
             <div class="boldTableBetListLeftContainer">
               <div
                 class="boldTableBetBlock"
+                :class="
+                  boldTableBetBlockIsSelect(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    OULine
+                  )
+                "
                 v-for="(OULine, OULineIndex) in boldRenderLeftTemplate"
                 :key="OULineIndex"
+                @click="
+                  goBoldBet(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    teamData
+                  )
+                "
               >
                 <div class="betBlockTop">{{ OULine }} </div>
                 <div class="betBlockBottom">
@@ -45,8 +63,21 @@
             <div class="boldTableBetListRightContainer">
               <div
                 class="boldTableBetBlock"
+                :class="
+                  boldTableBetBlockIsSelect(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    OULine
+                  )
+                "
                 v-for="(OULine, OULineIndex) in boldRenderRightTemplate"
                 :key="OULineIndex"
+                @click="
+                  goBoldBet(
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
+                    boldOddToMapData(teamData.Wager[0].Odds)[OULine],
+                    teamData
+                  )
+                "
               >
                 <div class="betBlockTop">{{ OULine }} </div>
                 <div class="betBlockBottom">
@@ -70,24 +101,31 @@
                 >
                   <td class="FirstCatNameBlock">
                     <div class="leftTimeBlock">
-                      <div class="timeRow" v-if="rowIndex === 0">
-                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                      </div>
-                      <div class="timeRow" v-if="rowIndex === 0">
-                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                      </div>
+                      <template v-if="rowIndex === 0 && selectGameType !== 2">
+                        <div class="timeRow">
+                          {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                        </div>
+                        <div class="timeRow">
+                          {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="timeRow" v-if="rowIndex === 0">
+                          {{ teamData.TimeAct }}
+                        </div>
+                      </template>
                     </div>
                     <div class="centerTeamBlock">
                       <!-- 只需要顯示一個隊伍 -->
                       <template v-if="teamData.AwayTeamStr === '.'">
-                        <div class="teamRow">
+                        <div class="teamRow" :title="teamData.HomeTeamStr">
                           {{ teamData.HomeTeamStr }}
                           <span class="teamPt">{{ teamData.HomePtNameStr }}</span>
                         </div>
                       </template>
                       <!-- 只需要顯示一個隊伍 -->
                       <template v-else-if="teamData.HomeTeamStr === '.'">
-                        <div class="teamRow">
+                        <div class="teamRow" :title="teamData.AwayTeamStr">
                           {{ teamData.AwayTeamStr }}
                           <span class="teamPt">{{ teamData.AwayPtNameStr }}</span>
                         </div>
@@ -95,28 +133,28 @@
                       <template v-else>
                         <!-- 主客場對調 -->
                         <template v-if="!teamData.SetFlag">
-                          <div class="teamRow"
-                            >{{ teamData.AwayTeamStr }}
+                          <div class="teamRow" :title="teamData.AwayTeamStr">
+                            {{ teamData.AwayTeamStr }}
                             <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
                               -{{ teamData.AwayPtNameStr }}
                             </span>
                           </div>
-                          <div class="teamRow"
-                            >{{ teamData.HomeTeamStr }}
+                          <div class="teamRow" :title="teamData.HomeTeamStr">
+                            {{ teamData.HomeTeamStr }}
                             <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
                               -{{ teamData.HomePtNameStr }}
                             </span>
                           </div>
                         </template>
                         <template v-else>
-                          <div class="teamRow"
-                            >{{ teamData.HomeTeamStr }}
+                          <div class="teamRow" :title="teamData.HomeTeamStr">
+                            {{ teamData.HomeTeamStr }}
                             <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
                               -{{ teamData.HomePtNameStr }}
                             </span>
                           </div>
-                          <div class="teamRow"
-                            >{{ teamData.AwayTeamStr }}
+                          <div class="teamRow" :title="teamData.AwayTeamStr">
+                            {{ teamData.AwayTeamStr }}
                             <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
                               -{{ teamData.AwayPtNameStr }}
                             </span>
@@ -127,6 +165,18 @@
                       <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0">
                         和局
                       </div>
+                    </div>
+                    <div class="scoreBlock" v-if="rowIndex === 0 && selectGameType === 2">
+                      <div
+                        class="homeScore"
+                        :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >{{ teamData.HomeScore }}</div
+                      >
+                      <div
+                        class="awayScore"
+                        :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >{{ teamData.AwayScore }}</div
+                      >
                     </div>
                     <div class="rightFavoriteBlock" v-if="rowIndex === 0">
                       <div
@@ -342,8 +392,8 @@
                       @click="moreGameClickHandler(teamData)"
                       v-if="rowIndex === 0"
                     >
-                      更多
                       {{ teamData.MoreCount }}
+                      <img src="@/assets/img/common/moreGameIcon.svg" alt="" />
                     </div>
                   </td>
                 </tr>
@@ -453,7 +503,6 @@
         }
       },
       addFavoriteHandler(EvtID) {
-        console.log(EvtID);
         this.$store.commit('Setting/addFavorites', EvtID);
       },
       clickArrow() {
@@ -496,6 +545,43 @@
           };
         }, {});
         return res;
+      },
+      boldTableBetBlockIsSelect(oddData, OULine) {
+        const compareData = this.betCartList.find((cartData) => cartData.GameID === oddData.GameID);
+        if (compareData && compareData.OULine === OULine) {
+          return 'boldTableBetBlockSelect';
+        } else {
+          return '';
+        }
+      },
+      goBoldBet(showOdd, oddData, teamData) {
+        this.$emit('AddToCart');
+
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(showOdd),
+          wagerPos: 3,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: oddData.GameID,
+          CatID: this.source.CatID,
+          CatNameStr: this.source.CatNameStr,
+          LeagueNameStr: this.source.LeagueNameStr,
+          HomeTeamStr: teamData.HomeTeamStr,
+          AwayTeamStr: teamData.AwayTeamStr,
+          WagerGrpID: 10,
+          WagerTypeID: 112,
+          EvtID: teamData.EvtID,
+          EvtStatus: teamData.EvtStatus,
+          SetFlag: teamData.SetFlag,
+          ...oddData,
+        };
+
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
       },
       goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
         if (showOdd === '') {
@@ -592,6 +678,20 @@
     &:last-child {
       margin-bottom: 0px;
     }
+    $starSize: 19px;
+    .star {
+      width: $starSize;
+      height: $starSize;
+      background-size: 100% auto;
+      background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
+      cursor: pointer;
+    }
+    .starActive {
+      width: $starSize;
+      height: $starSize;
+      background-size: 100% auto;
+      background: url(~@/assets/img/pc/icon_star.svg) no-repeat center top;
+    }
     .collapseTitleBlock {
       width: 100%;
       height: 35px;
@@ -637,6 +737,9 @@
             margin-left: 8px;
           }
         }
+        .star {
+          margin-left: 10px;
+        }
       }
       .boldTableBetList {
         display: flex;
@@ -647,6 +750,9 @@
           text-align: center;
           background-color: white;
           cursor: pointer;
+          &:hover {
+            background-color: #ffe1ae;
+          }
           .betBlockTop {
             width: 100%;
             height: 30px;
@@ -659,6 +765,9 @@
             color: #30679e;
             font-weight: bold;
           }
+        }
+        .boldTableBetBlockSelect {
+          background-color: #ffd5d5;
         }
         .boldTableBetListLeftContainer {
           display: flex;
@@ -735,25 +844,24 @@
               }
             }
           }
+          .scoreBlock {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            gap: 1rem;
+            padding: 5px;
+            .homeScore,
+            .awayScore {
+              &.light {
+                color: #ff8500;
+              }
+            }
+          }
           .rightFavoriteBlock {
             width: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            $starSize: 19px;
-            .star {
-              width: $starSize;
-              height: $starSize;
-              background-size: 100% auto;
-              background: url(~@/assets/img/pc/icon_star.svg) no-repeat center bottom;
-              cursor: pointer;
-            }
-            .starActive {
-              width: $starSize;
-              height: $starSize;
-              background-size: 100% auto;
-              background: url(~@/assets/img/pc/icon_star.svg) no-repeat center top;
-            }
           }
         }
         .GameTableHeaderOtherTD,
@@ -825,6 +933,14 @@
         }
         .moreGame {
           cursor: pointer;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          &:hover {
+            background-color: #e8e8e8;
+          }
         }
       }
     }

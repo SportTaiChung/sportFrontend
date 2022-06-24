@@ -369,9 +369,9 @@
         default: 0,
       },
       // 0: 投注資訊 => 單向投注
-      //    投注資訊 => 過關投注
-      // 1: 最新注單 => 未結算注單
-      //    最新注單 => 可兌現注單
+      // 1: 投注資訊 => 過關投注
+      // 0: 最新注單 => 未結算注單
+      // 1: 最新注單 => 可兌現注單
       childIndex: {
         type: Number,
         default: 0,
@@ -427,13 +427,6 @@
           });
         }
       }, 10000);
-
-      this.intervalEvent2 = setInterval(() => {
-        if (this.lastTraceCodeKey !== null) {
-          this.callPlayStateAPI();
-          this.$store.dispatch('User/GetUserInfoCash');
-        }
-      }, 2000);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -592,6 +585,7 @@
       resultCancelBtnClick() {
         this.$emit('setNewGroupIndex', 1);
         this.$emit('setNewChildIndex', 0);
+        this.lastBlurInput = { name: 'fillEachBetAmount' };
         this.cancelHandler();
       },
       showOddValue(oddValue) {
@@ -779,7 +773,7 @@
           const WagerPos = cartData.wagerPos;
           const HdpPos = cartData.HdpPos;
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
-          const OddValue = this.$SportLib.cartDataToDisplayData(cartData).showOdd;
+          const OddValue = parseFloat(this.$SportLib.cartDataToDisplayData(cartData).showOdd);
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
           if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
             errorMessage = '尚未收到注格資訊,請稍後再試';
@@ -859,7 +853,9 @@
               if (res?.data?.traceCodeKey) {
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
-                this.callPlayStateAPI();
+                setTimeout(() => {
+                  this.callPlayStateAPI();
+                }, 1000);
               }
             })
             .catch((err) => {
@@ -878,18 +874,20 @@
         }
         if (this.panelMode === this.PanelModeEnum.lock || this.settings.showBetConfirm === false) {
           this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
               if (res?.data?.traceCodeKey) {
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
-                this.callPlayStateAPI();
+                setTimeout(() => {
+                  this.callPlayStateAPI(true);
+                }, 1000);
               }
             })
             .catch((err) => {
               console.error(err);
-
               this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.normal);
               this.$store.commit('SetLoading', false);
             });
@@ -897,9 +895,12 @@
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
       },
-      callPlayStateAPI() {
+      callPlayStateAPI(isStray = false) {
         this.$store
-          .dispatch('BetCart/playState', this.lastTraceCodeKey)
+          .dispatch('BetCart/playState', {
+            traceCodeKey: this.lastTraceCodeKey,
+            isStray,
+          })
           .then((res) => {})
           .finally(() => {
             this.$store.commit('SetLoading', false);
@@ -1135,10 +1136,10 @@
           }
         }
         .closeBtn {
-          background-color: #3a86de;
+          background-color: #3fa381;
           color: white;
           &:hover {
-            background-color: #569cec;
+            background-color: #62b096;
           }
         }
       }
