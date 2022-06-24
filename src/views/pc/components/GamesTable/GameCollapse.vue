@@ -166,9 +166,17 @@
                         和局
                       </div>
                     </div>
-                    <div class="scoreBlock" v-if="rowIndex === 0">
-                      <div class="homeScore" :class="'light'">8</div>
-                      <div class="awayScore" :class="'light'">7</div>
+                    <div class="scoreBlock" v-if="rowIndex === 0 && selectGameType === 2">
+                      <div
+                        class="homeScore"
+                        :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >{{ teamData.HomeScore }}</div
+                      >
+                      <div
+                        class="awayScore"
+                        :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >{{ teamData.AwayScore }}</div
+                      >
                     </div>
                     <div class="rightFavoriteBlock" v-if="rowIndex === 0">
                       <div
@@ -384,8 +392,8 @@
                       @click="moreGameClickHandler(teamData)"
                       v-if="rowIndex === 0"
                     >
-                      更多
                       {{ teamData.MoreCount }}
+                      <img src="@/assets/img/common/moreGameIcon.svg" alt="" />
                     </div>
                   </td>
                 </tr>

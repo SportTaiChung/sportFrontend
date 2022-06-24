@@ -84,29 +84,10 @@
       <div v-if="gameType2Page === 0 && isShowLiveScore">
         <components
           :is="LiveBoardComponentName"
-          :gameScoreData="moreGameData.GameScore"
+          :gameScoreData="gameScoreData"
           :teamData="teamData"
         >
         </components>
-
-        <!-- <Soccer
-          v-if="judgeGameLiveScore(1, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></Soccer>
-        <BaseBall
-          v-if="judgeGameLiveScore(101, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></BaseBall>
-        <BasketBall
-          v-if="judgeGameLiveScore(102, selectCatID)"
-          :gameScoreData="moreGameData.GameScore"
-          :homeTeam="getteamData.home"
-          :awayTeam="getteamData.away"
-        ></BasketBall> -->
       </div>
     </div>
 
@@ -285,9 +266,7 @@
       }, 6000);
 
       // 某些滾球數據,需要輪詢,像是棒球
-      const catData = this.CatMapData[this.selectCatID];
-      console.log('GameScoreRefresh:', catData?.GameScoreRefresh);
-      if (catData && catData.GameScoreRefresh && this.selectGameType === 2) {
+      if (this.isGameScoreRefresh) {
         this.intervalEvent2 = setInterval(() => {
           this.$store.dispatch('MoreGame/GetGameLiveResult', this.teamData.EvtID);
         }, 5000);
@@ -465,6 +444,17 @@
         } else {
           console.error(`${this.selectCatID} 的球種 不在彩種列表內`);
           return null;
+        }
+      },
+      isGameScoreRefresh() {
+        const catData = this.CatMapData[this.selectCatID];
+        return catData && catData.GameScoreRefresh && this.selectGameType === 2;
+      },
+      gameScoreData() {
+        if (this.isGameScoreRefresh) {
+          return this.moreGameData.GameScore;
+        } else {
+          return this.moreGameData.GameScoreHead;
         }
       },
     },

@@ -271,6 +271,38 @@ export default {
         }
       }
     },
+    updateTeamData(state, { isUpdateFromOtherStore, updateData }) {
+      if (state.GameList.length !== 0) {
+        updateData.forEach((updateData) => {
+          state.GameList.every((GameData) => {
+            const gameListIndex = GameData.Items.List.findIndex(
+              (LeagueData) => LeagueData.LeagueID === updateData.LeagueID
+            );
+
+            if (gameListIndex !== -1) {
+              try {
+                GameData.Items.List[gameListIndex].Team.every((teamData, teamIndex) => {
+                  if (
+                    teamData.AwayID === updateData.AwayID &&
+                    teamData.HomeID === updateData.HomeID
+                  ) {
+                    teamData = { ...teamData, ...updateData };
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+              } catch (err) {
+                console.error('updateTeamData:', err);
+              }
+              return false;
+            } else {
+              return true;
+            }
+          });
+        });
+      }
+    },
   },
   actions: {
     GetCatList(store) {
@@ -521,6 +553,13 @@ export default {
               isUpdateFromOtherStore: false,
               updateData: res.data.List,
             });
+
+            if (res.data.GameScoreHead.length !== 0) {
+              store.commit('updateTeamData', {
+                isUpdateFromOtherStore: false,
+                updateData: res.data.GameScoreHead,
+              });
+            }
           });
         } else {
           resolve();

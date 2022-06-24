@@ -20,9 +20,9 @@ export default {
       state.moreGameData = {};
       state.teamData = {};
     },
-    updateGameScore(state, newGameScore) {
+    updateGameScoreHead(state, newGameScore) {
       if (Object.keys(state.moreGameData).length !== 0) {
-        state.moreGameData.GameScore = newGameScore;
+        state.moreGameData.GameScoreHead = newGameScore;
       }
     },
     updateTeamData(state, newTeamData) {
@@ -123,7 +123,8 @@ export default {
           EvtID,
         }).then((res) => {
           if (res.data.GameScore.length !== 0) {
-            store.commit('updateGameScore', res.data.GameScore);
+            // 不要懷疑,這邊API拿到的key 是GameScore,但卻要拿去更新GameScoreHead的key
+            store.commit('updateGameScoreHead', res.data.GameScore);
             store.commit('updateTeamData', res.data.GameScore[0]);
           }
           store.commit('updateMoreGameData', {
