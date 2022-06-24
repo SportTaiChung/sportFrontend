@@ -1,7 +1,7 @@
 <template>
   <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
-      <div class="teamName">{{ getteamData.home }}</div>
+      <div class="teamName home">{{ getteamData.home }}</div>
       <!-- 非滾球 -->
       <template v-if="selectGameType !== 2">
         <div class="teamVS">vs</div>
@@ -15,7 +15,7 @@
         </div>
       </template>
 
-      <div class="teamName">{{ getteamData.away }}</div>
+      <div class="teamName away">{{ getteamData.away }}</div>
       <img
         class="closeBtn"
         src="@/assets/img/pc/btn_close_w.svg"
@@ -604,24 +604,46 @@
       border: 0;
     }
     .MoreGameHeader {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 1fr 70px 1fr;
       background-color: #136146;
       border-bottom-color: #136146;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: $gameHeaderHeight;
       width: 100%;
       position: relative;
       .teamName {
+        line-height: 35px;
         color: #fff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0 1rem;
+        &.home {
+          text-align: right;
+        }
+        &.away {
+          text-align: left;
+          padding-right: 2rem;
+        }
       }
       .teamVS {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 0 8px;
+        overflow: hidden;
         color: #ffdf1b;
         font-size: 15px;
-        padding: 0 8px;
       }
       .teamVSLive {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         padding: 0 8px;
+        overflow: hidden;
         .topBlock {
           color: #c5f0c5;
           text-align: center;
