@@ -39,6 +39,7 @@ export default {
     clearCart(state) {
       state.betCartList.length = 0;
       state.betCartList = [];
+      state.strayOdd = null;
     },
     clearCartBetResult(state) {
       state.betCartList.forEach((it) => (it.betResult = null));
