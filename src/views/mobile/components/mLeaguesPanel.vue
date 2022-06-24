@@ -19,9 +19,13 @@
           </label>
         </div>
         <ul class="leagueList">
-          <li class="leagueItem" v-for="(leagueData, index) in leagueListDataFiltered" :key="index">
+          <li
+            class="leagueItem"
+            v-for="leagueData in leagueListDataFiltered"
+            :key="leagueData.LeagueID"
+          >
             <label>
-              <input type="checkbox" v-model="leagueData.isSelect" />
+              <input type="checkbox" v-model="leagueData.isSelect" @change="onLeagueChanged" />
               {{ leagueData.LeagueName }}
             </label>
           </li>
@@ -51,7 +55,7 @@
     },
     watch: {
       selectedLeagues() {
-        this.saveLeaguesSetting();
+        // this.saveLeaguesSetting();
       },
       isOpen(newVal) {
         if (newVal) {
@@ -61,6 +65,7 @@
       'options.selectAll': {
         handler(isChecked) {
           this.LeagueListData.forEach((it) => (it.isSelect = isChecked));
+          this.saveLeaguesSetting();
         },
         immediate: true,
       },
@@ -125,6 +130,9 @@
           onlyShowCheck: false,
         };
         this.LeagueListData = [];
+      },
+      onLeagueChanged() {
+        this.saveLeaguesSetting();
       },
     },
   };
