@@ -4,7 +4,7 @@
       <table>
         <thead>
           <tr>
-            <td>{{ teamData.TimeAct }}</td>
+            <td>{{ gameScoreData[0].TimeAct }}</td>
             <td>
               <img
                 class="icon-redCard"
@@ -20,15 +20,15 @@
         <tbody>
           <tr>
             <td>{{ teamData.HomeTeamStr }}</td>
-            <td>{{ teamData.HomeRCard }}</td>
-            <td>-</td>
-            <td>{{ teamData.HomeScore }}</td>
+            <td>{{ gameScoreData[0].HomeRCard }}</td>
+            <td>{{ gameScoreData[0].HomeCorner }}</td>
+            <td>{{ gameScoreData[0].HomeScore }}</td>
           </tr>
           <tr>
             <td>{{ teamData.AwayTeamStr }}</td>
-            <td>{{ teamData.AwayRCard }}</td>
-            <td>-</td>
-            <td>{{ teamData.AwayScore }}</td>
+            <td>{{ gameScoreData[0].AwayRCard }}</td>
+            <td>{{ gameScoreData[0].AwayCorner }}</td>
+            <td>{{ gameScoreData[0].AwayScore }}</td>
           </tr>
         </tbody>
       </table>

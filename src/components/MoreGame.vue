@@ -266,6 +266,7 @@
         collapseItemNames: [],
         selectItemKey: null,
         intervalEvent: null,
+        intervalEvent2: null,
 
         gameType1Page: 1,
         gameType2Page: 0,
@@ -282,9 +283,19 @@
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
       }, 6000);
+
+      // 某些滾球數據,需要輪詢,像是棒球
+      const catData = this.CatMapData[this.selectCatID];
+      console.log('GameScoreRefresh:', catData?.GameScoreRefresh);
+      if (catData && catData.GameScoreRefresh && this.selectGameType === 2) {
+        this.intervalEvent2 = setInterval(() => {
+          this.$store.dispatch('MoreGame/GetGameLiveResult', this.teamData.EvtID);
+        }, 5000);
+      }
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
+      clearInterval(this.intervalEvent2);
     },
     computed: {
       moreGameData() {
@@ -311,6 +322,9 @@
       },
       teamData() {
         return this.$store.state.MoreGame.teamData;
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
       menuTabs() {
         if (this.moreGameData === null) {

@@ -4,7 +4,7 @@
       <table>
         <thead>
           <tr>
-            <td>{{ title }} - -</td>
+            <td></td>
             <td> 1 </td>
             <td> 2 </td>
             <td> 3 </td>
