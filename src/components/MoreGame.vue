@@ -1,7 +1,7 @@
 <template>
   <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
-      <div class="teamName home">{{ getteamData.home }}</div>
+      <div class="teamName home" :title="getteamData.home">{{ getteamData.home }}</div>
       <!-- 非滾球 -->
       <template v-if="selectGameType !== 2">
         <div class="teamVS">vs</div>
@@ -15,7 +15,7 @@
         </div>
       </template>
 
-      <div class="teamName away">{{ getteamData.away }}</div>
+      <div class="teamName away" :title="getteamData.away">{{ getteamData.away }}</div>
       <img
         class="closeBtn"
         src="@/assets/img/pc/btn_close_w.svg"

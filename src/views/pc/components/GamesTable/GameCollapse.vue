@@ -166,6 +166,10 @@
                         和局
                       </div>
                     </div>
+                    <div class="scoreBlock" v-if="rowIndex === 0">
+                      <div class="homeScore" :class="'light'">8</div>
+                      <div class="awayScore" :class="'light'">7</div>
+                    </div>
                     <div class="rightFavoriteBlock" v-if="rowIndex === 0">
                       <div
                         class="star"
@@ -829,6 +833,19 @@
               line-height: 18px;
               .teamPt {
                 color: gray;
+              }
+            }
+          }
+          .scoreBlock {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            gap: 1rem;
+            padding: 5px;
+            .homeScore,
+            .awayScore {
+              &.light {
+                color: #ff8500;
               }
             }
           }
