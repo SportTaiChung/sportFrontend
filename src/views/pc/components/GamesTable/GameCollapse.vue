@@ -49,7 +49,8 @@
                   goBoldBet(
                     boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
                     boldOddToMapData(teamData.Wager[0].Odds)[OULine],
-                    teamData
+                    teamData,
+                    $event
                   )
                 "
               >
@@ -254,7 +255,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .topWagerPos
+                                  .topWagerPos,
+                                $event
                               )
                             "
                           >
@@ -280,7 +282,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .bottomWagerPos
+                                  .bottomWagerPos,
+                                $event
                               )
                             "
                           >
@@ -309,7 +312,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .topWagerPos
+                                  .topWagerPos,
+                                $event
                               )
                             "
                           >
@@ -336,7 +340,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .bottomWagerPos
+                                  .bottomWagerPos,
+                                $event
                               )
                             "
                           >
@@ -384,7 +389,8 @@
                                     teamData.SetFlag,
                                     wagerData,
                                     rowIndex
-                                  ).drewWagerPos
+                                  ).drewWagerPos,
+                                  $event
                                 )
                               "
                             >
@@ -504,6 +510,9 @@
       selectGameType() {
         return this.gameStore.selectGameType;
       },
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
+      },
     },
     methods: {
       isGameTableHeaderMoreSelect(teamData, rowIndex) {
@@ -572,7 +581,17 @@
           return '';
         }
       },
-      goBoldBet(showOdd, oddData, teamData) {
+      checkQuickBet(event) {
+        if (this.isQuickBetEnable) {
+          const clickTarget = event.target.getBoundingClientRect();
+          this.$store.commit('BetCart/showQuickBetData', {
+            isShow: true,
+            x: clickTarget.left,
+            y: clickTarget.top,
+          });
+        }
+      },
+      goBoldBet(showOdd, oddData, teamData, event) {
         this.$emit('AddToCart');
 
         const selectGameTypeID = this.$store.state.Game.selectGameType;
@@ -600,8 +619,10 @@
         };
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        this.checkQuickBet(event);
       },
-      goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
+      goBet(showOdd, teamData, wagerData, rowIndex, wagerPos, event) {
         if (showOdd === '') {
           return;
         }
@@ -640,6 +661,8 @@
         };
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        this.checkQuickBet(event);
       },
     },
   };

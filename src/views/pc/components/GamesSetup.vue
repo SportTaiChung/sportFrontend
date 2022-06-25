@@ -61,7 +61,7 @@
         v-show="quickBetEnable"
         placeholder="請輸入金額"
         class="setUp_input"
-        @change="quickBetAmountChangeHandler"
+        @input="quickBetAmountChangeHandler"
       />
       <el-switch
         v-model="quickBetEnable"
@@ -176,6 +176,9 @@
       isQuickBet() {
         return this.$store.state.Game.isQuickBet;
       },
+      UserCredit() {
+        return this.$store.state.User.UserCredit;
+      },
     },
     watch: {
       isQuickBet: {
@@ -212,7 +215,14 @@
     },
     methods: {
       quickBetAmountChangeHandler() {
-        this.$store.commit('Game/setQuickBetAmount', parseInt(this.quickBetAmount));
+        this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
+        if (isNaN(this.quickBetAmount)) {
+          this.quickBetAmount = 0;
+        }
+        if (this.quickBetAmount > this.UserCredit) {
+          this.quickBetAmount = this.UserCredit;
+        }
+        this.$store.commit('Game/setQuickBetAmount', this.quickBetAmount);
       },
       quickBetEnableChangeHandler() {
         this.$store.commit('Game/setQuickBetEnable', this.quickBetEnable);

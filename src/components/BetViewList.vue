@@ -448,10 +448,6 @@
               this.$store.state.Setting.UserSetting.defaultStrayAmount.amount
             );
           }
-
-          if (this.isQuickBetEnable) {
-            this.submitHandler();
-          }
         });
       },
       groupIndex: {
@@ -507,6 +503,9 @@
       isClearMemberData() {
         this.clearMemberData();
       },
+      isSubmitHandler() {
+        this.submitHandler(true);
+      },
     },
     computed: {
       OptionCancelBtnStr() {
@@ -535,6 +534,9 @@
       },
       isClearMemberData() {
         return this.$store.state.BetCart.isClearMemberData;
+      },
+      isSubmitHandler() {
+        return this.$store.state.BetCart.isSubmitHandler;
       },
       isShowChartList() {
         return this.groupIndex === 0 && this.childIndex === 0 && this.showBetCartList.length > 0;
@@ -832,7 +834,7 @@
           return list;
         }
       },
-      submitHandler() {
+      submitHandler(isShowMessage = false) {
         const checkRes = this.checkBetPlayData(1, null);
         if (checkRes === null) {
           return;
@@ -854,7 +856,7 @@
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
                 setTimeout(() => {
-                  this.callPlayStateAPI();
+                  this.callPlayStateAPI(isShowMessage);
                 }, 1000);
               }
             })
@@ -895,11 +897,11 @@
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
       },
-      callPlayStateAPI(isStray = false) {
+      callPlayStateAPI(isShowMessage = false) {
         this.$store
           .dispatch('BetCart/playState', {
             traceCodeKey: this.lastTraceCodeKey,
-            isStray,
+            isShowMessage,
           })
           .then((res) => {})
           .finally(() => {

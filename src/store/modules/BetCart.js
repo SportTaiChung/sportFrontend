@@ -3,6 +3,11 @@ import { oddDataToPlayData } from '@/utils/SportLib';
 import { PanelModeEnum } from '@/enum/BetPanelMode';
 import rootStore from '@/store';
 import { Notification } from 'element-ui';
+const quickBetData = {
+  isShow: false,
+  x: 0,
+  y: 0,
+};
 export default {
   namespaced: true,
   state: {
@@ -12,8 +17,11 @@ export default {
     isAddNewToChart: false,
     // 是否需要去清除BetViewList的資料
     isClearMemberData: false,
+    // 快速投注,點擊投注按鈕會更改此狀態,BetViewList監聽此值,來決定是否直接呼叫SubmitHandler
+    isSubmitHandler: false,
     strayOdd: null,
     panelMode: PanelModeEnum.normal,
+    quickBetData,
   },
   getters: {
     showBetCartList(state) {
@@ -24,11 +32,19 @@ export default {
     },
   },
   mutations: {
+    showQuickBetData(state, { isShow, x, y }) {
+      state.quickBetData.isShow = isShow;
+      state.quickBetData.x = x;
+      state.quickBetData.y = y;
+    },
     setPanelMode(state, val) {
       state.panelMode = val;
     },
-    setIsClearMemberData(state, val) {
-      state.isClearMemberData = val;
+    setIsClearMemberData(state) {
+      state.isClearMemberData = !state.isClearMemberData;
+    },
+    setIsSubmitHandler(state) {
+      state.isSubmitHandler = !state.isSubmitHandler;
     },
     setStrayOdd(state, val) {
       state.strayOdd = val;
@@ -46,6 +62,7 @@ export default {
         it.betResult = null;
         it.betResultCount = 0;
       });
+      state.quickBetData = quickBetData;
     },
     removeCartByGameID(state, gameID) {
       const cartIndex = state.betCartList.findIndex((cartData) => cartData.GameID === gameID);
@@ -128,7 +145,7 @@ export default {
       if (store.state.panelMode === PanelModeEnum.result) {
         store.commit('clearCart');
         store.commit('setPanelMode', PanelModeEnum.Normal);
-        store.commit('setIsClearMemberData', !store.state.isClearMemberData);
+        store.commit('setIsClearMemberData');
       }
 
       // 是否在購物車內找到完全相同的自己
@@ -190,7 +207,7 @@ export default {
       });
     },
     // 檢查投注狀態
-    playState(store, { traceCodeKey, isStray }) {
+    playState(store, { traceCodeKey, isShowMessage }) {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey)
           .then((res) => {
@@ -198,12 +215,12 @@ export default {
               // 如果有找到201 就重新打一次playState
               if (res.data.find((it) => it.code === 201)) {
                 setTimeout(() => {
-                  store.dispatch('playState', { traceCodeKey, isStray });
+                  store.dispatch('playState', { traceCodeKey, isShowMessage });
                 }, 600);
               }
 
               // 只有過關投注才能提示
-              if (isStray && res.data.length !== 0) {
+              if (isShowMessage && res.data.length !== 0) {
                 if (res.data[0].code === 200) {
                   Notification.success({
                     message: res.data[0].Message,

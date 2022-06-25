@@ -218,7 +218,7 @@
                             oddIndex +
                             betIndex
                           "
-                          @click="goBet(betData, oddData, leagueData)"
+                          @click="goBet(betData, oddData, leagueData, $event)"
                         >
                           <div class="betBlockTop">
                             {{ betData.showMethod }}
@@ -472,6 +472,9 @@
           return this.moreGameData.GameScoreHead;
         }
       },
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
+      },
     },
     watch: {
       MoreGameStoreUpdateFlag() {
@@ -534,7 +537,7 @@
           this.collapseItemNames = this.FinalGameList.map((it) => it.ItemName);
         }
       },
-      goBet(betData, oddData, leagueData) {
+      goBet(betData, oddData, leagueData, event) {
         this.$emit('AddToCart');
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
@@ -560,6 +563,15 @@
           ...oddData,
         };
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        if (this.isQuickBetEnable) {
+          const clickTarget = event.target.getBoundingClientRect();
+          this.$store.commit('BetCart/showQuickBetData', {
+            isShow: true,
+            x: clickTarget.left,
+            y: clickTarget.top + 5,
+          });
+        }
       },
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
