@@ -167,16 +167,34 @@
                       </div>
                     </div>
                     <div class="scoreBlock" v-if="rowIndex === 0 && selectGameType === 2">
-                      <div
-                        class="homeScore"
-                        :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
-                        >{{ teamData.HomeScore }}</div
-                      >
-                      <div
-                        class="awayScore"
-                        :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
-                        >{{ teamData.AwayScore }}</div
-                      >
+                      <template v-if="teamData.SetFlag">
+                        <div
+                          class="homeScore"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >
+                          {{ teamData.HomeScore }}
+                        </div>
+                        <div
+                          class="awayScore"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >
+                          {{ teamData.AwayScore }}
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div
+                          class="awayScore"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >
+                          {{ teamData.AwayScore }}
+                        </div>
+                        <div
+                          class="homeScore"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >
+                          {{ teamData.HomeScore }}
+                        </div>
+                      </template>
                     </div>
                     <div class="rightFavoriteBlock" v-if="rowIndex === 0">
                       <div
@@ -392,8 +410,8 @@
                       @click="moreGameClickHandler(teamData)"
                       v-if="rowIndex === 0"
                     >
-                      {{ teamData.MoreCount }}
                       <img src="@/assets/img/common/moreGameIcon.svg" alt="" />
+                      {{ teamData.MoreCount }}
                     </div>
                   </td>
                 </tr>
@@ -937,7 +955,7 @@
           height: 100%;
           display: flex;
           justify-content: center;
-          flex-direction: row;
+          flex-direction: column;
           align-items: center;
           &:hover {
             background-color: #e8e8e8;
@@ -945,7 +963,7 @@
 
           img {
             max-width: 0.9rem;
-            margin-left: 0.5rem;
+            margin-bottom: 5px;
           }
         }
       }

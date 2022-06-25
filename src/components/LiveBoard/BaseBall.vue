@@ -21,21 +21,6 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ teamData.HomeTeamStr }}</td>
-            <td>{{ keyNameToShow('S1', 0) }}</td>
-            <td>{{ keyNameToShow('S2', 0) }}</td>
-            <td>{{ keyNameToShow('S3', 0) }}</td>
-            <td>{{ keyNameToShow('S4', 0) }}</td>
-            <td>{{ keyNameToShow('S5', 0) }}</td>
-            <td>{{ keyNameToShow('S6', 0) }}</td>
-            <td>{{ keyNameToShow('S7', 0) }}</td>
-            <td>{{ keyNameToShow('S8', 0) }}</td>
-            <td>{{ keyNameToShow('S9', 0) }}</td>
-            <td>{{ keyNameToShow('OT', 0) }}</td>
-            <td>{{ keyNameToShow('FH', 0) }}</td>
-            <td>{{ '-' }}</td>
-          </tr>
-          <tr>
             <td>{{ teamData.AwayTeamStr }}</td>
             <td>{{ keyNameToShow('S1', 1) }}</td>
             <td>{{ keyNameToShow('S2', 1) }}</td>
@@ -47,7 +32,22 @@
             <td>{{ keyNameToShow('S8', 1) }}</td>
             <td>{{ keyNameToShow('S9', 1) }}</td>
             <td>{{ keyNameToShow('OT', 1) }}</td>
-            <td>{{ keyNameToShow('FH', 1) }}</td>
+            <td>{{ teamData.AwayScore }}</td>
+            <td>{{ '-' }}</td>
+          </tr>
+          <tr>
+            <td>{{ teamData.HomeTeamStr }}</td>
+            <td>{{ keyNameToShow('S1', 0) }}</td>
+            <td>{{ keyNameToShow('S2', 0) }}</td>
+            <td>{{ keyNameToShow('S3', 0) }}</td>
+            <td>{{ keyNameToShow('S4', 0) }}</td>
+            <td>{{ keyNameToShow('S5', 0) }}</td>
+            <td>{{ keyNameToShow('S6', 0) }}</td>
+            <td>{{ keyNameToShow('S7', 0) }}</td>
+            <td>{{ keyNameToShow('S8', 0) }}</td>
+            <td>{{ keyNameToShow('S9', 0) }}</td>
+            <td>{{ keyNameToShow('OT', 0) }}</td>
+            <td>{{ teamData.HomeScore }}</td>
             <td>{{ '-' }}</td>
           </tr>
         </tbody>

@@ -11,7 +11,12 @@
       <template v-else>
         <div class="teamVSLive">
           <div class="topBlock"> {{ teamData.TimeAct }} </div>
-          <div class="bottomBlock"> {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }} </div>
+          <div class="bottomBlock" v-if="!teamData.SetFlag">
+            {{ `${teamData.AwayScore} : ${teamData.HomeScore}` }}
+          </div>
+          <div class="bottomBlock" v-else>
+            {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }}
+          </div>
         </div>
       </template>
 
