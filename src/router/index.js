@@ -51,7 +51,6 @@ export default async () => {
   if (process.env.VUE_APP_UI === 'pc') {
     dynamicRoute.push(import('./pc/index'));
   } else {
-    console.log('add mobile route');
     dynamicRoute.push(import('./mobile/index'));
   }
   const dynamicRouteRes = await Promise.all(dynamicRoute).then((res) =>

@@ -139,9 +139,8 @@ export default {
       return new Promise((resolve, reject) => {
         return getGameResult({ EvtID })
           .then(async (res) => {
-            console.log('res:', res);
             if (Object.keys(store.state.moreGameData).length === 0) {
-              // store.state.moreGameData.GameScore=res
+              store.state.moreGameData.GameScore = res.data;
             }
             resolve(res);
           })

@@ -100,7 +100,10 @@
           <img class="betResultImgIcon" src="@/assets/img/common/betView/ok.png" alt="" />
           {{ cartData.betResult.Message }}
         </div>
-        <div class="info" v-else-if="cartData.betResult.code === 201">
+        <div
+          class="info"
+          v-else-if="cartData.betResult.code === 201 && state.betCartList[index].betResultCount > 2"
+        >
           <img class="betResultImgIcon" src="@/assets/img/common/betView/info.png" alt="" />
           {{ cartData.betResult.Message }}
         </div>

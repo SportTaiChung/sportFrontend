@@ -42,7 +42,10 @@ export default {
       state.strayOdd = null;
     },
     clearCartBetResult(state) {
-      state.betCartList.forEach((it) => (it.betResult = null));
+      state.betCartList.forEach((it) => {
+        it.betResult = null;
+        it.betResultCount = 0;
+      });
     },
     removeCartByGameID(state, gameID) {
       const cartIndex = state.betCartList.findIndex((cartData) => cartData.GameID === gameID);
@@ -58,6 +61,7 @@ export default {
       if (state.betCartList.length !== 0 && state.panelMode === PanelModeEnum.result) {
         resultList.forEach((it, index) => {
           state.betCartList[index].betResult = it;
+          ++state.betCartList[index].betResultCount;
         });
       }
     },
@@ -158,6 +162,7 @@ export default {
         betAmount,
         winAmount: null,
         betResult: null,
+        betResultCount: 0,
       };
       console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
@@ -194,7 +199,7 @@ export default {
               if (res.data.find((it) => it.code === 201)) {
                 setTimeout(() => {
                   store.dispatch('playState', { traceCodeKey, isStray });
-                }, 500);
+                }, 600);
               }
 
               // 只有過關投注才能提示
