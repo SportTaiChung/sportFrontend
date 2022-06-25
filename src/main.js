@@ -43,6 +43,9 @@ Promise.all([router()]).then(async (res) => {
         // Other options (see the 'Global options' section)
         placement: 'right-start',
       },
+      'quick-bet-panel': {
+        $extend: 'dropdown',
+      },
     },
   });
   Vue.use(ElementUI);
