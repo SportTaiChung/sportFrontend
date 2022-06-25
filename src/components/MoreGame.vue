@@ -413,7 +413,7 @@
               return {
                 ...it,
                 Odds: [],
-                HeadShowName: gameData.ItemName + it.WagerTypeName,
+                HeadShowName: it.WagerTypeName,
               };
             });
 
