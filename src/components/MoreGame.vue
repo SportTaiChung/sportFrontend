@@ -246,16 +246,12 @@
 
 <script>
   import Odd from '@/components/Odd';
-  import BaseBall from '@/components/LiveBoard/BaseBall';
-  import Soccer from '@/components/LiveBoard/Soccer';
-  import BasketBall from './LiveBoard/BasketBall.vue';
+  import LiveBoards from '@/components/LiveBoard/LiveBoardIndex';
   export default {
     name: 'MoreGame',
     components: {
       Odd,
-      Soccer,
-      BaseBall,
-      BasketBall,
+      ...LiveBoards,
     },
     data() {
       return {
@@ -269,6 +265,11 @@
 
         ComponentMapList: {
           1: 'Soccer',
+          21: 'PingPong',
+          22: 'Badminton',
+          23: 'Volleyball',
+          55: 'Tennis',
+          85: 'PCGame',
           101: 'BaseBall',
           102: 'BasketBall',
         },

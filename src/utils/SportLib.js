@@ -542,6 +542,7 @@ export function getBoardImageByCatId(catID) {
     5: 'soccer.jpg',
     21: 'pingpong.jpg',
     22: 'badminton.jpg',
+    23: 'volleyball.jpg',
     31: null,
     32: null,
     4: 'baseball.jpg',
@@ -558,7 +559,7 @@ export function getBoardImageByCatId(catID) {
     83: null,
     85: 'pcgame.jpg',
     '-999': null,
-    default: null,
+    default: 'soccer.jpg',
   });
 
   return map[catID] || map.default;

@@ -1,10 +1,10 @@
 <template>
-  <div id="BaseBall">
-    <div class="table-wrapper" :style="background">
+  <div class="liveBoard">
+    <div class="table-wrapper" :style="background(101)">
       <table>
         <thead>
           <tr>
-            <td></td>
+            <td>LIVE</td>
             <td> 1 </td>
             <td> 2 </td>
             <td> 3 </td>
@@ -61,83 +61,19 @@
   export default {
     mixins: [base],
     name: 'BaseBall',
-    computed: {
-      // 背景圖
-      background() {
-        const board = this.$SportLib.getBoardImageByCatId(4);
-        const url = require('@/assets/img/common/liveBoard/boards/' + board);
-        return {
-          'background-image': `url(${url})`,
-        };
-      },
-      // board 資訊
-      title() {
-        return '9';
-      },
-    },
-    methods: {
-      keyNameToShow(key, renderType) {
-        const scoreData = this.gameScoreData[0];
-        if (scoreData) {
-          if (scoreData[key] === '') {
-            return '';
-          } else {
-            if (renderType === 0) {
-              return scoreData[key].split(':')[0];
-            } else {
-              return scoreData[key].split(':')[1];
-            }
-          }
-        }
-      },
-    },
   };
 </script>
 
 <style lang="scss" scoped>
-  #BaseBall {
-    height: 100%;
-    background-color: #222;
-
+  @import './style.scss';
+  .liveBoard {
     .table-wrapper {
-      height: 150px;
-      max-width: 370px;
-      padding: 20px 15px 0 15px;
-      margin: auto;
-      background-position-x: center;
-      background-repeat: no-repeat;
-      background-size: 370px auto;
-
       table {
-        table-layout: fixed;
-        border-spacing: 0 1px;
-        width: 100%;
-        font-size: 1rem;
-        color: #fff;
-        background-color: rgba(0, 0, 0, 0.5);
-
-        thead {
-          & > tr > td:nth-child(1) {
-            width: 28%;
-          }
+        thead tr td:nth-child(1) {
+          width: 28%;
         }
-
-        tbody {
-          & > tr > td:nth-child(12) {
-            color: yellow;
-          }
-        }
-
-        tr {
-          background: rgba(0, 0, 0, 0.5);
-        }
-
-        td {
-          padding: 8px 3px;
-          text-align: center;
-          &:first-child {
-            text-align: left;
-          }
+        tbody tr td:nth-child(12) {
+          color: yellow;
         }
       }
     }
