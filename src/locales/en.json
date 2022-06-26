@@ -120,7 +120,8 @@
     "No": "no",
     "Visible": "show",
     "Week": "Week",
-    "SingleOdd": "single bet"
+    "SingleOdd": "single bet",
+    "remark ": "Note"
   },
   "GamesBetInfo": {
     "BetInfo": "Betting Information",

@@ -82,7 +82,7 @@
                   </td>
                   <td>{{ $t('Common.Game2') }}</td>
                   <td v-for="(str, i) in titles" :key="i">{{ str }}</td>
-                  <!-- <td>資訊</td> -->
+                  <td>{{ $t('Common.remark ') }}</td>
                 </tr>
               </tbody>
             </table>
