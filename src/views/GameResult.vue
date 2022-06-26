@@ -165,7 +165,7 @@
     },
     computed: {
       CatList() {
-        return this.$store.state.Game.CatList;
+        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
       },
       CatMapData() {
         return this.$store.state.Game.CatMapData;
