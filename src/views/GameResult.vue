@@ -45,7 +45,7 @@
       </div>
       <div class="countdownSec" v-if="timerIndex > 0"> {{ countdownSec }} </div>
       <div class="btn-refresh" @click="getGameResult()"> <i class="el-icon-refresh-right"></i></div>
-      <div class="league-filter"> {{ $t('GamesSetup.LeagueSelect') }} </div>
+      <!-- <div class="league-filter"> {{ $t('GamesSetup.LeagueSelect') }} </div> -->
     </div>
 
     <!-- 賽果主容器 -->
