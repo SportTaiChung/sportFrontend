@@ -202,6 +202,7 @@
       },
       ChangeCat() {
         this.$refs.leaguesPanel.clearLeagueList();
+        this.$store.commit('Game/changeCatReset');
       },
     },
     watch: {
