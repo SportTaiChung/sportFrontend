@@ -12,6 +12,7 @@ import {
   getCountMes,
   sendReadMes,
   getGameResult,
+  getAnnouncement,
 } from '@/api/Game';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
@@ -342,6 +343,23 @@ export default {
             resolve();
           })
           .catch(reject);
+      });
+    },
+
+    // 11. 游戏公告讯息 - 搜寻单列
+    GetAnnouncement(store) {
+      return new Promise((resolve, reject) => {
+        return getAnnouncement({
+          sia: false,
+        }).then((res) => resolve(res));
+      });
+    },
+    // 11. 游戏公告讯息 - 搜寻全部
+    GetAnnouncementAll(store) {
+      return new Promise((resolve, reject) => {
+        return getAnnouncement({
+          sia: true,
+        }).then((res) => resolve(res));
       });
     },
     // 12-1.获取在线咨询信息

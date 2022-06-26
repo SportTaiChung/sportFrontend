@@ -9,6 +9,18 @@ export function getCatList() {
   });
 }
 
+// 11. 游戏公告讯息
+export function getAnnouncement(postData) {
+  return request({
+    url: `/GameInfo/Ann`,
+    method: 'post',
+    param: {
+      AddMemberToken: false,
+      data: { lang: store.state.Lang, ...postData },
+    },
+  });
+}
+
 // 12-1.获取在线咨询信息
 export function getQAHistory(isGuestMode = false) {
   return request({

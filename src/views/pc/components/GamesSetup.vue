@@ -11,6 +11,12 @@
       </div>
     </div>
     <div class="setUp_C">
+      <!-- 公告跑馬燈 -->
+      <div class="marquee-wrapper">
+        <div class="icon"></div>
+        <Marquee :text="marqueeText" />
+      </div>
+
       <span>
         {{ $t('GamesSetup.AcceptBetter') }}
         <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
@@ -121,8 +127,12 @@
 </template>
 
 <script>
+  import Marquee from './Marquee.vue';
   export default {
     name: 'GamesSetup',
+    components: {
+      Marquee,
+    },
     data() {
       return {
         quickBetEnable: false, // 快速投注开关
@@ -141,12 +151,14 @@
         ],
         currentTime: null,
         countInterval: null,
+        announcementInterval: null,
         isShowLeagueSelectDialog: false,
         dialogData: {
           selectAll: false,
           onlyShowCheck: false,
         },
         LeagueListData: [],
+        marqueeText: '',
       };
     },
     mounted() {
@@ -157,10 +169,17 @@
       }, 1000);
       this.initTimeAPI();
       document.addEventListener('visibilitychange', this.visibilitychangeEvent);
+
+      // 輪詢 公告 API
+      // this.announcementInterval = setInterval(() => {
+      //   this.getAnnouncement();
+      // }, 10000);
+      // this.getAnnouncement();
     },
     beforeDestroy() {
       document.removeEventListener('visibilitychange', this.visibilitychangeEvent);
       clearInterval(this.countInterval);
+      clearInterval(this.announcementInterval);
     },
     computed: {
       TimeCountDown() {
@@ -305,6 +324,11 @@
         this.$emit('SelectLeague');
         this.isShowLeagueSelectDialog = false;
       },
+      getAnnouncement() {
+        this.$store.dispatch('Game/GetAnnouncement').then((res) => {
+          this.marqueeText = res.data.content;
+        });
+      },
     },
   };
 </script>
@@ -419,9 +443,10 @@
       margin: 0 15px;
     }
     .setUp_L {
-      width: 200px;
+      flex-shrink: 0;
+      width: 180px;
       display: inline-flex;
-      justify-content: space-around;
+      justify-content: flex-start;
       align-items: center;
       height: 100%;
       > div {
@@ -436,19 +461,20 @@
         }
       }
       .timeBlockContainer {
+        flex-shrink: 0;
         display: flex;
+        justify-content: center;
         align-items: center;
-        width: 120px;
+        width: 180px;
         color: #81f0ca;
         white-space: nowrap;
-        margin-left: 20px;
         .dayBlock {
           margin-right: 10px;
         }
       }
     }
     .setUp_C {
-      flex: 1;
+      flex-grow: 1;
       display: inline-flex;
       justify-content: flex-end;
       align-items: center;
@@ -472,8 +498,31 @@
         color: white;
         cursor: pointer;
       }
+
+      .marquee-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        padding: 0 1rem;
+        margin: 0 1rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 6px;
+
+        .icon {
+          flex-shrink: 0;
+          width: 25px;
+          height: 25px;
+          margin-right: 0.5rem;
+          background-image: url('~@/assets/img/common/megaphone.png');
+          background-size: contain;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+      }
     }
     .setUp_R {
+      flex-shrink: 0;
       width: 300px;
       display: inline-flex;
       justify-content: flex-end;
