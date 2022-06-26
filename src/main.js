@@ -7,7 +7,7 @@ import VueCarousel from 'vue-carousel';
 import axios from 'axios';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import FloatingVue from 'floating-vue';
-import i18n from './locales'; // internationalization
+import i18n from './locales';
 
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';

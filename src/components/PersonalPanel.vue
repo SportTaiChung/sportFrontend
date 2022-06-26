@@ -2,19 +2,19 @@
   <div id="PersonalPanel" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
-        <div class="title"> 個人設置 </div>
+        <div class="title"> {{ $t('GamesHeader.PersonalSetting') }} </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
       </div>
 
       <div class="body">
         <div class="row">
-          <div class="rowTitle"> 帳號</div>
+          <div class="rowTitle"> {{ $t('Login.Account') }}</div>
           <div class="rowContent accountBlock">
             {{ $store.state.User.MBID }}
           </div>
         </div>
         <div class="row">
-          <div class="rowTitle"> 暱稱</div>
+          <div class="rowTitle"> {{ $t('Common.NickName') }}</div>
           <div class="rowContent">
             <el-input
               v-model="nickName"
@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="rowTitle"> 語系</div>
+          <div class="rowTitle"> {{ $t('Common.Lang') }}</div>
           <div class="rowContent">
             <el-select v-model="lang" @change="newLang">
               <el-option
@@ -103,8 +103,8 @@
           .then((res) => {
             this.lastNickName = this.nickName;
             this.$notify({
-              title: '成功',
-              message: '修改成功',
+              title: this.$t('Common.Success'),
+              message: this.$t('Common.ModifySuccess'),
               type: 'success',
             });
           })

@@ -3,7 +3,7 @@
     <ul class="footer-container">
       <li class="footer-item" @click="openLive()">
         <img class="icon" src="@/assets/img/mobile/icon_footer_palysvg.svg" alt="" />
-        <span>直播</span>
+        <span>{{ $t('Common.Live') }}</span>
       </li>
       <li class="footer-item" @click="openLeaguesPanel()">
         <img
@@ -13,21 +13,21 @@
           "
           alt=""
         />
-        <span>其他聯盟</span>
+        <span>{{ $t('Common.OtherLeague') }}</span>
       </li>
       <li class="footer-item" @click="onBetViewClick">
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
           <span class="num">{{ this.betCartStore.betCartList.length }}</span>
         </div>
-        <span :style="hasStrayStyle"> {{ strayOdd || '點此投注' }}</span>
+        <span :style="hasStrayStyle"> {{ strayOdd || $t('Common.ClickBet') }}</span>
       </li>
       <li class="footer-item" @click="onBetRecordViewClick">
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
-        <span>投注紀錄</span>
+        <span>{{ $t('HistoryRecord.BetHistoryRecord') }}</span>
       </li>
       <li class="footer-item" @click="openMenuPanel">
         <img class="icon" src="@/assets/img/mobile/icon_footer_more.svg" alt="" />
-        <span>更 多</span>
+        <span>{{ $t('Common.MoreSpace') }}</span>
       </li>
     </ul>
   </div>

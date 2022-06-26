@@ -37,9 +37,13 @@
         </template>
         <template v-else>
           <div class="cardContentBlockRowText">{{ cartData.HomeTeamStr }}</div>
-          <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">(主)</div>
+          <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">
+            ({{ $t('Common.Home') }})
+          </div>
           <div class="cardContentBlockRowText"> v {{ cartData.AwayTeamStr }}</div>
-          <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">(主)</div>
+          <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">
+            ({{ $t('Common.Home') }})
+          </div>
         </template>
       </div>
       <!-- 一般投注每一個item的各自金額 -->
@@ -49,11 +53,11 @@
           v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
         >
           <div class="infoItem">
-            <div class="infoItemTitle">投注 :</div>
+            <div class="infoItemTitle">{{ $t('Common.Bet') }} :</div>
             <div class="infoItemVal"> {{ cartData.betAmount }}</div>
           </div>
           <div class="infoItem">
-            <div class="infoItemTitle">可贏 :</div>
+            <div class="infoItemTitle">{{ $t('Common.CanWin') }} :</div>
             <div class="infoItemVal"> {{ cartData.winAmount }}</div>
           </div>
         </div>
@@ -76,20 +80,20 @@
           <input
             class="input"
             v-model="cartData.winAmount"
-            placeholder="可赢金額"
+            :placeholder="$t('Common.CanWinMoney')"
             type="number"
             @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
             @click="onCardInputClick"
             @blur="winAmountBlur(cartData.GameID)"
           />
-          <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')"
-            >確認下注</div
-          >
+          <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')">
+            {{ $t('Common.SubmitBet') }}
+          </div>
         </div>
       </div>
 
       <div class="cardContentBlockRow limitText" v-if="panelMode === PanelModeEnum.normal">
-        本場上限 : {{ cartData.BetMax }}
+        {{ $t('ListCardItem.BetLimit') }} : {{ cartData.BetMax }}
       </div>
 
       <div
@@ -122,7 +126,7 @@
     </div>
 
     <div class="blackMaskErrorBlock" v-if="isShowBlackMask">
-      <div class="blackMaskText"> 盤口關閉中，請移除再下注 </div>
+      <div class="blackMaskText"> {{ $t('ListCardItem.ItemIsClosePlzRemove') }} </div>
     </div>
   </div>
 </template>

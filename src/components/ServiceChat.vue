@@ -3,7 +3,7 @@
     <div class="overlay" @click="close()"></div>
     <div class="panel">
       <div class="header">
-        <h5>專屬客服</h5>
+        <h5>{{ $t('Login.CustomerService') }}</h5>
         <div class="btn-close" @click="close()"></div>
       </div>
 
@@ -12,8 +12,8 @@
           <div class="chat-header">
             <img src="@/assets/img/common/service/avatar8.png" class="avatar" />
             <div class="info">
-              <div class="name"> 專屬客服 冰冰 </div>
-              <div class="status"> 在線中 </div>
+              <div class="name"> {{ $t('Login.CustomerService') }} 冰冰 </div>
+              <div class="status"> {{ $t('Common.Online') }} </div>
             </div>
           </div>
 
@@ -48,7 +48,7 @@
                 type="text"
                 v-model="modelInput"
                 @keypress.enter="sendMseeage"
-                placeholder="輸入訊息"
+                :placeholder="$t('Common.InputMessage')"
               />
             </div>
             <div class="btn-submit" @click="sendMseeage">

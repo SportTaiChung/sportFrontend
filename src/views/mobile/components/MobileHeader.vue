@@ -50,7 +50,7 @@
           class="menu-icon"
           @click="goFav()"
         />
-        收藏夾
+        {{ $t('Common.Collect') }}
       </li>
       <li
         v-for="(catData, index) in gameStore.MenuList"

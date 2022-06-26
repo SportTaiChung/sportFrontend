@@ -1,3 +1,5 @@
+import i18n from '@/locales';
+
 /**
  * 所有玩法數據的資料
  * WagerPos : 1主 2客 3和 4大 5小 4單 5雙
@@ -99,12 +101,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     if (!SetFlag) {
       return [
         {
-          showMethod: '客 ' + homeShow,
+          showMethod: `${i18n.t('Common.Away')} ${homeShow}`,
           showOdd: oddData.AwayHdpOdds,
           wagerPos: 2,
         },
         {
-          showMethod: '主 ' + awayShow,
+          showMethod: `${i18n.t('Common.Home')} ${awayShow}`,
           showOdd: oddData.HomeHdpOdds,
           wagerPos: 1,
         },
@@ -112,12 +114,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     } else {
       return [
         {
-          showMethod: '主 ' + homeShow,
+          showMethod: `${i18n.t('Common.Home')} ${homeShow}`,
           showOdd: oddData.HomeHdpOdds,
           wagerPos: 1,
         },
         {
-          showMethod: '客 ' + awayShow,
+          showMethod: `${i18n.t('Common.Away')} ${awayShow}`,
           showOdd: oddData.AwayHdpOdds,
           wagerPos: 2,
         },
@@ -126,12 +128,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
   } else if (PlayMethodData.BigSmall.typeIdList.indexOf(wagerTypeID) !== -1) {
     return [
       {
-        showMethod: '大 ' + oddData.OULine,
+        showMethod: `${i18n.t('Common.Big')} ${oddData.OULine}`,
         showOdd: oddData.OverOdds,
         wagerPos: 4,
       },
       {
-        showMethod: '小 ' + oddData.OULine,
+        showMethod: `${i18n.t('Common.Small')} ${oddData.OULine}`,
         showOdd: oddData.UnderOdds,
         wagerPos: 5,
       },
@@ -141,19 +143,19 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     if (!SetFlag) {
       const resArr = [
         {
-          showMethod: '客',
+          showMethod: i18n.t('Common.Away'),
           showOdd: oddData.AwayOdds,
           wagerPos: 2,
         },
         {
-          showMethod: '主',
+          showMethod: i18n.t('Common.Home'),
           showOdd: oddData.HomeOdds,
           wagerPos: 1,
         },
       ];
       if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
-          showMethod: '和',
+          showMethod: i18n.t('Common.Drew'),
           showOdd: oddData.DrewOdds,
           wagerPos: 3,
         });
@@ -162,19 +164,19 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     } else {
       const resArr = [
         {
-          showMethod: '主',
+          showMethod: i18n.t('Common.Home'),
           showOdd: oddData.HomeOdds,
           wagerPos: 1,
         },
         {
-          showMethod: '客',
+          showMethod: i18n.t('Common.Away'),
           showOdd: oddData.AwayOdds,
           wagerPos: 2,
         },
       ];
       if (Number(oddData.DrewOdds) !== 0) {
         resArr.splice(1, 0, {
-          showMethod: '和',
+          showMethod: i18n.t('Common.Drew'),
           showOdd: oddData.DrewOdds,
           wagerPos: 3,
         });
@@ -185,12 +187,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     // 單雙
     return [
       {
-        showMethod: '單',
+        showMethod: i18n.t('Common.Single'),
         showOdd: oddData.OverOdds,
         wagerPos: 4,
       },
       {
-        showMethod: '雙',
+        showMethod: i18n.t('Common.Double'),
         showOdd: oddData.UnderOdds,
         wagerPos: 5,
       },
@@ -199,12 +201,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     if (!SetFlag) {
       return [
         {
-          showMethod: '客',
+          showMethod: i18n.t('Common.Away'),
           showOdd: oddData.AwayHdpOdds,
           wagerPos: 2,
         },
         {
-          showMethod: '主',
+          showMethod: i18n.t('Common.Home'),
           showOdd: oddData.HomeHdpOdds,
           wagerPos: 1,
         },
@@ -212,12 +214,12 @@ export function oddDataToMorePlayData(SetFlag, wagerTypeID = null, oddData = nul
     } else {
       return [
         {
-          showMethod: '主',
+          showMethod: i18n.t('Common.Home'),
           showOdd: oddData.HomeHdpOdds,
           wagerPos: 1,
         },
         {
-          showMethod: '客',
+          showMethod: i18n.t('Common.Away'),
           showOdd: oddData.AwayHdpOdds,
           wagerPos: 2,
         },
@@ -258,7 +260,7 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       topPlayMethod = oddData.OULine;
       topPlayOdd = oddData.OverOdds;
       topWagerPos = 4;
-      bottomPlayMethod = '小';
+      bottomPlayMethod = i18n.t('Common.Small');
       bottomPlayOdd = oddData.UnderOdds;
       bottomWagerPos = 5;
       playMethodData = PlayMethodData.BigSmall;
@@ -274,10 +276,10 @@ export function oddDataToPlayData(SetFlag, wagerTypeID = null, oddData = null) {
       playMethodData = PlayMethodData.SoloWin;
     } else if (PlayMethodData.OddEven.typeIdList.indexOf(wagerTypeID) !== -1) {
       // 單雙
-      topPlayMethod = '單';
+      topPlayMethod = i18n.t('Common.Single');
       topPlayOdd = oddData.OverOdds;
       topWagerPos = 4;
-      bottomPlayMethod = '雙';
+      bottomPlayMethod = i18n.t('Common.Double');
       bottomPlayOdd = oddData.UnderOdds;
       bottomWagerPos = 5;
       playMethodData = PlayMethodData.OddEven;
@@ -398,11 +400,11 @@ export function cartDataToDisplayData(cartData) {
     }
   } else if (playData.playMethodData.name === 'BigSmall') {
     if (judgeWagerPos === 4) {
-      showBetTitle = '大';
+      showBetTitle = i18n.t('Common.Big');
       showCutLine = playData.topPlayMethod;
       showOdd = playData.topPlayOdd;
     } else if (judgeWagerPos === 5) {
-      showBetTitle = '小';
+      showBetTitle = i18n.t('Common.Small');
       showCutLine = playData.topPlayMethod;
       showOdd = playData.bottomPlayOdd;
     } else {
@@ -425,7 +427,7 @@ export function cartDataToDisplayData(cartData) {
       showOdd = playData.bottomPlayOdd;
       showCutLine = 'PK';
     } else if (judgeWagerPos === 3) {
-      showBetTitle = '和局';
+      showBetTitle = i18n.t('Common.DrewOdd');
       showOdd = playData.drewPlayOdd;
       showCutLine = '';
     } else {
@@ -433,10 +435,10 @@ export function cartDataToDisplayData(cartData) {
     }
   } else if (playData.playMethodData.name === 'OddEven') {
     if (judgeWagerPos === 4) {
-      showBetTitle = '單';
+      showBetTitle = i18n.t('Common.Single');
       showOdd = playData.topPlayOdd;
     } else if (judgeWagerPos === 5) {
-      showBetTitle = '雙';
+      showBetTitle = i18n.t('Common.Double');
       showOdd = playData.bottomPlayOdd;
     } else {
       console.error(`cartDataToDisplayData no this wagerPos ${cartData.wagerPos}`);
@@ -479,17 +481,17 @@ export function cartDataToDisplayData(cartData) {
   let wagerBoldLabel = '';
   // 波膽處理
   if (cartData.WagerTypeID === 112) {
-    wagerBoldLabel = '-波膽';
+    wagerBoldLabel = `- ${i18n.t('Common.Bold')}`;
   }
 
   if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
-    wagerGrpLabel = `- [全場${wagerBoldLabel}]`;
+    wagerGrpLabel = `- [${i18n.t('Common.FullGame')}${wagerBoldLabel}]`;
   } else if (
     cartData.WagerGrpID === 1 ||
     cartData.WagerGrpID === 11 ||
     cartData.WagerGrpID === 21
   ) {
-    wagerGrpLabel = `- [上半${wagerBoldLabel}]`;
+    wagerGrpLabel = `- [${i18n.t('Common.HalfGame')}${wagerBoldLabel}]`;
   }
   const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 

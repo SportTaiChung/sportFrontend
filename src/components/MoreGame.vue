@@ -43,7 +43,7 @@
 
         <li
           class="item"
-          title="比分板"
+          :title="$t('Common.LiveBoard')"
           :class="gameType2Page == 0 ? 'active' : ''"
           @click="gameType2Page = 0"
         >
@@ -59,7 +59,7 @@
         </li> -->
         <li
           class="item"
-          title="直播"
+          :title="$t('Common.Live')"
           :class="gameType2Page == 2 ? 'active' : ''"
           @click="gameType2Page = 2"
         >
@@ -120,7 +120,7 @@
         </li> -->
         <li
           class="item"
-          title="滾球數據"
+          :title="$t('Common.RollBalData')"
           :class="gameType1Page == 1 ? 'active' : ''"
           @click="gameType1Page = 1"
         >
@@ -136,7 +136,7 @@
         </li> -->
         <li
           class="item"
-          title="賽事數據"
+          :title="$t('Common.GameData')"
           :class="gameType1Page == 3 ? 'active' : ''"
           @click="gameType1Page = 3"
         >

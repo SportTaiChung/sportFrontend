@@ -5,7 +5,6 @@
         <div class="dayBlock">{{ TimeCountDown.day }}</div>
         <div class="timeBlock">{{ TimeCountDown.time }}</div>
       </span>
-      <!-- 切換主題色 -->
       <div>
         <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
         <!-- <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" /> -->
@@ -13,11 +12,13 @@
     </div>
     <div class="setUp_C">
       <span>
-        自動接收最佳賠率
+        {{ $t('GamesSetup.AcceptBetter') }}
         <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
       ></span>
       <el-divider direction="vertical"></el-divider>
-      <span class="selectLeague" @click="showLeagueSelectDialog">聯盟選擇</span>
+      <span class="selectLeague" @click="showLeagueSelectDialog">
+        {{ $t('GamesSetup.LeagueSelect') }}
+      </span>
       <el-divider direction="vertical"></el-divider>
       <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
         <span class="el-dropdown-link">
@@ -55,11 +56,11 @@
       <el-divider direction="vertical" class="margin-0"></el-divider>
     </div>
     <div class="setUp_R">
-      <span class="setUp_color">快速投註</span>
+      <span class="setUp_color">{{ $t('GamesSetup.QuickBet') }}</span>
       <input
         v-model="quickBetAmount"
         v-show="quickBetEnable"
-        placeholder="請輸入金額"
+        :placeholder="$t('GamesSetup.PlzInputAmount')"
         class="setUp_input"
         @input="quickBetAmountChangeHandler"
       />
@@ -71,11 +72,13 @@
       >
       </el-switch>
       <el-popover popper-class="fastBet-help-popper" placement="bottom-start" trigger="hover">
-        <div class="help-title">快速投注說明</div>
+        <div class="help-title">{{ $t('GamesSetup.QuickBetInfo') }}</div>
         <div class="help-detail">
-          1.設定投這金額<br />
-          2.點擊投注項目<br />
-          3.投注完成
+          {{ $t('GamesSetup.QuickBetInfo1') }}
+          <br />
+          {{ $t('GamesSetup.QuickBetInfo2') }}
+          <br />
+          {{ $t('GamesSetup.QuickBetInfo3') }}
         </div>
         <i class="el-icon-question" slot="reference"></i>
       </el-popover>
@@ -83,7 +86,7 @@
 
     <el-dialog
       class="LeagueSelectDialog"
-      title="聯盟選擇"
+      :title="$t('GamesSetup.LeagueSelect')"
       width="80%"
       center
       :visible.sync="isShowLeagueSelectDialog"
@@ -91,9 +94,11 @@
       <div class="LeagueSelectDialogContent">
         <div class="ContentHeader">
           <el-checkbox size="medium" v-model="dialogData.selectAll" @change="dialogSelectAll">
-            全選
+            {{ $t('GamesSetup.SelectAll') }}
           </el-checkbox>
-          <el-checkbox size="medium" v-model="dialogData.onlyShowCheck">只顯示已勾選</el-checkbox>
+          <el-checkbox size="medium" v-model="dialogData.onlyShowCheck">
+            {{ $t('GamesSetup.SelectCheck') }}
+          </el-checkbox>
         </div>
         <div class="leagueItemContentList">
           <div class="leagueItem" v-for="(leagueData, index) in LeagueListDataFilter" :key="index">
@@ -104,8 +109,12 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <div class="cancelBtn" @click="isShowLeagueSelectDialog = false">取 消</div>
-        <div class="submitBtn" type="primary" @click="leagueChooseSelectHandler">提 交</div>
+        <div class="cancelBtn" @click="isShowLeagueSelectDialog = false">
+          {{ $t('GamesSetup.Cancel') }}
+        </div>
+        <div class="submitBtn" type="primary" @click="leagueChooseSelectHandler">
+          {{ $t('GamesSetup.Submit') }}
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -118,17 +127,17 @@
       return {
         quickBetEnable: false, // 快速投注开关
         quickBetAmount: 0,
-        listValue: '含本金',
+        listValue: this.$t('GamesSetup.IncludePrincipal'),
         isAcceptBetter: null,
         sortValue: null,
         sortList: [
-          { value: 1, label: '時間排序' },
-          { value: 0, label: '熱門排序' },
+          { value: 1, label: this.$t('GamesSetup.TimeSort') },
+          { value: 0, label: this.$t('GamesSetup.HotSort') },
         ],
         isIncludePrincipal: null,
         principalOption: [
-          { value: false, label: '不含本金' },
-          { value: true, label: '含本金' },
+          { value: false, label: this.$t('GamesSetup.NotIncludePrincipal') },
+          { value: true, label: this.$t('GamesSetup.IncludePrincipal') },
         ],
         currentTime: null,
         countInterval: null,

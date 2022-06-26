@@ -3,9 +3,9 @@
     <table>
       <thead>
         <tr>
-          <td>關數</td>
-          <td>賠率</td>
-          <td>分盤</td>
+          <td>{{ $t('StrayCount.StrayCount') }}</td>
+          <td>{{ $t('Common.Odd') }}</td>
+          <td>{{ $t('Common.SplitPen') }}</td>
         </tr>
       </thead>
       <tbody>
@@ -21,12 +21,16 @@
                 v-model="data.odd"
                 @input="inputHandler(index, 'odd')"
               ></el-input>
-              <div class="oddEmpty" v-if="data.errorType === 1"> 賠率不能為空 </div>
-              <div class="oddEmpty" v-if="data.errorType === 2"> 百分比未填寫 </div>
+              <div class="oddEmpty" v-if="data.errorType === 1">
+                {{ $t('StrayCount.OddCantEmpty') }}
+              </div>
+              <div class="oddEmpty" v-if="data.errorType === 2">
+                {{ $t('StrayCount.PercentNotFill') }}
+              </div>
             </template>
           </td>
           <td class="row">
-            <div class="firstText">分盤</div>
+            <div class="firstText">{{ $t('Common.SplitPen') }}</div>
 
             <el-select
               v-model="data.type"
@@ -62,7 +66,7 @@
 
     <div class="resultBlock">
       <div class="left">
-        <div class="titleText">投注金額</div>
+        <div class="titleText">{{ $t('Common.BetAmount') }}</div>
         <el-input
           class="resultInputBlock"
           v-model="betAmount"
@@ -71,7 +75,7 @@
         ></el-input>
       </div>
       <div class="right">
-        <div class="titleText">可贏金額</div>
+        <div class="titleText">{{ $t('Common.CanWinMoney') }}</div>
         <el-input
           class="resultInputBlock resultWinInputBlock"
           size="mini"
@@ -83,13 +87,13 @@
 
     <div class="formulaBlock" v-if="formulaResult !== ''">
       <div class="formulaTitle">
-        <span class="title"> 計算過程 </span>
+        <span class="title"> {{ $t('StrayCount.CountProcess') }} </span>
         <span class="help">
           <i class="el-icon-question"></i>
           <div class="formulaPromptBox">
-            過關計算方式：
+            {{ $t('StrayCount.StrayCountWay') }}：
             <br />
-            投注金額 X (1+分洞%數X賠率) X (1+分洞%數X賠率) ... -投注金額
+            {{ $t('Common.BetAmount') }} {{ $t('StrayCount.BetFormula') }}
           </div>
         </span>
       </div>
@@ -98,10 +102,10 @@
 
     <div class="optionBlock">
       <div class="left">
-        <div class="optionBtn" @click="reset">清 零</div>
+        <div class="optionBtn" @click="reset">{{ $t('StrayCount.ClearZero') }}</div>
       </div>
       <div class="right">
-        <div class="optionBtn countBtn" @click="countStart">計 算</div>
+        <div class="optionBtn countBtn" @click="countStart">{{ $t('StrayCount.Count') }}</div>
       </div>
     </div>
   </div>
@@ -123,15 +127,15 @@
         options: [
           {
             value: TypeEnum.Win,
-            label: '全贏',
+            label: this.$t('Common.AllWin'),
           },
           {
             value: TypeEnum.Loose,
-            label: '全輸',
+            label: this.$t('Common.AllLose'),
           },
           {
             value: TypeEnum.Draw,
-            label: '平',
+            label: this.$t('Common.Ping'),
           },
           {
             value: TypeEnum.Plus,
@@ -203,7 +207,7 @@
         // 檢查投注金額
         if (this.betAmount === '') {
           this.$message({
-            message: '請輸入投注金額',
+            message: this.$t('StrayCount.PlzInputBetAmount'),
             type: 'error',
           });
           hasError = true;
@@ -253,7 +257,6 @@
         this.countData.forEach((it) => (it.errorType = 0));
         this.countData = this.countData.slice();
         if (this.check()) {
-          console.log('開始計算');
           const countList = this.countData.filter((it) => it.odd !== '');
           const newFormulaResult = `${this.betAmount}*`;
           let appendStr = '';

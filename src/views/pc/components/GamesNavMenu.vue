@@ -220,7 +220,7 @@
         return [
           {
             Items: [],
-            catName: '收藏',
+            catName: this.$t('Common.Collect'),
             count: this.$store.state.Setting.UserSetting.favorites.length,
             isFavorite: true,
           },

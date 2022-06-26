@@ -2,7 +2,7 @@
   <div id="mAdvancedSettings">
     <ul class="list">
       <li class="item">
-        <div class="title">賠率類型</div>
+        <div class="title">{{ $t('Common.OddType') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
@@ -12,7 +12,7 @@
                 v-bind:value="true"
                 v-model="model.mIncludePrincipal"
               />
-              <span> 含本金 </span>
+              <span> {{ $t('GamesSetup.IncludePrincipal') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -21,30 +21,30 @@
                 v-bind:value="false"
                 v-model="model.mIncludePrincipal"
               />
-              <span> 不含本金 </span>
+              <span> {{ $t('GamesSetup.NotIncludePrincipal') }} </span>
             </label>
           </div>
         </div>
       </li>
 
       <li class="item">
-        <div class="title">賽事排序</div>
+        <div class="title">{{ $t('Common.GameSort') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
               <input type="radio" name="tableSort" v-bind:value="0" v-model="model.mTableSort" />
-              <span> 熱門 </span>
+              <span> {{ $t('Common.Hot') }} </span>
             </label>
             <label class="radio-item">
               <input type="radio" name="tableSort" v-bind:value="1" v-model="model.mTableSort" />
-              <span> 時間 </span>
+              <span> {{ $t('Common.Time') }} </span>
             </label>
           </div>
         </div>
       </li>
 
       <li class="item">
-        <div class="title">下注確認信息</div>
+        <div class="title">{{ $t('GamesSettingDialog.BetConfirmMessage') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
@@ -54,7 +54,7 @@
                 v-bind:value="true"
                 v-model="model.mShowBetConfirm"
               />
-              <span> 顯示 </span>
+              <span> {{ $t('Common.Visible') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -63,14 +63,14 @@
                 v-bind:value="false"
                 v-model="model.mShowBetConfirm"
               />
-              <span> 隱藏 </span>
+              <span> {{ $t('Common.InVisible') }} </span>
             </label>
           </div>
         </div>
       </li>
 
       <li class="item">
-        <div class="title">默認金額</div>
+        <div class="title">{{ $t('GamesSettingDialog.DefaultMount') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
@@ -80,7 +80,7 @@
                 v-bind:value="0"
                 v-model="model.mDefaultAmountType"
               />
-              <span> 關閉 </span>
+              <span> {{ $t('Common.Close') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -89,7 +89,7 @@
                 v-bind:value="1"
                 v-model="model.mDefaultAmountType"
               />
-              <span> 最後投注 </span>
+              <span> {{ $t('Common.LastBet') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -98,7 +98,7 @@
                 v-bind:value="2"
                 v-model="model.mDefaultAmountType"
               />
-              <span> 自訂金額 </span>
+              <span> {{ $t('Common.CustomMoney') }} </span>
             </label>
           </div>
           <input
@@ -111,7 +111,7 @@
       </li>
 
       <li class="item">
-        <div class="title">默認過關投注</div>
+        <div class="title">{{ $t('GamesSettingDialog.DefaultStrayBet') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
@@ -121,7 +121,7 @@
                 v-bind:value="0"
                 v-model="model.mDefaultStrayAmountType"
               />
-              <span> 關閉 </span>
+              <span> {{ $t('Common.Close') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -130,7 +130,7 @@
                 v-bind:value="1"
                 v-model="model.mDefaultStrayAmountType"
               />
-              <span> 最後投注 </span>
+              <span> {{ $t('Common.LastBet') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -139,7 +139,7 @@
                 v-bind:value="2"
                 v-model="model.mDefaultStrayAmountType"
               />
-              <span> 自訂金額 </span>
+              <span> {{ $t('Common.CustomMoney') }} </span>
             </label>
           </div>
           <input
@@ -152,7 +152,7 @@
       </li>
 
       <li class="item">
-        <div class="title">自動接收最佳賠率</div>
+        <div class="title">{{ $t('GamesSetup.AcceptBetter') }}</div>
         <div class="content">
           <div class="radio-group">
             <label class="radio-item">
@@ -162,7 +162,7 @@
                 v-bind:value="true"
                 v-model="model.mAcceptBetter"
               />
-              <span> 是 </span>
+              <span> {{ $t('Common.Yes') }} </span>
             </label>
             <label class="radio-item">
               <input
@@ -171,7 +171,7 @@
                 v-bind:value="false"
                 v-model="model.mAcceptBetter"
               />
-              <span> 否 </span>
+              <span> {{ $t('Common.No') }} </span>
             </label>
           </div>
         </div>
@@ -179,8 +179,10 @@
 
       <li class="item">
         <div class="title">
-          自訂籌碼
-          <span class="redTip"> 最多設置 {{ maxChips }} 個 </span>
+          {{ $t('Common.CustomBet') }}
+          <span class="redTip">
+            {{ $t('Common.MostSet') }} {{ maxChips }} {{ $t('Common.Indivual') }}
+          </span>
         </div>
         <div class="content" style="padding: 1rem 0.8rem">
           <ul class="chips">

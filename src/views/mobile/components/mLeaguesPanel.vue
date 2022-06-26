@@ -4,18 +4,18 @@
 
     <div class="panel">
       <div class="header-container">
-        <h5 class="title"> 聯盟選擇 </h5>
+        <h5 class="title"> {{ $t('GamesSetup.LeagueSelect') }} </h5>
       </div>
 
       <div class="main-container">
         <div class="opts-wrapper">
           <label>
             <input type="checkbox" v-model="options.selectAll" />
-            全選
+            {{ $t('GamesSetup.SelectAll') }}
           </label>
           <label>
             <input type="checkbox" v-model="options.onlyShowCheck" />
-            只顯示已勾選
+            {{ $t('GamesSetup.SelectCheck') }}
           </label>
         </div>
         <ul class="leagueList">

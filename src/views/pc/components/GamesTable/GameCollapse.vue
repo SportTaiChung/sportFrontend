@@ -164,7 +164,7 @@
                       </template>
 
                       <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0">
-                        和局
+                        {{ $t('Common.DrewOdd') }}
                       </div>
                     </div>
                     <div class="scoreBlock" v-if="rowIndex === 0 && selectGameType === 2">

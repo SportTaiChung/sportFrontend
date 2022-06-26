@@ -17,10 +17,10 @@
       <div class="lineSplit"> </div>
       <div class="optionRow">
         <div class="betAmount">
-          <div> 金額: </div>
+          <div> {{ $t('Common.Money') }}: </div>
           <div class="betAmountColor"> {{ cartData.betAmount }}</div>
         </div>
-        <div class="betBtn" @click="betBtnClickHandler()"> 投注</div>
+        <div class="betBtn" @click="betBtnClickHandler()"> {{ $t('Common.Bet') }}</div>
       </div>
     </div>
   </div>

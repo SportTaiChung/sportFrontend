@@ -18,7 +18,7 @@
         </td>
         <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
           <div class="borderWhiteBlock"></div>
-          更多
+          {{ $t('Common.More') }}
           <div></div>
         </td>
       </template>

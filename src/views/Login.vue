@@ -44,7 +44,7 @@
             />
           </div>
         </div>
-        <button class="btn-login" @click="handleLogin"> 會員登入 </button>
+        <button class="btn-login" @click="handleLogin"> {{ $t('Login.MemberLogin') }} </button>
 
         <div class="line-other">
           <div class="line"></div>

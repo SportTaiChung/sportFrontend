@@ -3,18 +3,17 @@
     <div class="overlay" @click="close()"></div>
     <div class="panel">
       <div class="header">
-        <!-- <h5>專屬客服</h5> -->
         <div class="btn-close" @click="close()"></div>
       </div>
 
       <div class="body">
         <div class="container">
           <img src="@/assets/img/common/service/chat-icon.png" alt="" />
-          <h5>UPG專屬客服</h5>
+          <h5>{{ $t('ServicePanel.UPGService') }}</h5>
 
           <div class="text-title">
-            <p>您好，歡迎來到新體育</p>
-            請先點擊以下問題分類，讓我能夠更快的為您服務
+            <p>{{ $t('ServicePanel.Hi') }}</p>
+            {{ $t('ServicePanel.ClickQuest') }}
           </div>
 
           <div class="issues">
@@ -50,22 +49,22 @@
         cards: [
           {
             id: 0,
-            issue: '點數問題',
+            issue: this.$t('ServicePanel.PointQuest'),
             img: 'issue_point.svg',
           },
           {
             id: 1,
-            issue: '球賽問題',
+            issue: this.$t('ServicePanel.GameQuest'),
             img: 'issue_sport.svg',
           },
           {
             id: 2,
-            issue: '彩球遊戲',
+            issue: this.$t('ServicePanel.LotQuest'),
             img: 'issue_lottery.svg',
           },
           {
             id: 3,
-            issue: '其他問題',
+            issue: this.$t('ServicePanel.OtherQuest'),
             img: 'issue_other.svg',
           },
         ],

@@ -55,7 +55,7 @@
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
           <img alt="" src="@/assets/img/pc/icon_noGame.svg" />
-          <p>暫無賽事</p>
+          <p>{{ $t('Common.NoGame') }}</p>
         </div>
       </div>
     </template>
