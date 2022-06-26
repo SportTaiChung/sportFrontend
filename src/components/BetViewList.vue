@@ -432,6 +432,9 @@
         lastBlurInput: { name: 'fillEachBetAmount' },
 
         lastTraceCodeKey: null,
+
+        isLockEnter: false,
+        lockEvent: null,
       };
     },
     mounted() {
@@ -445,10 +448,13 @@
           });
         }
       }, 10000);
+
+      window.addEventListener('keydown', this.keyPress);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
       clearInterval(this.intervalEvent2);
+      window.removeEventListener('keydown', this.keyPress);
     },
     watch: {
       // 有新增投注到購物車事件
@@ -605,6 +611,26 @@
       },
     },
     methods: {
+      keyPress(e) {
+        if (e.key === 'Enter' && !this.isLockEnter) {
+          this.isLockEnter = true;
+          clearTimeout(this.lockEvent);
+          this.lockEvent = setTimeout(() => {
+            this.isLockEnter = false;
+          }, 300);
+          if (
+            this.groupIndex === 0 &&
+            this.showBetCartList.length !== 0 &&
+            this.panelMode !== this.PanelModeEnum.result
+          ) {
+            if (this.childIndex === 0) {
+              this.submitHandler();
+            } else if (this.childIndex === 1) {
+              this.straySubmitHandler();
+            }
+          }
+        }
+      },
       arrowIconJudge(isCollapse) {
         if (isCollapse) {
           return 'el-icon-arrow-up';
@@ -805,10 +831,10 @@
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
           const OddValue = parseFloat(this.$SportLib.cartDataToDisplayData(cartData).showOdd);
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-          if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
-            errorMessage = this.$t('BetViewList.NotGetBetInfo');
-            return false;
-          }
+          // if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
+          //   errorMessage = this.$t('BetViewList.NotGetBetInfo');
+          //   return false;
+          // }
           if (cartData.Status !== 1) {
             errorMessage = this.$t('BetViewList.PlzRemoveOutOfTimeBet');
             return false;
