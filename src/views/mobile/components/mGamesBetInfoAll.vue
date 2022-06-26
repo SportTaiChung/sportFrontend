@@ -81,7 +81,7 @@
       .header {
         flex-shrink: 0;
         display: flex;
-        background-color: #6da9e5;
+        background-color: #3fa381;
         color: #fff;
         border-radius: 4px 4px 0 0;
         font-size: 0.95em;

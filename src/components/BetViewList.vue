@@ -1176,6 +1176,7 @@
           font-size: 14px;
           cursor: pointer;
           font-weight: bold;
+          text-align: center;
         }
         .clearBtn {
           background-color: #838383;
