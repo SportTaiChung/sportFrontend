@@ -20,7 +20,7 @@
             <img src="@/assets/img/common/account.png" />
             <input
               autocomplete="off"
-              placeholder="帳號"
+              :placeholder="$t('Login.Account')"
               v-model="formData.username"
               @keydown.enter="handleLogin"
             />
@@ -36,7 +36,7 @@
             <input
               autocomplete="new-password"
               name="new-password"
-              placeholder="密碼"
+              :placeholder="$t('Login.Password')"
               show-password
               v-model="formData.password"
               :type="isShowPassword ? 'text' : 'password'"
@@ -59,7 +59,7 @@
           </div> -->
           <div class="item" @click="isOpenServicePanel = true">
             <img src="@/assets/img/common/service.png" />
-            專屬客服
+            {{ $t('Login.CustomerService') }}
           </div>
         </div>
       </div>
