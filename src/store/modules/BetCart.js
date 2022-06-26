@@ -226,9 +226,11 @@ export default {
                     message: res.data[0].Message,
                   });
                 } else {
-                  Notification.error({
-                    message: res.data[0].Message,
-                  });
+                  if (store.state.betCartList[0].betResultCount >= 2) {
+                    Notification.error({
+                      message: res.data[0].Message,
+                    });
+                  }
                 }
               }
               store.commit('updateBetCartListBetResult', res.data);
