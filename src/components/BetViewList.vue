@@ -155,6 +155,7 @@
         <div class="betInputTitle"> {{ $t('Common.SingleOdd') }} </div>
         <div class="betInputSymbol">:</div>
         <input
+          ref="fillEachBetAmount"
           v-model="fillEachBetAmount"
           type="number"
           @input="fillEachBetAmountHandler"
@@ -256,6 +257,7 @@
         </div>
         <div class="betInputSymbol">:</div>
         <input
+          ref="strayBetAmount"
           v-model="strayBetAmount"
           type="number"
           read="true"
@@ -463,6 +465,16 @@
             this.strayBetAmount = parseInt(
               this.$store.state.Setting.UserSetting.defaultStrayAmount.amount
             );
+          }
+
+          console.log(this.$refs);
+
+          if (this.groupIndex === 0) {
+            if (this.childIndex === 0) {
+              this.$refs.fillEachBetAmount.focus();
+            } else if (this.childIndex === 1) {
+              this.$refs.strayBetAmount.focus();
+            }
           }
         });
       },
