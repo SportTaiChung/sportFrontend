@@ -15,6 +15,7 @@ import {
 } from '@/api/Game';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
+import { getMenuIconByCatID, getBoardImageByCatId, getColorByCatId } from '@/utils/SportLib';
 
 export default {
   namespaced: true,
@@ -309,6 +310,20 @@ export default {
       return new Promise((resolve, reject) => {
         return getCatList()
           .then((res) => {
+            res.push({
+              CatID: '-999',
+              GameScoreRefresh: false,
+              GroupCatIDs: [-999],
+              Name: '收藏',
+            });
+
+            // 設定 icon 顏色 背景...
+            res.forEach((it) => {
+              it.icon = getMenuIconByCatID(it.CatID);
+              it.color = getColorByCatId(it.CatID);
+              it.background = getBoardImageByCatId(it.CatID);
+            });
+
             const mapList = res.reduce((sum, it) => {
               let appendObj = {};
 

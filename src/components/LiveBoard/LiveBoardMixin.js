@@ -9,10 +9,15 @@ const LiveBoardMixin = {
       type: Object,
     },
   },
+  computed: {
+    CatMapData() {
+      return this.$store.state.Game.CatMapData;
+    },
+  },
   methods: {
     // 背景圖
     background(catId) {
-      const board = this.$SportLib.getBoardImageByCatId(catId);
+      const board = this.CatMapData[catId].background;
       const url = require('@/assets/img/common/liveBoard/boards/' + board);
       return {
         'background-image': `url(${url})`,

@@ -1,5 +1,5 @@
 <template>
-  <table class="GameTableHeader">
+  <table class="GameTableHeader" :style="bgColor">
     <tbody class="GameTableBody">
       <td class="FirstCatNameBlock" @click="clickArrow">
         <div class="leftArrowBlock">
@@ -48,6 +48,10 @@
         type: Boolean,
         default: false,
       },
+      color: {
+        type: String,
+        default: '#136146',
+      },
     },
     computed: {
       isShowMoreGame() {
@@ -65,6 +69,11 @@
       },
       selectGameType() {
         return this.gameStore.selectGameType;
+      },
+      bgColor() {
+        return {
+          'background-color': this.color,
+        };
       },
     },
     methods: {

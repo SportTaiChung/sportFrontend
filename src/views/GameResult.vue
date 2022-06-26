@@ -167,6 +167,9 @@
       CatList() {
         return this.$store.state.Game.CatList;
       },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
+      },
       titles() {
         return this.rawData?.BestHead || [];
       },
@@ -221,7 +224,8 @@
     },
     methods: {
       getMenuIconByCatID(catId) {
-        return require('@/assets/img/common/menuIcon/' + this.$SportLib.getMenuIconByCatID(catId));
+        const icon = this.CatMapData[catId].icon;
+        return require('@/assets/img/common/menuIcon/' + icon);
       },
       getGameResult() {
         this.rawData = null;

@@ -504,62 +504,79 @@ export function cartDataToDisplayData(cartData) {
   };
 }
 
-// 以 catID 取得對應 menu icon
+// 取得彩種 menu icon
 export function getMenuIconByCatID(catID) {
-  const iconMap = Object.freeze({
-    1: 'icon_sportMenu_soccer.svg',
-    5: 'icon_sportMenu_football.svg',
-    21: 'icon_sportMenu_pingpong.svg',
-    22: 'icon_sportMenu_badminton.svg',
-    23: 'icon_sportMenu_volleyball.svg',
-    31: 'icon_sportMenu_worldCup.svg',
-    32: 'icon_sportMenu_UEFA.svg',
-    4: 'icon_sportMenu_baseball.svg',
-    12: 'icon_sportMenu_baseball.svg',
-    13: 'icon_sportMenu_baseball.svg',
-    14: 'icon_sportMenu_baseball.svg',
-    101: 'icon_sportMenu_baseball.svg',
-    102: 'icon_sportMenu_basketball.svg',
-    3: 'icon_sportMenu_basketball.svg',
-    16: 'icon_sportMenu_basketball.svg',
-    55: 'icon_sportMenu_tennis.svg',
-    72: 'icon_horse.svg',
-    82: 'icon_sportMenu_hockey.svg',
-    83: 'icon_lottery.svg',
-    84: 'icon_invest.svg',
-    85: 'icon_sportMenu_pcgame.svg',
-    '-999': 'icon_sportMenu_star.svg',
+  const map = Object.freeze({
+    1: 'icon_sportMenu_soccer.svg', // 足球
+    5: 'icon_sportMenu_football.svg', // 美足
+    21: 'icon_sportMenu_pingpong.svg', // 乒乓
+    22: 'icon_sportMenu_badminton.svg', // 羽球
+    23: 'icon_sportMenu_volleyball.svg', // 排球
+    24: 'icon_sportMenu_billiard.svg', // 撞球
+    31: 'icon_sportMenu_worldCup.svg', // 世界盃
+    32: 'icon_sportMenu_UEFA.svg', // 歐洲杯
+    55: 'icon_sportMenu_tennis.svg', // 網球
+    72: 'icon_horse.svg', // 賽馬賽狗
+    82: 'icon_sportMenu_hockey.svg', // 冰球
+    83: 'icon_lottery.svg', // 彩球
+    84: 'icon_invest.svg', // 指數
+    85: 'icon_sportMenu_pcgame.svg', // 電競
+    101: 'icon_sportMenu_baseball.svg', // 棒球
+    102: 'icon_sportMenu_basketball.svg', // 籃球
+    '-999': 'icon_sportMenu_star.svg', // 收藏
     default: 'icon_sportMenu_soccer.svg',
   });
 
-  return iconMap[catID] || iconMap.default;
+  return map[catID] || map.default;
 }
 
-// 以 catID 取得對應 背景圖
+// 取得彩種 背景圖
 export function getBoardImageByCatId(catID) {
   const map = Object.freeze({
     1: 'soccer.jpg',
-    5: 'soccer.jpg',
+    5: 'Rugby.jpg',
     21: 'pingpong.jpg',
     22: 'badminton.jpg',
     23: 'volleyball.jpg',
-    31: null,
-    32: null,
-    4: 'baseball.jpg',
-    12: 'baseball.jpg',
-    13: 'baseball.jpg',
-    14: 'baseball.jpg',
-    101: 'baseball.jpg',
-    102: 'basketball.jpg',
-    3: 'basketball.jpg',
-    16: 'basketball.jpg',
+    24: 'billiard.jpg',
+    31: 'worldCup.jpg',
+    32: 'champion.jpg',
     55: 'tennis.jpg',
     72: null,
     82: 'hockey.jpg',
     83: null,
+    84: null,
     85: 'pcgame.jpg',
+    101: 'baseball.jpg',
+    102: 'basketball.jpg',
     '-999': null,
     default: 'soccer.jpg',
+  });
+
+  return map[catID] || map.default;
+}
+
+// 取得彩種 顏色
+export function getColorByCatId(catID) {
+  const map = Object.freeze({
+    1: '#61b880',
+    5: '#b25332',
+    21: '#c6914b',
+    22: '#d56f84',
+    23: '#e0bf36',
+    24: '#A470AC',
+    31: '#65cc56',
+    32: '#FFFC4C',
+    55: '#90b270',
+    72: '#14be9e',
+    82: '#14be9e',
+    83: '#f07f3f',
+    84: '#fe5186',
+    85: '#7894dc',
+    101: '#caba62',
+    102: '#ae6a3d',
+    '-999': '#ffffff',
+    default: '#ffffff',
   });
 
   return map[catID] || map.default;

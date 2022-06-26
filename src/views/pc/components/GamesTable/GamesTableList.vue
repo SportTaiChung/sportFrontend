@@ -34,6 +34,7 @@
             :CatName="GameData.CatName"
             :BestHead="GameData.Items.BestHead"
             :isShowMoreGameEntryBtn="GameData.Items.hasMoreCount"
+            :color="CatMapData[GameData.Items.List[0].CatID].color"
             @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
           >
           </GameTableHeader>
@@ -99,6 +100,9 @@
       },
       GameList() {
         return this.gameStore.GameList;
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
