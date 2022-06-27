@@ -473,9 +473,7 @@
             );
           }
 
-          console.log(this.$refs);
-
-          if (this.groupIndex === 0) {
+          if (this.groupIndex === 0 && !this.isMobileMode) {
             if (this.childIndex === 0) {
               this.$refs.fillEachBetAmount.focus();
             } else if (this.childIndex === 1) {
