@@ -31,7 +31,7 @@
     "NotIncludePrincipal": "No principal"
   },
   "Common": {
-    "Collect": "collect",
+    "Collect": "Favorites",
     "DrewOdd": "Tie",
     "Home": "host",
     "Away": "guest",
@@ -121,7 +121,7 @@
     "Visible": "show",
     "Week": "Week",
     "SingleOdd": "single bet",
-    "remark ": "Note"
+    "remark": "Note"
   },
   "GamesBetInfo": {
     "BetInfo": "Betting Information",

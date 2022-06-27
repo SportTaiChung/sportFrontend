@@ -4,7 +4,7 @@
       <!-- 收藏夾Header -->
       <GameTableHeader
         v-if="isFavoriteMode"
-        CatName="收藏夾"
+        :CatName="$t('Common.Collect')"
         :isCollapse="TopFavoriteIsCollapse()"
         :isNavMenuCollapse="isNavMenuCollapse"
         :BestHead="[]"

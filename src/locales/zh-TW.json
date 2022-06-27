@@ -33,7 +33,7 @@
     "NotIncludePrincipal": "不含本金"
   },
   "Common": {
-    "Collect": "收藏",
+    "Collect": "收藏夾",
     "DrewOdd": "和局",
     "Away": "客",
     "Home": "主",
@@ -129,7 +129,7 @@
     "Time": "時間",
     "Yes": "是",
     "No": "否",
-    "remark ": "備註"
+    "remark": "備註"
   },
   "GamesBetInfo": {
     "BetInfo": "投注資訊",

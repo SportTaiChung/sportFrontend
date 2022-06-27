@@ -33,7 +33,7 @@
     "NotIncludePrincipal": "不含本金"
   },
   "Common": {
-    "Collect": "收藏",
+    "Collect": "收藏夹",
     "DrewOdd": "和局",
     "Home": "主",
     "Away": "客",
@@ -128,7 +128,7 @@
     "Visible": "显示",
     "Week": "星期",
     "SingleOdd": "单注",
-    "remark ": " 备注"
+    "remark": "备注"
   },
   "GamesBetInfo": {
     "BetInfo": "投注资讯",
