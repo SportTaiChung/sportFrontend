@@ -171,10 +171,10 @@
       document.addEventListener('visibilitychange', this.visibilitychangeEvent);
 
       // 輪詢 公告 API
-      // this.announcementInterval = setInterval(() => {
-      //   this.getAnnouncement();
-      // }, 10000);
-      // this.getAnnouncement();
+      this.announcementInterval = setInterval(() => {
+        this.getAnnouncement();
+      }, 10000);
+      this.getAnnouncement();
     },
     beforeDestroy() {
       document.removeEventListener('visibilitychange', this.visibilitychangeEvent);
@@ -326,6 +326,7 @@
       },
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
+          console.log('res:', res);
           this.marqueeText = res.data.content;
         });
       },

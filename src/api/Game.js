@@ -16,8 +16,8 @@ export function getAnnouncement(postData) {
     method: 'post',
     param: {
       AddMemberToken: false,
-      data: { lang: store.state.Lang, ...postData },
     },
+    data: { lang: store.state.Lang, ...postData },
   });
 }
 
