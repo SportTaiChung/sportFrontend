@@ -208,7 +208,7 @@
 
                   <td
                     class="GameTableHeaderOtherTD"
-                    v-for="(wagerData, wagerIndex) in teamData.Wager"
+                    v-for="(wagerData, wagerIndex) in teamWagerDataFilterLimit(teamData.Wager)"
                     :key="wagerIndex"
                     :set="
                       ((sportData = $SportLib.WagerDataToShowData(
@@ -452,6 +452,10 @@
       isCollapse: {
         type: Boolean,
       },
+      ColumnLimit: {
+        type: Number,
+        default: 10,
+      },
     },
     data() {
       return {
@@ -515,6 +519,9 @@
       },
     },
     methods: {
+      teamWagerDataFilterLimit(arr) {
+        return arr.filter((it, index) => index < this.ColumnLimit);
+      },
       isGameTableHeaderMoreSelect(teamData, rowIndex) {
         if (teamData.EvtID === this.moreGameEvtID && rowIndex === 0) {
           return 'GameTableHeaderMoreSelect';

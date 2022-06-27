@@ -20,6 +20,7 @@ export default new Vuex.Store({
     isInit: false,
     nowThemeInfo: 'light', // 当前主题
     themes: ['light', 'dark'], // 所有主题
+    ScreenWidth: 1200,
     Lang: lang,
   },
   mutations: {
@@ -34,6 +35,9 @@ export default new Vuex.Store({
     },
     SetIsInit(state, newVal) {
       state.isInit = newVal;
+    },
+    SetScreenWidth(state, newVal) {
+      state.ScreenWidth = newVal;
     },
     SetLang(state, newVal) {
       window.vue.$i18n.locale = newVal;

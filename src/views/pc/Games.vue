@@ -122,12 +122,28 @@
       window.game = this;
       window.store = this.$store;
     },
+    mounted() {
+      this.updateIsNavMenuCollapse();
+    },
     computed: {
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
+      ScreenWidth() {
+        return this.$store.state.ScreenWidth;
+      },
+    },
+    watch: {
+      ScreenWidth() {
+        this.updateIsNavMenuCollapse();
+      },
     },
     methods: {
+      updateIsNavMenuCollapse() {
+        if (this.ScreenWidth < 1600) {
+          this.isNavMenuCollapse = true;
+        }
+      },
       setFakeUpdate(data) {
         this.$store.commit('Game/updateGameList', {
           isUpdateFromOtherStore: false,

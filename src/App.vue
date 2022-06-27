@@ -26,6 +26,9 @@
       window.addEventListener('resize', this.resizeEvent);
       window.lib = this.$lib;
     },
+    mounted() {
+      this.$store.commit('SetScreenWidth', window.innerWidth);
+    },
     watch: {
       $route: {
         handler: function (to) {
@@ -50,6 +53,7 @@
     },
     methods: {
       resizeEvent() {
+        this.$store.commit('SetScreenWidth', window.innerWidth);
         if (window.innerWidth < 768) {
           this.$store.commit('SetIsMobile', true);
         } else {
@@ -58,7 +62,7 @@
       },
       appStyleJudge() {
         if (process.env.VUE_APP_UI === 'pc') {
-          return 'min-width:1200px;';
+          return 'min-width:1400px;';
         } else {
           return '';
         }

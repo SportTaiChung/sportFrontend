@@ -11,7 +11,7 @@
       <template v-if="selectCatID === 1 && selectWagerTypeKey === 2"> </template>
       <!-- 其他 -->
       <template v-else>
-        <td v-for="(it, key) in BestHead" :key="key" class="GameTableHeaderOtherTD">
+        <td v-for="(it, key) in BestHeadWithFilterLimit" :key="key" class="GameTableHeaderOtherTD">
           <div class="borderWhiteBlock"></div>
           {{ it.showName }}
           <div></div>
@@ -52,8 +52,15 @@
         type: String,
         default: '#136146',
       },
+      ColumnLimit: {
+        type: Number,
+        default: 10,
+      },
     },
     computed: {
+      BestHeadWithFilterLimit() {
+        return this.BestHead.filter((it, index) => index < this.ColumnLimit);
+      },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },

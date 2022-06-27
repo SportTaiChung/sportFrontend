@@ -9,6 +9,7 @@
         :isNavMenuCollapse="isNavMenuCollapse"
         :BestHead="[]"
         :isShowMoreGameEntryBtn="false"
+        :ColumnLimit="ColumnLimit"
         @ArrowClick="TopFavoriteArrowClick()"
       >
       </GameTableHeader>
@@ -21,6 +22,7 @@
         :CatName="GameList[0].CatName"
         :BestHead="GameList[0].Items.BestHead"
         :isShowMoreGameEntryBtn="GameList[0].Items.hasMoreCount"
+        :ColumnLimit="ColumnLimit"
         @ArrowClick="GameTableHeaderTopArrowClick"
       >
       </GameTableHeader>
@@ -35,6 +37,7 @@
             :BestHead="GameData.Items.BestHead"
             :isShowMoreGameEntryBtn="GameData.Items.hasMoreCount"
             :color="CatMapData[GameData.Items.List[0].CatID].color"
+            :ColumnLimit="ColumnLimit"
             @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
           >
           </GameTableHeader>
@@ -44,6 +47,7 @@
               :index="leagueIndex"
               :source="leagueData"
               :isCollapse="activeCollapse.indexOf(leagueData.LeagueID) > -1"
+              :ColumnLimit="ColumnLimit"
               @collapseChange="collapseChangeHandler"
               @AddToCart="$emit('AddToCart')"
             ></GameCollapse>
@@ -85,6 +89,7 @@
         itemComponent: GameCollapse,
         activeCollapse: [],
         collapseTimeoutEvent: null,
+        ColumnLimit: 10,
       };
     },
     created() {},
@@ -107,6 +112,9 @@
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
+      ScreenWidth() {
+        return this.$store.state.ScreenWidth;
+      },
     },
     watch: {
       selectCatID() {
@@ -115,8 +123,22 @@
       selectGameType() {
         this.activeCollapse.length = 0;
       },
+      ScreenWidth() {
+        this.updateColumnLimit();
+      },
+      isShowMoreGame() {
+        this.updateColumnLimit();
+      },
     },
     methods: {
+      updateColumnLimit() {
+        // 開啟快速投注時,寬度小於某個值,只能顯示三個玩法
+        if (this.ScreenWidth < 1600 && this.isShowMoreGame) {
+          this.ColumnLimit = 3;
+        } else {
+          this.ColumnLimit = 10;
+        }
+      },
       GameTableHeaderTopArrowClick() {
         // 展開所有摺疊
         if (this.activeCollapse.length === this.GameList[0].Items.List.length) {

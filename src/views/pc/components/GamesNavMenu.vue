@@ -21,7 +21,7 @@
       @mouseenter="isShowNavMenuGameType = false"
     >
       <div class="Collapse C_hide">
-        <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
+        <i class="el-icon-arrow-right" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
     <el-menu
