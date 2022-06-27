@@ -10,6 +10,7 @@
         <!-- <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" /> -->
       </div>
     </div>
+
     <div class="setUp_C">
       <!-- 公告跑馬燈 -->
       <div class="marquee-wrapper">
@@ -17,50 +18,53 @@
         <Marquee :text="marqueeText" />
       </div>
 
-      <span>
-        {{ $t('GamesSetup.AcceptBetter') }}
-        <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
-      ></span>
-      <el-divider direction="vertical"></el-divider>
-      <span class="selectLeague" @click="showLeagueSelectDialog">
-        {{ $t('GamesSetup.LeagueSelect') }}
-      </span>
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
-        <span class="el-dropdown-link">
-          {{ principalOption.find((it) => it.value === isIncludePrincipal).label }}
-          <i class="el-icon-arrow-down el-icon--right"></i>
+      <div class="options-wrapper">
+        <span>
+          {{ $t('GamesSetup.AcceptBetter') }}
+          <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
+        ></span>
+        <el-divider direction="vertical"></el-divider>
+        <span class="selectLeague" @click="showLeagueSelectDialog">
+          {{ $t('GamesSetup.LeagueSelect') }}
         </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(item, key) in principalOption"
-            :key="key"
-            :command="item.value"
-            :class="item.value === isIncludePrincipal ? 'DefaultFocus' : ''"
-          >
-            {{ item.label }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown @command="handleSort" trigger="click" class="dropDown">
-        <span class="el-dropdown-link">
-          {{ sortList.find((it) => it.value === sortValue).label }}
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(item, key) in sortList"
-            :key="key"
-            :command="item.value"
-            :class="item.value === sortValue ? 'DefaultFocus' : ''"
-          >
-            {{ item.label }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-divider direction="vertical" class="margin-0"></el-divider>
+        <el-divider direction="vertical"></el-divider>
+        <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
+          <span class="el-dropdown-link">
+            {{ principalOption.find((it) => it.value === isIncludePrincipal).label }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, key) in principalOption"
+              :key="key"
+              :command="item.value"
+              :class="item.value === isIncludePrincipal ? 'DefaultFocus' : ''"
+            >
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-divider direction="vertical"></el-divider>
+        <el-dropdown @command="handleSort" trigger="click" class="dropDown">
+          <span class="el-dropdown-link">
+            {{ sortList.find((it) => it.value === sortValue).label }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, key) in sortList"
+              :key="key"
+              :command="item.value"
+              :class="item.value === sortValue ? 'DefaultFocus' : ''"
+            >
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-divider direction="vertical" class="margin-0"></el-divider>
+      </div>
     </div>
+
     <div class="setUp_R">
       <span class="setUp_color">{{ $t('GamesSetup.QuickBet') }}</span>
       <input
@@ -447,7 +451,7 @@
       flex-shrink: 0;
       width: 180px;
       display: inline-flex;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: center;
       height: 100%;
       > div {
@@ -466,7 +470,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 180px;
         color: #81f0ca;
         white-space: nowrap;
         .dayBlock {
@@ -479,26 +482,7 @@
       display: inline-flex;
       justify-content: flex-end;
       align-items: center;
-      .margin-0 {
-        margin: 0 0 0 8px;
-      }
-      .el-dropdown {
-        font-size: 12px;
-        cursor: pointer;
-        @include base-fontColor();
-        > span {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        i {
-          margin-left: 5px;
-        }
-      }
-      .selectLeague {
-        color: white;
-        cursor: pointer;
-      }
+      width: calc(100% - 480px);
 
       .marquee-wrapper {
         flex-grow: 1;
@@ -509,6 +493,7 @@
         margin: 0 1rem;
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 6px;
+        overflow: hidden;
 
         .icon {
           flex-shrink: 0;
@@ -519,6 +504,31 @@
           background-size: contain;
           background-position: center;
           background-repeat: no-repeat;
+        }
+      }
+
+      .options-wrapper {
+        flex-shrink: 0;
+
+        .margin-0 {
+          margin: 0 0 0 8px;
+        }
+        .el-dropdown {
+          font-size: 12px;
+          cursor: pointer;
+          @include base-fontColor();
+          > span {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          i {
+            margin-left: 5px;
+          }
+        }
+        .selectLeague {
+          color: white;
+          cursor: pointer;
         }
       }
     }
