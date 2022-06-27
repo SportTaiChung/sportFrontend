@@ -230,6 +230,24 @@
       </div>
     </div>
 
+    <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
+    <div
+      class="cardOptionBlock"
+      v-if="isMobileMode && isShowChartList && panelMode === PanelModeEnum.result"
+    >
+      <div class="buttonRow">
+        <div class="clearBtn" @click="resultLeftBtnClickHandler()">
+          {{ OptionCancelBtnStr }}
+        </div>
+        <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
+          {{ $t('Common.SubmitBet') }}
+        </div>
+        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+          {{ $t('Common.Close') }}
+        </div>
+      </div>
+    </div>
+
     <!-- 串關投注下方面板 -->
     <div class="cardOptionBlock" v-if="isShowCharStrayList && isShowCardOptionBlock">
       <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
