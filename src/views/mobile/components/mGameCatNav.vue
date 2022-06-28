@@ -62,6 +62,7 @@
 
 <style lang="scss" scoped>
   ul.gameCatNav {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
