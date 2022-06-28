@@ -143,9 +143,9 @@
         this.activeCollapse = this.activeCollapse.length > 0 ? [] : this.expandAllCollapse();
       },
       expandAllCollapse() {
-        this.activeCollapse = new Array(this.gameData.Items.List.length)
+        return (this.activeCollapse = new Array(this.gameData.Items.List.length)
           .fill(0)
-          .map((it, index) => index);
+          .map((it, index) => index));
       },
       openWagerTypePopup() {
         if (this.currentCatData.Items.length) {
@@ -170,7 +170,7 @@
       flex: 1;
       overflow-x: auto;
       overflow-y: hidden;
-      box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
+      // box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
     }
     .playTypeBar {
       display: flex;

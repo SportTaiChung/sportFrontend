@@ -107,7 +107,7 @@
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
-  import mGameTable from './components/mGameTable.vue';
+  import mGameTable from './components/mGameTable/mGameTable.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';

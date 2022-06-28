@@ -1,5 +1,5 @@
 <template>
-  <div ref="root" class="mGameBetting" :style="maxHeight" :class="isExpanded ? '' : 'closed'">
+  <div ref="root" class="mGameBetting" :class="isExpanded ? '' : 'closed'">
     <table :class="hasMoreGameStyle">
       <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
@@ -8,7 +8,7 @@
         </tr>
       </thead>
 
-      <tbody ref="tbody">
+      <tbody ref="tbody" v-show="isExpanded">
         <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
             <tr
@@ -216,11 +216,9 @@
 </template>
 
 <script>
-  import mixin from './GamesTableMixin';
   import Odd from '@/components/Odd';
 
   export default {
-    mixins: [mixin],
     name: 'mGameBetting',
     components: {
       Odd,
@@ -252,48 +250,18 @@
       },
     },
     data() {
-      return {
-        isMounted: false,
-      };
+      return {};
     },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
-      maxHeight() {
-        if (!this.isMounted) return;
-        if (!this.isExpanded) return;
-        const { thead, tbody } = this.$refs;
-        return {
-          height: thead.offsetHeight + tbody.offsetHeight + 'px',
-        };
-      },
       hasMoreGameStyle() {
         return this.hasMoreGame ? 'hasMoreGame' : '';
       },
     },
-    mounted() {
-      this.isMounted = true;
-      this.$refs.root.addEventListener(
-        'transitionend',
-        (e) => {
-          if (!this.isExpanded && e.propertyName === 'height') {
-            this.$refs.tbody.style.display = 'none';
-          }
-        },
-        { once: true }
-      );
-      if (!this.isExpanded) {
-        this.$refs.tbody.style.display = 'none';
-      }
-    },
-    watch: {
-      isExpanded(isExpanded) {
-        if (isExpanded) {
-          this.$refs.tbody.style.display = '';
-        }
-      },
-    },
+    mounted() {},
+    watch: {},
     methods: {
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';

@@ -1,11 +1,6 @@
 <template>
   <div class="mGameInfo">
-    <div
-      ref="collapseContainer"
-      class="collapse-container"
-      :class="isExpanded ? 'on' : ''"
-      :style="maxHeight"
-    >
+    <div ref="collapseContainer" class="collapse-container" :class="isExpanded ? 'on' : ''">
       <table>
         <thead ref="thead" @click="$emit('toggleCollapse')">
           <tr>
@@ -20,7 +15,7 @@
           </tr>
         </thead>
 
-        <tbody ref="collapseTarget" class="collapse-target">
+        <tbody ref="collapseTarget" class="collapse-target" v-show="isExpanded">
           <template v-for="(teamData, teamIndex) in source.Team">
             <template v-if="teamData.EvtStatus === 1">
               <tr
@@ -115,9 +110,7 @@
 </template>
 
 <script>
-  import mixin from './GamesTableMixin';
   export default {
-    mixins: [mixin],
     name: 'mGameInfo',
     components: {},
     props: {
@@ -144,31 +137,10 @@
       },
     },
     data() {
-      return {
-        isMounted: false,
-      };
+      return {};
     },
-    mounted() {
-      this.isMounted = true;
-      this.$refs.collapseContainer.addEventListener('transitionstart', (e) => {
-        if (e.propertyName === 'height') {
-          // console.log('start');
-        }
-      });
-      this.$refs.collapseContainer.addEventListener('transitionend', (e) => {
-        if (e.propertyName === 'height') {
-          // console.log('end');
-          if (!this.isExpanded) {
-            this.$refs.collapseTarget.style.display = 'none';
-          }
-        }
-      });
-    },
+    mounted() {},
     methods: {
-      getCurrentHeight() {
-        const { thead, collapseTarget } = this.$refs;
-        return thead.offsetHeight + collapseTarget.offsetHeight;
-      },
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
           return 'active';
@@ -180,22 +152,7 @@
         this.$store.commit('Setting/addFavorites', EvtID);
       },
     },
-    computed: {
-      maxHeight() {
-        if (!this.isMounted) return;
-        if (!this.isExpanded) return;
-        return {
-          height: this.getCurrentHeight() + 'px',
-        };
-      },
-    },
-    watch: {
-      isExpanded(isExpanded) {
-        if (isExpanded) {
-          this.$refs.collapseTarget.style.display = '';
-        }
-      },
-    },
+    watch: {},
   };
 </script>
 
@@ -213,7 +170,7 @@
       width: fit-content;
       min-width: 100%;
       transition: height 300ms ease-out;
-      height: $row-height;
+      height: auto;
       &::after {
         content: '';
         display: block;
@@ -286,7 +243,7 @@
           margin-right: 1rem;
           filter: invert(30%);
           transform: rotate(-90deg);
-          transition: 350ms ease;
+          transition: 200ms ease;
           &.isExpanded {
             transform: rotate(0);
           }
