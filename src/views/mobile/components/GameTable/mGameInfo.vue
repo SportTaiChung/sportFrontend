@@ -297,6 +297,7 @@
               background: url('~@/assets/img/common/icon_star.svg') no-repeat center bottom;
               background-size: 100% auto;
               background-position: center bottom;
+              background-repeat: no-repeat;
               margin: auto 15px auto auto;
               display: block;
               cursor: pointer;

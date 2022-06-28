@@ -107,12 +107,12 @@
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
-  import mGameTable from './components/mGameTable/mGameTable.vue';
+  import mGameTable from './components/GameTable/mGameTable.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup.vue';
-  import mMenuPanel from './components/mMenuPanel.vue';
+  import mMenuPanel from './components/MenuPanel/mMenuPanel.vue';
   import MoreGame from '@/components/MoreGame.vue';
   import ServiceChat from '@/components/ServiceChat.vue';
   import mLeaguesPanel from './components/mLeaguesPanel.vue';

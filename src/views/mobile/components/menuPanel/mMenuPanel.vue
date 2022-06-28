@@ -73,7 +73,7 @@
 </template>
 
 <script>
-  import mAdvancedSettings from '../components/menuPanel/mAdvancedSettings.vue';
+  import mAdvancedSettings from './mAdvancedSettings.vue';
 
   export default {
     name: 'mMenuPanel',
