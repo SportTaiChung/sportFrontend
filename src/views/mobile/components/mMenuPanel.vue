@@ -14,7 +14,7 @@
       <!-- 一級選單面板區 -->
       <div class="main-container">
         <ul class="feature-list">
-          <li class="feature-item">
+          <li class="feature-item" @click="openLive()">
             <img class="icon" src="@/assets/img/mobile/icon_live.svg" />
             <div class="text"> {{ $t('Common.LivePlay') }} </div>
           </li>
@@ -150,6 +150,17 @@
             ', left=' +
             left
         );
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLiveURL')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
     },
   };
