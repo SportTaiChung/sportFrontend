@@ -3,7 +3,7 @@
     <div class="overlay" @click="close()"></div>
     <div class="panel">
       <div class="header">
-        <h5>{{ $t('Login.CustomerService') }}</h5>
+        <h5>UPG{{ $t('Login.CustomerService') }}</h5>
         <div class="btn-close" @click="close()"></div>
       </div>
 
@@ -12,7 +12,7 @@
           <div class="chat-header">
             <img src="@/assets/img/common/service/avatar8.png" class="avatar" />
             <div class="info">
-              <div class="name"> {{ $t('Login.CustomerService') }} 冰冰 </div>
+              <div class="name"> {{ $t('Login.CustomerService') }}</div>
               <div class="status"> {{ $t('Common.Online') }} </div>
             </div>
           </div>
@@ -33,7 +33,7 @@
                     </template>
                   </div>
                 </div>
-                <div class="time">{{ msg.CreateTimestr }}</div>
+                <div class="time">{{ $lib.timeFormatHHmm(msg.CreateTimestr) }}</div>
               </div>
             </template>
           </div>
@@ -161,12 +161,19 @@
         }
         this.$store
           .dispatch('Game/GetQAHistory', { isGuestMode: this.isGuestMode })
-          .then((res) => (this.history = res.data.reverse()))
+          .then((res) => {
+            const historyLength = this.history.length;
+            this.history = res.data.reverse();
+            if (historyLength !== res.data.length) {
+              this.$nextTick(() => {
+                this.scrollToBottom(() => {
+                  this.sendReadMes();
+                });
+              });
+            }
+          })
           .finally(() => {
             this.isLoading = false;
-            this.scrollToBottom(() => {
-              this.sendReadMes();
-            });
           });
       },
       // 取得未讀數
@@ -352,9 +359,9 @@
             padding: 10px;
 
             .msg-wrap {
-              display: inline-flex;
-              flex-direction: column;
-              max-width: 400px;
+              display: flex;
+              max-width: 450px;
+              margin-bottom: 20px;
               .msg-row {
                 display: flex;
                 flex-flow: row nowrap;
@@ -405,17 +412,18 @@
                 }
               }
               .time {
-                margin: 10px auto;
+                margin: 0 8px;
                 color: #6c757d;
                 font-size: 1.23rem;
                 text-align: center;
+                display: flex;
+                align-items: flex-end;
               }
 
               &.self {
                 align-self: flex-end;
-                .msg-row {
-                  flex-flow: row-reverse;
-                }
+                flex-flow: row-reverse;
+
                 .avatar {
                   display: none;
                 }
