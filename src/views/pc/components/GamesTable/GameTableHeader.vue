@@ -1,5 +1,5 @@
 <template>
-  <table class="GameTableHeader">
+  <table class="GameTableHeader" :style="bgColor">
     <tbody class="GameTableBody">
       <td class="FirstCatNameBlock" @click="clickArrow">
         <div class="leftArrowBlock">
@@ -11,14 +11,14 @@
       <template v-if="selectCatID === 1 && selectWagerTypeKey === 2"> </template>
       <!-- 其他 -->
       <template v-else>
-        <td v-for="(it, key) in BestHead" :key="key" class="GameTableHeaderOtherTD">
+        <td v-for="(it, key) in BestHeadWithFilterLimit" :key="key" class="GameTableHeaderOtherTD">
           <div class="borderWhiteBlock"></div>
           {{ it.showName }}
           <div></div>
         </td>
         <td v-if="isShowMoreGameEntryBtn" class="GameTableHeaderMoreTD">
           <div class="borderWhiteBlock"></div>
-          更多
+          {{ $t('Common.More') }}
           <div></div>
         </td>
       </template>
@@ -48,8 +48,19 @@
         type: Boolean,
         default: false,
       },
+      color: {
+        type: String,
+        default: '#136146',
+      },
+      ColumnLimit: {
+        type: Number,
+        default: 10,
+      },
     },
     computed: {
+      BestHeadWithFilterLimit() {
+        return this.BestHead.filter((it, index) => index < this.ColumnLimit);
+      },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
@@ -65,6 +76,11 @@
       },
       selectGameType() {
         return this.gameStore.selectGameType;
+      },
+      bgColor() {
+        return {
+          'background-color': this.color,
+        };
       },
     },
     methods: {

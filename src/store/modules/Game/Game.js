@@ -12,9 +12,11 @@ import {
   getCountMes,
   sendReadMes,
   getGameResult,
+  getAnnouncement,
 } from '@/api/Game';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
+import { getMenuIconByCatID, getBoardImageByCatId, getColorByCatId } from '@/utils/SportLib';
 
 export default {
   namespaced: true,
@@ -309,6 +311,20 @@ export default {
       return new Promise((resolve, reject) => {
         return getCatList()
           .then((res) => {
+            res.push({
+              CatID: '-999',
+              GameScoreRefresh: false,
+              GroupCatIDs: [-999],
+              Name: '收藏',
+            });
+
+            // 設定 icon 顏色 背景...
+            res.forEach((it) => {
+              it.icon = getMenuIconByCatID(it.CatID);
+              it.color = getColorByCatId(it.CatID);
+              it.background = getBoardImageByCatId(it.CatID);
+            });
+
             const mapList = res.reduce((sum, it) => {
               let appendObj = {};
 
@@ -327,6 +343,23 @@ export default {
             resolve();
           })
           .catch(reject);
+      });
+    },
+
+    // 11. 游戏公告讯息 - 搜寻单列
+    GetAnnouncement(store) {
+      return new Promise((resolve, reject) => {
+        return getAnnouncement({
+          sia: false,
+        }).then((res) => resolve(res));
+      });
+    },
+    // 11. 游戏公告讯息 - 搜寻全部
+    GetAnnouncementAll(store) {
+      return new Promise((resolve, reject) => {
+        return getAnnouncement({
+          sia: true,
+        }).then((res) => resolve(res));
       });
     },
     // 12-1.获取在线咨询信息

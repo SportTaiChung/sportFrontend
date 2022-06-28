@@ -24,7 +24,7 @@
           ></mGameTable>
         </template>
         <template v-else>
-          <div class="noData" v-if="!$store.state.isLoading"> 暫無賽事 </div>
+          <div class="noData" v-if="!$store.state.isLoading"> {{ $t('Common.NoGame') }} </div>
         </template>
       </div>
 
@@ -202,6 +202,7 @@
       },
       ChangeCat() {
         this.$refs.leaguesPanel.clearLeagueList();
+        this.$store.commit('Game/changeCatReset');
       },
     },
     watch: {

@@ -4,11 +4,12 @@
       <!-- 收藏夾Header -->
       <GameTableHeader
         v-if="isFavoriteMode"
-        CatName="收藏夾"
+        :CatName="$t('Common.Collect')"
         :isCollapse="TopFavoriteIsCollapse()"
         :isNavMenuCollapse="isNavMenuCollapse"
         :BestHead="[]"
         :isShowMoreGameEntryBtn="false"
+        :ColumnLimit="ColumnLimit"
         @ArrowClick="TopFavoriteArrowClick()"
       >
       </GameTableHeader>
@@ -21,6 +22,7 @@
         :CatName="GameList[0].CatName"
         :BestHead="GameList[0].Items.BestHead"
         :isShowMoreGameEntryBtn="GameList[0].Items.hasMoreCount"
+        :ColumnLimit="ColumnLimit"
         @ArrowClick="GameTableHeaderTopArrowClick"
       >
       </GameTableHeader>
@@ -34,6 +36,8 @@
             :CatName="GameData.CatName"
             :BestHead="GameData.Items.BestHead"
             :isShowMoreGameEntryBtn="GameData.Items.hasMoreCount"
+            :color="CatMapData[GameData.Items.List[0].CatID].color"
+            :ColumnLimit="ColumnLimit"
             @ArrowClick="FavoriteGameTableHeaderBottomArrowClick(GameData.Items.List)"
           >
           </GameTableHeader>
@@ -43,6 +47,7 @@
               :index="leagueIndex"
               :source="leagueData"
               :isCollapse="activeCollapse.indexOf(leagueData.LeagueID) > -1"
+              :ColumnLimit="ColumnLimit"
               @collapseChange="collapseChangeHandler"
               @AddToCart="$emit('AddToCart')"
             ></GameCollapse>
@@ -55,7 +60,7 @@
       <div class="EmptyGameTable">
         <div class="EmptyCenterItemBlock">
           <img alt="" src="@/assets/img/pc/icon_noGame.svg" />
-          <p>暫無賽事</p>
+          <p>{{ $t('Common.NoGame') }}</p>
         </div>
       </div>
     </template>
@@ -84,6 +89,7 @@
         itemComponent: GameCollapse,
         activeCollapse: [],
         collapseTimeoutEvent: null,
+        ColumnLimit: 10,
       };
     },
     created() {},
@@ -100,8 +106,14 @@
       GameList() {
         return this.gameStore.GameList;
       },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
+      },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
+      },
+      ScreenWidth() {
+        return this.$store.state.ScreenWidth;
       },
     },
     watch: {
@@ -111,8 +123,22 @@
       selectGameType() {
         this.activeCollapse.length = 0;
       },
+      ScreenWidth() {
+        this.updateColumnLimit();
+      },
+      isShowMoreGame() {
+        this.updateColumnLimit();
+      },
     },
     methods: {
+      updateColumnLimit() {
+        // 開啟快速投注時,寬度小於某個值,只能顯示三個玩法
+        if (this.ScreenWidth < 1600 && this.isShowMoreGame) {
+          this.ColumnLimit = 3;
+        } else {
+          this.ColumnLimit = 10;
+        }
+      },
       GameTableHeaderTopArrowClick() {
         // 展開所有摺疊
         if (this.activeCollapse.length === this.GameList[0].Items.List.length) {
@@ -216,28 +242,29 @@
         }
       },
       GameTableListStyleJudge() {
-        let diffOffset = 0;
-        // 左側選單如果關閉時
-        if (this.isNavMenuCollapse) {
-          // 減掉 左邊側欄 64px
-          // 減掉 右邊注單 300px;
-          // 加上 卷軸寬度17px;
-          // 因此減掉 347px;
-          diffOffset = 364;
-          // return `width: calc(100% - 347px);`;
-        } else {
-          // 減掉 左邊側欄 200px
-          // 減掉 右邊注單 300px;
-          // 加上 卷軸寬度17px;
-          // 因此減掉 483px;
-          diffOffset = 480;
-          // return `width: calc(100% - 483px);`;
-        }
-        // 更多投注 寬度370px
-        if (this.isShowMoreGame) {
-          diffOffset += 370;
-        }
-        return `width: calc(100% - ${diffOffset}px);`;
+        // let diffOffset = 0;
+        // // 左側選單如果關閉時
+        // if (this.isNavMenuCollapse) {
+        //   // 減掉 左邊側欄 64px
+        //   // 減掉 右邊注單 300px;
+        //   // 加上 卷軸寬度17px;
+        //   // 因此減掉 347px;
+        //   diffOffset = 364;
+        //   // return `width: calc(100% - 347px);`;
+        // } else {
+        //   // 減掉 左邊側欄 200px
+        //   // 減掉 右邊注單 300px;
+        //   // 加上 卷軸寬度17px;
+        //   // 因此減掉 483px;
+        //   diffOffset = 480;
+        //   // return `width: calc(100% - 483px);`;
+        // }
+        // // 更多投注 寬度370px
+        // if (this.isShowMoreGame) {
+        //   diffOffset += 370;
+        // }
+        // return `width: calc(100% - ${diffOffset}px);`;
+        return '';
       },
     },
   };
@@ -251,7 +278,7 @@
     border-right: 2px solid;
     width: fit-content;
     background-color: #d5d5d5;
-
+    flex: 1;
     @include main_bg_border_color();
 
     .ScrollViewContainer {

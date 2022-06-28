@@ -5,63 +5,74 @@
         <div class="dayBlock">{{ TimeCountDown.day }}</div>
         <div class="timeBlock">{{ TimeCountDown.time }}</div>
       </span>
-      <!-- 切換主題色 -->
       <div>
         <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
         <!-- <img alt="" class="icon" src="@/assets/img/pc/yue.svg" @click="changeTheme('dark')" /> -->
       </div>
     </div>
+
     <div class="setUp_C">
-      <span>
-        自動接收最佳賠率
-        <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
-      ></span>
-      <el-divider direction="vertical"></el-divider>
-      <span class="selectLeague" @click="showLeagueSelectDialog">聯盟選擇</span>
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
-        <span class="el-dropdown-link">
-          {{ principalOption.find((it) => it.value === isIncludePrincipal).label }}
-          <i class="el-icon-arrow-down el-icon--right"></i>
+      <!-- 公告跑馬燈 -->
+      <div class="marquee-wrapper">
+        <div class="icon"></div>
+        <Marquee :text="marqueeText" />
+      </div>
+
+      <div class="options-wrapper">
+        <span>
+          {{ $t('GamesSetup.AcceptBetter') }}
+          <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
+        ></span>
+        <el-divider direction="vertical"></el-divider>
+        <span class="selectLeague" @click="showLeagueSelectDialog">
+          {{ $t('GamesSetup.LeagueSelect') }}
         </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(item, key) in principalOption"
-            :key="key"
-            :command="item.value"
-            :class="item.value === isIncludePrincipal ? 'DefaultFocus' : ''"
-          >
-            {{ item.label }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-divider direction="vertical"></el-divider>
-      <el-dropdown @command="handleSort" trigger="click" class="dropDown">
-        <span class="el-dropdown-link">
-          {{ sortList.find((it) => it.value === sortValue).label }}
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(item, key) in sortList"
-            :key="key"
-            :command="item.value"
-            :class="item.value === sortValue ? 'DefaultFocus' : ''"
-          >
-            {{ item.label }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-divider direction="vertical" class="margin-0"></el-divider>
+        <el-divider direction="vertical"></el-divider>
+        <el-dropdown @command="handleIsIncludePrincipal" trigger="click" class="dropDown">
+          <span class="el-dropdown-link">
+            {{ principalOption.find((it) => it.value === isIncludePrincipal).label }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, key) in principalOption"
+              :key="key"
+              :command="item.value"
+              :class="item.value === isIncludePrincipal ? 'DefaultFocus' : ''"
+            >
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-divider direction="vertical"></el-divider>
+        <el-dropdown @command="handleSort" trigger="click" class="dropDown">
+          <span class="el-dropdown-link">
+            {{ sortList.find((it) => it.value === sortValue).label }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, key) in sortList"
+              :key="key"
+              :command="item.value"
+              :class="item.value === sortValue ? 'DefaultFocus' : ''"
+            >
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-divider direction="vertical" class="margin-0"></el-divider>
+      </div>
     </div>
+
     <div class="setUp_R">
-      <span class="setUp_color">快速投註</span>
+      <span class="setUp_color">{{ $t('GamesSetup.QuickBet') }}</span>
       <input
         v-model="quickBetAmount"
         v-show="quickBetEnable"
-        placeholder="請輸入金額"
+        :placeholder="$t('GamesSetup.PlzInputAmount')"
         class="setUp_input"
-        @change="quickBetAmountChangeHandler"
+        @input="quickBetAmountChangeHandler"
       />
       <el-switch
         v-model="quickBetEnable"
@@ -70,20 +81,31 @@
         @change="quickBetEnableChangeHandler"
       >
       </el-switch>
-      <el-popover popper-class="fastBet-help-popper" placement="bottom-start" trigger="hover">
-        <div class="help-title">快速投注說明</div>
+      <el-popover
+        class="popover"
+        popper-class="fastBet-help-popper"
+        placement="bottom-start"
+        trigger="hover"
+      >
+        <div class="help-title">{{ $t('GamesSetup.QuickBetInfo') }}</div>
         <div class="help-detail">
-          1.設定投這金額<br />
-          2.點擊投注項目<br />
-          3.投注完成
+          {{ $t('GamesSetup.QuickBetInfo1') }}
+          <br />
+          {{ $t('GamesSetup.QuickBetInfo2') }}
+          <br />
+          {{ $t('GamesSetup.QuickBetInfo3') }}
         </div>
         <i class="el-icon-question" slot="reference"></i>
       </el-popover>
+
+      <div class="cartBtn" @click="cartBtnClick">
+        <i :class="isShowGameBet ? 'el-icon-arrow-right' : 'el-icon-shopping-cart-2'"></i>
+      </div>
     </div>
 
     <el-dialog
       class="LeagueSelectDialog"
-      title="聯盟選擇"
+      :title="$t('GamesSetup.LeagueSelect')"
       width="80%"
       center
       :visible.sync="isShowLeagueSelectDialog"
@@ -91,9 +113,11 @@
       <div class="LeagueSelectDialogContent">
         <div class="ContentHeader">
           <el-checkbox size="medium" v-model="dialogData.selectAll" @change="dialogSelectAll">
-            全選
+            {{ $t('GamesSetup.SelectAll') }}
           </el-checkbox>
-          <el-checkbox size="medium" v-model="dialogData.onlyShowCheck">只顯示已勾選</el-checkbox>
+          <el-checkbox size="medium" v-model="dialogData.onlyShowCheck">
+            {{ $t('GamesSetup.SelectCheck') }}
+          </el-checkbox>
         </div>
         <div class="leagueItemContentList">
           <div class="leagueItem" v-for="(leagueData, index) in LeagueListDataFilter" :key="index">
@@ -104,40 +128,55 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <div class="cancelBtn" @click="isShowLeagueSelectDialog = false">取 消</div>
-        <div class="submitBtn" type="primary" @click="leagueChooseSelectHandler">提 交</div>
+        <div class="cancelBtn" @click="isShowLeagueSelectDialog = false">
+          {{ $t('GamesSetup.Cancel') }}
+        </div>
+        <div class="submitBtn" type="primary" @click="leagueChooseSelectHandler">
+          {{ $t('GamesSetup.Submit') }}
+        </div>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+  import Marquee from './Marquee.vue';
   export default {
     name: 'GamesSetup',
+    props: {
+      isShowGameBet: {
+        type: Boolean,
+      },
+    },
+    components: {
+      Marquee,
+    },
     data() {
       return {
         quickBetEnable: false, // 快速投注开关
         quickBetAmount: 0,
-        listValue: '含本金',
+        listValue: this.$t('GamesSetup.IncludePrincipal'),
         isAcceptBetter: null,
         sortValue: null,
         sortList: [
-          { value: 1, label: '時間排序' },
-          { value: 0, label: '熱門排序' },
+          { value: 1, label: this.$t('GamesSetup.TimeSort') },
+          { value: 0, label: this.$t('GamesSetup.HotSort') },
         ],
         isIncludePrincipal: null,
         principalOption: [
-          { value: false, label: '不含本金' },
-          { value: true, label: '含本金' },
+          { value: false, label: this.$t('GamesSetup.NotIncludePrincipal') },
+          { value: true, label: this.$t('GamesSetup.IncludePrincipal') },
         ],
         currentTime: null,
         countInterval: null,
+        announcementInterval: null,
         isShowLeagueSelectDialog: false,
         dialogData: {
           selectAll: false,
           onlyShowCheck: false,
         },
         LeagueListData: [],
+        marqueeText: '',
       };
     },
     mounted() {
@@ -148,10 +187,17 @@
       }, 1000);
       this.initTimeAPI();
       document.addEventListener('visibilitychange', this.visibilitychangeEvent);
+
+      // 輪詢 公告 API
+      this.announcementInterval = setInterval(() => {
+        this.getAnnouncement();
+      }, 10000);
+      this.getAnnouncement();
     },
     beforeDestroy() {
       document.removeEventListener('visibilitychange', this.visibilitychangeEvent);
       clearInterval(this.countInterval);
+      clearInterval(this.announcementInterval);
     },
     computed: {
       TimeCountDown() {
@@ -175,6 +221,9 @@
       },
       isQuickBet() {
         return this.$store.state.Game.isQuickBet;
+      },
+      UserCredit() {
+        return this.$store.state.User.UserCredit;
       },
     },
     watch: {
@@ -212,7 +261,14 @@
     },
     methods: {
       quickBetAmountChangeHandler() {
-        this.$store.commit('Game/setQuickBetAmount', parseInt(this.quickBetAmount));
+        this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
+        if (isNaN(this.quickBetAmount)) {
+          this.quickBetAmount = 0;
+        }
+        if (this.quickBetAmount > this.UserCredit) {
+          this.quickBetAmount = this.UserCredit;
+        }
+        this.$store.commit('Game/setQuickBetAmount', this.quickBetAmount);
       },
       quickBetEnableChangeHandler() {
         this.$store.commit('Game/setQuickBetEnable', this.quickBetEnable);
@@ -285,6 +341,15 @@
         );
         this.$emit('SelectLeague');
         this.isShowLeagueSelectDialog = false;
+      },
+      getAnnouncement() {
+        this.$store.dispatch('Game/GetAnnouncement').then((res) => {
+          console.log('res:', res);
+          this.marqueeText = res.data.content;
+        });
+      },
+      cartBtnClick() {
+        this.$emit('ClickShowGameBet', !this.isShowGameBet);
       },
     },
   };
@@ -383,8 +448,8 @@
   @import '@/assets/sass/theme/mixin.scss';
 
   .setUp_color {
-    margin-right: 10px;
     @include base-fontColor();
+    margin-right: 8px;
   }
 
   #GamesSetup {
@@ -400,9 +465,10 @@
       margin: 0 15px;
     }
     .setUp_L {
-      width: 200px;
+      flex-shrink: 0;
+      width: 180px;
       display: inline-flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
       height: 100%;
       > div {
@@ -417,53 +483,87 @@
         }
       }
       .timeBlockContainer {
+        flex-shrink: 0;
         display: flex;
+        justify-content: center;
         align-items: center;
-        width: 120px;
         color: #81f0ca;
         white-space: nowrap;
-        margin-left: 20px;
         .dayBlock {
           margin-right: 10px;
         }
       }
     }
     .setUp_C {
-      flex: 1;
+      flex-grow: 1;
       display: inline-flex;
       justify-content: flex-end;
       align-items: center;
-      .margin-0 {
-        margin: 0 0 0 8px;
-      }
-      .el-dropdown {
-        font-size: 12px;
-        cursor: pointer;
-        @include base-fontColor();
-        > span {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+      width: calc(100% - 480px);
+
+      .marquee-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        padding: 0 1rem;
+        margin: 0 1rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 6px;
+        overflow: hidden;
+
+        .icon {
+          flex-shrink: 0;
+          width: 25px;
+          height: 25px;
+          margin-right: 0.5rem;
+          background-image: url('~@/assets/img/common/megaphone.png');
+          background-size: contain;
+          background-position: center;
+          background-repeat: no-repeat;
         }
-        i {
-          margin-left: 5px;
-        }
       }
-      .selectLeague {
-        color: white;
-        cursor: pointer;
+
+      .options-wrapper {
+        flex-shrink: 0;
+
+        .margin-0 {
+          margin: 0 0 0 8px;
+        }
+        .el-dropdown {
+          font-size: 12px;
+          cursor: pointer;
+          @include base-fontColor();
+          > span {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          i {
+            margin-left: 5px;
+          }
+        }
+        .selectLeague {
+          color: white;
+          cursor: pointer;
+        }
       }
     }
     .setUp_R {
+      flex-shrink: 0;
       width: 300px;
       display: inline-flex;
       justify-content: flex-end;
       align-items: center;
-      padding: 0 10px;
+      .popover {
+        width: 20px;
+        display: flex;
+        justify-content: center;
+        margin: 0 5px;
+      }
       i {
         font-size: 20px;
         color: #000000;
-        margin-left: 10px;
       }
       .setUp_input {
         width: 110px;
@@ -474,7 +574,20 @@
         border: none;
         color: #fff;
         outline: none;
-        margin: 0 10px;
+        margin-right: 8px;
+      }
+      .cartBtn {
+        background: #ffdf1b;
+        display: flex;
+        justify-content: center;
+        border-radius: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+        i {
+          display: block;
+          margin: 0;
+          padding: 2px 8px;
+        }
       }
     }
   }

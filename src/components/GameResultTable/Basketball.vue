@@ -64,6 +64,7 @@
           <div class="cell">{{ parseScore('FinalScore')[1] }}</div>
         </div>
       </td>
+      <td></td>
     </tr>
   </table>
 </template>

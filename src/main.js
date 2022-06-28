@@ -7,6 +7,7 @@ import VueCarousel from 'vue-carousel';
 import axios from 'axios';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import FloatingVue from 'floating-vue';
+import i18n from './locales';
 
 import * as message from '@/utils/messageHandler.js';
 import * as SportLib from '@/utils/SportLib';
@@ -45,13 +46,14 @@ Promise.all([router()]).then(async (res) => {
       },
     },
   });
-  Vue.use(ElementUI);
+  Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) });
   Vue.use(VueCarousel);
   Vue.config.productionTip = false;
 
-  new Vue({
+  window.vue = new Vue({
     router: window.router,
     store,
+    i18n,
     render: (h) => h(App),
   }).$mount('#app');
 });

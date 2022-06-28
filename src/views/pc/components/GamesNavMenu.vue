@@ -21,7 +21,7 @@
       @mouseenter="isShowNavMenuGameType = false"
     >
       <div class="Collapse C_hide">
-        <i class="el-icon-arrow-left" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
+        <i class="el-icon-arrow-right" @click="setNavMenuCollapse(!isNavMenuCollapse)"></i>
       </div>
     </div>
     <el-menu
@@ -75,10 +75,7 @@
         <!-- 有兒子的menu Item -->
         <el-submenu v-if="menuData.Items.length !== 0" :key="i" :index="i.toString()">
           <template slot="title">
-            <img
-              :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(menuData.catid))"
-              class="menu-icon"
-            />
+            <img :src="getMenuIconByCatID(menuData.catid)" class="menu-icon" />
             <div class="flex nav_bottom" @click.stop="menuItemClickHandler(menuData, null, i)">
               <span class="nav_text">{{ menuData.catName }}</span>
               <span class="nav_number">{{ menuData.count }}</span>
@@ -108,10 +105,7 @@
             @click.stop="menuItemClickHandler(menuData, null, i)"
           >
             <img
-              :src="
-                require('@/assets/img/common/menuIcon/' +
-                  getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid))
-              "
+              :src="getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid)"
               class="menu-icon"
               @mouseenter="isShowNavMenuGameType = false"
             />
@@ -220,12 +214,15 @@
         return [
           {
             Items: [],
-            catName: '收藏',
+            catName: this.$t('Common.Collect'),
             count: this.$store.state.Setting.UserSetting.favorites.length,
             isFavorite: true,
           },
           ...this.gameStore.MenuList,
         ];
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
     },
     watch: {
@@ -392,7 +389,8 @@
         }
       },
       getMenuIconByCatID(catId) {
-        return this.$SportLib.getMenuIconByCatID(catId);
+        const icon = this.CatMapData[catId].icon;
+        return require('@/assets/img/common/menuIcon/' + icon);
       },
       PopperGameTypeItemClick(key) {
         this.gameTypeClickHandler(key);
@@ -516,7 +514,6 @@
         }
         .singleMenuItemContainer {
           display: flex;
-          justify-content: center;
           align-items: center;
           width: 100%;
           height: 100%;

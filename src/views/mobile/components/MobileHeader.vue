@@ -45,12 +45,8 @@
         :class="gameStore.selectCatID == -999 ? 'active' : ''"
         @click="goFav"
       >
-        <img
-          :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(-999))"
-          class="menu-icon"
-          @click="goFav()"
-        />
-        收藏夾
+        <img :src="getMenuIconByCatID(-999)" class="menu-icon" @click="goFav()" />
+        {{ $t('Common.Collect') }}
       </li>
       <li
         v-for="(catData, index) in gameStore.MenuList"
@@ -59,10 +55,7 @@
         :class="gameStore.selectCatID == catData.catid ? 'active' : ''"
         @click.stop="menuItemClickHandler(catData, null, index)"
       >
-        <img
-          :src="require('@/assets/img/common/menuIcon/' + getMenuIconByCatID(catData.catid))"
-          class="menu-icon"
-        />
+        <img :src="getMenuIconByCatID(catData.catid)" class="menu-icon" />
         {{ catData.catName }}
       </li>
     </ul>
@@ -131,6 +124,9 @@
       },
       GameList() {
         return this.gameStore.GameList;
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
       showGameTypeList() {
         return this.gameStore.GameTypeList.filter((it, index) => index <= 2);
@@ -211,7 +207,8 @@
         this.$emit('openWagerTypePopup');
       },
       getMenuIconByCatID(catId) {
-        return this.$SportLib.getMenuIconByCatID(catId);
+        const icon = this.CatMapData[catId].icon;
+        return require('@/assets/img/common/menuIcon/' + icon);
       },
       goFav() {
         this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {

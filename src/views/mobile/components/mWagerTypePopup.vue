@@ -2,7 +2,7 @@
   <div id="mWagerTypePopup" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
-        <div class="title"> 選擇玩法 </div>
+        <div class="title"> {{ $t('Common.ChoosePlay') }} </div>
       </div>
 
       <div class="line"></div>

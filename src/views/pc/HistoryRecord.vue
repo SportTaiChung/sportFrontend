@@ -1,18 +1,22 @@
 <template>
   <div id="HistoryRecord">
     <div class="Record_head">
-      <h3>投注记录</h3>
+      <h3>{{ $t('HistoryRecord.BetHistoryRecord') }}</h3>
     </div>
     <div class="Record_top">
       <ul>
-        <li @click="active = 0" :class="active === 0 ? 'active' : ''"> 未結算注單 </li>
-        <li @click="active = 1" :class="active !== 0 ? 'active' : ''"> 已結算注單 </li>
+        <li @click="active = 0" :class="active === 0 ? 'active' : ''">
+          {{ $t('GamesBetInfo.NotCountBet') }}
+        </li>
+        <li @click="active = 1" :class="active !== 0 ? 'active' : ''">
+          {{ $t('HistoryRecord.IsCountBet') }}
+        </li>
       </ul>
       <div>
         <el-button v-show="active === 2" size="mini" @click="active = 1" icon="el-icon-arrow-left">
-          返回</el-button
-        >
-        <el-button type="primary" size="mini" @click="updata">更新</el-button>
+          {{ $t('Common.Return') }}
+        </el-button>
+        <el-button type="primary" size="mini" @click="update">{{ $t('Common.Update') }}</el-button>
       </div>
     </div>
     <div class="Record_main">
@@ -20,34 +24,34 @@
         <!-- 未結算注單 -->
         <table v-show="active === 0" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <th width="200">注單訊息</th>
-            <th>投注內容</th>
-            <th width="150">投注額</th>
-            <th width="150">投注後餘額</th>
-            <th width="150">可贏</th>
+            <th width="200">{{ $t('HistoryRecord.BetMessage') }}</th>
+            <th>{{ $t('Common.BetContent') }}</th>
+            <th width="150">{{ $t('HistoryRecord.BetAmount') }}</th>
+            <th width="150">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
+            <th width="150">{{ $t('Common.CanWin') }}</th>
           </tr>
           <tr class="rt_data" v-for="(item, i) in getBetHistoryData" :key="i">
             <td class="rt_info">
               <ul>
                 <li>
-                  <span>下注 : </span>
+                  <span>{{ $t('Common.DownBet') }} : </span>
                   <span>{{ item.BetTimeStr }}</span>
                 </li>
                 <li v-if="item.BetType === 1">
-                  <span>比赛 : </span>
+                  <span>{{ $t('Common.Game') }} : </span>
                   <span>{{ item.dataBet[0].ScheduleTimeStr }}</span>
                 </li>
                 <li v-else>
-                  <span>类型 : 過關 </span>
-                  <span> {{ item.dataBet.length }}串 1 x 1 </span>
+                  <span>{{ $t('HistoryRecord.TypeStray') }} </span>
+                  <span> {{ item.dataBet.length }}{{ $t('Common.string') }} 1 x 1 </span>
                 </li>
                 <li>
-                  <span>單號 : </span>
+                  <span>{{ $t('Common.BetID') }} : </span>
                   <span>{{ item.TicketID }}</span>
                 </li>
                 <li>
-                  <span>賠率 :</span>
-                  <span>不含本金</span>
+                  <span>{{ $t('Common.Odd') }} :</span>
+                  <span>{{ $t('GamesSetup.NotIncludePrincipal') }}</span>
                 </li>
               </ul>
             </td>
@@ -58,11 +62,12 @@
                   {{ item.dataBet[0].WagerGrpName }}
                 </li>
                 <li>
-                  {{ item.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                  {{ item.dataBet[0].HomeTeam }}
+                  <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
                   {{ item.dataBet[0].AwayTeam }}
                 </li>
                 <li>
-                  投注 :
+                  {{ $t('Common.Bet') }} :
                   <span class="betTeamColor">
                     {{ item.dataBet[0].betname }}
                     <span class="oddColor">
@@ -83,11 +88,12 @@
                     {{ betlist.WagerGrpName }}
                   </li>
                   <li
-                    >{{ betlist.HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                    >{{ betlist.HomeTeam }}
+                    <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
                     {{ betlist.AwayTeam }}</li
                   >
                   <li>
-                    投注：
+                    {{ $t('Common.Bet') }}：
                     <span class="betTeamColor">
                       {{ betlist.betname }}
                       <span class="oddColor">{{ betlist.CutLine }}</span>
@@ -96,12 +102,12 @@
                     <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
                   </li>
                   <li>
-                    賽果:
+                    {{ $t('GamesHeader.GameResult') }}:
                     <span class="resultScore">{{ betlist.HomeScore }} : </span>
                     <span class="resultScore">{{ betlist.AwayScore }}</span>
                   </li>
                   <li>
-                    比賽時間:
+                    {{ $t('Common.GameTime') }}:
                     <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
                   </li>
                 </ul>
@@ -114,7 +120,7 @@
             </td>
           </tr>
           <tr class="rt_foot">
-            <td colspan="2">合計</td>
+            <td colspan="2">{{ $t('Common.Total') }}</td>
             <td class="betSumTotal">{{ totalAmount }}</td>
             <td></td>
             <td>{{ totalWinAmount }}</td>
@@ -124,20 +130,20 @@
         <!-- 已結算注單 -->
         <table v-show="active === 1" border="0" cellspacing="0" cellpadding="0" class="weektable">
           <tr>
-            <th>比賽日期</th>
-            <th>投注額</th>
-            <th>返水</th>
-            <th>結果</th>
+            <th>{{ $t('GameDate') }}</th>
+            <th>{{ $t('HistoryRecord.BetAmount') }}</th>
+            <th>{{ $t('Common.ReturnWater') }}</th>
+            <th>{{ $t('Common.Result') }}</th>
           </tr>
           <tr
             v-for="(item, i) in weekData"
-            :class="item.weekLang.indexOf('合計') > 0 ? 'week' : ''"
+            :class="item.weekLang.indexOf($t('Common.Total')) > 0 ? 'week' : ''"
             :key="i"
           >
             <td>{{ item.accdate.substr(5) }} {{ item.weekLang }}</td>
             <td>{{ item.amount }}</td>
             <td>{{ item.RetAmt }}</td>
-            <td v-if="item.weekLang.indexOf('合計') > 0">{{ item.ResultAmount }}</td>
+            <td v-if="item.weekLang.indexOf($t('Common.Total')) > 0">{{ item.ResultAmount }}</td>
             <td v-else>
               <el-link type="primary" @click="goThisWeek(item.accdate)">{{
                 item.ResultAmount
@@ -150,13 +156,13 @@
         <div v-show="active === 2">
           <table border="0" cellspacing="0" cellpadding="0">
             <tr>
-              <th width="185">注單訊息</th>
-              <th width="400">投注內容</th>
-              <th width="100">投注額</th>
-              <th width="130">投注後餘額</th>
-              <th width="100">可贏</th>
-              <th width="100">返水</th>
-              <th width="100">結果</th>
+              <th width="185">{{ $t('HistoryRecord.BetMessage') }}</th>
+              <th width="400">{{ $t('Common.BetContent') }}</th>
+              <th width="100">{{ $t('HistoryRecord.BetAmount') }}</th>
+              <th width="130">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
+              <th width="100">{{ $t('Common.CanWin') }}</th>
+              <th width="100">{{ $t('Common.ReturnWater') }}</th>
+              <th width="100">{{ $t('Common.Result') }}</th>
             </tr>
           </table>
 
@@ -165,8 +171,8 @@
               <tr>
                 <td width="585" @click="upactive(item.CatID)">
                   <i :class="item.active ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
-                  <template v-if="i === 0"> 一般投注 </template>
-                  <template v-if="i === 1"> 過關投注 </template>
+                  <template v-if="i === 0"> {{ $t('Common.NormalBet') }} </template>
+                  <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template>
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
                 <td width="130">{{ item.AfterAmounts }}</td>
@@ -188,24 +194,24 @@
                 <td width="185" class="rt_info">
                   <ul>
                     <li>
-                      <span>下注 : </span>
+                      <span>{{ $t('Common.DownBet') }} : </span>
                       <span>{{ itemdata.BetTimeStr.slice(5, 16) }}</span>
                     </li>
                     <li v-if="itemdata.BetType === 1">
-                      <span>比赛 : </span>
+                      <span>{{ $t('Common.Game') }} : </span>
                       <span>{{ itemdata.dataBet[0].ScheduleTimeStr.slice(5, 16) }}</span>
                     </li>
                     <li v-else>
-                      <span>类型 : 過關 </span>
-                      <span> {{ itemdata.dataBet.length }}串 1 x 1 </span>
+                      <span>{{ $t('HistoryRecord.TypeStray') }} </span>
+                      <span> {{ itemdata.dataBet.length }}{{ $t('Common.string') }} 1 x 1 </span>
                     </li>
                     <li>
-                      <span>單號 : </span>
+                      <span>{{ $t('Common.BetID') }} : </span>
                       <span>{{ itemdata.TicketID }}</span>
                     </li>
                     <li>
-                      <span>賠率 :</span>
-                      <span>不含本金</span>
+                      <span>{{ $t('Common.Odd') }} :</span>
+                      <span>{{ $t('GamesSetup.NotIncludePrincipal') }}</span>
                     </li>
                   </ul>
                 </td>
@@ -219,11 +225,12 @@
                         {{ betlist.WagerGrpName }}
                       </li>
                       <li>
-                        {{ betlist.HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                        {{ betlist.HomeTeam }}
+                        <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
                         {{ betlist.AwayTeam }}
                       </li>
                       <li>
-                        投注：
+                        {{ $t('Common.Bet') }}：
                         <span class="betTeamColor">
                           {{ betlist.betname }}
                           <span class="oddColor">{{ betlist.CutLine }} </span>
@@ -232,12 +239,12 @@
                         <span class="oddColor"> {{ betlist.PayoutOddsStr }}</span>
                       </li>
                       <li>
-                        賽果:
+                        {{ $t('GamesHeader.GameResult') }}:
                         <span class="resultScore">{{ betlist.HomeScore }} : </span>
                         <span class="resultScore">{{ betlist.AwayScore }}</span>
                       </li>
                       <li>
-                        比賽時間:
+                        {{ $t('Common.GameTime') }}:
                         <span class="startGameTime">{{ betlist.ScheduleTimeStr }} : </span>
                       </li>
                     </ul>
@@ -255,7 +262,7 @@
                       {{ itemdata.dataBet[0].AwayTeam }}
                     </li>
                     <li>
-                      投注 :
+                      {{ $t('Common.Bet') }} :
                       <span class="betTeamColor">
                         {{ itemdata.dataBet[0].betname }}
                         <span class="oddColor">
@@ -282,7 +289,7 @@
           </div>
           <table border="0" cellspacing="0" cellpadding="0">
             <tr class="rt_foot">
-              <td width="585">合計</td>
+              <td width="585">{{ $t('Common.Total') }}</td>
               <td width="100" class="betSumTotal">{{ gettotal.Amounts }}</td>
               <td width="130">{{ gettotal.AfterAmounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
@@ -327,18 +334,18 @@
       getBetHistoryData() {
         this.betHistoryData.forEach((item, i) => {
           if (item.BetType === 1) {
-            if (item.dataBet[0].WagerPosName === '主隊') {
+            if (item.dataBet[0].WagerPosName === this.$t('Common.HomeTeam')) {
               this.betHistoryData[i].dataBet[0].betname = item.dataBet[0].HomeTeam;
-            } else if (item.dataBet[0].WagerPosName === '客隊') {
+            } else if (item.dataBet[0].WagerPosName === this.$t('Common.AwayTeam')) {
               this.betHistoryData[i].dataBet[0].betname = item.dataBet[0].AwayTeam;
             } else {
               this.betHistoryData[i].dataBet[0].betname = item.dataBet[0].WagerPosName;
             }
           } else {
             item.dataBet.forEach((betList, y) => {
-              if (betList.WagerPosName === '主隊') {
+              if (betList.WagerPosName === this.$t('Common.HomeTeam')) {
                 this.betHistoryData[i].dataBet[y].betname = betList.HomeTeam;
-              } else if (betList.WagerPosName === '客隊') {
+              } else if (betList.WagerPosName === this.$t('Common.AwayTeam')) {
                 this.betHistoryData[i].dataBet[y].betname = betList.AwayTeam;
               } else {
                 this.betHistoryData[i].dataBet[y].betname = item.dataBet[y].WagerPosName;
@@ -361,7 +368,7 @@
         }
         var BetTypemap = {
           CatID: -99,
-          catName: '過關',
+          catName: this.$t('Common.Stray'),
           data: destTypemap,
         };
         // 分组  各球类
@@ -395,9 +402,9 @@
             if (itemdata.BetType === 1) {
               canwins += Math.floor(itemdata.Amount * itemdata.dataBet[0].PayoutOddsStr);
 
-              if (itemdata.dataBet[0].WagerPosName === '主隊') {
+              if (itemdata.dataBet[0].WagerPosName === this.$t('Common.HomeTeam')) {
                 itemdata.dataBet[0].betname = itemdata.dataBet[0].HomeTeam;
-              } else if (itemdata.dataBet[0].WagerPosName === '客隊') {
+              } else if (itemdata.dataBet[0].WagerPosName === this.$t('Common.AwayTeam')) {
                 itemdata.dataBet[0].betname = itemdata.dataBet[0].AwayTeam;
               } else {
                 itemdata.dataBet[0].betname = itemdata.dataBet[0].WagerPosName;
@@ -408,9 +415,9 @@
               var oddx = 1;
               itemdata.dataBet.forEach((Betlist, y) => {
                 odds.push(parseFloat(Betlist.PayoutOddsStr) + 1);
-                if (Betlist.WagerPosName === '主隊') {
+                if (Betlist.WagerPosName === this.$t('Common.HomeTeam')) {
                   Betlist.betname = Betlist.HomeTeam;
-                } else if (Betlist.WagerPosName === '客隊') {
+                } else if (Betlist.WagerPosName === this.$t('Common.AwayTeam')) {
                   Betlist.betname = Betlist.AwayTeam;
                 } else {
                   Betlist.betname = Betlist.WagerPosName;
@@ -453,7 +460,7 @@
       },
     },
     methods: {
-      updata() {
+      update() {
         if (this.active === 0) {
           this.getBetHistory(false);
         } else if (this.active === 1) {

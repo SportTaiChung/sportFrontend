@@ -4,7 +4,7 @@
       <div class="header">
         <ul class="tab-list">
           <li class="tab-item" :class="tabIndex === 0 ? 'active' : ''" @click="tabIndex = 0"
-            >單項<span class="number">{{ betCartList.length }}</span></li
+            >{{ $t('Common.SingleItem') }}<span class="number">{{ betCartList.length }}</span></li
           >
           <!-- <li class="tab-item" :class="tabIndex === 1 ? 'active' : ''" @click="tabIndex = 1"
             >過關<span class="number">{{ betCartList.length }}</span></li
@@ -73,7 +73,7 @@
 
       .header {
         display: flex;
-        background-color: #6da9e5;
+        background-color: #3fa381;
         color: #fff;
         border-radius: 4px 4px 0 0;
         font-size: 0.95em;

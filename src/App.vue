@@ -6,13 +6,18 @@
     :style="appStyleJudge()"
   >
     <router-view />
+
+    <QuickBetPanel v-if="quickBetData.isShow"></QuickBetPanel>
   </div>
 </template>
 
 <script>
+  import QuickBetPanel from '@/components/QuickBetPanel';
   export default {
     name: 'App',
-    components: {},
+    components: {
+      QuickBetPanel,
+    },
     data() {
       return {};
     },
@@ -20,6 +25,9 @@
       this.resizeEvent();
       window.addEventListener('resize', this.resizeEvent);
       window.lib = this.$lib;
+    },
+    mounted() {
+      this.$store.commit('SetScreenWidth', window.innerWidth);
     },
     watch: {
       $route: {
@@ -32,8 +40,20 @@
         },
       },
     },
+    computed: {
+      nowThemeInfo() {
+        return this.$store.state.nowThemeInfo;
+      },
+      isLoading() {
+        return this.$store.state.isLoading;
+      },
+      quickBetData() {
+        return this.$store.state.BetCart.quickBetData;
+      },
+    },
     methods: {
       resizeEvent() {
+        this.$store.commit('SetScreenWidth', window.innerWidth);
         if (window.innerWidth < 768) {
           this.$store.commit('SetIsMobile', true);
         } else {
@@ -42,20 +62,13 @@
       },
       appStyleJudge() {
         if (process.env.VUE_APP_UI === 'pc') {
-          return 'min-width:1200px;';
+          return 'min-width:1400px;';
         } else {
           return '';
         }
       },
     },
-    computed: {
-      nowThemeInfo() {
-        return this.$store.state.nowThemeInfo;
-      },
-      isLoading() {
-        return this.$store.state.isLoading;
-      },
-    },
+
     beforeDestroy() {
       window.removeEventListener('resize', this.resizeEvent);
     },

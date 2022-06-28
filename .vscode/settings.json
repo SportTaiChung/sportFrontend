@@ -3,4 +3,9 @@
         "source.fixAll.eslint": true
     },
     "editor.formatOnSave": true,
+    "i18n-ally.localesPaths": [
+        "src/locales"
+    ],
+    "vue-i18n.i18nPaths": "c:\\git\\sportFrontend\\src\\locales,src\\locales",
+    "i18n-ally.keystyle": "nested",
 }

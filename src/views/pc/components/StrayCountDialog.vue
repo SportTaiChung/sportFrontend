@@ -2,23 +2,23 @@
   <div id="StrayCountDialog" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
-        <div class="title"> 過關計算器 </div>
+        <div class="title"> {{ $t('GamesBetInfo.StrayCount') }} </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
         <el-popover popper-class="calculator-help-popper" placement="bottom-start" trigger="hover">
-          <div class="help-title">操作說明</div>
+          <div class="help-title">{{ $t('Common.OperateInfo') }}</div>
           <div class="help-detail">
             <table>
               <tbody>
                 <tr>
-                  <td> 注 : </td>
-                  <td> 中洞需自行輸入分盤 </td>
+                  <td> {{ $t('Common.Note') }} : </td>
+                  <td> {{ $t('StrayCountDialog.MiddleInput') }} </td>
                 </tr>
                 <tr>
-                  <td> 例 : </td>
+                  <td> {{ $t('Common.Ex') }} : </td>
                   <td>
-                    <p> 洛杉磯湖人隊 10+80 洛杉磯道奇，比赛结束 117:105 </p>
-                    <p> 下注洛杉磯湖人隊：選擇 ( + ) 填入 80 </p>
-                    <p> 下注洛杉磯道奇：選擇 ( - ) 填入 80 </p>
+                    <p> {{ $t('StrayCountDialog.Ex1') }} </p>
+                    <p> {{ $t('StrayCountDialog.Ex2') }} </p>
+                    <p> {{ $t('StrayCountDialog.Ex3') }} </p>
                   </td>
                 </tr>
               </tbody>

@@ -11,10 +11,18 @@
         text-color="#fff"
         @select="handleSelect"
       >
-        <el-menu-item index="1" @click="jumpLink('scoreLive')">即時比分</el-menu-item>
-        <el-menu-item index="2" @click="OpenGameResultWindow">賽果</el-menu-item>
-        <el-menu-item index="3" @click="jumpLink('rule')">規則</el-menu-item>
-        <el-menu-item index="4" @click="OpenPopupCenter">投註記錄</el-menu-item>
+        <el-menu-item index="1" @click="jumpLink('scoreLive')">
+          {{ $t('GamesHeader.LiveScore') }}
+        </el-menu-item>
+        <el-menu-item index="2" @click="OpenGameResultWindow">
+          {{ $t('GamesHeader.GameResult') }}
+        </el-menu-item>
+        <el-menu-item index="3" @click="jumpLink('rule')">
+          {{ $t('GamesHeader.GameRule') }}
+        </el-menu-item>
+        <el-menu-item index="4" @click="OpenPopupCenter">
+          {{ $t('GamesHeader.BetList') }}
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="headerTop_userinfo">
@@ -25,7 +33,7 @@
           <img
             src="@/assets/img/common/icon_header_service.svg"
             class="icon-service"
-            title="聯絡客服"
+            :title="$t('GamesHeader.ContactService')"
             @click="openService()"
           />
           <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
@@ -34,7 +42,7 @@
           <img
             src="@/assets/img/common/icon_header_user.svg"
             class="icon-service"
-            title="個人設置"
+            :title="$t('GamesHeader.PersonalSetting')"
             @click="openPersonal()"
           />
         </li>
@@ -42,7 +50,7 @@
           <img
             src="@/assets/img/common/logout.svg"
             class="logoutIcon"
-            title="登出"
+            :title="$t('GamesHeader.Logout')"
             alt=""
             @click="logout"
           />

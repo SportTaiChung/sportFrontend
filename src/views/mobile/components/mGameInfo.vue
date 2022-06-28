@@ -84,7 +84,9 @@
                     </template>
 
                     <!-- 是否顯示和局 -->
-                    <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0"> 和局 </div>
+                    <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0">
+                      {{ $t('Common.DrewOdd') }}
+                    </div>
 
                     <!-- 時間 & 收藏按鈕 -->
                     <div class="info-timeStarRow" v-if="rowIndex === 0">

@@ -49,7 +49,8 @@
                   goBoldBet(
                     boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds,
                     boldOddToMapData(teamData.Wager[0].Odds)[OULine],
-                    teamData
+                    teamData,
+                    $event
                   )
                 "
               >
@@ -163,20 +164,38 @@
                       </template>
 
                       <div class="teamRow" v-if="teamData.hasDrewOdds && rowIndex === 0">
-                        和局
+                        {{ $t('Common.DrewOdd') }}
                       </div>
                     </div>
                     <div class="scoreBlock" v-if="rowIndex === 0 && selectGameType === 2">
-                      <div
-                        class="homeScore"
-                        :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
-                        >{{ teamData.HomeScore }}</div
-                      >
-                      <div
-                        class="awayScore"
-                        :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
-                        >{{ teamData.AwayScore }}</div
-                      >
+                      <template v-if="teamData.SetFlag">
+                        <div
+                          class="homeScore"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >
+                          {{ teamData.HomeScore }}
+                        </div>
+                        <div
+                          class="awayScore"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >
+                          {{ teamData.AwayScore }}
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div
+                          class="awayScore"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                        >
+                          {{ teamData.AwayScore }}
+                        </div>
+                        <div
+                          class="homeScore"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                        >
+                          {{ teamData.HomeScore }}
+                        </div>
+                      </template>
                     </div>
                     <div class="rightFavoriteBlock" v-if="rowIndex === 0">
                       <div
@@ -189,7 +208,7 @@
 
                   <td
                     class="GameTableHeaderOtherTD"
-                    v-for="(wagerData, wagerIndex) in teamData.Wager"
+                    v-for="(wagerData, wagerIndex) in teamWagerDataFilterLimit(teamData.Wager)"
                     :key="wagerIndex"
                     :set="
                       ((sportData = $SportLib.WagerDataToShowData(
@@ -236,7 +255,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .topWagerPos
+                                  .topWagerPos,
+                                $event
                               )
                             "
                           >
@@ -262,7 +282,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .bottomWagerPos
+                                  .bottomWagerPos,
+                                $event
                               )
                             "
                           >
@@ -291,7 +312,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .topWagerPos
+                                  .topWagerPos,
+                                $event
                               )
                             "
                           >
@@ -318,7 +340,8 @@
                                 wagerData,
                                 rowIndex,
                                 $SportLib.WagerDataToShowData(teamData.SetFlag, wagerData, rowIndex)
-                                  .bottomWagerPos
+                                  .bottomWagerPos,
+                                $event
                               )
                             "
                           >
@@ -366,7 +389,8 @@
                                     teamData.SetFlag,
                                     wagerData,
                                     rowIndex
-                                  ).drewWagerPos
+                                  ).drewWagerPos,
+                                  $event
                                 )
                               "
                             >
@@ -392,8 +416,8 @@
                       @click="moreGameClickHandler(teamData)"
                       v-if="rowIndex === 0"
                     >
-                      {{ teamData.MoreCount }}
                       <img src="@/assets/img/common/moreGameIcon.svg" alt="" />
+                      {{ teamData.MoreCount }}
                     </div>
                   </td>
                 </tr>
@@ -427,6 +451,10 @@
       },
       isCollapse: {
         type: Boolean,
+      },
+      ColumnLimit: {
+        type: Number,
+        default: 10,
       },
     },
     data() {
@@ -486,8 +514,14 @@
       selectGameType() {
         return this.gameStore.selectGameType;
       },
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
+      },
     },
     methods: {
+      teamWagerDataFilterLimit(arr) {
+        return arr.filter((it, index) => index < this.ColumnLimit);
+      },
       isGameTableHeaderMoreSelect(teamData, rowIndex) {
         if (teamData.EvtID === this.moreGameEvtID && rowIndex === 0) {
           return 'GameTableHeaderMoreSelect';
@@ -554,7 +588,17 @@
           return '';
         }
       },
-      goBoldBet(showOdd, oddData, teamData) {
+      checkQuickBet(event) {
+        if (this.isQuickBetEnable) {
+          const clickTarget = event.target.getBoundingClientRect();
+          this.$store.commit('BetCart/showQuickBetData', {
+            isShow: true,
+            x: clickTarget.left,
+            y: clickTarget.top,
+          });
+        }
+      },
+      goBoldBet(showOdd, oddData, teamData, event) {
         this.$emit('AddToCart');
 
         const selectGameTypeID = this.$store.state.Game.selectGameType;
@@ -582,8 +626,10 @@
         };
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        this.checkQuickBet(event);
       },
-      goBet(showOdd, teamData, wagerData, rowIndex, wagerPos) {
+      goBet(showOdd, teamData, wagerData, rowIndex, wagerPos, event) {
         if (showOdd === '') {
           return;
         }
@@ -622,6 +668,8 @@
         };
 
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        this.checkQuickBet(event);
       },
     },
   };
@@ -937,7 +985,7 @@
           height: 100%;
           display: flex;
           justify-content: center;
-          flex-direction: row;
+          flex-direction: column;
           align-items: center;
           &:hover {
             background-color: #e8e8e8;
@@ -945,7 +993,7 @@
 
           img {
             max-width: 0.9rem;
-            margin-left: 0.5rem;
+            margin-bottom: 5px;
           }
         }
       }

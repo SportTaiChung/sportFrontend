@@ -44,6 +44,11 @@ export default async () => {
       component: () =>
         import(/* webpackChunkName: "TestVirtualList" */ '../views/Test/TestVirtualList.vue'),
     },
+    {
+      path: '/TestI18n',
+      name: 'TestI18n',
+      component: () => import(/* webpackChunkName: "TestI18n" */ '../views/Test/TestI18n.vue'),
+    },
   ];
 
   // 動態路由注入
@@ -51,7 +56,6 @@ export default async () => {
   if (process.env.VUE_APP_UI === 'pc') {
     dynamicRoute.push(import('./pc/index'));
   } else {
-    console.log('add mobile route');
     dynamicRoute.push(import('./mobile/index'));
   }
   const dynamicRouteRes = await Promise.all(dynamicRoute).then((res) =>
@@ -83,7 +87,8 @@ export default async () => {
       to.name === 'GameResult' ||
       to.name === 'TestOddData' ||
       to.name === 'TestTableData' ||
-      to.name === 'TestVirtualList'
+      to.name === 'TestVirtualList' ||
+      to.name === 'TestI18n'
     ) {
       next();
     } else {

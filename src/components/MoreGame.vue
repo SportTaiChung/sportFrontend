@@ -11,7 +11,12 @@
       <template v-else>
         <div class="teamVSLive">
           <div class="topBlock"> {{ teamData.TimeAct }} </div>
-          <div class="bottomBlock"> {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }} </div>
+          <div class="bottomBlock" v-if="!teamData.SetFlag">
+            {{ `${teamData.AwayScore} : ${teamData.HomeScore}` }}
+          </div>
+          <div class="bottomBlock" v-else>
+            {{ `${teamData.HomeScore} : ${teamData.AwayScore}` }}
+          </div>
         </div>
       </template>
 
@@ -38,7 +43,7 @@
 
         <li
           class="item"
-          title="比分板"
+          :title="$t('Common.LiveBoard')"
           :class="gameType2Page == 0 ? 'active' : ''"
           @click="gameType2Page = 0"
         >
@@ -54,7 +59,7 @@
         </li> -->
         <li
           class="item"
-          title="直播"
+          :title="$t('Common.Live')"
           :class="gameType2Page == 2 ? 'active' : ''"
           @click="gameType2Page = 2"
         >
@@ -115,7 +120,7 @@
         </li> -->
         <li
           class="item"
-          title="滾球數據"
+          :title="$t('Common.RollBalData')"
           :class="gameType1Page == 1 ? 'active' : ''"
           @click="gameType1Page = 1"
         >
@@ -131,7 +136,7 @@
         </li> -->
         <li
           class="item"
-          title="賽事數據"
+          :title="$t('Common.GameData')"
           :class="gameType1Page == 3 ? 'active' : ''"
           @click="gameType1Page = 3"
         >
@@ -213,7 +218,7 @@
                             oddIndex +
                             betIndex
                           "
-                          @click="goBet(betData, oddData, leagueData)"
+                          @click="goBet(betData, oddData, leagueData, $event)"
                         >
                           <div class="betBlockTop">
                             {{ betData.showMethod }}
@@ -241,16 +246,12 @@
 
 <script>
   import Odd from '@/components/Odd';
-  import BaseBall from '@/components/LiveBoard/BaseBall';
-  import Soccer from '@/components/LiveBoard/Soccer';
-  import BasketBall from './LiveBoard/BasketBall.vue';
+  import LiveBoards from '@/components/LiveBoard/LiveBoardIndex';
   export default {
     name: 'MoreGame',
     components: {
       Odd,
-      Soccer,
-      BaseBall,
-      BasketBall,
+      ...LiveBoards,
     },
     data() {
       return {
@@ -264,6 +265,11 @@
 
         ComponentMapList: {
           1: 'Soccer',
+          21: 'PingPong',
+          22: 'Badminton',
+          23: 'Volleyball',
+          55: 'Tennis',
+          85: 'PCGame',
           101: 'BaseBall',
           102: 'BasketBall',
         },
@@ -408,7 +414,7 @@
               return {
                 ...it,
                 Odds: [],
-                HeadShowName: gameData.ItemName + it.WagerTypeName,
+                HeadShowName: it.WagerTypeName,
               };
             });
 
@@ -466,6 +472,9 @@
         } else {
           return this.moreGameData.GameScoreHead;
         }
+      },
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
       },
     },
     watch: {
@@ -529,7 +538,7 @@
           this.collapseItemNames = this.FinalGameList.map((it) => it.ItemName);
         }
       },
-      goBet(betData, oddData, leagueData) {
+      goBet(betData, oddData, leagueData, event) {
         this.$emit('AddToCart');
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
@@ -555,6 +564,15 @@
           ...oddData,
         };
         this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        if (this.isQuickBetEnable) {
+          const clickTarget = event.target.getBoundingClientRect();
+          this.$store.commit('BetCart/showQuickBetData', {
+            isShow: true,
+            x: clickTarget.left,
+            y: clickTarget.top + 5,
+          });
+        }
       },
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {

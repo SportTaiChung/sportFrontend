@@ -1,7 +1,7 @@
 <template>
   <div id="GameResult" @click="onPageClick">
     <div class="main-title">
-      <h3>賽果</h3>
+      <h3>{{ $t('GamesHeader.GameResult') }}</h3>
     </div>
 
     <!-- 功能選單 -->
@@ -36,21 +36,23 @@
             :class="timerIndex === i ? 'active' : ''"
             @click="timerIndex = i"
           >
-            <template v-if="timerTypes[i] > 0"> 每 {{ timerTypes[i] }} 秒 </template>
-            <template v-else> 不更新 </template>
+            <template v-if="timerTypes[i] > 0">
+              {{ $t('Common.Each') }} {{ timerTypes[i] }} {{ $t('Common.Sec') }}
+            </template>
+            <template v-else> {{ $t('Common.NotUpdate') }} </template>
           </li>
         </ul>
       </div>
       <div class="countdownSec" v-if="timerIndex > 0"> {{ countdownSec }} </div>
       <div class="btn-refresh" @click="getGameResult()"> <i class="el-icon-refresh-right"></i></div>
-      <div class="league-filter"> 聯盟選擇 </div>
+      <!-- <div class="league-filter"> {{ $t('GamesSetup.LeagueSelect') }} </div> -->
     </div>
 
     <!-- 賽果主容器 -->
     <div class="main-container">
       <!-- 球種列表 -->
       <div class="gameTypeList">
-        <div class="header">球賽列表</div>
+        <div class="header">{{ $t('Common.GameList') }}</div>
         <ul class="list">
           <li
             v-for="(cat, i) in CatList"
@@ -78,9 +80,9 @@
                       :class="expandedLeagues.length > 0 ? 'active' : ''"
                     ></i>
                   </td>
-                  <td>賽事</td>
+                  <td>{{ $t('Common.Game2') }}</td>
                   <td v-for="(str, i) in titles" :key="i">{{ str }}</td>
-                  <!-- <td>資訊</td> -->
+                  <td>{{ $t('Common.remark') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -115,7 +117,7 @@
 
         <div v-show="leagueList.length === 0 && !$store.state.isLoading" class="noResult">
           <img src="@/assets/img/common/btn_GDV_scoreBoard.svg" alt="" />
-          暫無賽果
+          {{ $t('Common.NoGameResult') }}
         </div>
       </div>
     </div>
@@ -163,7 +165,10 @@
     },
     computed: {
       CatList() {
-        return this.$store.state.Game.CatList;
+        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
+      },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
       },
       titles() {
         return this.rawData?.BestHead || [];
@@ -182,7 +187,9 @@
       },
       timerTypeName() {
         const sec = this.totalCountdownSec;
-        return sec > 0 ? `每 ${sec} 秒` : '不更新';
+        return sec > 0
+          ? `${this.$t('Common.Each')} ${sec} ${this.$t('Common.Sec')}`
+          : this.$t('Common.NotUpdate');
       },
     },
     created() {
@@ -217,7 +224,8 @@
     },
     methods: {
       getMenuIconByCatID(catId) {
-        return require('@/assets/img/common/menuIcon/' + this.$SportLib.getMenuIconByCatID(catId));
+        const icon = this.CatMapData[catId].icon;
+        return require('@/assets/img/common/menuIcon/' + icon);
       },
       getGameResult() {
         this.rawData = null;
@@ -245,8 +253,16 @@
         let dd = date.getDate();
         dd = dd < 10 ? '0' + dd : dd;
         const day = date.getDay();
-        const dayArr = ['日', '一', '二', '三', '四', '五', '六'];
-        return `${mm}-${dd} 星期${dayArr[day]}`;
+        const dayArr = [
+          this.$t('Common.SunDay'),
+          this.$t('Common.MonDay'),
+          this.$t('Common.TuesDay'),
+          this.$t('Common.WednesDay'),
+          this.$t('Common.Thursday'),
+          this.$t('Common.FriDay'),
+          this.$t('Common.SaturDay'),
+        ];
+        return `${mm}-${dd} ${this.$t('Common.Week')}${dayArr[day]}`;
       },
       dateToYYYYMMDD(date) {
         const yyyy = date.getFullYear();

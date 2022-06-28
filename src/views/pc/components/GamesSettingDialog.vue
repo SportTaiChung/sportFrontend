@@ -2,35 +2,23 @@
   <div id="GamesSettingDialog" @click.stop="onMaskClick">
     <div class="popup">
       <div class="header">
-        <div class="title"> 功能設定 </div>
+        <div class="title"> {{ $t('GamesBetInfo.Setting') }} </div>
         <div class="btn-close" @click.stop="onMaskClick"></div>
         <el-popover popper-class="gameSetting-help-popper" placement="bottom-start" trigger="hover">
-          <div class="help-title">快速投注說明</div>
+          <div class="help-title">{{ $t('GamesSetup.QuickBetInfo') }}</div>
           <div class="help-detail">
-            <!-- <h5>默認顯示類型</h5>
-            <p> 設定進入體育頁面默認顯示類型。 </p>
+            <h5>{{ $t('GamesSettingDialog.BetConfirmMessage') }}</h5>
+            <p> {{ $t('GamesSettingDialog.Tip1') }} </p>
 
-            <h5>默認顯示球類</h5>
-            <p> 設定進入體育頁面默認顯示球類。 </p> -->
-
-            <h5>下注確認信息</h5>
-            <p> 設定投注時是否顯示下注確認信息。 </p>
-
-            <!-- <h5>默認排序</h5>
-            <p> 設定進入體育頁面默認排序方式。 </p> -->
-
-            <!-- <h5>投注成功信息</h5>
-            <p> 設定投注成功後是否顯示投注成功信息。 </p> -->
-
-            <h5>默認金額</h5>
+            <h5>{{ $t('GamesSettingDialog.DefaultMount') }}</h5>
             <p>
-              最後投注：下注時將會預設為前次投注金額。
+              {{ $t('GamesSettingDialog.Tip2') }}
               <br />
-              自訂：下注時將會預設為自訂金額。
+              {{ $t('GamesSettingDialog.Tip3') }}
             </p>
 
-            <h5>自訂籌碼</h5>
-            <p> 設定投注頁面的顯示籌碼，最多設置6個。 </p>
+            <h5>{{ $t('Common.CustomBet') }}</h5>
+            <p> {{ $t('GamesSettingDialog.Limit6') }} </p>
           </div>
           <div class="btn-help" slot="reference"> ? </div>
         </el-popover>
@@ -39,7 +27,7 @@
       <div class="body">
         <ul class="list">
           <li class="item">
-            <div class="title">下注確認信息</div>
+            <div class="title">{{ $t('GamesSettingDialog.BetConfirmMessage') }}</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
@@ -49,7 +37,7 @@
                     v-bind:value="true"
                     v-model="mShowBetConfirm"
                   />
-                  <span> 顯示 </span>
+                  <span> {{ $t('Common.Visible') }} </span>
                 </label>
                 <label class="radio-item">
                   <input
@@ -58,14 +46,14 @@
                     v-bind:value="false"
                     v-model="mShowBetConfirm"
                   />
-                  <span> 隱藏 </span>
+                  <span> {{ $t('Common.InVisible') }} </span>
                 </label>
               </div>
             </div>
           </li>
 
           <li class="item">
-            <div class="title">默認金額</div>
+            <div class="title">{{ $t('GamesSettingDialog.DefaultMount') }}</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
@@ -75,7 +63,7 @@
                     v-bind:value="0"
                     v-model="mDefaultAmountType"
                   />
-                  <span> 關閉 </span>
+                  <span> {{ $t('Common.Close') }} </span>
                 </label>
                 <label class="radio-item">
                   <input
@@ -84,7 +72,7 @@
                     v-bind:value="1"
                     v-model="mDefaultAmountType"
                   />
-                  <span> 最後投注 </span>
+                  <span> {{ $t('Common.LastBet') }} </span>
                 </label>
                 <label class="radio-item">
                   <input
@@ -93,7 +81,7 @@
                     v-bind:value="2"
                     v-model="mDefaultAmountType"
                   />
-                  <span> 自訂金額 </span>
+                  <span> {{ $t('Common.CustomMoney') }} </span>
                 </label>
               </div>
               <input
@@ -106,7 +94,7 @@
           </li>
 
           <li class="item">
-            <div class="title">默認過關投注</div>
+            <div class="title">{{ $t('GamesSettingDialog.DefaultStrayBet') }}</div>
             <div class="content">
               <div class="radio-group">
                 <label class="radio-item">
@@ -116,7 +104,7 @@
                     v-bind:value="0"
                     v-model="mDefaultStrayAmountType"
                   />
-                  <span> 關閉 </span>
+                  <span> {{ $t('Common.Close') }} </span>
                 </label>
                 <label class="radio-item">
                   <input
@@ -125,7 +113,7 @@
                     v-bind:value="1"
                     v-model="mDefaultStrayAmountType"
                   />
-                  <span> 最後投注 </span>
+                  <span> {{ $t('Common.LastBet') }} </span>
                 </label>
                 <label class="radio-item">
                   <input
@@ -134,7 +122,7 @@
                     v-bind:value="2"
                     v-model="mDefaultStrayAmountType"
                   />
-                  <span> 自訂金額 </span>
+                  <span> {{ $t('Common.CustomMoney') }} </span>
                 </label>
               </div>
               <input
@@ -148,9 +136,11 @@
 
           <li class="item">
             <div class="title">
-              自訂籌碼
+              {{ $t('Common.CustomBet') }}
               <br />
-              <span class="redTip"> 最多設置 {{ maxChips }} 個 </span>
+              <span class="redTip">
+                {{ $t('Common.MostSet') }} {{ maxChips }} {{ $t('Common.Indivual') }}
+              </span>
             </div>
             <div class="content">
               <ul class="chips">
@@ -168,7 +158,7 @@
           </li>
         </ul>
 
-        <div class="btn-save" @click="saveSettings">確認修改</div>
+        <div class="btn-save" @click="saveSettings">{{ $t('Common.ConfirmModify') }}</div>
       </div>
     </div>
   </div>
@@ -240,7 +230,7 @@
 
         setTimeout(() => {
           this.$notify.success({
-            message: '修改成功',
+            message: this.$t('Common.ModifySuccess'),
           });
           this.$store.commit('SetLoading', false);
           this.$emit('closeMe');

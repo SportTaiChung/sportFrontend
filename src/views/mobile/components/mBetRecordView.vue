@@ -1,16 +1,16 @@
 <template>
   <div id="mBetRecordView">
     <div class="header-container">
-      <div class="title">投注紀錄</div>
+      <div class="title">{{ $t('HistoryRecord.BetHistoryRecord') }}</div>
       <div class="btn-close" @click="$emit('onCloseBetRecordView')"> &times; </div>
     </div>
 
     <ul class="navList">
       <li :class="tabIndex === 0 ? 'active' : ''" @click="onTabClick(0)">
-        <div class="text">未結算</div>
+        <div class="text">{{ $t('Common.NotCount') }}</div>
       </li>
       <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(1)">
-        <div class="text">已結算</div>
+        <div class="text">{{ $t('Common.IsCount') }}</div>
       </li>
       <!-- <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(2)">
         <div class="text">可兌現</div>

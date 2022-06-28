@@ -6,15 +6,12 @@ import Game from './modules/Game/Game';
 import MoreGame from './modules/Game/MoreGame';
 import Setting from './modules/Setting';
 import History from './modules/History';
+import lang from '@/utils/lang';
 
 import { systemTime } from '@/api/Common';
 
 Vue.use(Vuex);
 
-let Lang = localStorage.getItem('Lang');
-if (Lang === null) {
-  Lang = 'tw';
-}
 export default new Vuex.Store({
   modules: { User, Game, BetCart, MoreGame, Setting, History },
   state: {
@@ -23,7 +20,8 @@ export default new Vuex.Store({
     isInit: false,
     nowThemeInfo: 'light', // 当前主题
     themes: ['light', 'dark'], // 所有主题
-    Lang,
+    ScreenWidth: 1200,
+    Lang: lang,
   },
   mutations: {
     SetThemeInfo(state, theme) {
@@ -38,7 +36,11 @@ export default new Vuex.Store({
     SetIsInit(state, newVal) {
       state.isInit = newVal;
     },
+    SetScreenWidth(state, newVal) {
+      state.ScreenWidth = newVal;
+    },
     SetLang(state, newVal) {
+      window.vue.$i18n.locale = newVal;
       state.Lang = newVal;
       localStorage.setItem('Lang', newVal);
     },

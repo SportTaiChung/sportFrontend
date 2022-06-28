@@ -56,15 +56,17 @@
               </template>
               <template v-else>
                 <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
-                <div class="cardContentBlockRowText HomeTeamSign">(主)</div>
+                <div class="cardContentBlockRowText HomeTeamSign">({{ $t('Common.Home') }})</div>
                 <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
               </template>
             </div>
 
             <div class="cardContentBlockRow">
-              <div class="cardContentBlockWithHalfRow">投注: {{ historyItem.Amount }}</div>
               <div class="cardContentBlockWithHalfRow">
-                最高返還:
+                {{ $t('Common.Bet') }}: {{ historyItem.Amount }}
+              </div>
+              <div class="cardContentBlockWithHalfRow">
+                {{ $t('BetViewList.HighBack') }}:
                 {{
                   $lib.truncFloor(
                     historyItem.Amount * (parseFloat(historyItem.dataBet[0].PayoutOddsStr) + 1)
@@ -78,11 +80,15 @@
         <template v-if="historyItem.BetType === 99">
           <div class="strayContentBlock" @click="historyItem.isCollapse = !historyItem.isCollapse">
             <div class="strayContentBlockRow">
-              <div>過關</div>
+              <div>{{ $t('Common.Stray') }}</div>
               <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
             </div>
             <div class="strayContentBlockRow">
-              {{ `(每組${historyItem.Amount}元 x 1組) = ${historyItem.Amount}` }}
+              {{
+                `${$t('Common.EachZu')}${historyItem.Amount}${$t('Common.Dollar')} x 1${$t(
+                  'Common.Group'
+                )}) = ${historyItem.Amount}`
+              }}
             </div>
 
             <!-- 過關詳細注單 -->
@@ -116,7 +122,7 @@
                     </template>
                     <template v-else>
                       <div class="">{{ dataBet.HomeTeam }} </div>
-                      <div class="HomeTeamSign">(主) </div>
+                      <div class="HomeTeamSign">({{ $t('Common.Home') }}) </div>
                       <div class="strayDetailContentBlockRowTeam"> v {{ dataBet.AwayTeam }}</div>
                     </template>
                   </div>
@@ -137,16 +143,19 @@
       v-if="isMobileMode && !isShowCardOptionBlock && panelMode !== PanelModeEnum.result"
     >
       <div class="buttonRow">
-        <div class="submitBtn" style="text-align: center" @click="submitHandler">確認下注</div>
+        <div class="submitBtn" style="text-align: center" @click="submitHandler">
+          {{ $t('Common.SubmitBet') }}
+        </div>
       </div>
     </div>
 
     <!-- 單向投注下方面板 -->
     <div class="cardOptionBlock" v-if="isShowChartList && isShowCardOptionBlock">
       <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> 單注 </div>
+        <div class="betInputTitle"> {{ $t('Common.SingleOdd') }} </div>
         <div class="betInputSymbol">:</div>
         <input
+          ref="fillEachBetAmount"
           v-model="fillEachBetAmount"
           type="number"
           @input="fillEachBetAmountHandler"
@@ -160,7 +169,7 @@
       </div>
 
       <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> 可贏金額 </div>
+        <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
         <div class="betInputSymbol">:</div>
         <input
           v-model="fillEachWinAmount"
@@ -200,9 +209,9 @@
       </div>
 
       <div class="totalRow">
-        <div class="halfItem">所有投注 : {{ totalBetAmount }}</div>
+        <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ totalBetAmount }}</div>
         <div class="halfItem">
-          可贏金額 :
+          {{ $t('Common.CanWinMoney') }} :
           <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
             {{ totalWinAmount }}
           </span>
@@ -213,27 +222,47 @@
           {{ OptionCancelBtnStr }}
         </div>
         <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
-          確認下注
+          {{ $t('Common.SubmitBet') }}
         </div>
-        <div class="closeBtn" v-else @click="resultCancelBtnClick()"> 關閉 </div>
+        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+          {{ $t('Common.Close') }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
+    <div
+      class="cardOptionBlock"
+      v-if="isMobileMode && isShowChartList && panelMode === PanelModeEnum.result"
+    >
+      <div class="buttonRow">
+        <div class="clearBtn" @click="resultLeftBtnClickHandler()">
+          {{ OptionCancelBtnStr }}
+        </div>
+        <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
+          {{ $t('Common.SubmitBet') }}
+        </div>
+        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+          {{ $t('Common.Close') }}
+        </div>
       </div>
     </div>
 
     <!-- 串關投注下方面板 -->
     <div class="cardOptionBlock" v-if="isShowCharStrayList && isShowCardOptionBlock">
       <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
-        <div class="topTextRow"> ※ 存在同場賽事 </div>
+        <div class="topTextRow"> ※ {{ $t('BetViewList.HasSameGame') }} </div>
         <div class="bottomTextRow">
-          <div>已選項目有</div>
+          <div>{{ $t('BetViewList.HaveChoose') }}</div>
           <div class="goldTip">{{ EvtIdRepeatList.length }}</div>
-          <div>注無法串關</div>
+          <div>{{ $t('BetViewList.CantStray') }}</div>
         </div>
       </div>
       <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
         <div class="strayBlock">
           <div class="strayBlockTop">
             <div class="strayTopLeft">
-              {{ `${showBetCartList.length}串1` }}
+              {{ `${showBetCartList.length}${$t('Common.string')}1` }}
             </div>
             <div class="strayTopRight">
               <div class="num">1 </div>
@@ -246,6 +275,7 @@
         </div>
         <div class="betInputSymbol">:</div>
         <input
+          ref="strayBetAmount"
           v-model="strayBetAmount"
           type="number"
           read="true"
@@ -255,7 +285,7 @@
         />
       </div>
       <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> 可贏金額 </div>
+        <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
         <div class="betInputSymbol">:</div>
         <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
       </div>
@@ -289,18 +319,22 @@
         class="strayRow"
         v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
       >
-        <div class="strayRowTitle"> 過關 共1組 </div>
+        <div class="strayRowTitle"> {{ $t('BetViewList.StaryOnly1') }} </div>
         <div class="strayRowContent">
           {{
-            `${showBetCartList.length}串1 X 1 (每組${strayBetAmount}元 X 1 組) = ${strayBetAmount}`
+            `${showBetCartList.length}${$t('Common.string')}1 X 1 (${$t(
+              'Common.EachZu'
+            )}${strayBetAmount}${$t('Common.Dollar')} X 1 ${$t(
+              'Common.Group'
+            )}) = ${strayBetAmount}`
           }}
         </div>
       </div>
 
       <div class="totalRow">
-        <div class="halfItem">所有投注 : {{ strayBetAmount }}</div>
+        <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ strayBetAmount }}</div>
         <div class="halfItem">
-          可贏金額 :
+          {{ $t('Common.CanWinMoney') }} :
           <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
             {{ $lib.truncFloor(strayBetAmount * strayOdd) }}
           </span>
@@ -315,9 +349,11 @@
           v-if="panelMode !== PanelModeEnum.result"
           @click="straySubmitHandler"
         >
-          確認下注
+          {{ $t('Common.SubmitBet') }}
         </div>
-        <div class="closeBtn" v-else @click="resultCancelBtnClick()"> 關閉 </div>
+        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+          {{ $t('Common.Close') }}
+        </div>
       </div>
     </div>
 
@@ -326,7 +362,7 @@
         <div class="noDataItemImgContainer">
           <img src="@/assets/img/pc/icon_onInfo.svg" alt="" />
         </div>
-        <div> 點擊賠率以添加選項 </div>
+        <div> {{ $t('BetViewList.ClickToAdd') }} </div>
       </div>
     </div>
 
@@ -338,13 +374,13 @@
         <div class="noDataItemImgContainer">
           <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
         </div>
-        <div>暫無最新注單</div>
+        <div>{{ $t('BetViewList.NoBet') }}</div>
       </div>
     </div>
 
     <div class="noData" v-if="isShowStrayCantPlayTip">
       <div class="noDataItem">
-        <div class="noDataItemImgContainer"> 通關投注至少選擇2場賽事 </div>
+        <div class="noDataItemImgContainer"> {{ $t('BetViewList.StayNeed2Game') }} </div>
       </div>
     </div>
   </div>
@@ -414,6 +450,9 @@
         lastBlurInput: { name: 'fillEachBetAmount' },
 
         lastTraceCodeKey: null,
+
+        isLockEnter: false,
+        lockEvent: null,
       };
     },
     mounted() {
@@ -427,10 +466,13 @@
           });
         }
       }, 10000);
+
+      window.addEventListener('keydown', this.keyPress);
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
       clearInterval(this.intervalEvent2);
+      window.removeEventListener('keydown', this.keyPress);
     },
     watch: {
       // 有新增投注到購物車事件
@@ -449,8 +491,12 @@
             );
           }
 
-          if (this.isQuickBetEnable) {
-            this.submitHandler();
+          if (this.groupIndex === 0 && !this.isMobileMode) {
+            if (this.childIndex === 0) {
+              this.$refs.fillEachBetAmount.focus();
+            } else if (this.childIndex === 1) {
+              this.$refs.strayBetAmount.focus();
+            }
           }
         });
       },
@@ -507,15 +553,18 @@
       isClearMemberData() {
         this.clearMemberData();
       },
+      isSubmitHandler() {
+        this.submitHandler(true);
+      },
     },
     computed: {
       OptionCancelBtnStr() {
         if (this.panelMode === this.PanelModeEnum.normal) {
-          return '取消';
+          return this.$t('Common.Cancel');
         } else if (this.panelMode === this.PanelModeEnum.lock) {
-          return '全部清除';
+          return this.$t('Common.AllClear');
         } else {
-          return '保留投注項目';
+          return this.$t('BetViewList.KeepBetCart');
         }
       },
       settings() {
@@ -535,6 +584,9 @@
       },
       isClearMemberData() {
         return this.$store.state.BetCart.isClearMemberData;
+      },
+      isSubmitHandler() {
+        return this.$store.state.BetCart.isSubmitHandler;
       },
       isShowChartList() {
         return this.groupIndex === 0 && this.childIndex === 0 && this.showBetCartList.length > 0;
@@ -575,6 +627,26 @@
       },
     },
     methods: {
+      keyPress(e) {
+        if (e.key === 'Enter' && !this.isLockEnter) {
+          this.isLockEnter = true;
+          clearTimeout(this.lockEvent);
+          this.lockEvent = setTimeout(() => {
+            this.isLockEnter = false;
+          }, 300);
+          if (
+            this.groupIndex === 0 &&
+            this.showBetCartList.length !== 0 &&
+            this.panelMode !== this.PanelModeEnum.result
+          ) {
+            if (this.childIndex === 0) {
+              this.submitHandler();
+            } else if (this.childIndex === 1) {
+              this.straySubmitHandler();
+            }
+          }
+        }
+      },
       arrowIconJudge(isCollapse) {
         if (isCollapse) {
           return 'el-icon-arrow-up';
@@ -744,14 +816,14 @@
         if (betType === 99) {
           let errorMessage = null;
           if (this.EvtIdRepeatList.length !== 0) {
-            errorMessage = '串關出現重複賽事';
+            errorMessage = this.$t('BetViewList.StrayHaveSame');
           }
           if (
             this.strayBetAmount === 0 ||
             this.strayBetAmount === '' ||
             this.strayBetAmount === null
           ) {
-            errorMessage = '請先輸入串關金額';
+            errorMessage = this.$t('BetViewList.PlzInputStrayAmountFirst');
           }
 
           if (errorMessage !== null) {
@@ -775,12 +847,12 @@
           const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
           const OddValue = parseFloat(this.$SportLib.cartDataToDisplayData(cartData).showOdd);
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
-          if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
-            errorMessage = '尚未收到注格資訊,請稍後再試';
-            return false;
-          }
+          // if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
+          //   errorMessage = this.$t('BetViewList.NotGetBetInfo');
+          //   return false;
+          // }
           if (cartData.Status !== 1) {
-            errorMessage = '請先移除過期賽事';
+            errorMessage = this.$t('BetViewList.PlzRemoveOutOfTimeBet');
             return false;
           }
           // 一般投注
@@ -790,7 +862,7 @@
               cartData.betAmount === '' ||
               cartData.betAmount === 0
             ) {
-              errorMessage = '請先輸入下注金額';
+              errorMessage = this.$t('BetViewList.PlzInputBetAmount');
               return false;
             }
 
@@ -832,7 +904,7 @@
           return list;
         }
       },
-      submitHandler() {
+      submitHandler(isShowMessage = false) {
         const checkRes = this.checkBetPlayData(1, null);
         if (checkRes === null) {
           return;
@@ -854,7 +926,7 @@
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
                 setTimeout(() => {
-                  this.callPlayStateAPI();
+                  this.callPlayStateAPI(isShowMessage);
                 }, 1000);
               }
             })
@@ -895,11 +967,11 @@
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
       },
-      callPlayStateAPI(isStray = false) {
+      callPlayStateAPI(isShowMessage = false) {
         this.$store
           .dispatch('BetCart/playState', {
             traceCodeKey: this.lastTraceCodeKey,
-            isStray,
+            isShowMessage,
           })
           .then((res) => {})
           .finally(() => {
@@ -1120,6 +1192,7 @@
           font-size: 14px;
           cursor: pointer;
           font-weight: bold;
+          text-align: center;
         }
         .clearBtn {
           background-color: #838383;

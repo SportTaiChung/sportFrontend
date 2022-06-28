@@ -9,7 +9,9 @@
             selectChildIndex = 0;
           "
         >
-          <div class="topHeaderTextItemChild" :class="topHeaderTextItemChildCSS(0)"> 投注資訊 </div>
+          <div class="topHeaderTextItemChild" :class="topHeaderTextItemChildCSS(0)">
+            {{ $t('GamesBetInfo.BetInfo') }}
+          </div>
           <div class="topHeaderTextItemChild SelectBorder" v-if="this.selectGroupIndex === 0"></div>
         </div>
         <div
@@ -19,15 +21,25 @@
             selectChildIndex = 0;
           "
         >
-          <div class="topHeaderTextItemChild" :class="topHeaderTextItemChildCSS(1)"> 最新注單 </div>
+          <div class="topHeaderTextItemChild" :class="topHeaderTextItemChildCSS(1)">
+            {{ $t('GamesBetInfo.NewestBet') }}
+          </div>
           <div class="topHeaderTextItemChild SelectBorder" v-if="this.selectGroupIndex === 1"></div>
         </div>
       </div>
       <div class="topHeaderIconItemGroup">
-        <div class="topHeaderIconItem" @click="$emit('openStrayCount')" title="過關計算器">
+        <div
+          class="topHeaderIconItem"
+          @click="$emit('openStrayCount')"
+          :title="$t('GamesBetInfo.StrayCount')"
+        >
           <img src="@/assets/img/pc/btn_count.svg" alt="" />
         </div>
-        <div class="topHeaderIconItem" @click="$emit('openSetting')" title="功能設定">
+        <div
+          class="topHeaderIconItem"
+          @click="$emit('openSetting')"
+          :title="$t('GamesBetInfo.Setting')"
+        >
           <img src="@/assets/img/pc/btn_funSet.svg" alt="" />
         </div>
       </div>
@@ -109,15 +121,15 @@
       bottomHeaderRowItem(index) {
         if (this.selectGroupIndex === 0) {
           if (index === 0) {
-            return '單向投注';
+            return this.$t('GamesBetInfo.NormalBet');
           } else {
-            return '過關投注';
+            return this.$t('GamesBetInfo.StrayBet');
           }
         } else {
           if (index === 0) {
-            return '未結算注單';
+            return this.$t('GamesBetInfo.NotCountBet');
           } else {
-            return '可兌現注單';
+            return this.$t('GamesBetInfo.isCountBet');
           }
         }
       },

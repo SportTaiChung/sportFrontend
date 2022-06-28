@@ -3,6 +3,7 @@
     <!-- 標題 Bar -->
     <div
       class="playTypeBar"
+      :style="headerColor"
       v-if="GameList.length && gameData.Items.List.length"
       @click="onToggleAllCollapseClick"
     >
@@ -92,6 +93,9 @@
       GameList() {
         return this.gameStore.GameList;
       },
+      CatMapData() {
+        return this.$store.state.Game.CatMapData;
+      },
       currentCatData() {
         const { selectCatID, MenuList } = this.gameStore;
         const currentCatData = MenuList.find((it) => it.catid === selectCatID);
@@ -116,6 +120,12 @@
           ? ' - ' + this.currentWagerType.WagerTypeName
           : '';
         return gameName + wagerTypeName;
+      },
+      headerColor() {
+        const color = this.CatMapData[this.gameData.Items.List[0].CatID]?.color || '#7d9364';
+        return {
+          'background-color': color,
+        };
       },
     },
     methods: {

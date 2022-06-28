@@ -14,29 +14,29 @@
       <!-- 一級選單面板區 -->
       <div class="main-container">
         <ul class="feature-list">
-          <li class="feature-item">
+          <li class="feature-item" @click="openLive()">
             <img class="icon" src="@/assets/img/mobile/icon_live.svg" />
-            <div class="text"> 現場轉播 </div>
+            <div class="text"> {{ $t('Common.LivePlay') }} </div>
           </li>
           <li class="feature-item" @click="jumpLink('scoreLive')">
             <img class="icon" src="@/assets/img/mobile/icon_score.svg" />
-            <div class="text"> 即時比分 </div>
+            <div class="text"> {{ $t('GamesHeader.LiveScore') }} </div>
           </li>
           <li class="feature-item" @click="$emit('openStrayCount')">
             <img class="icon" src="@/assets/img/mobile/icon_count.svg" />
-            <div class="text"> 過關計算器 </div>
+            <div class="text"> {{ $t('GamesBetInfo.StrayCount') }} </div>
           </li>
           <li class="feature-item" @click="OpenGameResultWindow()">
             <img class="icon" src="@/assets/img/mobile/icon_result.svg" />
-            <div class="text"> 賽果 </div>
+            <div class="text"> {{ $t('GamesHeader.GameResult') }} </div>
           </li>
           <li class="feature-item" @click="jumpLink('rule')">
             <img class="icon" src="@/assets/img/mobile/icon_rule.svg" />
-            <div class="text"> 規則 </div>
+            <div class="text"> {{ $t('GamesHeader.GameRule') }} </div>
           </li>
           <li class="feature-item" @click="openSecondaryPanel('功能設定')">
             <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" />
-            <div class="text"> 功能設定 </div>
+            <div class="text"> {{ $t('GamesBetInfo.Setting') }} </div>
           </li>
         </ul>
 
@@ -150,6 +150,17 @@
             ', left=' +
             left
         );
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLiveURL')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
     },
   };
