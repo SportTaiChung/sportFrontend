@@ -315,6 +315,14 @@
         ></i>
       </div>
 
+      <BetResultBlock
+        style="margin-bottom: 7px; margin-left: 10px"
+        v-if="panelMode === PanelModeEnum.result"
+        :panelMode="panelMode"
+        :cartData="showBetCartList[0]"
+      >
+      </BetResultBlock>
+
       <div
         class="strayRow"
         v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
@@ -389,6 +397,7 @@
 <script>
   import mBetKeyboard from '@/components/mBetKeyboard';
   import listCardItem from '@/components/ListCardItem';
+  import BetResultBlock from '@/components/BetResultBlock';
   import { PanelModeEnum } from '@/enum/BetPanelMode';
 
   export default {
@@ -396,6 +405,7 @@
     components: {
       mBetKeyboard,
       listCardItem,
+      BetResultBlock,
     },
     props: {
       // 0: 投注資訊
@@ -926,7 +936,7 @@
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
                 setTimeout(() => {
-                  this.callPlayStateAPI(isShowMessage);
+                  this.callPlayStateAPI();
                 }, 1000);
               }
             })
@@ -954,7 +964,7 @@
                 this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.result);
                 this.lastTraceCodeKey = res.data.traceCodeKey;
                 setTimeout(() => {
-                  this.callPlayStateAPI(true);
+                  this.callPlayStateAPI();
                 }, 1000);
               }
             })
@@ -967,11 +977,10 @@
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
       },
-      callPlayStateAPI(isShowMessage = false) {
+      callPlayStateAPI() {
         this.$store
           .dispatch('BetCart/playState', {
             traceCodeKey: this.lastTraceCodeKey,
-            isShowMessage,
           })
           .then((res) => {})
           .finally(() => {

@@ -2,7 +2,7 @@ import { getBetInfo, playBet, playState, getBetHistory } from '@/api/Game';
 import { oddDataToPlayData } from '@/utils/SportLib';
 import { PanelModeEnum } from '@/enum/BetPanelMode';
 import rootStore from '@/store';
-import { Notification } from 'element-ui';
+// import { Notification } from 'element-ui';
 const quickBetData = {
   isShow: false,
   x: 0,
@@ -207,7 +207,7 @@ export default {
       });
     },
     // 檢查投注狀態
-    playState(store, { traceCodeKey, isShowMessage }) {
+    playState(store, { traceCodeKey }) {
       return new Promise((resolve, reject) => {
         return playState(traceCodeKey)
           .then((res) => {
@@ -215,23 +215,8 @@ export default {
               // 如果有找到201 就重新打一次playState
               if (res.data.find((it) => it.code === 201)) {
                 setTimeout(() => {
-                  store.dispatch('playState', { traceCodeKey, isShowMessage });
+                  store.dispatch('playState', { traceCodeKey });
                 }, 600);
-              }
-
-              // 只有過關投注才能提示
-              if (isShowMessage && res.data.length !== 0) {
-                if (res.data[0].code === 200) {
-                  Notification.success({
-                    message: res.data[0].Message,
-                  });
-                } else {
-                  if (store.state.betCartList[0].betResultCount >= 2) {
-                    Notification.error({
-                      message: res.data[0].Message,
-                    });
-                  }
-                }
               }
               store.commit('updateBetCartListBetResult', res.data);
             }

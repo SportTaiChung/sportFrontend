@@ -96,26 +96,8 @@
         {{ $t('ListCardItem.BetLimit') }} : {{ cartData.BetMax }}
       </div>
 
-      <div
-        class="betResultBlock"
-        v-if="panelMode === PanelModeEnum.result && cartData.betResult !== null && childIndex === 0"
-      >
-        <div class="success" v-if="cartData.betResult.code === 200">
-          <img class="betResultImgIcon" src="@/assets/img/common/betView/ok.png" alt="" />
-          {{ cartData.betResult.Message }}
-        </div>
-        <div
-          class="info"
-          v-else-if="cartData.betResult.code === 201 && state.betCartList[index].betResultCount > 2"
-        >
-          <img class="betResultImgIcon" src="@/assets/img/common/betView/info.png" alt="" />
-          {{ cartData.betResult.Message }}
-        </div>
-        <div class="error" v-else>
-          <img class="betResultImgIcon" src="@/assets/img/common/betView/error.png" alt="" />
-          {{ cartData.betResult.Message }}
-        </div>
-      </div>
+      <BetResultBlock v-if="childIndex === 0" :panelMode="panelMode" :cartData="cartData">
+      </BetResultBlock>
 
       <!-- 小鍵盤 -->
       <mBetKeyboard
@@ -132,12 +114,14 @@
 </template>
 
 <script>
+  import BetResultBlock from '@/components/BetResultBlock';
   import mBetKeyboard from '@/components/mBetKeyboard';
   import { PanelModeEnum } from '@/enum/BetPanelMode';
   export default {
     name: 'ListCardItem',
     components: {
       mBetKeyboard,
+      BetResultBlock,
     },
     props: {
       cartData: {
