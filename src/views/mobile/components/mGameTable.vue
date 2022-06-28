@@ -80,7 +80,7 @@
       mGameBetting,
     },
     mounted() {
-      this.activeCollapse = [];
+      this.expandAllCollapse();
     },
     computed: {
       gameStore() {
@@ -140,10 +140,12 @@
         }
       },
       toggleAllCollapse() {
-        this.activeCollapse =
-          this.activeCollapse.length > 0
-            ? []
-            : new Array(this.gameData.Items.List.length).fill(0).map((it, index) => index);
+        this.activeCollapse = this.activeCollapse.length > 0 ? [] : this.expandAllCollapse();
+      },
+      expandAllCollapse() {
+        this.activeCollapse = new Array(this.gameData.Items.List.length)
+          .fill(0)
+          .map((it, index) => index);
       },
       openWagerTypePopup() {
         if (this.currentCatData.Items.length) {
