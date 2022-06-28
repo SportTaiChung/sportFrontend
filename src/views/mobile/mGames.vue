@@ -130,6 +130,50 @@
       ServiceChat,
       StrayCountDialog,
     },
+    mounted() {
+      // 強制修正 viewport高度
+      function syncHeight() {
+        document.documentElement.style.setProperty(
+          '--window-inner-height',
+          `${window.innerHeight}px`
+        );
+      }
+      window.addEventListener('resize', syncHeight);
+
+      // 強制禁用 ios 兩指縮放 (舊)
+      document.documentElement.addEventListener(
+        'touchstart',
+        function (event) {
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        },
+        false
+      );
+
+      // 強制禁用 ios 兩指縮放 (新)
+      document.documentElement.addEventListener(
+        'gesturestart',
+        function (event) {
+          event.preventDefault();
+        },
+        false
+      );
+
+      // 強制禁用 ios 點兩下縮放
+      var lastTouchEnd = 0;
+      document.documentElement.addEventListener(
+        'touchend',
+        function (event) {
+          var now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        false
+      );
+    },
     data() {
       return {
         activeCollapse: [],
@@ -214,6 +258,13 @@
 </script>
 
 <style lang="scss">
+  :root {
+    --window-inner-height: 100%;
+  }
+
+  * {
+    user-select: none;
+  }
   html {
     font-size: 15px;
     @media screen and (max-width: 1000px) {
@@ -231,6 +282,26 @@
   body {
     width: 100%;
     height: 100%;
+    height: var(--window-inner-height);
+    margin-top: 0.01px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    touch-action: manipulation;
+    margin-top: 0.01px;
+  }
+
+  body {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    touch-action: manipulation;
+    text-size-adjust: 100%;
+    -webkit-overflow-scrolling: touch;
   }
 
   #MobileGames {
