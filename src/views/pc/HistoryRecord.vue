@@ -479,7 +479,7 @@
         this.active = 2;
         this.getBetHistory(true, time + ' 00:00:00', time + ' 23:59:59');
       },
-      getBetHistory(type, starttime, endtime) {
+      getBetHistory(type = false, starttime, endtime) {
         this.$store.commit('SetLoading', true);
         let postData = {};
         if (type) {
@@ -492,7 +492,7 @@
         }
         this.$store
           .dispatch('History/getBetHistory', {
-            isset: false,
+            isset: type,
             ...postData,
           })
           .then((res) => {
@@ -509,7 +509,7 @@
       getBetDayHistory(type) {
         this.$store
           .dispatch('History/getBetDayHistory', {
-            isset: false,
+            isset: true,
           })
           .then((res) => {
             this.weekData = res.data;
