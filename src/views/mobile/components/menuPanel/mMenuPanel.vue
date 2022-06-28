@@ -6,7 +6,7 @@
       <div class="header-container">
         <img class="level" src="@/assets/img/mobile/icon_level1.svg" />
         <div class="player-id"
-          >{{ userID }} <span class="more-id">{{ userID }}</span>
+          >{{ userID }} <span class="more-id">{{ nickName }}</span>
         </div>
         <div class="btn-announcement" @click="$emit('callAnnouncement')"> </div>
       </div>
@@ -37,6 +37,10 @@
           <li class="feature-item" @click="openSecondaryPanel('功能設定')">
             <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" />
             <div class="text"> {{ $t('GamesBetInfo.Setting') }} </div>
+          </li>
+          <li class="feature-item" @click="openPersonal()">
+            <!-- <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" /> -->
+            <div class="text"> {{ $t('GamesHeader.PersonalSetting') }} </div>
           </li>
         </ul>
 
@@ -102,6 +106,9 @@
       userID() {
         return this.userStore.MBID;
       },
+      nickName() {
+        return this.userStore.UserData?.RealName;
+      },
     },
     methods: {
       close() {
@@ -161,6 +168,9 @@
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
+      },
+      openPersonal() {
+        this.$emit('openPersonal');
       },
     },
   };
@@ -292,6 +302,7 @@
             justify-content: flex-start;
             background-color: transparent;
             cursor: pointer;
+            position: relative;
             width: 100%;
             height: 35px;
 
@@ -302,12 +313,15 @@
             }
 
             .text {
+              position: absolute;
+              margin-left: 50px;
+              width: calc(100% - 50px);
               flex: 1;
               font-size: 1.2rem;
               line-height: 35px;
               text-align: left;
               color: #000;
-              padding-left: 5px;
+              padding: 0 5px;
               border-bottom: 1px solid #ccc;
               white-space: nowrap;
               overflow: hidden;

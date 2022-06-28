@@ -76,6 +76,7 @@
         @closeMe="isOpenMenuPanel = false"
         @updateGameDetail="reCallGameDetailAPI()"
         @openStrayCount="isShowStrayCount = true"
+        @openPersonal="isOpenPersonalPanel = true"
       ></mMenuPanel>
 
       <!-- 聯盟選擇面板 -->
@@ -100,6 +101,10 @@
         @closeMe="isOpenServiceChat = false"
         @updateUnreadCount="updateUnreadCount"
       ></ServiceChat>
+
+      <!-- 個人設置 -->
+      <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
+      </PersonalPanel>
     </div>
   </div>
 </template>
@@ -118,6 +123,7 @@
   import mLeaguesPanel from './components/mLeaguesPanel.vue';
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
   import mGameCatNav from './components/mGameCatNav.vue';
+  import PersonalPanel from '@/components/PersonalPanel';
 
   export default {
     name: 'MobileGames',
@@ -135,6 +141,10 @@
       ServiceChat,
       StrayCountDialog,
       mGameCatNav,
+      PersonalPanel,
+    },
+    created() {
+      this.$store.dispatch('User/UserInfoAbout');
     },
     mounted() {
       if (this.gameStore.MenuList.length !== 0) {
@@ -214,6 +224,7 @@
         isOpenMenuPanel: false,
         isOpenLeaguesPanel: false,
         isOpenServiceChat: false,
+        isOpenPersonalPanel: false,
         isShowStrayCount: false,
         latestSelectCatId: null,
         latestSelectWagerTypeKey: null,
