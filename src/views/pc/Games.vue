@@ -58,6 +58,8 @@
 
     <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
     </PersonalPanel>
+
+    <ChatSocket></ChatSocket>
   </div>
 </template>
 
@@ -72,6 +74,7 @@
   import StrayCountDialog from './components/StrayCountDialog.vue';
   import ServiceChat from '@/components/ServiceChat';
   import PersonalPanel from '@/components/PersonalPanel';
+  import ChatSocket from '@/components/ChatSocket';
 
   export default {
     name: 'PCGames',
@@ -86,6 +89,7 @@
       MoreGame,
       ServiceChat,
       PersonalPanel,
+      ChatSocket,
     },
     data() {
       return {
@@ -103,6 +107,10 @@
         isOpenPersonalPanel: false,
         // QA未讀數量
         unreadQACount: 0,
+
+        websocketObj: null,
+        wsHeartflag: false,
+        reconnectTime: 0,
       };
     },
     created() {
