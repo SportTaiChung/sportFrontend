@@ -242,28 +242,29 @@
         }
       },
       GameTableListStyleJudge() {
-        let diffOffset = 0;
-        // 左側選單如果關閉時
-        if (this.isNavMenuCollapse) {
-          // 減掉 左邊側欄 64px
-          // 減掉 右邊注單 300px;
-          // 加上 卷軸寬度17px;
-          // 因此減掉 347px;
-          diffOffset = 364;
-          // return `width: calc(100% - 347px);`;
-        } else {
-          // 減掉 左邊側欄 200px
-          // 減掉 右邊注單 300px;
-          // 加上 卷軸寬度17px;
-          // 因此減掉 483px;
-          diffOffset = 480;
-          // return `width: calc(100% - 483px);`;
-        }
-        // 更多投注 寬度370px
-        if (this.isShowMoreGame) {
-          diffOffset += 370;
-        }
-        return `width: calc(100% - ${diffOffset}px);`;
+        // let diffOffset = 0;
+        // // 左側選單如果關閉時
+        // if (this.isNavMenuCollapse) {
+        //   // 減掉 左邊側欄 64px
+        //   // 減掉 右邊注單 300px;
+        //   // 加上 卷軸寬度17px;
+        //   // 因此減掉 347px;
+        //   diffOffset = 364;
+        //   // return `width: calc(100% - 347px);`;
+        // } else {
+        //   // 減掉 左邊側欄 200px
+        //   // 減掉 右邊注單 300px;
+        //   // 加上 卷軸寬度17px;
+        //   // 因此減掉 483px;
+        //   diffOffset = 480;
+        //   // return `width: calc(100% - 483px);`;
+        // }
+        // // 更多投注 寬度370px
+        // if (this.isShowMoreGame) {
+        //   diffOffset += 370;
+        // }
+        // return `width: calc(100% - ${diffOffset}px);`;
+        return '';
       },
     },
   };
@@ -277,7 +278,7 @@
     border-right: 2px solid;
     width: fit-content;
     background-color: #d5d5d5;
-
+    flex: 1;
     @include main_bg_border_color();
 
     .ScrollViewContainer {

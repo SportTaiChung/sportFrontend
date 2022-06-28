@@ -81,7 +81,12 @@
         @change="quickBetEnableChangeHandler"
       >
       </el-switch>
-      <el-popover popper-class="fastBet-help-popper" placement="bottom-start" trigger="hover">
+      <el-popover
+        class="popover"
+        popper-class="fastBet-help-popper"
+        placement="bottom-start"
+        trigger="hover"
+      >
         <div class="help-title">{{ $t('GamesSetup.QuickBetInfo') }}</div>
         <div class="help-detail">
           {{ $t('GamesSetup.QuickBetInfo1') }}
@@ -92,6 +97,10 @@
         </div>
         <i class="el-icon-question" slot="reference"></i>
       </el-popover>
+
+      <div class="cartBtn" @click="cartBtnClick">
+        <i :class="isShowGameBet ? 'el-icon-arrow-right' : 'el-icon-shopping-cart-2'"></i>
+      </div>
     </div>
 
     <el-dialog
@@ -134,6 +143,11 @@
   import Marquee from './Marquee.vue';
   export default {
     name: 'GamesSetup',
+    props: {
+      isShowGameBet: {
+        type: Boolean,
+      },
+    },
     components: {
       Marquee,
     },
@@ -334,6 +348,9 @@
           this.marqueeText = res.data.content;
         });
       },
+      cartBtnClick() {
+        this.$emit('ClickShowGameBet', !this.isShowGameBet);
+      },
     },
   };
 </script>
@@ -431,8 +448,8 @@
   @import '@/assets/sass/theme/mixin.scss';
 
   .setUp_color {
-    margin-right: 10px;
     @include base-fontColor();
+    margin-right: 8px;
   }
 
   #GamesSetup {
@@ -538,11 +555,15 @@
       display: inline-flex;
       justify-content: flex-end;
       align-items: center;
-      padding: 0 10px;
+      .popover {
+        width: 20px;
+        display: flex;
+        justify-content: center;
+        margin: 0 5px;
+      }
       i {
         font-size: 20px;
         color: #000000;
-        margin-left: 10px;
       }
       .setUp_input {
         width: 110px;
@@ -553,7 +574,20 @@
         border: none;
         color: #fff;
         outline: none;
-        margin: 0 10px;
+        margin-right: 8px;
+      }
+      .cartBtn {
+        background: #ffdf1b;
+        display: flex;
+        justify-content: center;
+        border-radius: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+        i {
+          display: block;
+          margin: 0;
+          padding: 2px 8px;
+        }
       }
     }
   }

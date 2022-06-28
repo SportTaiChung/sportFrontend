@@ -8,7 +8,12 @@
       ></GamesHeader>
     </div>
     <div class="setUp">
-      <GamesSetup ref="GamesSetup" @SelectLeague="SelectLeague"></GamesSetup>
+      <GamesSetup
+        ref="GamesSetup"
+        :isShowGameBet="isShowGameBet"
+        @SelectLeague="SelectLeague"
+        @ClickShowGameBet="ShowGameBet"
+      ></GamesSetup>
     </div>
     <div class="main">
       <GamesNavMenu
@@ -23,6 +28,7 @@
       <MoreGame v-if="isShowMoreGame" @AddToCart="AddToCartEvent()"></MoreGame>
       <GamesBetInfo
         ref="GamesBetInfo"
+        v-show="isShowGameBet"
         @openSetting="
           isShowSetting = true;
           $refs.GamesSettingDialog.loadSettings();
@@ -91,6 +97,8 @@
         isShowStrayCount: false,
         // 顯示客服對話
         isOpenServiceChat: false,
+        // 顯示投注面板
+        isShowGameBet: false,
         // 顯示個人設置
         isOpenPersonalPanel: false,
         // QA未讀數量
@@ -132,13 +140,23 @@
       ScreenWidth() {
         return this.$store.state.ScreenWidth;
       },
+      isAddNewToChart() {
+        return this.$store.state.BetCart.isAddNewToChart;
+      },
     },
     watch: {
       ScreenWidth() {
         this.updateIsNavMenuCollapse();
       },
+      // 有新增投注到購物車事件
+      isAddNewToChart() {
+        this.isShowGameBet = true;
+      },
     },
     methods: {
+      ShowGameBet(val) {
+        this.isShowGameBet = val;
+      },
       updateIsNavMenuCollapse() {
         if (this.ScreenWidth < 1600) {
           this.isNavMenuCollapse = true;
