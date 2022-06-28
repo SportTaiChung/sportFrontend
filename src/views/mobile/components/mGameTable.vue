@@ -63,10 +63,6 @@
           return {};
         },
       },
-      isExpanded: {
-        type: Boolean,
-        default: false,
-      },
       hasMoreGame: {
         type: Boolean,
         default() {

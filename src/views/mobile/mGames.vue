@@ -3,27 +3,31 @@
     <div class="main-layout">
       <!-- HEADER -->
       <MobileHeader
-        ref="header"
-        :activeCollapse="activeCollapse"
         :unreadQACount="unreadQACount"
-        @toggleAllCollapse="toggleAllCollapse()"
         @openService="openService()"
-        @ChangeCat="ChangeCat()"
+        @gameTypeClickHandler="gameTypeClickHandler"
       ></MobileHeader>
+
+      <!-- 彩種導覽列 -->
+      <mGameCatNav
+        @onCatTypeClick="menuItemClickHandler"
+        @callGetFavoriteGameDetail="callGetFavoriteGameDetail()"
+      ></mGameCatNav>
 
       <!-- 主遊戲 table 容器 -->
       <div class="gameTableContainer">
         <template v-if="GameList.length">
+          <!-- loop 當前彩種所有賽事 -->
           <mGameTable
             v-for="(gameData, index) in GameList"
             :key="index"
             :gameData="gameData"
-            :isExpanded="isExpanded(index)"
             :hasMoreGame="gameData.Items.hasMoreCount"
             @openWagerTypePopup="isShowWagerTypePopup = true"
           ></mGameTable>
         </template>
         <template v-else>
+          <!-- 無賽事 -->
           <div class="noData" v-if="!$store.state.isLoading"> {{ $t('Common.NoGame') }} </div>
         </template>
       </div>
@@ -70,7 +74,7 @@
       <mMenuPanel
         :isOpen="isOpenMenuPanel"
         @closeMe="isOpenMenuPanel = false"
-        @updateGameDetail="$refs.header.reCallGameDetailAPI()"
+        @updateGameDetail="reCallGameDetailAPI()"
         @openStrayCount="isShowStrayCount = true"
       ></mMenuPanel>
 
@@ -79,7 +83,7 @@
         ref="leaguesPanel"
         :isOpen="isOpenLeaguesPanel"
         @closeMe="isOpenLeaguesPanel = false"
-        @onLeaguesListChanged="$refs.header.reCallGameDetailAPI()"
+        @onLeaguesListChanged="reCallGameDetailAPI()"
         @hasLeagueFiltered="(val) => (hasLeagueFiltered = val)"
       ></mLeaguesPanel>
 
@@ -113,6 +117,7 @@
   import ServiceChat from '@/components/ServiceChat.vue';
   import mLeaguesPanel from './components/mLeaguesPanel.vue';
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
+  import mGameCatNav from './components/mGameCatNav.vue';
 
   export default {
     name: 'MobileGames',
@@ -129,8 +134,30 @@
       MoreGame,
       ServiceChat,
       StrayCountDialog,
+      mGameCatNav,
     },
     mounted() {
+      if (this.gameStore.MenuList.length !== 0) {
+        // 一進入頁面預設選取第一個
+        this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
+      } else {
+        this.$store.commit('SetLoading', false);
+      }
+
+      // 更新 賠率: 每10秒
+      this.intervalEvent = setInterval(() => {
+        if (this.isFavoriteMode) {
+          this.$store.dispatch('Game/GetFavoriteGameDetailSmall');
+        } else {
+          this.$store.dispatch('Game/GetGameDetailSmall');
+        }
+      }, 10000);
+
+      // 更新 MENU: 每20秒
+      this.intervalEvent2 = setInterval(() => {
+        this.$store.dispatch('Game/GetMenuGameCatList', false);
+      }, 20000);
+
       // 強制修正 viewport高度
       function syncHeight() {
         document.documentElement.style.setProperty(
@@ -166,7 +193,7 @@
         'touchend',
         function (event) {
           var now = Date.now();
-          if (now - lastTouchEnd <= 300) {
+          if (now - lastTouchEnd <= 300 && event.cancelable) {
             event.preventDefault();
           }
           lastTouchEnd = now;
@@ -174,9 +201,12 @@
         false
       );
     },
+    beforeDestroy() {
+      clearInterval(this.intervalEvent);
+      clearInterval(this.intervalEvent2);
+    },
     data() {
       return {
-        activeCollapse: [],
         isShowBetInfo: false,
         isShowBetInfoSingle: true,
         isShowBetRecordView: false,
@@ -185,9 +215,15 @@
         isOpenLeaguesPanel: false,
         isOpenServiceChat: false,
         isShowStrayCount: false,
+        latestSelectCatId: null,
+        latestSelectWagerTypeKey: null,
         // QA未讀數量
         unreadQACount: 0,
         hasLeagueFiltered: false,
+
+        // interval IDs
+        intervalEvent: null,
+        intervalEvent2: null,
       };
     },
     computed: {
@@ -197,29 +233,91 @@
       gameStore() {
         return this.$store.state.Game;
       },
+      gameTypeID() {
+        return this.$store.state.Game.selectGameType;
+      },
+      isFavoriteMode() {
+        return this.gameStore.selectCatID === -999;
+      },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
+      isCallGameDetailAPI() {
+        return this.$store.state.Game.isCallGameDetailAPI;
+      },
+      favorites() {
+        return this.$store.state.Setting.UserSetting.favorites;
+      },
     },
     methods: {
-      toggleCollapse(index) {
-        if (this.activeCollapse.includes(index)) {
-          this.activeCollapse = this.activeCollapse.filter((it) => it !== index);
-        } else {
-          this.activeCollapse.push(index);
+      menuItemClickHandler(catData, WagerTypeKey) {
+        // 清除聯盟篩選
+        this.clearLeagueList();
+
+        const clickCatID = catData.catid;
+
+        if (WagerTypeKey === null) {
+          if (catData.Items.length === 0) {
+            WagerTypeKey = 1;
+          } else {
+            WagerTypeKey = catData.Items[0].WagerTypeKey;
+          }
         }
+        this.latestSelectCatId = clickCatID;
+        this.latestSelectWagerTypeKey = WagerTypeKey;
+        // 獲取遊戲detail
+        this.callGetGameDetail(clickCatID, WagerTypeKey);
       },
-      toggleAllCollapse() {
-        this.activeCollapse =
-          this.activeCollapse.length > 0
-            ? []
-            : new Array(this.GameList.length).fill(0).map((it, index) => index);
+      callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
+        if (!updateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
+        let postData = null;
+        postData = {
+          GameType: this.gameTypeID,
+          CatID,
+          WagerTypeKey,
+        };
+
+        this.$store.dispatch('Game/GetGameDetail', { postData, updateBehind }).then((res) => {
+          console.log(
+            'getGameDetail done GameType CatID WagerTypeKey',
+            this.gameTypeID,
+            CatID,
+            WagerTypeKey
+          );
+          this.$store.commit('SetLoading', false);
+        });
       },
-      isExpanded(index) {
-        return this.activeCollapse.includes(index);
+      reCallGameDetailAPI() {
+        const catId = this.latestSelectCatId || this.gameStore.selectCatID;
+        const WagerTypeKey = this.latestSelectWagerTypeKey || this.gameStore.selectWagerTypeKey;
+        this.callGetGameDetail(catId, WagerTypeKey);
+      },
+      gameTypeClickHandler(gameType) {
+        console.log(gameType);
+        this.$store.commit('Game/setGameType', gameType);
+        const menuData = this.gameStore.FullMenuList.find((menu) => menu.GameType === gameType);
+        const catid = menuData.LeftMenu.item.length !== 0 ? menuData.LeftMenu.item[0].catid : 1;
+        this.callGetGameDetail(catid, null);
+        this.$store.dispatch('Game/GetMenuGameCatList', true);
+      },
+      // 最愛
+      callGetFavoriteGameDetail(isUpdateBehind = false) {
+        if (!isUpdateBehind) {
+          this.$store.commit('SetLoading', true);
+        }
+        this.$store
+          .dispatch('Game/GetFavoriteGameDetail')
+          .then((res) => {})
+          .finally(() => {
+            if (!isUpdateBehind) {
+              this.$store.commit('SetLoading', false);
+            }
+          });
       },
       openBetInfoPopup() {
         if (this.betCartList.length === 1) {
@@ -244,7 +342,7 @@
       updateUnreadCount(count) {
         this.unreadQACount = count;
       },
-      ChangeCat() {
+      clearLeagueList() {
         this.$refs.leaguesPanel.clearLeagueList();
         this.$store.commit('Game/changeCatReset');
       },
@@ -252,6 +350,24 @@
     watch: {
       betCartList(list) {
         list.length === 0 && (this.isShowBetInfoSingle = true);
+      },
+      isCallGameDetailAPI: {
+        handler() {
+          if (this.isFavoriteMode) {
+            this.callGetFavoriteGameDetail(true);
+          } else {
+            this.callGetGameDetail(
+              this.gameStore.selectCatID,
+              this.gameStore.selectWagerTypeKey,
+              true
+            );
+          }
+        },
+      },
+      favorites(val) {
+        if (val.length === 0 && this.isFavoriteMode) {
+          this.reCallGameDetailAPI();
+        }
       },
     },
   };
