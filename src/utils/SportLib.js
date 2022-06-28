@@ -20,7 +20,7 @@ export const PlayMethodData = {
   // 讓分
   HandiCap: {
     name: 'HandiCap',
-    typeIdList: [101, 103, 121, 124, 129],
+    typeIdList: [101, 103, 117, 118, 121, 124, 129],
     betCutLineDealFunc: function (oddData) {
       return oddData.HomeHdp !== '' ? oddData.HomeHdp : oddData.AwayHdp;
     },
@@ -28,7 +28,7 @@ export const PlayMethodData = {
   // 大小
   BigSmall: {
     name: 'BigSmall',
-    typeIdList: [102, 104, 109, 122, 125],
+    typeIdList: [102, 104, 109, 122, 125, 131],
     betCutLineDealFunc: function (oddData) {
       return oddData.OULine;
     },
@@ -44,7 +44,7 @@ export const PlayMethodData = {
   // 單雙
   OddEven: {
     name: 'OddEven',
-    typeIdList: [105, 113, 126, 128],
+    typeIdList: [105, 113, 126, 128, 132],
     betCutLineDealFunc: function () {
       return 0;
     },

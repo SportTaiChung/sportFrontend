@@ -17,6 +17,7 @@ import {
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
 import { getMenuIconByCatID, getBoardImageByCatId, getColorByCatId } from '@/utils/SportLib';
+import { NotCheckWagerGrpIDs } from '@/Config/index.js';
 
 export default {
   namespaced: true,
@@ -132,7 +133,7 @@ export default {
               newBestHead.forEach((headData, headIndex) => {
                 oldWagerDatas.every((oldWagerData, oldWagerDataIndex) => {
                   // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
-                  if (headData.WagerGrpIDs[0] !== 128) {
+                  if (NotCheckWagerGrpIDs.indexOf(headData.WagerGrpIDs[0]) === -1) {
                     const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(oldWagerData.WagerGrpID);
                     const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(
                       oldWagerData.WagerTypeID
