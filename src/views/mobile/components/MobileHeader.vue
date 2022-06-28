@@ -2,12 +2,12 @@
   <div id="mobileHeader">
     <div class="header-container">
       <div class="leftContainer">
-        <img
+        <!-- <img
           alt=""
           class="goBackIcon"
           src="@/assets/img/mobile/btn_arrow_w.svg"
           @click="routerGoBack()"
-        />
+        /> -->
         <div class="navList">
           <div
             class="navItem"
@@ -117,11 +117,11 @@
         .navList {
           display: flex;
           align-items: center;
-          margin-left: 1.2rem;
+          // margin-left: 1.2rem;
           .navItem {
             display: flex;
             align-items: center;
-            height: 1.6rem;
+            height: 2rem;
             padding: 0px 0.8rem;
             color: white;
             margin-right: 0.6rem;
