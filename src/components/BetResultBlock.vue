@@ -11,7 +11,7 @@
       <img class="betResultImgIcon" src="@/assets/img/common/betView/info.png" alt="" />
       {{ cartData.betResult.Message }}
     </div>
-    <div class="error" v-else>
+    <div class="error" v-else-if="cartData.betResult.code !== 201">
       <img class="betResultImgIcon" src="@/assets/img/common/betView/error.png" alt="" />
       {{ cartData.betResult.Message }}
     </div>
