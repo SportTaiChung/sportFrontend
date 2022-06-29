@@ -158,7 +158,7 @@
         this.isShowGameBet = val;
       },
       updateIsNavMenuCollapse() {
-        if (this.ScreenWidth < 1600) {
+        if (this.ScreenWidth < 1400) {
           this.isNavMenuCollapse = true;
         }
       },

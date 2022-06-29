@@ -28,7 +28,9 @@
           <div class="cell">{{ parseScore('FinalScore')[1] }}</div>
         </div>
       </td>
-      <td></td>
+      <td>
+        <div class="cell">{{ teamData.Remarks }}</div>
+      </td>
     </tr>
   </table>
 </template>

@@ -61,7 +61,11 @@
         }
       },
       appStyleJudge() {
-        if (process.env.VUE_APP_UI === 'pc') {
+        if (
+          process.env.VUE_APP_UI === 'pc' &&
+          this.$route.name !== 'HistoryRecord' &&
+          this.$route.name !== 'GameResult'
+        ) {
           return 'min-width:1400px;';
         } else {
           return '';
@@ -85,5 +89,6 @@
   body,
   #app {
     height: 100%;
+    width: 100%;
   }
 </style>

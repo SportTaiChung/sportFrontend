@@ -11,6 +11,9 @@
         text-color="#fff"
         @select="handleSelect"
       >
+        <el-menu-item index="0" @click="openLive">
+          {{ $t('Common.LivePlay') }}
+        </el-menu-item>
         <el-menu-item index="1" @click="jumpLink('scoreLive')">
           {{ $t('GamesHeader.LiveScore') }}
         </el-menu-item>
@@ -148,6 +151,17 @@
         this.$store.dispatch('User/Logout').finally(() => {
           this.$store.commit('SetLoading', false);
         });
+      },
+      openLive() {
+        this.$store.commit('SetLoading', true);
+        this.$store
+          .dispatch('Game/GetLiveURL')
+          .then((res) => {
+            window.open(res.data);
+          })
+          .finally(() => {
+            this.$store.commit('SetLoading', false);
+          });
       },
     },
   };

@@ -9,6 +9,7 @@
     >
       <!-- 玩法類型 -->
       <div class="playTypeBtn" @click="!isFavoriteMode && openWagerTypePopup()">
+        <img class="icon" :src="getMenuIconByCatID(gameData.CatID)" alt="" />
         <template v-if="!isFavoriteMode">
           {{ gameNameWithWagerType }}
         </template>
@@ -63,10 +64,6 @@
           return {};
         },
       },
-      isExpanded: {
-        type: Boolean,
-        default: false,
-      },
       hasMoreGame: {
         type: Boolean,
         default() {
@@ -84,7 +81,7 @@
       mGameBetting,
     },
     mounted() {
-      this.activeCollapse = [];
+      this.expandAllCollapse();
     },
     computed: {
       gameStore() {
@@ -144,15 +141,21 @@
         }
       },
       toggleAllCollapse() {
-        this.activeCollapse =
-          this.activeCollapse.length > 0
-            ? []
-            : new Array(this.gameData.Items.List.length).fill(0).map((it, index) => index);
+        this.activeCollapse = this.activeCollapse.length > 0 ? [] : this.expandAllCollapse();
+      },
+      expandAllCollapse() {
+        return (this.activeCollapse = new Array(this.gameData.Items.List.length)
+          .fill(0)
+          .map((it, index) => index));
       },
       openWagerTypePopup() {
         if (this.currentCatData.Items.length) {
           this.$emit('openWagerTypePopup');
         }
+      },
+      getMenuIconByCatID(catId) {
+        const icon = this.CatMapData[catId].icon;
+        return require('@/assets/img/common/menuIcon/' + icon);
       },
     },
   };
@@ -172,7 +175,7 @@
       flex: 1;
       overflow-x: auto;
       overflow-y: hidden;
-      box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
+      // box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
     }
     .playTypeBar {
       display: flex;
@@ -195,16 +198,30 @@
       }
 
       .playTypeBtn {
+        display: flex;
+        align-items: center;
+        position: relative;
         align-self: stretch;
         border: 1px solid #fff;
         border-radius: 45px;
-        padding: 4px 22px;
+        padding: 4px 30px;
+        min-height: 26px;
         line-height: 1;
         background-color: rgba(255, 255, 255, 0.15);
-        font-size: 1.1rem;
+        font-size: 1.2rem;
 
         &:active {
           background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        img.icon {
+          position: absolute;
+          left: 5px;
+          top: 50%;
+          height: 18px;
+          width: 18px;
+          transform: translateY(-50%);
+          filter: grayscale(1) brightness(3);
         }
       }
     }

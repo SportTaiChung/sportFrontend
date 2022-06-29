@@ -15,7 +15,7 @@ export function getAnnouncement(postData) {
     url: `/GameInfo/Ann`,
     method: 'post',
     param: {
-      AddMemberToken: false,
+      AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
   });

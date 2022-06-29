@@ -139,7 +139,7 @@
     "NormalBet": "單向投注",
     "StrayBet": "過關投注",
     "NotCountBet": "未結算注單",
-    "isCountBet": "可兌現注單"
+    "isCountBet": "已結算注單"
   },
   "ListCardItem": {
     "ItemIsClosePlzRemove": "盤口關閉中，請移除再下注",

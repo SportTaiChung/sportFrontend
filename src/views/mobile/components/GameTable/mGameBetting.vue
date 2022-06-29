@@ -1,5 +1,5 @@
 <template>
-  <div ref="root" class="mGameBetting" :style="maxHeight" :class="isExpanded ? '' : 'closed'">
+  <div ref="root" class="mGameBetting" :class="isExpanded ? '' : 'closed'">
     <table :class="hasMoreGameStyle">
       <thead ref="thead" @click="$emit('toggleCollapse')">
         <tr>
@@ -8,7 +8,7 @@
         </tr>
       </thead>
 
-      <tbody ref="tbody">
+      <tbody ref="tbody" v-show="isExpanded">
         <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
             <tr
@@ -195,18 +195,25 @@
                   </template>
                 </ul>
               </td>
-              <td
-                v-if="hasMoreGame && rowIndex === 0"
-                class="moreGame-holder"
-                @click="moreGameClickHandler(teamData)"
-              >
-                <img
-                  style="width: 14px; height: 14px"
-                  src="@/assets/img/common/moreGameIcon.svg"
-                  alt=""
-                />
-                {{ teamData.MoreCount }}
-              </td>
+
+              <!-- 更多玩法按鈕 -->
+              <template v-if="hasMoreGame">
+                <td
+                  v-if="rowIndex === 0"
+                  class="moreGameBtn"
+                  @click="moreGameClickHandler(teamData)"
+                >
+                  <img
+                    style="width: 14px; height: 14px"
+                    src="@/assets/img/common/moreGameIcon.svg"
+                    alt=""
+                  />
+                  <span>
+                    {{ teamData.MoreCount }}
+                  </span>
+                </td>
+                <td v-else class="moreGameBtn"></td>
+              </template>
             </tr>
           </template>
         </template>
@@ -216,11 +223,9 @@
 </template>
 
 <script>
-  import mixin from './GamesTableMixin';
   import Odd from '@/components/Odd';
 
   export default {
-    mixins: [mixin],
     name: 'mGameBetting',
     components: {
       Odd,
@@ -252,48 +257,18 @@
       },
     },
     data() {
-      return {
-        isMounted: false,
-      };
+      return {};
     },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
-      maxHeight() {
-        if (!this.isMounted) return;
-        if (!this.isExpanded) return;
-        const { thead, tbody } = this.$refs;
-        return {
-          height: thead.offsetHeight + tbody.offsetHeight + 'px',
-        };
-      },
       hasMoreGameStyle() {
         return this.hasMoreGame ? 'hasMoreGame' : '';
       },
     },
-    mounted() {
-      this.isMounted = true;
-      this.$refs.root.addEventListener(
-        'transitionend',
-        (e) => {
-          if (!this.isExpanded && e.propertyName === 'height') {
-            this.$refs.tbody.style.display = 'none';
-          }
-        },
-        { once: true }
-      );
-      if (!this.isExpanded) {
-        this.$refs.tbody.style.display = 'none';
-      }
-    },
-    watch: {
-      isExpanded(isExpanded) {
-        if (isExpanded) {
-          this.$refs.tbody.style.display = '';
-        }
-      },
-    },
+    mounted() {},
+    watch: {},
     methods: {
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';
@@ -370,7 +345,7 @@
 
   .mGameBetting {
     position: relative;
-    overflow: hidden;
+    // overflow: hidden;
     width: fit-content;
     min-width: 100%;
     transition: height 300ms ease-out;
@@ -399,6 +374,10 @@
       width: 100%;
       border-spacing: 0;
       font-size: $font-size;
+
+      tr {
+        position: relative;
+      }
 
       th {
         min-width: 6.666rem;
@@ -466,9 +445,36 @@
         padding: 0 0.5rem;
         text-align: center;
         border-bottom: 1px solid #e8e8e8;
+      }
+
+      td.moreGameBtn {
+        position: sticky;
+        right: 0;
+        top: 0;
+        width: 35px !important;
+        min-width: 35px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-width: 0px 0 1px 1px;
+        text-align: center;
+
+        span {
+          font-size: 1rem;
+          line-height: 1;
+        }
+
+        img {
+          vertical-align: text-bottom;
+        }
 
         &:active {
           background-color: #ddd;
+        }
+      }
+
+      tr td:nth-last-child(2) {
+        li {
+          border-right: none !important;
         }
       }
     }

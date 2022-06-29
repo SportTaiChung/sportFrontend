@@ -247,6 +247,7 @@
 <script>
   import Odd from '@/components/Odd';
   import LiveBoards from '@/components/LiveBoard/LiveBoardIndex';
+  import { NotCheckWagerGrpIDs } from '@/Config/index.js';
   export default {
     name: 'MoreGame',
     components: {
@@ -381,17 +382,61 @@
             // 排列出Wager底下所有Odd
             const Odds = LeagueData.Team[0].Wager.reduce((sum, WagerData) => {
               const wagerOdds = WagerData.Odds.map((oddData) => {
+                const WagerGrpID = WagerData.WagerGrpID;
                 const WagerTypeID = WagerData.WagerTypeID;
+
+                // debugger;
+                // let headWagerData;
+                // // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
+                // if (NotCheckWagerGrpIDs.indexOf(WagerGrpID) === -1) {
+                //   headWagerData = gameData.BestHead.find((headData) => {
+                //     const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(WagerGrpID);
+                //     const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(WagerTypeID);
+
+                //     if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
+                //       return true;
+                //     } else {
+                //       return false;
+                //     }
+                //   });
+                // } else {
+                //   // 如果 WagerGrpID 是128, 只要檢查 WagerTypeIDs 就好
+                //   headWagerData = gameData.BestHead.find((headData) => {
+                //     const findIndex = headData.WagerTypeIDs.findIndex(
+                //       (typeID) => typeID === WagerTypeID
+                //     );
+                //     if (findIndex > -1) {
+                //       return true;
+                //     } else {
+                //       return false;
+                //     }
+                //   });
+                // }
+
                 const headWagerData = gameData.BestHead.find((headData) => {
-                  const findIndex = headData.WagerTypeIDs.findIndex(
-                    (typeID) => typeID === WagerTypeID
-                  );
-                  if (findIndex > -1) {
-                    return true;
+                  // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
+                  if (NotCheckWagerGrpIDs.indexOf(headData.WagerGrpIDs[0]) === -1) {
+                    const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(WagerGrpID);
+                    const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(WagerTypeID);
+
+                    if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
+                      return true;
+                    } else {
+                      return false;
+                    }
                   } else {
-                    return false;
+                    // 如果 WagerGrpID 是128, 只要檢查 WagerTypeIDs 就好
+                    const findIndex = headData.WagerTypeIDs.findIndex(
+                      (typeID) => typeID === WagerTypeID
+                    );
+                    if (findIndex > -1) {
+                      return true;
+                    } else {
+                      return false;
+                    }
                   }
                 });
+
                 if (headWagerData) {
                   return {
                     ...oddData,

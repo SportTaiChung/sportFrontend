@@ -345,7 +345,9 @@
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
           console.log('res:', res);
-          this.marqueeText = res.data.content;
+          if (res.data) {
+            this.marqueeText = res.data.content;
+          }
         });
       },
       cartBtnClick() {

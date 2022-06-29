@@ -72,6 +72,8 @@
     background-color: rgba(0, 0, 0, 0.5);
 
     .popup {
+      display: flex;
+      flex-direction: column;
       width: calc(100vw - 50px);
       max-width: 390px;
       max-height: 80%;
@@ -79,6 +81,7 @@
       overflow: hidden;
 
       .header {
+        flex-shrink: 0;
         @include base-background();
         position: relative;
         .title {
@@ -122,15 +125,9 @@
           font-weight: bold;
         }
       }
-      .line {
-        height: 1px;
-        background: #ccc;
-        margin: 0 1.5rem;
-      }
       .body {
         display: flex;
         flex-direction: column;
-        max-height: 70%;
         overflow: auto;
         .btn-save {
           background-color: #ffdf1b;

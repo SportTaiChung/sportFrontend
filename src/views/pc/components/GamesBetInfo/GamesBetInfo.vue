@@ -104,8 +104,6 @@
     watch: {
       betCartList: {
         handler() {
-          // 投注資訊 - 點選一個以上盤口賠率,右側投注模式直接跳過關投注
-          console.log('this.betCartList.length:', this.betCartList.length, this.lastCartLength);
           if (this.selectGroupIndex === 0 && this.lastCartLength !== this.betCartList.length) {
             if (this.betCartList.length <= 1) {
               this.selectChildIndex = 0;
