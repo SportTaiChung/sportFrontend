@@ -10,6 +10,7 @@
     },
     created() {
       this.initWebsocket();
+      window.chat = this;
     },
     computed: {
       User() {
@@ -18,41 +19,13 @@
     },
     methods: {
       initWebsocket() {
-        if (WebSocket) {
-          this.webSocketObj = new WebSocket(
-            `wss://${process.env.VUE_APP_CHAT_API}/roomsocket/roomsocket`
-          );
-          this.webSocketObj.onmessage = this.onMessage;
-          this.webSocketObj.onopen = this.onOpen;
-          this.webSocketObj.onerror = this.onError;
-          this.webSocketObj.onclose = this.onClose;
-        }
-        // var testScoket = new WebSocket(
-        //   `wss://${process.env.VUE_APP_CHAT_API}/roomsocket/roomsocket`
-        // );
-
-        // testScoket.onopen = function (e) {
-        //   if (e != undefined) {
-        //     console.log({ error: 'connect', mes: 'opened', obj: e });
-        //   }
-        // };
-        // testScoket.onclose = function (e) {
-        //   if (e != undefined) {
-        //     console.log({ error: 'close', mes: 'closed', obj: e });
-        //   }
-        // };
-
-        // testScoket.onmessage = function (e) {
-        //   if (e != undefined) {
-        //     console.log({ error: 'received', mes: e.data, obj: e });
-        //   }
-        //   // socket.close();
-        // };
-        // testScoket.onerror = function (e) {
-        //   if (e != undefined) {
-        //     console.log({ error: 'error', mes: e.data, obj: e });
-        //   }
-        // };
+        this.webSocketObj = new WebSocket(
+          `wss://${process.env.VUE_APP_CHAT_API}/roomsocket/roomsocket`
+        );
+        this.webSocketObj.onmessage = this.onMessage;
+        this.webSocketObj.onopen = this.onOpen;
+        this.webSocketObj.onerror = this.onError;
+        this.webSocketObj.onclose = this.onClose;
       },
       onOpen() {
         if (this.webSocketObj.readyState === 1) {
@@ -65,14 +38,19 @@
         if (evt !== undefined) {
           // 其他解析測試
           // a.replace('@','####:####').replace('[','####:####').split("####:####")
-          const formatData = evt.data.split(/@|\[/);
+          // const formatData = evt.data.split(/@|\[/);
+          const formatData = evt.data
+            .replace('@', '####:####')
+            .replace('[', '####:####')
+            .split('####:####');
           const eventName = formatData[1];
           const data = formatData[2];
-          console.log('onMessage:', eventName, JSON.parse(data));
+          console.log('onMessage:', formatData, eventName, data);
+          console.log('parse:', JSON.parse(data));
+
           if (eventName === 'init') {
             this.APILoginMB();
           }
-          this.onClose();
         }
       },
       onError() {
@@ -99,6 +77,9 @@
           token: this.User.Token,
         };
         this.webSocketObj.send(`@APILoginMB[${JSON.stringify(postData)}`);
+      },
+      SendMessage(message) {
+        this.webSocketObj.send(message);
       },
     },
   };

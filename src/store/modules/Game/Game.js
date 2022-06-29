@@ -347,19 +347,11 @@ export default {
       });
     },
 
-    // 11. 游戏公告讯息 - 搜寻单列
+    // 11. 游戏公告讯息 false
     GetAnnouncement(store) {
       return new Promise((resolve, reject) => {
         return getAnnouncement({
-          sia: false,
-        }).then((res) => resolve(res));
-      });
-    },
-    // 11. 游戏公告讯息 - 搜寻全部
-    GetAnnouncementAll(store) {
-      return new Promise((resolve, reject) => {
-        return getAnnouncement({
-          sia: true,
+          sla: true,
         }).then((res) => resolve(res));
       });
     },

@@ -59,7 +59,7 @@
     <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
     </PersonalPanel>
 
-    <ChatSocket></ChatSocket>
+    <!-- <ChatSocket></ChatSocket> -->
   </div>
 </template>
 

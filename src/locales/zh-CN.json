@@ -203,5 +203,12 @@
     "BetRemainAmount": "投注后余额",
     "TypeStray": "类型 : 过关"
   },
-  "GameDate": "比赛日期"
+  "GameDate": "比赛日期",
+  "Ann": {
+    "Title": "公告专区",
+    "Time": "发布时间",
+    "Type": "公告类别",
+    "Message": "讯息内容",
+    "System": "系统公告"
+  }
 }

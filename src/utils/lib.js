@@ -43,8 +43,20 @@ export function diffDateCeil(a, b) {
   return Math.ceil((toTimestamp(a) - toTimestamp(b)) / 1000 / 86400);
 }
 
+function CheckTimeFormatData(time) {
+  if (typeof time === 'string') {
+    return time.replace(/-/g, '/');
+  } else {
+    return time;
+  }
+}
+
 // yyyy-MM-dd HH:mm:ss
 export function timeFormat(time) {
+  if (time === null) {
+    return;
+  }
+  time = CheckTimeFormatData(time);
   const date = new Date(time);
   const Y = date.getFullYear() + '-';
   const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
@@ -76,29 +88,16 @@ export function timeFormat(time) {
 
 // MM-dd HH:mm:ss
 export function timeFormatWithOutYY(time) {
+  if (time === null) {
+    return;
+  }
+  time = CheckTimeFormatData(time);
   const date = new Date(time);
   const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
   const D = date.getDate().toString().padStart(2, '0');
   const h = date.getHours() + ':';
   const m = date.getMinutes() + ':';
   const s = date.getSeconds();
-  const TimeZoneOffset = date.getTimezoneOffset();
-  let UTC = -(TimeZoneOffset / 60);
-  let UTCFloat = '';
-  if (TimeZoneOffset % 60 !== 0) {
-    UTCFloat = `.${-(TimeZoneOffset % 60)}`;
-  }
-  if (UTC > 0) {
-    UTC = ` (UTC+${parseInt(UTC)}${UTCFloat})`;
-  } else {
-    UTC = ` (UTC${parseInt(UTC)}${UTCFloat})`;
-  }
-  // return (
-  //   +' ' +
-  //   (h.toString().length === 2 ? '0' + h : h) +
-  //   (m.toString().length === 2 ? '0' + m : m) +
-  //   (s.toString().length === 1 ? '0' + s : s)
-  // );
   return {
     day: M + D,
     time:
@@ -108,8 +107,34 @@ export function timeFormatWithOutYY(time) {
   };
 }
 
+// M-D HH:mm
+export function timeFormatWithOutMMss(time) {
+  if (time === null) {
+    return;
+  }
+  time = CheckTimeFormatData(time);
+
+  const date = new Date(time);
+  const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
+  const D = date.getDate().toString().padStart(2, '0');
+  const h = date.getHours() + ':';
+  const m = date.getMinutes();
+
+  return (
+    M +
+    D +
+    ' ' +
+    (h.toString().length === 2 ? '0' + h : h) +
+    (m.toString().length === 1 ? '0' + m : m)
+  );
+}
+
 // MMDD
 export function timeFormatMMDD(time) {
+  if (time === null) {
+    return;
+  }
+  time = CheckTimeFormatData(time);
   const date = new Date(time);
   const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
   const D = date.getDate().toString().padStart(2, '0');
@@ -119,6 +144,10 @@ export function timeFormatMMDD(time) {
 
 // HH:mm
 export function timeFormatHHmm(time) {
+  if (time === null) {
+    return;
+  }
+  time = CheckTimeFormatData(time);
   const date = new Date(time);
   const h = date.getHours() + ':';
   const m = date.getMinutes();

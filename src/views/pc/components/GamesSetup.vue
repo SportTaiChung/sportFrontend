@@ -2,8 +2,8 @@
   <div id="GamesSetup">
     <div class="setUp_L">
       <span class="timeBlockContainer">
-        <div class="dayBlock">{{ TimeCountDown.day }}</div>
-        <div class="timeBlock">{{ TimeCountDown.time }}</div>
+        <div class="dayBlock">{{ TimeCountDay }}</div>
+        <div class="timeBlock">{{ TimeCountDownTime }}</div>
       </span>
       <div>
         <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
@@ -203,6 +203,12 @@
       TimeCountDown() {
         return this.$lib.timeFormatWithOutYY(this.currentTime);
       },
+      TimeCountDay() {
+        return this.TimeCountDown?.day;
+      },
+      TimeCountDownTime() {
+        return this.TimeCountDown?.time;
+      },
       tableSort() {
         return this.$store.state.Setting.UserSetting.tableSort;
       },
@@ -264,7 +270,7 @@
         const Ann = this.$router.resolve({
           path: 'Ann',
         });
-        this.$lib.WindowOpen(Ann);
+        this.$lib.WindowOpen(Ann.href);
       },
       quickBetAmountChangeHandler() {
         this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
@@ -350,9 +356,8 @@
       },
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
-          console.log('res:', res);
           if (res.data) {
-            this.marqueeText = res.data.content;
+            this.marqueeText = res.data[0].content;
           }
         });
       },
