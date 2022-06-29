@@ -31,7 +31,7 @@
           v-for="(source, index) in gameData.Items.List"
           :key="index"
           :source="source"
-          :isExpanded="isLeagueExpanded(index)"
+          :isExpanded="isExpanded(index)"
           :hasMoreGame="hasMoreGame"
           @toggleCollapse="toggleCollapse(index)"
         ></mGameInfo>
@@ -42,7 +42,7 @@
           <mGameBetting
             :source="source"
             :bestHead="gameData.Items.BestHead"
-            :isExpanded="isLeagueExpanded(index)"
+            :isExpanded="isExpanded(index)"
             :hasMoreGame="hasMoreGame"
             @toggleCollapse="toggleCollapse(index)"
           ></mGameBetting>
@@ -130,7 +130,7 @@
         if (e.target !== e.currentTarget) return;
         this.toggleAllCollapse();
       },
-      isLeagueExpanded(index) {
+      isExpanded(index) {
         return this.activeCollapse.includes(index);
       },
       toggleCollapse(index) {

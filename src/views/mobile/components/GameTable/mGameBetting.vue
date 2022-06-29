@@ -1,14 +1,14 @@
 <template>
-  <div ref="root" class="mGameBetting" :class="isExpanded ? '' : 'closed'">
+  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'">
     <table :class="hasMoreGameStyle">
-      <thead ref="thead" @click="$emit('toggleCollapse')">
+      <thead @click="$emit('toggleCollapse')">
         <tr>
           <th v-for="(it, i) in bestHead" :key="i"> {{ it.showName }}</th>
           <th v-if="hasMoreGame" class="moreGame-holder"></th>
         </tr>
       </thead>
 
-      <tbody ref="tbody" v-show="isExpanded">
+      <tbody v-show="isExpanded">
         <template v-for="(teamData, teamIndex) in source.Team">
           <template v-if="teamData.EvtStatus === 1">
             <tr
@@ -345,13 +345,10 @@
 
   .mGameBetting {
     position: relative;
-    // overflow: hidden;
     width: fit-content;
     min-width: 100%;
-    transition: height 300ms ease-out;
 
     &.closed {
-      height: $row-height !important;
       &::after {
         content: '';
         display: block;
@@ -362,11 +359,6 @@
         height: 1px;
         background-color: #ccc;
       }
-
-      tbody {
-        transition: 350ms ease;
-        opacity: 0;
-      }
     }
 
     table {
@@ -374,6 +366,7 @@
       width: 100%;
       border-spacing: 0;
       font-size: $font-size;
+      background-color: #fff;
 
       tr {
         position: relative;
@@ -408,6 +401,7 @@
             border-style: solid;
             border-color: #e8e8e8;
             border-width: 0 1px 1px 0;
+            background-color: #fff;
 
             &.interactive {
               cursor: pointer;

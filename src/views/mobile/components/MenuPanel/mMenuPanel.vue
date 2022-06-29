@@ -26,7 +26,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_count.svg" />
             <div class="text"> {{ $t('GamesBetInfo.StrayCount') }} </div>
           </li>
-          <li class="feature-item" @click="OpenGameResultWindow()">
+          <li class="feature-item" @click="goGameResultPage()">
             <img class="icon" src="@/assets/img/mobile/icon_result.svg" />
             <div class="text"> {{ $t('GamesHeader.GameResult') }} </div>
           </li>
@@ -78,6 +78,7 @@
 
 <script>
   import mAdvancedSettings from './mAdvancedSettings.vue';
+  import { PageEnum } from '../../enum';
 
   export default {
     name: 'mMenuPanel',
@@ -94,6 +95,7 @@
         isSecondaryPanelOpened: false,
         isShowAdvancedSettings: true,
         secondaryPanelTitle: 'title',
+        PageEnum,
       };
     },
     computed: {
@@ -128,11 +130,8 @@
       closeSecondaryPanel() {
         this.isSecondaryPanelOpened = false;
       },
-      OpenGameResultWindow() {
-        const historyRecord = this.$router.resolve({
-          path: 'GameResult',
-        });
-        this.$lib.WindowOpen(historyRecord.href);
+      goGameResultPage() {
+        this.$emit('goPage', PageEnum.gameResult);
       },
       jumpLink(linkKey) {
         this.$lib.WindowOpen(this.$conf.JumpLink[linkKey]);

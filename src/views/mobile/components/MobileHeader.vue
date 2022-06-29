@@ -2,23 +2,28 @@
   <div id="mobileHeader">
     <div class="header-container">
       <div class="leftContainer">
-        <!-- <img
-          alt=""
+        <img
+          v-if="page !== PageEnum.game"
           class="goBackIcon"
           src="@/assets/img/mobile/btn_arrow_w.svg"
-          @click="routerGoBack()"
-        /> -->
-        <div class="navList">
-          <div
-            class="navItem"
-            v-for="(item, i) in gameTypeList"
-            :key="i"
-            :class="gameTypeID === item.key ? 'navItemActive' : ''"
-            @click="gameTypeClickHandler(item.key)"
-          >
-            <div class="text">{{ item.value }} </div>
-          </div>
-        </div>
+          @click="$emit('goPage', PageEnum.game)"
+        />
+
+        <h5 class="pageName"> {{ pageName }} </h5>
+
+        <template v-if="page === PageEnum.game">
+          <ul class="gameTypeNav">
+            <li
+              class="navItem"
+              v-for="(item, i) in gameTypeList"
+              :key="i"
+              :class="gameTypeID === item.key ? 'navItemActive' : ''"
+              @click="gameTypeClickHandler(item.key)"
+            >
+              <div class="text">{{ item.value }} </div>
+            </li>
+          </ul>
+        </template>
       </div>
       <div class="rightContainer">
         <div class="userCreditBlock">
@@ -40,20 +45,25 @@
 </template>
 
 <script>
+  import { PageEnum } from '../enum';
+
   export default {
     name: 'mobileHeader',
     props: {
+      page: {
+        type: Number,
+        default: PageEnum.game,
+      },
       unreadQACount: {
         type: Number,
         default: 0,
       },
     },
     data() {
-      return {};
+      return {
+        PageEnum,
+      };
     },
-    mounted() {},
-
-    watch: {},
     computed: {
       gameStore() {
         return this.$store.state.Game;
@@ -69,6 +79,18 @@
       },
       userCredit() {
         return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
+      },
+      pageName() {
+        switch (this.page) {
+          case PageEnum.game: {
+            return '';
+          }
+          case PageEnum.gameResult: {
+            return this.$t('GamesHeader.GameResult');
+          }
+          default:
+            return '';
+        }
       },
     },
     methods: {
@@ -107,14 +129,28 @@
 
       .leftContainer {
         display: flex;
+        align-items: center;
 
         .goBackIcon {
-          width: 1.5rem;
+          width: 2rem;
           height: auto;
           transform: rotate(90deg);
           opacity: 0.7;
+          margin-right: 1rem;
+          &:active {
+            opacity: 1;
+          }
         }
-        .navList {
+
+        .pageName {
+          font-size: 1.6rem;
+          font-weight: normal;
+          line-height: normal;
+          color: #fff;
+          margin: 0;
+        }
+
+        .gameTypeNav {
           display: flex;
           align-items: center;
           // margin-left: 1.2rem;
