@@ -81,7 +81,7 @@
                     ></i>
                   </td>
                   <td>{{ $t('Common.Game2') }}</td>
-                  <td v-for="(str, i) in titles" :key="i">{{ str }}</td>
+                  <td v-for="(str, i) in titles" :key="i">{{ str.Value }}</td>
                 </tr>
               </tbody>
             </table>
@@ -106,9 +106,7 @@
 
               <!-- Table Templates -->
               <div v-for="(teamData, j) in league.List" :key="j">
-                <Soccer :teamData="teamData" v-if="isExpanded && selectedCatId === 1" />
-                <Baseball :teamData="teamData" v-if="isExpanded && selectedCatId === 101" />
-                <Basketball :teamData="teamData" v-if="isExpanded && selectedCatId === 102" />
+                <Universal :titles="titles" :teamData="teamData" v-if="isExpanded" />
               </div>
             </div>
           </div>
@@ -124,9 +122,7 @@
 </template>
 
 <script>
-  import Soccer from '@/components/GameResultTable/Soccer.vue';
-  import Baseball from '@/components/GameResultTable/Baseball.vue';
-  import Basketball from '@/components/GameResultTable/Basketball.vue';
+  import Universal from '@/components/GameResultTable/Universal.vue';
 
   const today = new Date();
   const dateRange = 10;
@@ -134,9 +130,7 @@
   export default {
     name: 'GameResult',
     components: {
-      Soccer,
-      Baseball,
-      Basketball,
+      Universal,
     },
     data() {
       return {
