@@ -138,11 +138,13 @@
         this.$lib.WindowOpen(this.$conf.JumpLink[linkKey]);
       },
       openLive() {
+        const safariWindow = window.open();
+        safariWindow.opener = null;
         this.$store.commit('SetLoading', true);
         this.$store
           .dispatch('Game/GetLiveURL')
           .then((res) => {
-            window.open(res.data);
+            safariWindow.location.href = res.data;
           })
           .finally(() => {
             this.$store.commit('SetLoading', false);

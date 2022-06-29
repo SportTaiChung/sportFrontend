@@ -549,6 +549,14 @@ export default {
         };
         return getGameDetail(postData)
           .then(async (res) => {
+            res.data = res.data.map((it) => {
+              if (it.Items.List.length !== 0) {
+                it.CatID = it.Items.List[0].CatID;
+              } else {
+                it.CatID = null;
+              }
+              return it;
+            });
             store.commit('setGameList', {
               data: res.data,
               isFavorite: true,

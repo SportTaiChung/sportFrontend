@@ -9,7 +9,7 @@
     >
       <!-- 玩法類型 -->
       <div class="playTypeBtn" @click="!isFavoriteMode && openWagerTypePopup()">
-        <img class="icon" :src="getMenuIconByCatID(gameData.CatID)" alt="" />
+        <img class="icon" v-if="gameData.CatID" :src="getMenuIconByCatID(gameData.CatID)" alt="" />
         <template v-if="!isFavoriteMode">
           {{ gameNameWithWagerType }}
         </template>
