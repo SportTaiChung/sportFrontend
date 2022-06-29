@@ -93,7 +93,7 @@
     },
     methods: {
       jumpLink(linkKey) {
-        this.WindowOpen(this.$conf.JumpLink[linkKey]);
+        this.$lib.WindowOpen(this.$conf.JumpLink[linkKey]);
       },
       callGetUserInfoCash() {
         this.$store.dispatch('User/GetUserInfoCash');
@@ -101,38 +101,17 @@
       callUserInfoAbout() {
         this.$store.dispatch('User/UserInfoAbout');
       },
-      WindowOpen(href) {
-        const width = document.documentElement.clientWidth;
-        const height = document.documentElement.clientHeight;
-        // const popupwidth = width * 0.6;
-        const popupwidth = 1200;
-        const popupheight = height * 0.6;
-        const top = (height - popupheight + 20) / 2;
-        const left = (width - popupwidth) / 2;
-        return window.open(
-          href,
-          '111',
-          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
-            popupwidth +
-            ', height=' +
-            popupheight +
-            ', top=' +
-            top +
-            ', left=' +
-            left
-        );
-      },
       OpenPopupCenter() {
         const historyRecord = this.$router.resolve({
           path: 'HistoryRecord',
         });
-        this.WindowOpen(historyRecord.href);
+        this.$lib.WindowOpen(historyRecord.href);
       },
       OpenGameResultWindow() {
         const historyRecord = this.$router.resolve({
           path: 'GameResult',
         });
-        this.WindowOpen(historyRecord.href);
+        this.$lib.WindowOpen(historyRecord.href);
       },
       handleSelect() {
         this.activeIndex = '1';

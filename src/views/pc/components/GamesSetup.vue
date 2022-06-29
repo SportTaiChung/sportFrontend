@@ -13,7 +13,7 @@
 
     <div class="setUp_C">
       <!-- 公告跑馬燈 -->
-      <div class="marquee-wrapper">
+      <div class="marquee-wrapper" @click="clickMarquee">
         <div class="icon"></div>
         <Marquee :text="marqueeText" />
       </div>
@@ -260,6 +260,12 @@
       },
     },
     methods: {
+      clickMarquee() {
+        const Ann = this.$router.resolve({
+          path: 'Ann',
+        });
+        this.$lib.WindowOpen(Ann);
+      },
       quickBetAmountChangeHandler() {
         this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
         if (isNaN(this.quickBetAmount)) {
@@ -513,6 +519,7 @@
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 6px;
         overflow: hidden;
+        cursor: pointer;
 
         .icon {
           flex-shrink: 0;

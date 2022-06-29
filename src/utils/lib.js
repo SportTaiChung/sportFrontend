@@ -140,3 +140,26 @@ export function truncFloor(num, decimal = 2) {
 export function truncCeil(num, decimal = 2) {
   return Math.ceil(trunc(num, decimal));
 }
+
+// 打開popup
+export function WindowOpen(href) {
+  const width = document.documentElement.clientWidth;
+  const height = document.documentElement.clientHeight;
+  // const popupwidth = width * 0.6;
+  const popupwidth = 1200;
+  const popupheight = height * 0.6;
+  const top = (height - popupheight + 20) / 2;
+  const left = (width - popupwidth) / 2;
+  return window.open(
+    href,
+    '111',
+    'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
+      popupwidth +
+      ', height=' +
+      popupheight +
+      ', top=' +
+      top +
+      ', left=' +
+      left
+  );
+}
