@@ -192,3 +192,12 @@ export function WindowOpen(href) {
       left
   );
 }
+
+export function customizedWidth(CatID) {
+  // PM 要求電競、賽狗寬度客製化
+  if (CatID === 85 || CatID === 72) {
+    return 'min-width: 350px';
+  } else {
+    return '';
+  }
+}

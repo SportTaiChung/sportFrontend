@@ -100,7 +100,7 @@
                   v-for="(teamDataRowNum, rowIndex) in teamData.Row"
                   :key="`${teamIndex}-${rowIndex}`"
                 >
-                  <td class="FirstCatNameBlock">
+                  <td class="FirstCatNameBlock" :style="customizedWidth">
                     <div class="leftTimeBlock">
                       <template v-if="rowIndex === 0 && selectGameType !== 2">
                         <div class="timeRow">
@@ -516,6 +516,9 @@
       },
       isQuickBetEnable() {
         return this.$store.state.Game.isQuickBet.isEnable;
+      },
+      customizedWidth() {
+        return this.$lib.customizedWidth(this.source.CatID);
       },
     },
     methods: {

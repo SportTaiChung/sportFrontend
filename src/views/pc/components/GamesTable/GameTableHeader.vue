@@ -1,7 +1,7 @@
 <template>
   <table class="GameTableHeader" :style="bgColor">
     <tbody class="GameTableBody">
-      <td class="FirstCatNameBlock" @click="clickArrow">
+      <td class="FirstCatNameBlock" :style="customizedWidth" @click="clickArrow">
         <div class="leftArrowBlock">
           <i :class="arrowIconJudge" />
         </div>
@@ -32,6 +32,9 @@
     mixins: [mixin],
     name: 'GameTableHeader',
     props: {
+      CatID: {
+        type: Number,
+      },
       CatName: {
         type: String,
       },
@@ -81,6 +84,9 @@
         return {
           'background-color': this.color,
         };
+      },
+      customizedWidth() {
+        return this.$lib.customizedWidth(this.CatID);
       },
     },
     methods: {
