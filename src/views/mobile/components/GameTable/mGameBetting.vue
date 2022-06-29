@@ -203,11 +203,7 @@
                   class="moreGameBtn"
                   @click="moreGameClickHandler(teamData)"
                 >
-                  <img
-                    style="width: 14px; height: 14px"
-                    src="@/assets/img/common/moreGameIcon.svg"
-                    alt=""
-                  />
+                  <img src="@/assets/img/common/moreGameIcon.svg" />
                   <span>
                     {{ teamData.MoreCount }}
                   </span>
@@ -458,7 +454,11 @@
         }
 
         img {
-          vertical-align: text-bottom;
+          display: block;
+          width: 14px;
+          height: 14px;
+          margin: 5px auto;
+          // vertical-align: text-bottom;
         }
 
         &:active {
