@@ -313,15 +313,15 @@
           display: flex;
           flex-flow: column nowrap;
           height: 100%;
-          padding: 8px;
           position: relative;
 
           .chat-header {
             flex-shrink: 0;
             display: flex;
             padding-bottom: 20px;
+            border-radius: 6px;
             border-bottom: 2px solid #f4f7f6;
-            box-shadow: 0px 15px 10px -15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0px 10px 10px -10px rgba(0, 0, 0, 0.4);
             z-index: 1;
 
             img.avatar {
@@ -354,7 +354,7 @@
             align-items: flex-start;
             overflow-x: hidden;
             overflow-y: auto;
-            padding: 10px;
+            // padding: 10px;
 
             .msg-wrap {
               display: flex;
@@ -366,8 +366,8 @@
 
                 .avatar {
                   flex-shrink: 0;
-                  width: 45px;
-                  height: 45px;
+                  width: 3.23rem;
+                  height: 3.23rem;
                   border: 1px solid #000;
                   border-radius: 50rem;
                   background-color: #333;
@@ -379,14 +379,15 @@
                 }
                 .msg {
                   color: #444;
-                  padding: 12px 20px;
+                  padding: 0.5rem 1.5rem;
                   line-height: 26px;
                   font-size: 16px;
-                  min-height: 50px;
+                  min-height: 3rem;
                   border-radius: 7px;
                   display: inline-block;
                   position: relative;
                   background: #efefef;
+                  align-self: flex-end;
 
                   &::after {
                     position: absolute;
@@ -421,7 +422,7 @@
               &.self {
                 align-self: flex-end;
                 flex-flow: row-reverse;
-
+                margin-right: 10px;
                 .avatar {
                   display: none;
                 }
@@ -463,6 +464,7 @@
               border: 1px solid #ced4da;
               border-radius: 0.25rem 0 0 0.25rem;
               border-width: 1px 0 1px 1px;
+              width: 50px;
               &:hover {
                 background: #f0f0f0;
               }
@@ -478,7 +480,7 @@
               padding: 0 10px;
               border-radius: 0 0.25rem 0.25rem 0;
               background-color: #38a688;
-              width: 60px;
+              width: 50px;
               &:hover {
                 filter: brightness(1.1);
               }
