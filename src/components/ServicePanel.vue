@@ -2,13 +2,11 @@
   <div id="ServicePanel" :class="isOpen ? 'open' : ''">
     <div class="overlay" @click="close()"></div>
     <div class="panel">
-      <div class="header">
-        <div class="btn-close" @click="close()"></div>
-      </div>
+      <div class="btn-close" @click="close()"></div>
 
       <div class="body">
         <div class="container">
-          <img src="@/assets/img/common/service/chat-icon.png" alt="" />
+          <img class="logo" src="@/assets/img/common/service/chat-icon.png" />
           <h5>{{ $t('ServicePanel.UPGService') }}</h5>
 
           <div class="text-title">
@@ -111,11 +109,12 @@
     }
 
     .panel {
+      position: relative;
       display: flex;
       flex-direction: column;
       width: 100%;
       height: 100%;
-      max-width: 480px;
+      max-width: 400px;
       overflow: hidden;
       background-color: rgba(255, 255, 255, 0.95);
       background-image: url('~@/assets/img/common/service/panel.jpg');
@@ -125,110 +124,102 @@
       transform: translateX(-100%);
       transition: 350ms ease;
 
-      .header {
-        flex: 0 1;
-        padding: 1.23rem;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        h5 {
-          color: #38a688;
-          font-size: 1.538rem;
-          margin: 0;
-          font-size: 1.538rem;
-          font-weight: 500;
-          line-height: 1.5;
-        }
-        .btn-close {
-          background-image: url('~@/assets/img/common/close.svg');
-          background-repeat: no-repeat;
-          background-position: center;
-          height: 1.23rem;
-          width: 1.23rem;
-          margin-left: auto;
-          opacity: 0.5;
-          cursor: pointer;
-          &:hover {
-            opacity: 1;
-          }
+      @media screen and (max-width: 600px) {
+        max-width: 100%;
+      }
+
+      .btn-close {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        background-image: url('~@/assets/img/common/close.svg');
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 1.4rem;
+        width: 1.4rem;
+        opacity: 0.5;
+        cursor: pointer;
+        &:hover {
+          opacity: 1;
         }
       }
 
       .body {
-        flex: 1;
-        padding: 1.23rem;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+
         .container {
           padding: 0 0.923rem;
           text-align: center;
-        }
-        h5 {
-          color: #fff;
-          font-size: 20px;
-          font-weight: 700;
-          text-align: center;
-          padding: 10px 0;
-          margin: 0;
-        }
-        .text-title {
-          letter-spacing: -0.0089rem;
-          color: #fff;
-          font-size: 14px;
-          margin: 20px 0 50px 0;
-          text-align: center;
-
-          p {
-            font-size: 18px;
-            color: #fff;
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            line-height: 1.846rem;
+          max-width: 300px;
+          margin: 5rem auto;
+          .logo {
+            width: 50%;
+            max-width: 100px;
           }
-        }
 
-        .issues {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          margin: 0 -0.923rem;
-          .issue-card {
-            min-width: 50%;
-            max-width: 150px;
-            margin: 0.307rem auto;
-            // background-color: #fff;
-            // border: 1px solid rgba(0, 0, 0, 0.125);
-            // border-radius: 50rem;
-            // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.075);
-            cursor: pointer;
-            img.card-img {
-              max-width: 93px;
-              // border-radius: 50rem;
-              // box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-              transition: 150ms ease;
-              &:hover {
-                filter: brightness(1.2);
-                transform: scale(1.1);
-              }
+          h5 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            padding: 10px 0;
+            margin: 0;
+          }
+          .text-title {
+            letter-spacing: -0.0089rem;
+            color: #fff;
+            font-size: 14px;
+            margin: 20px 0 50px 0;
+            text-align: center;
+
+            p {
+              font-size: 18px;
+              color: #fff;
+              margin-top: 0;
+              margin-bottom: 0.5rem;
+              line-height: 1.846rem;
             }
-            .card-body {
-              // padding: 1.23rem;
-              text-align: center;
-              .btn {
-                color: #fff;
-                font-weight: bold;
-                font-size: 1.23rem;
-                text-align: center;
-                line-height: normal;
-                padding: 6px 12px;
-                // background-color: #38a688;
-                margin-bottom: 0.615rem;
-                // border-radius: 50rem;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                // min-height: 2.923rem;
-                cursor: pointer;
+          }
+
+          .issues {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            width: 100%;
+            .issue-card {
+              min-width: 50%;
+              max-width: 150px;
+              margin: 0.307rem auto;
+              cursor: pointer;
+              img.card-img {
+                max-width: 93px;
+                transition: 150ms ease;
                 &:hover {
-                  filter: brightness(1.1);
+                  filter: brightness(1.2);
+                  transform: scale(1.1);
+                }
+                &:active {
+                  filter: brightness(0.9);
+                  transform: scale(0.9);
+                }
+              }
+              .card-body {
+                text-align: center;
+                .btn {
+                  color: #fff;
+                  font-weight: bold;
+                  font-size: 1.23rem;
+                  text-align: center;
+                  line-height: normal;
+                  padding: 6px 12px;
+                  margin-bottom: 0.615rem;
+                  display: inline-flex;
+                  justify-content: center;
+                  align-items: center;
+                  cursor: pointer;
+                  &:hover {
+                    filter: brightness(1.1);
+                  }
                 }
               }
             }
