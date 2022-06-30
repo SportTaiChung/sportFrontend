@@ -94,7 +94,8 @@
       border: 3px solid #c4ccd7;
       border-radius: 10px;
       background-color: #fff;
-
+      display: flex;
+      flex-direction: column;
       .header {
         .title {
           color: #000;

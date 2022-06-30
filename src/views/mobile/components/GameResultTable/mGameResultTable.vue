@@ -38,30 +38,28 @@
     </div>
 
     <!-- 日期選擇 popup -->
-    <template>
-      <div class="date-popup" v-show="isShowDatePicker" @click.stop="onMaskClick">
-        <div class="popup">
-          <div class="header">
-            <div class="title"> {{ $t('GameResult.SelectDate') }} </div>
-          </div>
+    <div class="date-popup" v-show="isShowDatePicker" @click.stop="onMaskClick">
+      <div class="popup">
+        <div class="header">
+          <div class="title"> {{ $t('GameResult.SelectDate') }} </div>
+        </div>
 
-          <div class="line"></div>
+        <div class="line"></div>
 
-          <div class="body">
-            <ul>
-              <li
-                class="btn-date"
-                v-for="(date, i) in lastDays"
-                :key="i"
-                :class="selectedDateIndex === i ? 'active' : ''"
-                @click="selectedDateIndex = i"
-                >{{ dateToString(date) }}
-              </li>
-            </ul>
-          </div>
+        <div class="body">
+          <ul>
+            <li
+              class="btn-date"
+              v-for="(date, i) in lastDays"
+              :key="i"
+              :class="selectedDateIndex === i ? 'active' : ''"
+              @click="selectedDateIndex = i"
+              >{{ dateToString(date) }}
+            </li>
+          </ul>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -289,7 +287,7 @@
     }
 
     .date-popup {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       display: flex;
@@ -298,15 +296,17 @@
       background-color: rgba(0, 0, 0, 0.5);
       width: 100%;
       height: 100%;
-      z-index: 10;
+      z-index: 20;
 
       .popup {
         width: calc(100vw - 50px);
-        max-width: 560px;
-        max-height: 80%;
+        max-width: 300px;
+        max-height: 65%;
         border: 3px solid #c4ccd7;
         border-radius: 10px;
         background-color: #fff;
+        display: flex;
+        flex-direction: column;
 
         .header {
           .title {
@@ -334,8 +334,8 @@
             align-items: center;
             position: relative;
             padding: 0.65rem 3rem;
-            margin-bottom: 1rem;
-            min-height: 3.5rem;
+            margin-bottom: 0.6rem;
+            min-height: 3rem;
             font-size: 1.3rem;
             color: #000;
             background-color: #fff;
