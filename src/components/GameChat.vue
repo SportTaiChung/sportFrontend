@@ -2,7 +2,7 @@
   <div id="GameChat">
     <div class="chatContainer">
       <!-- 對話紀錄 -->
-      <div class="ChatListBlock" v-show="isChatEnable" :class="isExtended ? 'extended' : ''">
+      <div class="chat-list-view" v-show="isChatEnable" :class="isExtended ? 'extended' : ''">
         <i class="btn-hide el-icon-close" @click="toggleChatRoom()"></i>
         <i
           class="btn-extend el-icon-arrow-up"
@@ -27,9 +27,13 @@
       <div class="chat-control">
         <!-- 遮罩 -->
         <div class="cover" v-if="!isChatEnable" @click="toggleChatRoom()"></div>
-        <div class="btn-toggleChat" :class="isChatEnable ? 'off' : 'on'" @click="toggleChatRoom()">
+        <div class="btn-toggleChat" :class="isChatEnable ? '' : 'active'" @click="toggleChatRoom()">
         </div>
-        <div class="btn-quickMsg" @click="isShowQuickMsgList = !isShowQuickMsgList"></div>
+        <div
+          class="btn-quickMsg"
+          :class="isShowQuickMsgList ? 'active' : ''"
+          @click="isShowQuickMsgList = !isShowQuickMsgList"
+        ></div>
         <div class="input-wrap">
           <input
             ref="input"
@@ -90,7 +94,7 @@
         this.$nextTick(() => {
           if (enabled) {
             this.scrollBottom();
-            this.placeholder = '';
+            this.placeholder = '請輸入文字...';
             this.$refs.input.focus();
           } else {
             this.chatMessage = '';
@@ -179,6 +183,12 @@
         height: 100%;
         left: 0;
         top: 0;
+        background-color: rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: 200ms ease;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.15);
+        }
       }
       .chat-control {
         flex-shrink: 0;
@@ -189,20 +199,18 @@
         align-items: center;
         background-color: #333;
         padding: 0 1.5rem;
-        z-index: 2;
+        z-index: 10;
         .btn-toggleChat {
           flex-shrink: 0;
           width: 26px;
           height: 26px;
           cursor: pointer;
+          background: url(~@/assets/img/common/chat/btn_chatroom.svg);
+          background-position: center top;
           background-repeat: no-repeat;
-          &.on {
-            background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center bottom;
-            background-size: 100% 200%;
-          }
-          &.off {
-            background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center top;
-            background-size: 100% 200%;
+          background-size: 100% 200%;
+          &.active {
+            background-position: center bottom;
           }
           &:hover {
             opacity: 0.7;
@@ -212,13 +220,18 @@
           flex-shrink: 0;
           width: 23px;
           height: 23px;
-          background: url(~@/assets/img/common/chat/btn_quickMsg.svg) no-repeat center top;
+          background: url(~@/assets/img/common/chat/btn_quickMsg.svg);
           background-size: 100% 200%;
           background-repeat: no-repeat;
+          background-position: center top;
           margin: 0 0 0 1.5rem;
           cursor: pointer;
           &:hover {
             opacity: 0.7;
+          }
+
+          &.active {
+            background-position: center bottom;
           }
         }
         .input-wrap {
@@ -251,7 +264,7 @@
           }
         }
       }
-      .ChatListBlock {
+      .chat-list-view {
         position: relative;
         width: 100%;
         height: 250px;
@@ -260,7 +273,7 @@
         border-top: 2px solid #bbb;
         background-color: #fff;
         box-shadow: 0px -15px 10px -15px rgba(0, 0, 0, 0.3);
-        transition: height 400ms ease;
+        transition: height 500ms ease;
 
         &.extended {
           height: 100%;
@@ -275,7 +288,7 @@
           color: #888;
           text-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
           cursor: pointer;
-          z-index: 8;
+          z-index: 1;
           &:hover {
             color: #000;
           }
@@ -289,7 +302,7 @@
           color: #888;
           text-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
           cursor: pointer;
-          z-index: 8;
+          z-index: 1;
           &:hover {
             color: #000;
           }
@@ -392,13 +405,15 @@
         position: absolute;
         bottom: 60px;
         width: 100%;
-        max-height: 200px;
+        height: 250px;
         overflow-y: auto;
         transform: translateY(100%);
-        transition: 350ms ease;
+        transition: 300ms ease;
         background: rgba(42, 79, 107, 0.9);
-        z-index: 1;
+        opacity: 0.5;
+        z-index: 2;
         &.active {
+          opacity: 1;
           transform: translateY(0);
         }
 
