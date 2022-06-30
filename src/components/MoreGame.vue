@@ -76,11 +76,10 @@
       <!-- 即將推出 -->
       <div
         v-show="gameType2Page == 2"
-        class="coming-soon"
+        class="coming-soon interactive"
         src="@/assets/img/common/coming_soon.jpg"
         @click="onComingSoonClick()"
       >
-        <img src="@/assets/img/common/coming_soon.jpg" style="cursor: pointer" />
       </div>
 
       <!-- 比分板區塊 -->
@@ -147,7 +146,6 @@
         src="@/assets/img/common/coming_soon.jpg"
         @click="onComingSoonClick()"
       >
-        <img src="@/assets/img/common/coming_soon.jpg" />
       </div>
     </div>
 
@@ -822,8 +820,10 @@
         right: 10px;
         opacity: 0.5;
         top: 10px;
-
         cursor: pointer;
+        &:hover {
+          opacity: 1;
+        }
       }
     }
     .GameInfoBlock {
@@ -1029,12 +1029,15 @@
     }
 
     div.coming-soon {
+      height: 150px;
       text-align: center;
       background: #333;
-      img {
-        width: 100%;
-        max-width: 370px;
-        vertical-align: middle;
+      background-image: url('~@/assets/img/common/coming_soon.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      &.interactive {
+        cursor: pointer;
       }
     }
 

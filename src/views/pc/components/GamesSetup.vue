@@ -591,16 +591,19 @@
         margin-right: 8px;
       }
       .cartBtn {
-        background: #ffdf1b;
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
-        border-radius: 10px;
+        border-radius: 50rem;
         margin-right: 5px;
+        padding: 2px 10px;
+        background: #ffdf1b;
         cursor: pointer;
+        &:hover {
+          background: #e1c71a;
+        }
         i {
-          display: block;
-          margin: 0;
-          padding: 2px 8px;
+          font-weight: bold;
         }
       }
     }
