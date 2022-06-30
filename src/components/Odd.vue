@@ -33,9 +33,9 @@
     computed: {
       OddCssJudge() {
         if (this.colorState === 1) {
-          return 'biggerColor';
+          return 'biggerColor ani-value-up';
         } else if (this.colorState === 2) {
-          return 'smallerColor';
+          return 'smallerColor ani-value-down';
         } else {
           return '';
         }
@@ -104,12 +104,47 @@
 
 <style lang="scss" scoped>
   .Odd {
+    position: relative;
     color: #3fa381;
+    overflow: hidden;
   }
   .biggerColor {
     color: red;
   }
   .smallerColor {
     color: skyblue;
+  }
+
+  .ani-value-up {
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      width: 3px;
+      background: linear-gradient(transparent, red, transparent);
+      height: 100%;
+      animation: loopY 1s ease-in-out infinite;
+    }
+  }
+
+  .ani-value-down {
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(transparent, green 20%, green 80%, transparent);
+      animation: loopY 1s ease-in-out infinite reverse;
+    }
+  }
+
+  @keyframes loopY {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
   }
 </style>
