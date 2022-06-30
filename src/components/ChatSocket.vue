@@ -68,6 +68,7 @@
         }
       },
       onClose() {
+        console.error('socket close!');
         this.wsHeartflag = false;
         this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
       },

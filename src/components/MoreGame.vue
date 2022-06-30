@@ -240,7 +240,7 @@
         </template>
       </div>
     </div>
-    <div class="GameChatBlock"> </div>
+    <div class="GameChatBlock" v-if="selectGameType === 2"> </div>
   </div>
 </template>
 
