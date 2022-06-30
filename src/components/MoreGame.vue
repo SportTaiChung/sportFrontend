@@ -906,7 +906,6 @@
             }
             .wagerPlayList {
               width: calc(100% - 78px);
-              display: flex;
               .wagerPlayRow {
                 display: flex;
                 width: 100%;
