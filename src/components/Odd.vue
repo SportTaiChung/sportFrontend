@@ -121,7 +121,7 @@
       position: absolute;
       right: 0;
       width: 3px;
-      background: linear-gradient(transparent, red, transparent);
+      background: linear-gradient(transparent, red 20%, red 80%, transparent);
       height: 100%;
       animation: loopY 1s ease-in-out infinite;
     }
