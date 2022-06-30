@@ -46,7 +46,7 @@
             .split('####:####');
           const eventName = formatData[1];
           const data = formatData[2];
-          console.log('onMessage:', formatData, eventName, data);
+          // console.log('onMessage:', formatData, eventName, data);
 
           if (eventName === 'init') {
             this.APILoginMB();

@@ -197,7 +197,59 @@
                       {{ renderHeadData.HeadShowName }}
                     </div>
                     <div class="wagerPlayList">
+                      <!-- 波膽 -->
                       <div
+                        class="wagerPlayRow"
+                        v-if="renderHeadData.WagerTypeIDs.indexOf(112) !== -1"
+                      >
+                        <template
+                          v-for="(boldTemplate, boldKey) in [
+                            boldTemplate1,
+                            boldTemplate2,
+                            boldTemplate3,
+                          ]"
+                        >
+                          <div class="columnContainer" :key="boldKey">
+                            <div class="boldBetBlockTitle" v-if="boldKey === 0">
+                              {{ $t('Common.Home') }}
+                            </div>
+                            <div class="boldBetBlockTitle" v-if="boldKey === 1">
+                              {{ $t('Common.Drew') }}
+                            </div>
+                            <div class="boldBetBlockTitle" v-if="boldKey === 2">
+                              {{ $t('Common.Away') }}
+                            </div>
+
+                            <div
+                              class="boldBetBlock"
+                              v-for="(OULine, index) in boldTemplate"
+                              :class="
+                                boldTableBetBlockIsSelect(
+                                  boldOddToMapData(renderHeadData.Odds)[OULine],
+                                  OULine
+                                )
+                              "
+                              :key="`${boldKey}-${index}`"
+                              @click="
+                                goBoldBet(
+                                  boldOddToMapData(renderHeadData.Odds)[OULine],
+                                  teamData,
+                                  leagueData,
+                                  $event
+                                )
+                              "
+                            >
+                              <div class="boldLeft">{{ OULine }}</div>
+                              <div class="boldRight">
+                                {{ showDrewOdd(boldOddToMapData(renderHeadData.Odds)[OULine]) }}
+                              </div>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+
+                      <div
+                        v-else
                         class="wagerPlayRow"
                         v-for="(oddData, oddIndex) in renderHeadData.Odds"
                         :key="'wagerPlayRow' + gameIndex + leagueIndex + renderHeadIndex + oddIndex"
@@ -278,6 +330,10 @@
           101: 'BaseBall',
           102: 'BasketBall',
         },
+
+        boldTemplate1: ['1-0', '2-0', '2-1', '3-0', '3-1', '3-2', '4-0', '4-1', '4-2', '4-3'],
+        boldTemplate2: ['0-0', '1-1', '2-2', '3-3', '4-4', 'other'],
+        boldTemplate3: ['0-1', '0-2', '1-2', '0-3', '1-3', '2-3', '0-4', '1-4', '2-4', '3-4'],
       };
     },
     created() {
@@ -298,6 +354,9 @@
       clearInterval(this.intervalEvent2);
     },
     computed: {
+      isQuickBetEnable() {
+        return this.$store.state.Game.isQuickBet.isEnable;
+      },
       moreGameData() {
         if (Object.keys(this.$store.state.MoreGame.moreGameData).length === 0) {
           return null;
@@ -388,34 +447,6 @@
               const wagerOdds = WagerData.Odds.map((oddData) => {
                 const WagerGrpID = WagerData.WagerGrpID;
                 const WagerTypeID = WagerData.WagerTypeID;
-
-                // debugger;
-                // let headWagerData;
-                // // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
-                // if (NotCheckWagerGrpIDs.indexOf(WagerGrpID) === -1) {
-                //   headWagerData = gameData.BestHead.find((headData) => {
-                //     const WagerGrpIDIndex = headData.WagerGrpIDs.indexOf(WagerGrpID);
-                //     const WagerTypeIDIndex = headData.WagerTypeIDs.indexOf(WagerTypeID);
-
-                //     if (WagerTypeIDIndex !== -1 && WagerGrpIDIndex !== -1) {
-                //       return true;
-                //     } else {
-                //       return false;
-                //     }
-                //   });
-                // } else {
-                //   // 如果 WagerGrpID 是128, 只要檢查 WagerTypeIDs 就好
-                //   headWagerData = gameData.BestHead.find((headData) => {
-                //     const findIndex = headData.WagerTypeIDs.findIndex(
-                //       (typeID) => typeID === WagerTypeID
-                //     );
-                //     if (findIndex > -1) {
-                //       return true;
-                //     } else {
-                //       return false;
-                //     }
-                //   });
-                // }
 
                 const headWagerData = gameData.BestHead.find((headData) => {
                   // 如果 WagerGrpID 不是128,需要同時檢查WagerGrpIDs和WagerTypeIDs
@@ -522,9 +553,6 @@
           return this.moreGameData.GameScoreHead;
         }
       },
-      isQuickBetEnable() {
-        return this.$store.state.Game.isQuickBet.isEnable;
-      },
     },
     watch: {
       MoreGameStoreUpdateFlag() {
@@ -541,6 +569,20 @@
       },
     },
     methods: {
+      boldOddToMapData(boldOdd) {
+        const res = boldOdd.reduce((sum, it, index) => {
+          return {
+            ...sum,
+            ...{
+              [it.OULine]: it,
+            },
+          };
+        }, {});
+        return res;
+      },
+      showDrewOdd(mapData) {
+        return mapData?.DrewOdds;
+      },
       judgeGameLiveScore(templateCatID, selectCatID) {
         const findCatData = this.CatList.find((catData) => {
           return catData.CatID === templateCatID;
@@ -601,7 +643,7 @@
           GameTypeLabel: GameTypeLabel,
           GameID: oddData.GameID,
           CatID: leagueData.CatID,
-          CatNameStr: this.$store.state.Game.CatMapData[leagueData.CatID].Name,
+          CatNameStr: this.$store.state.Game.CatMapData[leagueData.CatID]?.Name,
           LeagueNameStr: this.moreGameData.LeagueNameStr,
           HomeTeamStr: this.getteamData.home,
           AwayTeamStr: this.getteamData.away,
@@ -649,6 +691,62 @@
             this.openLive();
           }
         }
+      },
+      boldTableBetBlockIsSelect(oddData, OULine) {
+        if (oddData === undefined) {
+          return '';
+        }
+        const compareData = this.betCartList.find((cartData) => cartData.GameID === oddData.GameID);
+        if (compareData && compareData.OULine === OULine) {
+          return 'boldTableBetBlockSelect';
+        } else {
+          return '';
+        }
+      },
+      checkQuickBet(event) {
+        if (this.isQuickBetEnable) {
+          const clickTarget = event.target.getBoundingClientRect();
+          this.$store.commit('BetCart/showQuickBetData', {
+            isShow: true,
+            x: clickTarget.left,
+            y: clickTarget.top,
+          });
+        }
+      },
+      goBoldBet(boldData, teamData, leagueData, event) {
+        if (boldData === undefined) {
+          return;
+        }
+
+        this.$emit('AddToCart');
+
+        const selectGameTypeID = this.$store.state.Game.selectGameType;
+        const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
+          (it) => it.key === selectGameTypeID
+        )?.value;
+
+        const betInfoData = {
+          OriginShowOdd: parseFloat(boldData.DrewOdds),
+          wagerPos: 3,
+          GameTypeID: selectGameTypeID,
+          GameTypeLabel: GameTypeLabel,
+          GameID: boldData.GameID,
+          CatID: leagueData.CatID,
+          CatNameStr: this.$store.state.Game.CatMapData[leagueData.CatID]?.Name,
+          LeagueNameStr: leagueData.LeagueNameStr,
+          HomeTeamStr: teamData.HomeTeamStr,
+          AwayTeamStr: teamData.AwayTeamStr,
+          WagerGrpID: 10,
+          WagerTypeID: 112,
+          EvtID: teamData.EvtID,
+          EvtStatus: teamData.EvtStatus,
+          SetFlag: teamData.SetFlag,
+          ...boldData,
+        };
+
+        this.$store.dispatch('BetCart/addToCart', betInfoData);
+
+        this.checkQuickBet(event);
       },
     },
   };
@@ -808,10 +906,12 @@
             }
             .wagerPlayList {
               width: calc(100% - 78px);
+              display: flex;
               .wagerPlayRow {
                 display: flex;
                 width: 100%;
                 border-bottom: 1px solid #eeeeee;
+                border-left: 1px solid #eeeeee;
                 &:last-child {
                   border-bottom: 0px;
                 }
@@ -845,6 +945,45 @@
                 }
                 .betBlockSelect {
                   background-color: #ffd5d5;
+                }
+
+                .columnContainer {
+                  width: 33.33%;
+                  %boldBetBLock {
+                    width: 100%;
+                    height: 45px;
+                    line-height: 45px;
+                  }
+                  .boldTableBetBlockSelect {
+                    background-color: #ffd5d5;
+                  }
+                  .boldBetBlockTitle {
+                    @extend %boldBetBLock;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-bottom: 1px solid #eeeeee;
+                    border-right: 1px solid #eeeeee;
+                  }
+                  .boldBetBlock {
+                    @extend %boldBetBLock;
+                    padding: 0 5px;
+                    display: flex;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #eeeeee;
+                    border-right: 1px solid #eeeeee;
+                    cursor: pointer;
+                    .boldLeft {
+                      width: 40%;
+                      text-align: right;
+                      padding: 0 2.5px;
+                    }
+                    .boldRight {
+                      width: 60%;
+                      padding: 0 2.5px;
+                      text-align: center;
+                    }
+                  }
                 }
               }
             }
