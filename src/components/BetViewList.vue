@@ -635,10 +635,13 @@
       UserCredit() {
         return this.$store.state.User.UserCredit;
       },
+      isChatInputFocus() {
+        return this.$store.state.Chat.isChatInputFocus;
+      },
     },
     methods: {
       keyPress(e) {
-        if (e.key === 'Enter' && !this.isLockEnter) {
+        if (e.key === 'Enter' && !this.isLockEnter && !this.isChatInputFocus) {
           this.isLockEnter = true;
           clearTimeout(this.lockEvent);
           this.lockEvent = setTimeout(() => {

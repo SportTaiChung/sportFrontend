@@ -994,6 +994,7 @@
       height: calc(100% - $gameHeaderHeight - $gameChatHeight);
     }
     .GameChatBlock {
+      width: 100%;
       height: $gameChatHeight;
       background-color: #333;
     }

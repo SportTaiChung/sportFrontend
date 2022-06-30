@@ -51,7 +51,12 @@
           if (eventName === 'init') {
             this.APILoginMB();
           } else if (eventName === 'APINowMes') {
-            this.$store.commit('Chat/SetChatList', JSON.parse(data).data.reverse());
+            this.$store.commit('Chat/SetChatList', JSON.parse(data).data);
+          } else if (eventName === 'APISendMes') {
+            let parseData = JSON.parse(data);
+            if (parseData?.data.length !== 0) {
+              this.$store.commit('Chat/PushChatList', parseData.data[0]);
+            }
           }
         }
       },
