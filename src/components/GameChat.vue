@@ -181,8 +181,8 @@
         top: 0;
       }
       .chat-control {
-        position: relative;
         flex-shrink: 0;
+        position: relative;
         display: flex;
         height: 60px;
         width: 100%;
@@ -191,9 +191,11 @@
         padding: 0 1.5rem;
         z-index: 2;
         .btn-toggleChat {
+          flex-shrink: 0;
           width: 26px;
           height: 26px;
           cursor: pointer;
+          background-repeat: no-repeat;
           &.on {
             background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center bottom;
             background-size: 100% 200%;
@@ -212,6 +214,7 @@
           height: 23px;
           background: url(~@/assets/img/common/chat/btn_quickMsg.svg) no-repeat center top;
           background-size: 100% 200%;
+          background-repeat: no-repeat;
           margin: 0 0 0 1.5rem;
           cursor: pointer;
           &:hover {
@@ -235,10 +238,12 @@
           }
         }
         .btn-submit {
+          flex-shrink: 0;
           width: 26px;
           height: 26px;
           background-image: url(~@/assets/img/common/chat/icon_send.svg);
           background-position: center !important;
+          background-repeat: no-repeat;
           background-size: 100%;
           cursor: pointer;
           &:hover {
@@ -268,6 +273,7 @@
           font-size: 2rem;
           font-weight: 600;
           color: #888;
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
           cursor: pointer;
           z-index: 8;
           &:hover {
@@ -281,6 +287,7 @@
           font-size: 2rem;
           font-weight: 600;
           color: #888;
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
           cursor: pointer;
           z-index: 8;
           &:hover {
