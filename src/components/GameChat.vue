@@ -1,20 +1,19 @@
 <template>
   <div id="GameChat">
-    <div class="chatContainer" v-if="!isChatEnable" @click="chatContainerClick">
-      <div class="OpenChatBlock off"> </div>
-      <div class="ChatInputBlock"> 大家好~ </div>
-      <div class="ChatSubmitBlock"> </div>
-    </div>
-
-    <div class="chatContainer" v-else>
-      <div class="ChatListBlock">
+    <div class="chatContainer">
+      <!-- 對話紀錄 -->
+      <div class="ChatListBlock" v-show="isChatEnable" :class="isExtended ? 'extended' : ''">
+        <i class="btn-hide el-icon-close" @click="toggleChatRoom()"></i>
+        <i
+          class="btn-extend el-icon-arrow-up"
+          :class="isExtended ? 'active' : ''"
+          @click="toggleHeight()"
+        ></i>
         <div class="chat-history" ref="history">
           <template v-for="(it, index) in ChatList">
             <div class="msg-wrap" :class="isSelfMessage(it.mbID) ? 'self' : ''" :key="index">
               <div class="msg-row">
-                <div class="msg">
-                  {{ it.Mes }}
-                </div>
+                <div class="msg"> {{ it.Mes }} </div>
               </div>
               <div class="time">
                 {{ funnyFormat(it.CreateTime) }}
@@ -23,18 +22,40 @@
           </template>
         </div>
       </div>
-      <div class="OpenChatBlock on" @click="chatContainerClick"> </div>
-      <div class="QuickMSGBlock"></div>
-      <div class="ChatInputBlockOn">
-        <input
-          type="text"
-          v-model="chatMessage"
-          @keydown.enter="sendMessage"
-          @focusin="focusin"
-          @focusout="focusout"
-        />
+
+      <!-- 操作區 -->
+      <div class="chat-control">
+        <!-- 遮罩 -->
+        <div class="cover" v-if="!isChatEnable" @click="toggleChatRoom()"></div>
+        <div class="btn-toggleChat" :class="isChatEnable ? 'off' : 'on'" @click="toggleChatRoom()">
+        </div>
+        <div class="btn-quickMsg" @click="isShowQuickMsgList = !isShowQuickMsgList"></div>
+        <div class="input-wrap">
+          <input
+            ref="input"
+            type="text"
+            :placeholder="placeholder"
+            v-model="chatMessage"
+            @keydown.enter="sendMessage"
+            @focusin="focusin"
+            @focusout="focusout"
+          />
+        </div>
+        <div class="btn-submit" @click="sendMessage"> </div>
       </div>
-      <div class="ChatSubmitBlock" @click="sendMessage"> </div>
+
+      <!-- 快選訊息 list -->
+      <ul class="quickMsgList" :class="isShowQuickMsgList ? 'active' : ''">
+        <li
+          v-for="(str, i) in quickMsgList"
+          :key="i"
+          @click="
+            chatMessage = str;
+            isShowQuickMsgList = false;
+          "
+          >{{ str }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -46,6 +67,17 @@
       return {
         isChatEnable: false,
         chatMessage: '',
+        placeholder: '大家好~',
+        isExtended: false,
+        isShowQuickMsgList: false,
+        quickMsgList: [
+          '哈摟大家好~',
+          '各位觀眾，進球!!!',
+          '三分球!',
+          '左手只是輔助。 ',
+          '安安幾歲住哪~',
+          '開~通殺!!',
+        ],
       };
     },
     computed: {
@@ -54,9 +86,18 @@
       },
     },
     watch: {
-      isChatEnable() {
+      isChatEnable(enabled) {
         this.$nextTick(() => {
-          this.scrollBottom();
+          if (enabled) {
+            this.scrollBottom();
+            this.placeholder = '';
+            this.$refs.input.focus();
+          } else {
+            this.chatMessage = '';
+            this.placeholder = '大家好~';
+            this.isExtended = false;
+            this.isShowQuickMsgList = false;
+          }
         });
       },
       ChatList: {
@@ -73,8 +114,11 @@
       focusout() {
         this.$store.commit('Chat/setChatInputFocus', false);
       },
-      chatContainerClick() {
+      toggleChatRoom() {
         this.isChatEnable = !this.isChatEnable;
+      },
+      toggleHeight() {
+        this.isExtended = !this.isExtended;
       },
       sendMessage() {
         window.chat.SendMessage(this.chatMessage);
@@ -101,97 +145,162 @@
 
 <style lang="scss" scoped>
   #GameChat {
+    position: absolute;
+    bottom: 0;
     width: 100%;
     height: 100%;
-    position: relative;
+    overflow: hidden;
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+    }
+
+    ::-webkit-scrollbar:vertical {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
     .chatContainer {
-      width: 100%;
+      position: relative;
       height: 100%;
       display: flex;
-      align-items: center;
-      justify-content: space-around;
-      .OpenChatBlock {
-        display: block;
-        width: 26px;
-        height: 26px;
-        display: block;
-        &.on {
-          background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center bottom;
+      flex-flow: column;
+      justify-content: flex-end;
+      pointer-events: none;
+      & > * {
+        pointer-events: auto;
+      }
+      .cover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+      }
+      .chat-control {
+        position: relative;
+        flex-shrink: 0;
+        display: flex;
+        height: 60px;
+        width: 100%;
+        align-items: center;
+        background-color: #333;
+        padding: 0 1.5rem;
+        z-index: 2;
+        .btn-toggleChat {
+          width: 26px;
+          height: 26px;
+          cursor: pointer;
+          &.on {
+            background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center bottom;
+            background-size: 100% 200%;
+          }
+          &.off {
+            background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center top;
+            background-size: 100% 200%;
+          }
+          &:hover {
+            opacity: 0.7;
+          }
+        }
+        .btn-quickMsg {
+          flex-shrink: 0;
+          width: 23px;
+          height: 23px;
+          background: url(~@/assets/img/common/chat/btn_quickMsg.svg) no-repeat center top;
           background-size: 100% 200%;
+          margin: 0 0 0 1.5rem;
+          cursor: pointer;
+          &:hover {
+            opacity: 0.7;
+          }
         }
-        &.off {
-          background: url(~@/assets/img/common/chat/btn_chatroom.svg) no-repeat center top;
-          background-size: 100% 200%;
+        .input-wrap {
+          flex-grow: 1;
+          height: calc(100% - 20px);
+          line-height: 40px;
+          background-color: white;
+          border-radius: 5px;
+          color: gray;
+          font-size: 16px;
+          padding: 0 10px;
+          margin: 0 1.5rem;
+          cursor: pointer;
+          input {
+            border: none !important;
+            width: 100%;
+          }
         }
-      }
-      %InputBlockStyle {
-        width: 270px;
-        height: 40px;
-        line-height: 40px;
-        background-color: white;
-        border-radius: 5px;
-        color: gray;
-        font-size: 16px;
-        padding: 0 10px;
-      }
-      .ChatInputBlock {
-        @extend %InputBlockStyle;
-      }
-      .ChatInputBlockOn {
-        @extend %InputBlockStyle;
-        width: 240px;
-        input {
+        .btn-submit {
+          width: 26px;
+          height: 26px;
+          background-image: url(~@/assets/img/common/chat/icon_send.svg);
+          background-position: center !important;
+          background-size: 100%;
+          cursor: pointer;
+          &:hover {
+            opacity: 0.7;
+          }
         }
-      }
-      .ChatSubmitBlock {
-        width: 50px;
-        height: 40px;
-        background-image: url(~@/assets/img/common/chat/icon_send.svg);
-        background-position: center !important;
-        background-size: 100%;
-        width: 26px;
-        height: 26px;
-        display: block;
-      }
-      .QuickMSGBlock {
-        background: url(~@/assets/img/common/chat/btn_quickMsg.svg) no-repeat center top;
-        background-size: 100% 200%;
-        width: 23px;
-        height: 23px;
-        display: block;
       }
       .ChatListBlock {
-        position: absolute;
-        bottom: 60px;
-        background-color: white;
+        position: relative;
         width: 100%;
-        height: 200px;
+        height: 250px;
+        overflow: hidden;
+        padding: 0 3px;
+        border-top: 2px solid #bbb;
+        background-color: #fff;
+        box-shadow: 0px -15px 10px -15px rgba(0, 0, 0, 0.3);
+        transition: height 400ms ease;
+
+        &.extended {
+          height: 100%;
+        }
+
+        i.btn-hide {
+          position: absolute;
+          right: 1rem;
+          top: 1rem;
+          font-size: 2rem;
+          font-weight: 600;
+          color: #888;
+          cursor: pointer;
+          z-index: 8;
+          &:hover {
+            color: #000;
+          }
+        }
+        i.btn-extend {
+          position: absolute;
+          right: 1rem;
+          top: 3.5rem;
+          font-size: 2rem;
+          font-weight: 600;
+          color: #888;
+          cursor: pointer;
+          z-index: 8;
+          &:hover {
+            color: #000;
+          }
+          &.active {
+            transform: rotate(180deg);
+          }
+        }
+
         .chat-history {
-          &::-webkit-scrollbar {
-            -webkit-appearance: none;
-          }
-
-          &::-webkit-scrollbar:vertical {
-            width: 6px;
-          }
-
-          &::-webkit-scrollbar-thumb {
-            border-radius: 8px;
-            background-color: rgba(0, 0, 0, 0.3);
-          }
-          flex-grow: 1;
-          display: flex;
-          flex-flow: column nowrap;
-          align-items: flex-start;
+          padding: 10px;
+          height: 100%;
           overflow-x: hidden;
           overflow-y: auto;
-          padding: 10px;
-          height: 200px;
+
           .msg-wrap {
             display: flex;
-            max-width: 450px;
-            margin-bottom: 20px;
-            margin-right: 20px;
+            margin-bottom: 1rem;
+            margin-left: 1rem;
             .msg-row {
               display: flex;
               flex-flow: row nowrap;
@@ -211,10 +320,10 @@
               }
               .msg {
                 color: #444;
-                padding: 12px 20px;
-                line-height: 26px;
+                padding: 10px 18px;
+                line-height: normal;
                 font-size: 16px;
-                min-height: 50px;
+                min-height: 2rem;
                 border-radius: 7px;
                 display: inline-block;
                 position: relative;
@@ -232,7 +341,7 @@
                   border-width: 10px;
                   transform: translateX(-100%);
                   left: 0;
-                  top: 30%;
+                  top: 20%;
                 }
               }
               .msgPhoto {
@@ -253,6 +362,7 @@
             &.self {
               align-self: flex-end;
               flex-flow: row-reverse;
+              margin-right: 1rem;
 
               .avatar {
                 display: none;
@@ -268,6 +378,32 @@
                 }
               }
             }
+          }
+        }
+      }
+      ul.quickMsgList {
+        position: absolute;
+        bottom: 60px;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        transform: translateY(100%);
+        transition: 350ms ease;
+        background: rgba(42, 79, 107, 0.9);
+        z-index: 1;
+        &.active {
+          transform: translateY(0);
+        }
+
+        li {
+          border-bottom: 1px solid #547894;
+          line-height: 40px;
+          color: #fff;
+          font-size: 1.3rem;
+          padding: 0 0.8rem;
+          cursor: pointer;
+          &:hover {
+            background-color: rgba(0, 107, 214, 0.8);
           }
         }
       }

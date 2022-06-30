@@ -287,9 +287,10 @@
           </div>
         </template>
       </div>
-    </div>
-    <div class="GameChatBlock" v-if="selectGameType === 2">
-      <GameChat> </GameChat>
+
+      <div class="GameChatBlock" v-if="selectGameType === 2">
+        <GameChat> </GameChat>
+      </div>
     </div>
   </div>
 </template>
@@ -843,6 +844,7 @@
       }
     }
     .MoreGameBlock {
+      position: relative;
       flex: 1;
       overflow: auto;
       height: calc(100% - $gameHeaderHeight - $gameInfoHeight - $gameChatHeight);
@@ -990,9 +992,12 @@
       height: calc(100% - $gameHeaderHeight - $gameChatHeight);
     }
     .GameChatBlock {
+      position: absolute;
+      bottom: 0;
+      left: 0;
       width: 100%;
-      height: $gameChatHeight;
-      background-color: #333;
+      height: 100%;
+      pointer-events: none;
     }
 
     ul.navList {
