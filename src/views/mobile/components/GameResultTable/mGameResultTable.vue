@@ -36,6 +36,32 @@
         ></mGameResultDetail>
       </div>
     </div>
+
+    <!-- 日期選擇 popup -->
+    <template>
+      <div class="date-popup" v-show="isShowDatePicker" @click.stop="onMaskClick">
+        <div class="popup">
+          <div class="header">
+            <div class="title"> {{ $t('GameResult.SelectDate') }} </div>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="body">
+            <ul>
+              <li
+                class="btn-date"
+                v-for="(date, i) in lastDays"
+                :key="i"
+                :class="selectedDateIndex === i ? 'active' : ''"
+                @click="selectedDateIndex = i"
+                >{{ dateToString(date) }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -59,6 +85,7 @@
     },
     mounted() {
       this.getGameResult();
+      this.$emit('date', this.selectedDate);
     },
     data() {
       return {
@@ -182,10 +209,19 @@
         dd = dd < 10 ? '0' + dd : dd;
         return `${yyyy}-${mm}-${dd}`;
       },
+      onMaskClick(e) {
+        if (e.target !== e.currentTarget) return;
+        this.isShowDatePicker = false;
+      },
     },
     watch: {
       selectedCatId(newValue, oldValue) {
         this.getGameResult();
+      },
+      selectedDateIndex() {
+        this.getGameResult();
+        this.isShowDatePicker = false;
+        this.$emit('date', this.selectedDate);
       },
     },
   };
@@ -248,6 +284,76 @@
           width: 18px;
           transform: translateY(-50%);
           filter: grayscale(1) brightness(3);
+        }
+      }
+    }
+
+    .date-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+
+      .popup {
+        width: calc(100vw - 50px);
+        max-width: 560px;
+        max-height: 80%;
+        border: 3px solid #c4ccd7;
+        border-radius: 10px;
+        background-color: #fff;
+
+        .header {
+          .title {
+            color: #000;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 1.5rem;
+          }
+        }
+        .line {
+          height: 1px;
+          background: #ccc;
+          margin: 0 1.5rem;
+        }
+        .body {
+          display: flex;
+          flex-direction: column;
+          max-height: 70%;
+          padding: 1.5rem;
+          overflow: auto;
+
+          .btn-date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 0.65rem 3rem;
+            margin-bottom: 1rem;
+            min-height: 3.5rem;
+            font-size: 1.3rem;
+            color: #000;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 9px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #f0f0f0;
+            }
+
+            &.active,
+            &:active {
+              color: #fff;
+              background-color: #5198e8;
+              border-color: #5198e8;
+            }
+          }
         }
       }
     }

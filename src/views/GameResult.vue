@@ -19,8 +19,8 @@
             :key="i"
             :class="selectedDateIndex === i ? 'active' : ''"
             @click="selectedDateIndex = i"
-            >{{ dateToString(date) }}</li
-          >
+            >{{ dateToString(date) }}
+          </li>
         </ul>
       </div>
       <div class="timer">

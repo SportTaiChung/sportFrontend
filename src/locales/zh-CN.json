@@ -210,5 +210,8 @@
     "Type": "公告类别",
     "Message": "讯息内容",
     "System": "系统公告"
+  },
+  "GameResult": {
+    "SelectDate": "选择日期"
   }
 }

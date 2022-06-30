@@ -201,5 +201,8 @@
     "Time": "release time",
     "Message": "message content",
     "System": "system notification"
+  },
+  "GameResult": {
+    "SelectDate": "select date"
   }
 }

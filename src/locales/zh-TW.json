@@ -212,5 +212,8 @@
     "Type": "公告類別",
     "Message": "訊息內容",
     "System": "系統公告"
+  },
+  "GameResult": {
+    "SelectDate": "選擇日期"
   }
 }

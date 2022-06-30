@@ -1,9 +1,9 @@
 <template>
   <!-- 遊戲類型 -->
   <ul class="gameCatNav">
-    <li class="item date-picker">
+    <li class="item date-picker" @click="$emit('openDatePicker')">
       <img src="@/assets/img/mobile/btn_date.svg" class="btn-date" />
-      <span class="text">30</span>
+      <span class="text">{{ date.getDate() }}</span>
     </li>
     <li
       v-for="(catData, index) in CatList"
@@ -21,6 +21,12 @@
 <script>
   export default {
     name: 'mGameResultCatNav',
+    props: {
+      date: {
+        type: Date,
+        default: Date.now(),
+      },
+    },
     data() {
       return {
         selectedCatId: null,

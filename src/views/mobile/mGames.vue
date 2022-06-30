@@ -44,13 +44,19 @@
           <!-- 賽果彩種導覽列-->
           <mGameResultCatNav
             v-if="page === PageEnum.gameResult"
+            :date="gameResultDate"
             @onCatTypeClick="menuItemClickHandler"
             @changeGameResultCatId="(id) => (gameResultCatId = id)"
+            @openDatePicker="$refs.gameResult.isShowDatePicker = true"
           ></mGameResultCatNav>
 
           <!-- 桌子組件 -->
           <template v-if="true">
-            <mGameResultTable :selectedCatId="gameResultCatId"></mGameResultTable>
+            <mGameResultTable
+              ref="gameResult"
+              :selectedCatId="gameResultCatId"
+              @date="(date) => (gameResultDate = date)"
+            ></mGameResultTable>
           </template>
           <template v-else>
             <!-- 無賽果 -->
@@ -290,6 +296,7 @@
         latestSelectWagerTypeKey: null,
         hasLeagueFiltered: false,
         gameResultCatId: null,
+        gameResultDate: null,
 
         // QA未讀數量
         unreadQACount: 0,
