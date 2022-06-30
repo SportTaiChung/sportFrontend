@@ -100,7 +100,7 @@
         return this.dateToYYYYMMDD(this.selectedDate);
       },
       headerColor() {
-        const color = this.CatMapData[this.leagueList[0]?.CatID]?.color || '#7d9364';
+        const color = this.CatMapData[this.selectedCatId]?.color || '#7d9364';
         return {
           'background-color': color,
         };

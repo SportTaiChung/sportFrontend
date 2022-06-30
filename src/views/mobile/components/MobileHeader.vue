@@ -1,16 +1,20 @@
 <template>
   <div id="mobileHeader">
     <div class="header-container">
+      <!-- 左半邊 -->
       <div class="leftContainer">
+        <!-- 返回按鈕 -->
         <img
           v-if="page !== PageEnum.game"
-          class="goBackIcon"
+          class="goBackBtn"
           src="@/assets/img/mobile/btn_arrow_w.svg"
           @click="$emit('goPage', PageEnum.game)"
         />
 
+        <!-- 頁面名稱 -->
         <h5 class="pageName"> {{ pageName }} </h5>
 
+        <!-- gameType 切換鈕 (今日 / 滾球 / 早盤) -->
         <template v-if="page === PageEnum.game">
           <ul class="gameTypeNav">
             <li
@@ -25,11 +29,14 @@
           </ul>
         </template>
       </div>
+      <!-- 右半邊 -->
       <div class="rightContainer">
+        <!-- 錢包 -->
         <div class="userCreditBlock">
           <div v-if="userCredit" class="creditText">$ {{ userCredit }}</div>
         </div>
 
+        <!-- 客服 -->
         <div class="service">
           <img
             src="@/assets/img/common/icon_header_service.svg"
@@ -38,6 +45,8 @@
           />
           <div class="unreadMark" v-show="unreadQACount > 0">{{ unreadQACount }}</div>
         </div>
+
+        <!-- 登出 -->
         <img src="@/assets/img/common/logout.svg" class="icon-logout" @click="logout" />
       </div>
     </div>
@@ -131,12 +140,13 @@
         display: flex;
         align-items: center;
 
-        .goBackIcon {
+        .goBackBtn {
           width: 2rem;
           height: auto;
           transform: rotate(90deg);
           opacity: 0.7;
           margin-right: 1rem;
+          cursor: pointer;
           &:active {
             opacity: 1;
           }

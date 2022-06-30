@@ -132,6 +132,7 @@
       },
       goGameResultPage() {
         this.$emit('goPage', PageEnum.gameResult);
+        this.close();
       },
       jumpLink(linkKey) {
         this.$lib.WindowOpen(this.$conf.JumpLink[linkKey]);
