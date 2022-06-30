@@ -12,8 +12,8 @@
             <!-- 分數 -->
             <td v-for="(title, index) in titles" :key="index">
               <ul class="score-group" v-if="title.Key !== 'Remarks'">
-                <li>{{ parseScore(title.Key)[0] }}</li>
-                <li>{{ parseScore(title.Key)[1] }}</li>
+                <li>{{ parseScore(teamData, title.Key)[0] }}</li>
+                <li>{{ parseScore(teamData, title.Key)[1] }}</li>
               </ul>
               <div class="remarks" v-else>{{ teamData.Remarks || '-' }}</div>
             </td>
@@ -54,9 +54,6 @@
         },
       },
     },
-    data() {
-      return {};
-    },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
@@ -68,8 +65,8 @@
     mounted() {},
     watch: {},
     methods: {
-      parseScore(key) {
-        const str = this.teamData?.[key];
+      parseScore(teamData, key) {
+        const str = teamData?.[key];
         if (str && str.indexOf(':') !== -1) {
           return str.split(':');
         }
