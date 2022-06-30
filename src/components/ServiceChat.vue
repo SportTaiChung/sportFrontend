@@ -104,9 +104,7 @@
         reader.readAsDataURL(file); // read as base64
         reader.onload = (readerEvent) => {
           const base64str = readerEvent.target.result;
-          // console.log(base64str);
           const result = base64str.split(',')[1];
-          // console.log(result);
           this.sendFile({ base64File: result, name: file.name });
         };
         reader.onerror = (error) => {

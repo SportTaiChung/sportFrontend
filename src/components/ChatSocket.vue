@@ -19,6 +19,8 @@
     },
     methods: {
       initWebsocket() {
+        this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
+
         this.webSocketObj = new WebSocket(
           `wss://${process.env.VUE_APP_CHAT_API}/roomsocket/roomsocket`
         );
@@ -30,7 +32,6 @@
       onOpen() {
         if (this.webSocketObj.readyState === 1) {
           // - readyState 等于1 的时候建立链接成功
-          this.wsHeartflag = true;
           this.reconnectTime = 0;
         }
       },
@@ -46,31 +47,29 @@
           const eventName = formatData[1];
           const data = formatData[2];
           console.log('onMessage:', formatData, eventName, data);
-          console.log('parse:', JSON.parse(data));
 
           if (eventName === 'init') {
             this.APILoginMB();
+          } else if (eventName === 'APINowMes') {
+            this.$store.commit('Chat/SetChatList', JSON.parse(data).data.reverse());
           }
         }
       },
       onError() {
-        // 链接失败，进行重连
-        clearTimeout(this.wsHeart);
-        this.wsHeartflag = false;
-        if (this.reconnectTime <= 3) {
-          setTimeout(() => {
-            this.onOpen();
-            this.reconnectTime += 1;
-          }, 5000);
-        } else {
-          // 无法连接到聊天服务器
-          this.onClose();
-        }
+        console.warn('socket onError!');
+        this.ReconnectSocket();
       },
       onClose() {
-        console.error('socket close!');
-        this.wsHeartflag = false;
-        this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
+        console.warn('socket onClose!');
+        this.ReconnectSocket();
+      },
+      ReconnectSocket() {
+        if (this.reconnectTime <= 5) {
+          setTimeout(() => {
+            this.initWebsocket();
+            this.reconnectTime++;
+          }, 2000);
+        }
       },
       APILoginMB() {
         const postData = {

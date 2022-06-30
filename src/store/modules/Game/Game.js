@@ -462,7 +462,9 @@ export default {
               store.state.selectWagerTypeKey === null
             ) {
               store.commit('setCatIDAndGameTypeAndWagerType', {
-                selectGameType: res.data.Default.GameType,
+                // TODO tmp
+                // selectGameType: res.data.Default.GameType,
+                selectGameType: 2,
                 selectCatID: res.data.Default.catid,
                 selectWagerTypeKey: res.data.Default.WagerTypeKey,
               });

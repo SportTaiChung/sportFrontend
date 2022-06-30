@@ -240,7 +240,9 @@
         </template>
       </div>
     </div>
-    <div class="GameChatBlock" v-if="selectGameType === 2"> </div>
+    <div class="GameChatBlock" v-if="selectGameType === 2">
+      <GameChat> </GameChat>
+    </div>
   </div>
 </template>
 
@@ -248,9 +250,11 @@
   import Odd from '@/components/Odd';
   import LiveBoards from '@/components/LiveBoard/LiveBoardIndex';
   import { NotCheckWagerGrpIDs } from '@/Config/index.js';
+  import GameChat from '@/components/GameChat';
   export default {
     name: 'MoreGame',
     components: {
+      GameChat,
       Odd,
       ...LiveBoards,
     },
