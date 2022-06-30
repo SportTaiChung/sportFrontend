@@ -144,6 +144,7 @@
       <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
       </PersonalPanel>
     </div>
+    <ChatSocket></ChatSocket>
   </div>
 </template>
 
@@ -165,6 +166,7 @@
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
   import PersonalPanel from '@/components/PersonalPanel';
   import mAnnouncement from './components/mAnnouncement';
+  import ChatSocket from '@/components/ChatSocket';
   import { PageEnum } from './enum';
 
   export default {
@@ -187,6 +189,7 @@
       StrayCountDialog,
       PersonalPanel,
       mAnnouncement,
+      ChatSocket,
     },
     created() {
       this.$store.dispatch('User/UserInfoAbout');
