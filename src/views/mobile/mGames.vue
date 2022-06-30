@@ -3,35 +3,27 @@
     <!-- 主要布局 -->
     <div class="main-layout">
       <!-- HEADER -->
-      <MobileHeader
-        :unreadQACount="unreadQACount"
-        :page="page"
-        @openService="openService()"
-        @gameTypeClickHandler="gameTypeClickHandler"
-        @goPage="(v) => (page = v)"
-      ></MobileHeader>
+      <div class="main-header">
+        <MobileHeader
+          :unreadQACount="unreadQACount"
+          :page="page"
+          @openService="openService()"
+          @gameTypeClickHandler="gameTypeClickHandler"
+          @goPage="(v) => (page = v)"
+        ></MobileHeader>
+      </div>
 
-      <!-- 彩種導覽列  -->
-      <template>
-        <!-- 投注 -->
-        <mGameCatNav
-          v-if="page === PageEnum.game"
-          @onCatTypeClick="menuItemClickHandler"
-          @callGetFavoriteGameDetail="callGetFavoriteGameDetail()"
-        ></mGameCatNav>
-
-        <!-- 賽果 -->
-        <mGameResultCatNav
-          v-if="page === PageEnum.gameResult"
-          @onCatTypeClick="menuItemClickHandler"
-          @changeGameResultCatId="(id) => (gameResultCatId = id)"
-        ></mGameResultCatNav>
-      </template>
-
-      <!-- Table 容器 -->
-      <div class="gameTableContainer">
-        <!-- 投注頁 PageEnum.game -->
+      <div class="main-body">
+        <!-- 投注頁 -->
         <template v-if="page === PageEnum.game">
+          <!-- 投注彩種導覽列 -->
+          <mGameCatNav
+            v-if="page === PageEnum.game"
+            @onCatTypeClick="menuItemClickHandler"
+            @callGetFavoriteGameDetail="callGetFavoriteGameDetail()"
+          ></mGameCatNav>
+
+          <!-- 桌子組件 -->
           <template v-if="GameList.length">
             <mGameTable
               v-for="(gameData, index) in GameList"
@@ -47,8 +39,16 @@
           </template>
         </template>
 
-        <!-- 賽果頁 PageEnum.gameResult -->
+        <!-- 賽果頁 -->
         <template v-else-if="page === PageEnum.gameResult">
+          <!-- 賽果彩種導覽列-->
+          <mGameResultCatNav
+            v-if="page === PageEnum.gameResult"
+            @onCatTypeClick="menuItemClickHandler"
+            @changeGameResultCatId="(id) => (gameResultCatId = id)"
+          ></mGameResultCatNav>
+
+          <!-- 桌子組件 -->
           <template v-if="true">
             <mGameResultTable :selectedCatId="gameResultCatId"></mGameResultTable>
           </template>
@@ -59,16 +59,23 @@
             </div>
           </template>
         </template>
+
+        <!-- 公告頁 -->
+        <template v-else-if="page === PageEnum.announcement">
+          <mAnnouncement></mAnnouncement>
+        </template>
       </div>
 
-      <!-- FOOTER -->
-      <MobileFooter
-        :hasLeagueFiltered="hasLeagueFiltered"
-        @openBetInfoPopup="openBetInfoPopup()"
-        @openBetRecordView="openBetRecordView()"
-        @openMenuPanel="openMenuPanel()"
-        @openLeaguesPanel="openLeaguesPanel()"
-      ></MobileFooter>
+      <div class="main-footer">
+        <!-- FOOTER -->
+        <MobileFooter
+          :hasLeagueFiltered="hasLeagueFiltered"
+          @openBetInfoPopup="openBetInfoPopup()"
+          @openBetRecordView="openBetRecordView()"
+          @openMenuPanel="openMenuPanel()"
+          @openLeaguesPanel="openLeaguesPanel()"
+        ></MobileFooter>
+      </div>
     </div>
 
     <!-- 覆蓋 / 浮動型 組件區 -->
@@ -157,7 +164,7 @@
   import ServiceChat from '@/components/ServiceChat.vue';
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
   import PersonalPanel from '@/components/PersonalPanel';
-
+  import mAnnouncement from './components/mAnnouncement';
   import { PageEnum } from './enum';
 
   export default {
@@ -178,8 +185,8 @@
       MoreGame,
       ServiceChat,
       StrayCountDialog,
-
       PersonalPanel,
+      mAnnouncement,
     },
     created() {
       this.$store.dispatch('User/UserInfoAbout');
@@ -497,17 +504,29 @@
       width: 100%;
       height: 100%;
 
-      .gameTableContainer {
-        overflow: auto;
-        flex: 1;
+      .main-header {
+        flex: 0 0;
+      }
 
-        .noData {
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2rem;
-        }
+      .main-body {
+        flex: 1 0;
+        display: flex;
+        flex-flow: column;
+        overflow: hidden;
+        background-color: #eee;
+      }
+
+      .main-footer {
+        flex: 0 0;
+        z-index: 10;
+      }
+
+      .noData {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
       }
     }
     .fixed-container {

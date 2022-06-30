@@ -193,6 +193,8 @@
 
 <style lang="scss" scoped>
   .mGameResultTable {
+    overflow-x: hidden;
+    overflow-y: auto;
     .left-area {
       width: 35%;
       transition: width 600ms ease-out;

@@ -58,12 +58,12 @@
 
 <style lang="scss" scoped>
   ul.gameCatNav {
-    flex: 0 0 auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: stretch;
-    min-height: 50px;
+    height: 55px;
     padding: 0;
     width: 100%;
     background-color: #3fa381;
@@ -78,12 +78,11 @@
       display: flex;
       flex: none;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
       gap: 6px;
       padding: 0.4rem 0;
       min-width: 5.35rem;
-      width: fit-content;
       text-align: center;
       font-size: 1.2rem;
       white-space: nowrap;

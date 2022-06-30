@@ -149,7 +149,7 @@
           .map((it, index) => index));
       },
       openWagerTypePopup() {
-        if (this.currentCatData.Items.length) {
+        if (this.currentCatData.Items.length > 1) {
           this.$emit('openWagerTypePopup');
         }
       },
@@ -163,6 +163,8 @@
 
 <style lang="scss" scoped>
   .mGameTable {
+    overflow-x: hidden;
+    overflow-y: auto;
     .left-area {
       width: 35%;
       transition: width 600ms ease-out;
@@ -204,7 +206,7 @@
         align-self: stretch;
         border: 1px solid #fff;
         border-radius: 45px;
-        padding: 4px 30px;
+        padding: 4px 10px 4px 30px;
         min-height: 26px;
         line-height: 1;
         background-color: rgba(255, 255, 255, 0.15);

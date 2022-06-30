@@ -8,7 +8,7 @@
         <div class="player-id"
           >{{ userID }} <span class="more-id">{{ nickName }}</span>
         </div>
-        <div class="btn-announcement" @click="$emit('callAnnouncement')"> </div>
+        <div class="btn-announcement" @click="goAnnouncementPage()"> </div>
       </div>
 
       <!-- 一級選單面板區 -->
@@ -132,6 +132,10 @@
       },
       goGameResultPage() {
         this.$emit('goPage', PageEnum.gameResult);
+        this.close();
+      },
+      goAnnouncementPage() {
+        this.$emit('goPage', PageEnum.announcement);
         this.close();
       },
       jumpLink(linkKey) {
@@ -285,7 +289,7 @@
             cursor: pointer;
             position: relative;
             width: 100%;
-            height: 35px;
+            height: 40px;
 
             img.icon {
               width: 21px;
@@ -299,7 +303,7 @@
               width: calc(100% - 50px);
               flex: 1;
               font-size: 1.2rem;
-              line-height: 35px;
+              line-height: 40px;
               text-align: left;
               color: #000;
               padding: 0 5px;

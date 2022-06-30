@@ -36,8 +36,8 @@
     methods: {
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
-          if (res.data) {
-            this.AnnData = res.data;
+          if (res.data && res.data.length) {
+            this.AnnData = res.data.reverse();
           }
         });
       },
