@@ -32,14 +32,12 @@
     <div class="GameInfoBlock" v-if="selectGameType === 2">
       <!-- 滾球 上半部資訊 -->
       <ul class="navList">
-        <li
+        <div
           v-if="isMobileMode"
-          class="item"
-          style="position: absolute; left: 10px; top: 17px"
+          class="star"
+          :class="starCSSJudge(teamData.EvtID)"
           @click="$store.commit('Setting/addFavorites', teamData.EvtID)"
-        >
-          <div class="star" :class="starCSSJudge(teamData.EvtID)"></div>
-        </li>
+        ></div>
 
         <li
           class="item"
@@ -101,14 +99,12 @@
       <!-- 今日 上半部資訊 -->
       <ul class="navList">
         <!-- 收藏按鈕 -->
-        <li
+        <div
           v-if="isMobileMode"
-          class="item"
-          style="position: absolute; left: 10px; top: 17px"
+          class="star"
+          :class="starCSSJudge(teamData.EvtID)"
           @click="$store.commit('Setting/addFavorites', teamData.EvtID)"
-        >
-          <div class="star" :class="starCSSJudge(teamData.EvtID)"></div>
-        </li>
+        ></div>
 
         <!-- <li
           class="item"
@@ -1039,7 +1035,9 @@
 
     .star {
       position: absolute;
-      left: 0;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-56%);
       width: 25px;
       height: 25px;
       background: url('~@/assets/img/common/icon_star.svg') no-repeat center bottom;

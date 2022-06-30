@@ -1,5 +1,5 @@
 <template>
-  <div id="mGamesBetInfoSingle">
+  <div id="mGamesBetInfoSingle" :class="isShowMoreGame ? 'no-footer' : ''">
     <div class="popup">
       <div class="header">
         <ul class="tab-list">
@@ -32,6 +32,12 @@
     name: 'mGamesBetInfoSingle',
     components: {
       BetViewList,
+    },
+    props: {
+      isShowMoreGame: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
@@ -67,6 +73,10 @@
     padding: 5px;
     background: #eaeaea;
     box-shadow: rgb(0 0 0 / 25%) 0px -3px 8px;
+
+    &.no-footer {
+      bottom: 0;
+    }
 
     .popup {
       width: calc(100%);

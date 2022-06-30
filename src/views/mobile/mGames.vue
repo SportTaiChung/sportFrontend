@@ -80,7 +80,15 @@
 
     <!-- 覆蓋 / 浮動型 組件區 -->
     <div class="fixed-container">
+      <!-- 更多玩法面板 -->
       <MoreGame v-if="isShowMoreGame" @openBetRecordView="openBetRecordView()"></MoreGame>
+
+      <!-- 下注面板 (單注時) -->
+      <mGamesBetInfoSingle
+        v-show="betCartList.length === 1 && isShowBetInfoSingle"
+        :isShowMoreGame="isShowMoreGame"
+        @onHide="isShowBetInfoSingle = false"
+      ></mGamesBetInfoSingle>
 
       <!-- 下注面板 (多注時) -->
       <mGamesBetInfoAll
@@ -88,12 +96,6 @@
         v-show="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
-
-      <!-- 下注面板 (單注時) -->
-      <mGamesBetInfoSingle
-        v-show="betCartList.length === 1 && isShowBetInfoSingle"
-        @onHide="isShowBetInfoSingle = false"
-      ></mGamesBetInfoSingle>
 
       <!-- 投注紀錄面板 -->
       <mBetRecordView
