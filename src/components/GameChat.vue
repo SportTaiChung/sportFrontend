@@ -272,7 +272,6 @@
         width: 100%;
         height: 250px;
         overflow: hidden;
-        padding: 0 3px;
         border-top: 2px solid #bbb;
         background-color: #fff;
         box-shadow: 0px -15px 10px -15px rgba(0, 0, 0, 0.3);
@@ -325,6 +324,7 @@
           .msg-wrap {
             display: flex;
             margin-bottom: 1rem;
+            margin-right: 1rem;
             // margin-left: 1rem;
             .msg-row {
               display: flex;
