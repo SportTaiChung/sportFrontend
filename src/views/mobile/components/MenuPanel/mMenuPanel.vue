@@ -8,7 +8,7 @@
         <div class="player-id"
           >{{ userID }} <span class="more-id">{{ nickName }}</span>
         </div>
-        <div class="btn-announcement" @click="$emit('callAnnouncement')"> </div>
+        <div class="btn-announcement" @click="goAnnouncementPage()"> </div>
       </div>
 
       <!-- 一級選單面板區 -->
@@ -18,7 +18,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_live.svg" />
             <div class="text"> {{ $t('Common.LivePlay') }} </div>
           </li>
-          <li class="feature-item" @click="jumpLink('scoreLive')">
+          <li class="feature-item" @click="goLiveScorePage()">
             <img class="icon" src="@/assets/img/mobile/icon_score.svg" />
             <div class="text"> {{ $t('GamesHeader.LiveScore') }} </div>
           </li>
@@ -26,7 +26,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_count.svg" />
             <div class="text"> {{ $t('GamesBetInfo.StrayCount') }} </div>
           </li>
-          <li class="feature-item" @click="OpenGameResultWindow()">
+          <li class="feature-item" @click="goGameResultPage()">
             <img class="icon" src="@/assets/img/mobile/icon_result.svg" />
             <div class="text"> {{ $t('GamesHeader.GameResult') }} </div>
           </li>
@@ -78,6 +78,7 @@
 
 <script>
   import mAdvancedSettings from './mAdvancedSettings.vue';
+  import { PageEnum } from '../../enum';
 
   export default {
     name: 'mMenuPanel',
@@ -94,6 +95,7 @@
         isSecondaryPanelOpened: false,
         isShowAdvancedSettings: true,
         secondaryPanelTitle: 'title',
+        PageEnum,
       };
     },
     computed: {
@@ -128,42 +130,29 @@
       closeSecondaryPanel() {
         this.isSecondaryPanelOpened = false;
       },
-      OpenGameResultWindow() {
-        const historyRecord = this.$router.resolve({
-          path: 'GameResult',
-        });
-        this.WindowOpen(historyRecord.href);
+      goLiveScorePage() {
+        this.$emit('goPage', PageEnum.liveScore);
+        this.close();
+      },
+      goGameResultPage() {
+        this.$emit('goPage', PageEnum.gameResult);
+        this.close();
+      },
+      goAnnouncementPage() {
+        this.$emit('goPage', PageEnum.announcement);
+        this.close();
       },
       jumpLink(linkKey) {
-        this.WindowOpen(this.$conf.JumpLink[linkKey]);
-      },
-      WindowOpen(href) {
-        const width = document.documentElement.clientWidth;
-        const height = document.documentElement.clientHeight;
-        // const popupwidth = width * 0.6;
-        const popupwidth = 1200;
-        const popupheight = height * 0.6;
-        const top = (height - popupheight + 20) / 2;
-        const left = (width - popupwidth) / 2;
-        return window.open(
-          href,
-          '111',
-          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
-            popupwidth +
-            ', height=' +
-            popupheight +
-            ', top=' +
-            top +
-            ', left=' +
-            left
-        );
+        this.$lib.WindowOpen(this.$conf.JumpLink[linkKey]);
       },
       openLive() {
+        const safariWindow = window.open();
+        safariWindow.opener = null;
         this.$store.commit('SetLoading', true);
         this.$store
           .dispatch('Game/GetLiveURL')
           .then((res) => {
-            window.open(res.data);
+            safariWindow.location.href = res.data;
           })
           .finally(() => {
             this.$store.commit('SetLoading', false);
@@ -304,7 +293,7 @@
             cursor: pointer;
             position: relative;
             width: 100%;
-            height: 35px;
+            height: 40px;
 
             img.icon {
               width: 21px;
@@ -318,7 +307,7 @@
               width: calc(100% - 50px);
               flex: 1;
               font-size: 1.2rem;
-              line-height: 35px;
+              line-height: 40px;
               text-align: left;
               color: #000;
               padding: 0 5px;

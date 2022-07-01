@@ -12,6 +12,7 @@
           :listCardItemClassJudge="listCardItemClassJudge(cartData.GameID, cartData)"
           :currShowKeyboardIndex="currShowKeyboardIndex"
           :key="cartIndex"
+          :isControlByBetSingle="isControlByBetSingle"
           @cancelSingleHandler="cancelSingleHandler"
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
           @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
@@ -140,7 +141,7 @@
 
     <div
       class="cardOptionBlock"
-      v-if="isMobileMode && !isShowCardOptionBlock && panelMode !== PanelModeEnum.result"
+      v-if="isMobileMode && isControlByBetSingle && panelMode !== PanelModeEnum.result"
     >
       <div class="buttonRow">
         <div class="submitBtn" style="text-align: center" @click="submitHandler">
@@ -150,7 +151,7 @@
     </div>
 
     <!-- 單向投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowChartList && isShowCardOptionBlock">
+    <div class="cardOptionBlock" v-if="isShowChartList && !isControlByBetSingle">
       <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
         <div class="betInputTitle"> {{ $t('Common.SingleOdd') }} </div>
         <div class="betInputSymbol">:</div>
@@ -233,7 +234,12 @@
     <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
     <div
       class="cardOptionBlock"
-      v-if="isMobileMode && isShowChartList && panelMode === PanelModeEnum.result"
+      v-if="
+        isMobileMode &&
+        isShowChartList &&
+        panelMode === PanelModeEnum.result &&
+        isControlByBetSingle
+      "
     >
       <div class="buttonRow">
         <div class="clearBtn" @click="resultLeftBtnClickHandler()">
@@ -249,7 +255,7 @@
     </div>
 
     <!-- 串關投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowCharStrayList && isShowCardOptionBlock">
+    <div class="cardOptionBlock" v-if="isShowCharStrayList && !isControlByBetSingle">
       <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
         <div class="topTextRow"> ※ {{ $t('BetViewList.HasSameGame') }} </div>
         <div class="bottomTextRow">
@@ -422,9 +428,10 @@
         type: Number,
         default: 0,
       },
-      isShowCardOptionBlock: {
+      // 是否來自 mGamesBetInfoSingle 控制
+      isControlByBetSingle: {
         type: Boolean,
-        default: true,
+        default: false,
       },
     },
     data() {
@@ -476,6 +483,10 @@
           });
         }
       }, 10000);
+
+      if (this.isControlByBetSingle) {
+        this.currShowKeyboardIndex = 0;
+      }
 
       window.addEventListener('keydown', this.keyPress);
     },
@@ -635,10 +646,13 @@
       UserCredit() {
         return this.$store.state.User.UserCredit;
       },
+      isChatInputFocus() {
+        return this.$store.state.Chat.isChatInputFocus;
+      },
     },
     methods: {
       keyPress(e) {
-        if (e.key === 'Enter' && !this.isLockEnter) {
+        if (e.key === 'Enter' && !this.isLockEnter && !this.isChatInputFocus) {
           this.isLockEnter = true;
           clearTimeout(this.lockEvent);
           this.lockEvent = setTimeout(() => {

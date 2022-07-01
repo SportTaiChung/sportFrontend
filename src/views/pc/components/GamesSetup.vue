@@ -2,8 +2,8 @@
   <div id="GamesSetup">
     <div class="setUp_L">
       <span class="timeBlockContainer">
-        <div class="dayBlock">{{ TimeCountDown.day }}</div>
-        <div class="timeBlock">{{ TimeCountDown.time }}</div>
+        <div class="dayBlock">{{ TimeCountDay }}</div>
+        <div class="timeBlock">{{ TimeCountDownTime }}</div>
       </span>
       <div>
         <!-- <img alt="" class="icon" src="@/assets/img/pc/sun1.svg" @click="changeTheme('light')" /> -->
@@ -13,7 +13,7 @@
 
     <div class="setUp_C">
       <!-- 公告跑馬燈 -->
-      <div class="marquee-wrapper">
+      <div class="marquee-wrapper" @click="clickMarquee">
         <div class="icon"></div>
         <Marquee :text="marqueeText" />
       </div>
@@ -203,6 +203,12 @@
       TimeCountDown() {
         return this.$lib.timeFormatWithOutYY(this.currentTime);
       },
+      TimeCountDay() {
+        return this.TimeCountDown?.day;
+      },
+      TimeCountDownTime() {
+        return this.TimeCountDown?.time;
+      },
       tableSort() {
         return this.$store.state.Setting.UserSetting.tableSort;
       },
@@ -260,6 +266,12 @@
       },
     },
     methods: {
+      clickMarquee() {
+        const Ann = this.$router.resolve({
+          path: 'Ann',
+        });
+        this.$lib.WindowOpen(Ann.href);
+      },
       quickBetAmountChangeHandler() {
         this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
         if (isNaN(this.quickBetAmount)) {
@@ -344,9 +356,8 @@
       },
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
-          console.log('res:', res);
-          if (res.data) {
-            this.marqueeText = res.data.content;
+          if (res.data && res.data.length) {
+            this.marqueeText = res.data.reverse()[0].content;
           }
         });
       },
@@ -513,6 +524,7 @@
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 6px;
         overflow: hidden;
+        cursor: pointer;
 
         .icon {
           flex-shrink: 0;
@@ -579,16 +591,19 @@
         margin-right: 8px;
       }
       .cartBtn {
-        background: #ffdf1b;
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
-        border-radius: 10px;
+        border-radius: 50rem;
         margin-right: 5px;
+        padding: 2px 10px;
+        background: #ffdf1b;
         cursor: pointer;
+        &:hover {
+          background: #e1c71a;
+        }
         i {
-          display: block;
-          margin: 0;
-          padding: 2px 8px;
+          font-weight: bold;
         }
       }
     }

@@ -6,6 +6,7 @@ import Game from './modules/Game/Game';
 import MoreGame from './modules/Game/MoreGame';
 import Setting from './modules/Setting';
 import History from './modules/History';
+import Chat from './modules/Chat';
 import lang from '@/utils/lang';
 
 import { systemTime } from '@/api/Common';
@@ -13,7 +14,7 @@ import { systemTime } from '@/api/Common';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { User, Game, BetCart, MoreGame, Setting, History },
+  modules: { User, Game, BetCart, MoreGame, Setting, History, Chat },
   state: {
     isMobile: false,
     isLoading: false,

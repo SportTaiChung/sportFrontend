@@ -1,49 +1,103 @@
 <template>
   <div id="MobileGames">
+    <!-- 主要布局 -->
     <div class="main-layout">
       <!-- HEADER -->
-      <MobileHeader
-        :unreadQACount="unreadQACount"
-        @openService="openService()"
-        @gameTypeClickHandler="gameTypeClickHandler"
-      ></MobileHeader>
+      <div class="main-header">
+        <MobileHeader
+          :unreadQACount="unreadQACount"
+          :page="page"
+          @openService="openService()"
+          @gameTypeClickHandler="gameTypeClickHandler"
+          @goPage="(v) => (page = v)"
+        ></MobileHeader>
+      </div>
 
-      <!-- 彩種導覽列 -->
-      <mGameCatNav
-        @onCatTypeClick="menuItemClickHandler"
-        @callGetFavoriteGameDetail="callGetFavoriteGameDetail()"
-      ></mGameCatNav>
+      <div class="main-body">
+        <!-- 投注頁 -->
+        <template v-if="page === PageEnum.game">
+          <!-- 投注彩種導覽列 -->
+          <mGameCatNav
+            v-if="page === PageEnum.game"
+            @onCatTypeClick="menuItemClickHandler"
+            @callGetFavoriteGameDetail="callGetFavoriteGameDetail()"
+          ></mGameCatNav>
 
-      <!-- 主遊戲 table 容器 -->
-      <div class="gameTableContainer">
-        <template v-if="GameList.length">
-          <!-- loop 當前彩種所有賽事 -->
-          <mGameTable
-            v-for="(gameData, index) in GameList"
-            :key="index"
-            :gameData="gameData"
-            :hasMoreGame="gameData.Items.hasMoreCount"
-            @openWagerTypePopup="isShowWagerTypePopup = true"
-          ></mGameTable>
+          <!-- 桌子組件 -->
+          <template v-if="GameList.length">
+            <mGameTable
+              v-for="(gameData, index) in GameList"
+              :key="index"
+              :gameData="gameData"
+              :hasMoreGame="gameData.Items.hasMoreCount"
+              @openWagerTypePopup="isShowWagerTypePopup = true"
+            ></mGameTable>
+          </template>
+          <template v-else>
+            <!-- 無賽事 -->
+            <div class="noData" v-if="!$store.state.isLoading"> {{ $t('Common.NoGame') }} </div>
+          </template>
         </template>
-        <template v-else>
-          <!-- 無賽事 -->
-          <div class="noData" v-if="!$store.state.isLoading"> {{ $t('Common.NoGame') }} </div>
+
+        <!-- 賽果頁 -->
+        <template v-else-if="page === PageEnum.gameResult">
+          <!-- 賽果彩種導覽列-->
+          <mGameResultCatNav
+            v-if="page === PageEnum.gameResult"
+            :date="gameResultDate"
+            @onCatTypeClick="menuItemClickHandler"
+            @changeGameResultCatId="(id) => (gameResultCatId = id)"
+            @openDatePicker="$refs.gameResult.isShowDatePicker = true"
+          ></mGameResultCatNav>
+
+          <!-- 桌子組件 -->
+          <template v-if="true">
+            <mGameResultTable
+              ref="gameResult"
+              :selectedCatId="gameResultCatId"
+              @date="(date) => (gameResultDate = date)"
+            ></mGameResultTable>
+          </template>
+          <template v-else>
+            <!-- 無賽果 -->
+            <div class="noData" v-if="!$store.state.isLoading">
+              {{ $t('Common.NoGameResult') }}
+            </div>
+          </template>
+        </template>
+
+        <!-- 公告頁 -->
+        <template v-else-if="page === PageEnum.announcement">
+          <mAnnouncement></mAnnouncement>
+        </template>
+        <template v-else-if="page === PageEnum.liveScore">
+          <mLiveScorePage></mLiveScorePage>
         </template>
       </div>
 
-      <!-- FOOTER -->
-      <MobileFooter
-        :hasLeagueFiltered="hasLeagueFiltered"
-        @openBetInfoPopup="openBetInfoPopup()"
-        @openBetRecordView="openBetRecordView()"
-        @openMenuPanel="openMenuPanel()"
-        @openLeaguesPanel="openLeaguesPanel()"
-      ></MobileFooter>
+      <div class="main-footer">
+        <!-- FOOTER -->
+        <MobileFooter
+          :hasLeagueFiltered="hasLeagueFiltered"
+          @openBetInfoPopup="openBetInfoPopup()"
+          @openBetRecordView="openBetRecordView()"
+          @openMenuPanel="openMenuPanel()"
+          @openLeaguesPanel="openLeaguesPanel()"
+        ></MobileFooter>
+      </div>
     </div>
 
+    <!-- 覆蓋 / 浮動型 組件區 -->
     <div class="fixed-container">
+      <!-- 更多玩法面板 -->
       <MoreGame v-if="isShowMoreGame" @openBetRecordView="openBetRecordView()"></MoreGame>
+
+      <!-- 下注面板 (單注時) -->
+      <mGamesBetInfoSingle
+        v-show="betCartList.length === 1 && isShowBetInfoSingle"
+        :isShowMoreGame="isShowMoreGame"
+        @onHide="isShowBetInfoSingle = false"
+      ></mGamesBetInfoSingle>
 
       <!-- 下注面板 (多注時) -->
       <mGamesBetInfoAll
@@ -51,12 +105,6 @@
         v-show="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
-
-      <!-- 下注面板 (單注時) -->
-      <mGamesBetInfoSingle
-        v-show="betCartList.length === 1 && isShowBetInfoSingle"
-        @onHide="isShowBetInfoSingle = false"
-      ></mGamesBetInfoSingle>
 
       <!-- 投注紀錄面板 -->
       <mBetRecordView
@@ -77,6 +125,7 @@
         @updateGameDetail="reCallGameDetailAPI()"
         @openStrayCount="isShowStrayCount = true"
         @openPersonal="isOpenPersonalPanel = true"
+        @goPage="(v) => (page = v)"
       ></mMenuPanel>
 
       <!-- 聯盟選擇面板 -->
@@ -106,31 +155,42 @@
       <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
       </PersonalPanel>
     </div>
+    <ChatSocket></ChatSocket>
   </div>
 </template>
 
 <script>
   import MobileHeader from './components/MobileHeader.vue';
   import MobileFooter from './components/MobileFooter.vue';
+  import mGameCatNav from './components/mGameCatNav.vue';
+  import mGameResultCatNav from './components/mGameResultCatNav.vue';
   import mGameTable from './components/GameTable/mGameTable.vue';
+  import mGameResultTable from './components/GameResultTable/mGameResultTable.vue';
   import mGamesBetInfoAll from './components/mGamesBetInfoAll.vue';
   import mGamesBetInfoSingle from './components/mGamesBetInfoSingle.vue';
   import mBetRecordView from './components/mBetRecordView.vue';
   import mWagerTypePopup from './components/mWagerTypePopup.vue';
-  import mMenuPanel from './components/menuPanel/mMenuPanel.vue';
+  import mMenuPanel from './components/MenuPanel/mMenuPanel.vue';
+  import mLeaguesPanel from './components/mLeaguesPanel.vue';
   import MoreGame from '@/components/MoreGame.vue';
   import ServiceChat from '@/components/ServiceChat.vue';
-  import mLeaguesPanel from './components/mLeaguesPanel.vue';
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
-  import mGameCatNav from './components/mGameCatNav.vue';
   import PersonalPanel from '@/components/PersonalPanel';
+  import mAnnouncement from './components/mAnnouncement';
+  import mLiveScorePage from './components/mLiveScorePage.vue';
+
+  import ChatSocket from '@/components/ChatSocket';
+  import { PageEnum } from './enum';
 
   export default {
     name: 'MobileGames',
     components: {
       MobileHeader,
       MobileFooter,
+      mGameCatNav,
+      mGameResultCatNav,
       mGameTable,
+      mGameResultTable,
       mGamesBetInfoAll,
       mGamesBetInfoSingle,
       mBetRecordView,
@@ -140,18 +200,25 @@
       MoreGame,
       ServiceChat,
       StrayCountDialog,
-      mGameCatNav,
       PersonalPanel,
+      mLiveScorePage,
+      mAnnouncement,
+      ChatSocket,
     },
     created() {
       this.$store.dispatch('User/UserInfoAbout');
     },
     mounted() {
       if (this.gameStore.MenuList.length !== 0) {
-        // 一進入頁面預設選取第一個
+        // 一進入頁面預設選取第一個彩種
         this.menuItemClickHandler(this.gameStore.MenuList[0], null, 0);
       } else {
         this.$store.commit('SetLoading', false);
+      }
+
+      // 賽果預設選取第一個彩種
+      if (this.CatList[0]) {
+        this.gameResultCatId = this.CatList[0].CatID;
       }
 
       // 更新 賠率: 每10秒
@@ -217,6 +284,11 @@
     },
     data() {
       return {
+        // 當前頁面
+        PageEnum,
+        page: PageEnum.game,
+
+        // 組件顯示開關
         isShowBetInfo: false,
         isShowBetInfoSingle: true,
         isShowBetRecordView: false,
@@ -228,9 +300,12 @@
         isShowStrayCount: false,
         latestSelectCatId: null,
         latestSelectWagerTypeKey: null,
+        hasLeagueFiltered: false,
+        gameResultCatId: null,
+        gameResultDate: null,
+
         // QA未讀數量
         unreadQACount: 0,
-        hasLeagueFiltered: false,
 
         // interval IDs
         intervalEvent: null,
@@ -240,6 +315,9 @@
     computed: {
       GameList() {
         return this.gameStore.GameList;
+      },
+      CatList() {
+        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
       },
       gameStore() {
         return this.$store.state.Game;
@@ -444,24 +522,29 @@
       width: 100%;
       height: 100%;
 
-      .gameTableContainer {
-        overflow: auto;
-        flex: 1;
-
-        .noData {
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2rem;
-        }
+      .main-header {
+        flex: 0 0;
       }
 
-      .el-collapse-item__header {
-        line-height: 200%;
-        height: auto;
-        background-color: #e8e8e8;
-        border-bottom: 2px solid #d0d0d0;
+      .main-body {
+        flex: 1 0;
+        display: flex;
+        flex-flow: column;
+        overflow: hidden;
+        background-color: #eee;
+      }
+
+      .main-footer {
+        flex: 0 0;
+        z-index: 10;
+      }
+
+      .noData {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
       }
     }
     .fixed-container {

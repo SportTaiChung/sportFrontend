@@ -195,5 +195,14 @@
     "BetAmount": "bet amount",
     "TypeStray": "Type: pass"
   },
-  "GameDate": "match date"
+  "GameDate": "match date",
+  "Ann": {
+    "Title": "Announcement area",
+    "Time": "release time",
+    "Message": "message content",
+    "System": "system notification"
+  },
+  "GameResult": {
+    "SelectDate": "select date"
+  }
 }

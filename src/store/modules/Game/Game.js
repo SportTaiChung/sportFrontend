@@ -347,19 +347,11 @@ export default {
       });
     },
 
-    // 11. 游戏公告讯息 - 搜寻单列
+    // 11. 游戏公告讯息 false
     GetAnnouncement(store) {
       return new Promise((resolve, reject) => {
         return getAnnouncement({
-          sia: false,
-        }).then((res) => resolve(res));
-      });
-    },
-    // 11. 游戏公告讯息 - 搜寻全部
-    GetAnnouncementAll(store) {
-      return new Promise((resolve, reject) => {
-        return getAnnouncement({
-          sia: true,
+          sla: true,
         }).then((res) => resolve(res));
       });
     },
@@ -557,6 +549,14 @@ export default {
         };
         return getGameDetail(postData)
           .then(async (res) => {
+            res.data = res.data.map((it) => {
+              if (it.Items.List.length !== 0) {
+                it.CatID = it.Items.List[0].CatID;
+              } else {
+                it.CatID = null;
+              }
+              return it;
+            });
             store.commit('setGameList', {
               data: res.data,
               isFavorite: true,

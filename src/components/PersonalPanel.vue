@@ -27,7 +27,7 @@
         <div class="row">
           <div class="rowTitle"> {{ $t('Common.Lang') }}</div>
           <div class="rowContent">
-            <el-select v-model="lang" @change="newLang">
+            <el-select v-model="lang">
               <el-option
                 v-for="item in langOptions"
                 :key="item.value"
@@ -37,6 +37,10 @@
               </el-option>
             </el-select>
           </div>
+        </div>
+        <div class="row lastRow">
+          <div class="cancelBtn" @click="$emit('closeMe')">{{ $t('Common.Cancel') }}</div>
+          <div class="submitBtn" @click="modifyClick">修改</div>
         </div>
       </div>
     </div>
@@ -52,6 +56,7 @@
         nickName: '',
         lastNickName: '',
         lang: 'tw',
+        lastLang: '',
         langOptions: [
           {
             value: 'tw',
@@ -69,6 +74,7 @@
       this.nickName = this.$store.state.User.UserData.RealName;
       this.lastNickName = this.nickName;
       this.lang = this.$store.state.Lang;
+      this.lastLang = this.lang;
     },
     computed: {
       inputIcon() {
@@ -80,7 +86,7 @@
       },
     },
     methods: {
-      newLang(lang) {
+      setNewLang(lang) {
         this.$store.commit('SetLang', lang);
         location.reload();
       },
@@ -94,26 +100,33 @@
       },
       inputBlur() {
         this.isFocus = false;
-
-        this.$store.commit('SetLoading', true);
-        this.$store
-          .dispatch('User/setNickName', {
-            Nickname: this.nickName,
-          })
-          .then((res) => {
-            this.lastNickName = this.nickName;
-            this.$notify({
-              title: this.$t('Common.Success'),
-              message: this.$t('Common.ModifySuccess'),
-              type: 'success',
+      },
+      async modifyClick() {
+        if (this.lastNickName !== this.nickName) {
+          this.$store.commit('SetLoading', true);
+          await this.$store
+            .dispatch('User/setNickName', {
+              Nickname: this.nickName,
+            })
+            .then((res) => {
+              this.lastNickName = this.nickName;
+              this.$notify({
+                title: this.$t('Common.Success'),
+                message: this.$t('Common.ModifySuccess'),
+                type: 'success',
+              });
+            })
+            .catch(() => {
+              this.nickName = this.lastNickName;
+            })
+            .finally(() => {
+              this.$store.commit('SetLoading', false);
             });
-          })
-          .catch(() => {
-            this.nickName = this.lastNickName;
-          })
-          .finally(() => {
-            this.$store.commit('SetLoading', false);
-          });
+        }
+
+        if (this.lastLang !== this.lang) {
+          this.setNewLang(this.lang);
+        }
       },
     },
   };
@@ -207,6 +220,10 @@
           display: flex;
           height: 40px;
           margin-bottom: 15px;
+          justify-content: center;
+          &:last-child {
+            margin-bottom: 0px;
+          }
           .rowTitle {
             font-size: 18px;
             color: gray;
@@ -226,6 +243,33 @@
             color: rgb(110, 110, 110);
             font-size: 18px;
           }
+
+          .cancelBtn,
+          .submitBtn {
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            line-height: 40px;
+            padding: 0 20px;
+            cursor: pointer;
+          }
+          .cancelBtn {
+            background-color: #808080;
+            margin-right: 15px;
+            &:hover {
+              background-color: #8a8a8a;
+            }
+          }
+          .submitBtn {
+            background-color: #41a780;
+            margin-left: 15px;
+            &:hover {
+              background-color: #43bb8d;
+            }
+          }
+        }
+        .lastRow {
+          margin: 5px 0 !important;
         }
       }
     }

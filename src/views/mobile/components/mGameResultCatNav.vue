@@ -1,43 +1,53 @@
 <template>
   <!-- 遊戲類型 -->
   <ul class="gameCatNav">
-    <li
-      v-if="hasFavorite"
-      class="item fav"
-      :class="gameStore.selectCatID == -999 ? 'active' : ''"
-      @click="goFav"
-    >
-      <img :src="getMenuIconByCatID(-999)" class="menu-icon" @click="goFav()" />
-      {{ $t('Common.Collect') }}
+    <li class="item date-picker" @click="$emit('openDatePicker')">
+      <img src="@/assets/img/mobile/btn_date.svg" class="btn-date" />
+      <span class="text">{{ showGetDate }}</span>
     </li>
     <li
-      v-for="(catData, index) in gameStore.MenuList"
+      v-for="(catData, index) in CatList"
       :key="index"
       class="item"
-      :class="gameStore.selectCatID == catData.catid ? 'active' : ''"
-      @click.stop="$emit('onCatTypeClick', catData, null, index)"
+      :class="selectedCatId == catData.CatID ? 'active' : ''"
+      @click="selectedCatId = catData.CatID"
     >
-      <img :src="getMenuIconByCatID(catData.catid)" class="menu-icon" />
-      {{ catData.catName }}
+      <img :src="getMenuIconByCatID(catData.CatID)" class="menu-icon" />
+      {{ catData.Name }}
     </li>
   </ul>
 </template>
 
 <script>
   export default {
-    name: 'mGameCatNav',
+    name: 'mGameResultCatNav',
+    props: {
+      date: {
+        type: Date,
+      },
+    },
     data() {
-      return {};
+      return {
+        selectedCatId: null,
+      };
+    },
+    created() {
+      if (this.CatList.length > 0) {
+        this.selectedCatId = this.CatList[0].CatID;
+      }
     },
     computed: {
       gameStore() {
         return this.$store.state.Game;
       },
+      CatList() {
+        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
+      },
       CatMapData() {
         return this.$store.state.Game.CatMapData;
       },
-      hasFavorite() {
-        return this.$store.state.Setting.UserSetting.favorites.length > 0;
+      showGetDate() {
+        return this.date?.getDate();
       },
     },
     methods: {
@@ -45,16 +55,10 @@
         const icon = this.CatMapData[catId].icon;
         return require('@/assets/img/common/menuIcon/' + icon);
       },
-      openWagerTypePopup() {
-        this.$emit('openWagerTypePopup');
-      },
-      goFav() {
-        this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
-          selectGameType: this.$store.state.Game.selectGameType,
-          selectCatID: -999,
-          selectWagerTypeKey: null,
-        });
-        this.$emit('callGetFavoriteGameDetail');
+    },
+    watch: {
+      selectedCatId(newValue) {
+        this.$emit('changeGameResultCatId', newValue);
       },
     },
   };
@@ -91,6 +95,7 @@
       font-size: 1.2rem;
       white-space: nowrap;
       color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
 
       &.active {
         color: #fff;
@@ -107,12 +112,26 @@
         opacity: 0.7;
       }
 
-      &.fav {
+      &.date-picker {
         position: sticky;
         left: 0;
         z-index: 1;
         background-color: #6da9e5;
         box-shadow: 1px 0px 6px rgb(0 0 0 / 10%);
+        justify-content: center;
+
+        img.btn-date {
+          max-width: 2.769rem;
+          height: auto;
+          opacity: 0.7;
+        }
+
+        span.text {
+          position: absolute;
+          top: 45.2%;
+          color: #fff;
+          font-weight: bold;
+        }
       }
     }
   }

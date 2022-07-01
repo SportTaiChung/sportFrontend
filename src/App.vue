@@ -64,7 +64,8 @@
         if (
           process.env.VUE_APP_UI === 'pc' &&
           this.$route.name !== 'HistoryRecord' &&
-          this.$route.name !== 'GameResult'
+          this.$route.name !== 'GameResult' &&
+          this.$route.name !== 'Ann'
         ) {
           return 'min-width:1400px;';
         } else {

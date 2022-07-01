@@ -1,44 +1,73 @@
 <template>
-  <div class="mGameInfo">
-    <div ref="collapseContainer" class="collapse-container" :class="isExpanded ? 'on' : ''">
-      <table>
-        <thead ref="thead" @click="$emit('toggleCollapse')">
-          <tr>
-            <th>
-              <span class="title">{{ source.LeagueNameStr }}</span>
-              <img
-                src="@/assets/img/mobile/btn_arrow_w.svg"
-                class="arrow"
-                :class="isExpanded ? 'isExpanded' : ''"
-              />
-            </th>
-          </tr>
-        </thead>
+  <div class="mGameInfo" :class="isExpanded ? '' : 'closed'">
+    <table>
+      <thead @click="$emit('toggleCollapse')">
+        <tr>
+          <th>
+            <span class="title">{{ source.LeagueNameStr }}</span>
+            <img
+              src="@/assets/img/mobile/btn_arrow_w.svg"
+              class="arrow"
+              :class="isExpanded ? 'isExpanded' : ''"
+            />
+          </th>
+        </tr>
+      </thead>
 
-        <tbody ref="collapseTarget" class="collapse-target" v-show="isExpanded">
-          <template v-for="(teamData, teamIndex) in source.Team">
-            <template v-if="teamData.EvtStatus === 1">
-              <tr
-                v-for="(teamDataRowNum, rowIndex) in teamData.Row"
-                :key="`${teamIndex}-${rowIndex}`"
-                :set="(hasTie = teamData.hasDrewOdds && rowIndex === 0)"
-              >
-                <!-- 賽事 -->
-                <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
-                  <div class="team-block">
-                    <!-- 只需要顯示一個隊伍 -->
-                    <template v-if="teamData.AwayTeamStr === '.'">
-                      <div>
-                        <div class="team"
-                          >{{ teamData.HomeTeamStr }}
+      <tbody v-show="isExpanded">
+        <template v-for="(teamData, teamIndex) in source.Team">
+          <template v-if="teamData.EvtStatus === 1">
+            <tr
+              v-for="(teamDataRowNum, rowIndex) in teamData.Row"
+              :key="`${teamIndex}-${rowIndex}`"
+              :set="(hasTie = teamData.hasDrewOdds && rowIndex === 0)"
+            >
+              <!-- 賽事 -->
+              <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
+                <div class="team-block">
+                  <!-- 只需要顯示一個隊伍 -->
+                  <template v-if="teamData.AwayTeamStr === '.'">
+                    <div>
+                      <div class="team"
+                        >{{ teamData.HomeTeamStr }}
 
-                          <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                            -{{ teamData.HomePtNameStr }}</span
-                          >
-                        </div>
+                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                          -{{ teamData.HomePtNameStr }}</span
+                        >
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else-if="teamData.HomeTeamStr === '.'">
+                    <div class="team"
+                      >{{ teamData.AwayTeamStr }}
+                      <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                        -{{ teamData.AwayPtNameStr }}</span
+                      >
+                    </div>
+                  </template>
+                  <template v-else>
+                    <!-- 判斷主客場對調 -->
+                    <template v-if="!teamData.SetFlag">
+                      <div class="team"
+                        >{{ teamData.AwayTeamStr }}
+                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                          -{{ teamData.AwayPtNameStr }}</span
+                        >
+                      </div>
+                      <div class="team"
+                        >{{ teamData.HomeTeamStr }}
+                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                          -{{ teamData.HomePtNameStr }}</span
+                        >
                       </div>
                     </template>
-                    <template v-else-if="teamData.HomeTeamStr === '.'">
+                    <template v-else>
+                      <div class="team"
+                        >{{ teamData.HomeTeamStr }}
+                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                          -{{ teamData.HomePtNameStr }}</span
+                        >
+                      </div>
                       <div class="team"
                         >{{ teamData.AwayTeamStr }}
                         <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
@@ -46,66 +75,35 @@
                         >
                       </div>
                     </template>
-                    <template v-else>
-                      <!-- 判斷主客場對調 -->
-                      <template v-if="!teamData.SetFlag">
-                        <div class="team"
-                          >{{ teamData.AwayTeamStr }}
-                          <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                            -{{ teamData.AwayPtNameStr }}</span
-                          >
-                        </div>
-                        <div class="team"
-                          >{{ teamData.HomeTeamStr }}
-                          <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                            -{{ teamData.HomePtNameStr }}</span
-                          >
-                        </div>
-                      </template>
-                      <template v-else>
-                        <div class="team"
-                          >{{ teamData.HomeTeamStr }}
-                          <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                            -{{ teamData.HomePtNameStr }}</span
-                          >
-                        </div>
-                        <div class="team"
-                          >{{ teamData.AwayTeamStr }}
-                          <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                            -{{ teamData.AwayPtNameStr }}</span
-                          >
-                        </div>
-                      </template>
-                    </template>
+                  </template>
 
-                    <!-- 是否顯示和局 -->
-                    <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0">
-                      {{ $t('Common.DrewOdd') }}
+                  <!-- 是否顯示和局 -->
+                  <div class="team" v-if="teamData.hasDrewOdds && rowIndex === 0">
+                    {{ $t('Common.DrewOdd') }}
+                  </div>
+
+                  <!-- 時間 & 收藏按鈕 -->
+                  <div class="info-timeStarRow" v-if="rowIndex === 0">
+                    <!-- 時間 -->
+                    <div class="time">
+                      {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                      {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
                     </div>
-
-                    <!-- 時間 & 收藏按鈕 -->
-                    <div class="info-timeStarRow" v-if="rowIndex === 0">
-                      <!-- 時間 -->
-                      <div class="time">
-                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                      </div>
-                      <!-- 收藏 -->
-                      <div
-                        class="star"
-                        :class="starCSSJudge(teamData.EvtID)"
-                        @click="addFavoriteHandler(teamData.EvtID)"
-                      >
-                      </div>
+                    <!-- 收藏 -->
+                    <div
+                      class="star"
+                      :class="starCSSJudge(teamData.EvtID)"
+                      @click="addFavoriteHandler(teamData.EvtID)"
+                    >
                     </div>
                   </div>
-                </td>
-              </tr>
-            </template>
+                </div>
+              </td>
+            </tr>
           </template>
-        </tbody>
-      </table>
-    </div>
+        </template>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -114,9 +112,6 @@
     name: 'mGameInfo',
     components: {},
     props: {
-      index: {
-        type: Number,
-      },
       source: {
         type: Object,
         default() {
@@ -136,10 +131,6 @@
         },
       },
     },
-    data() {
-      return {};
-    },
-    mounted() {},
     methods: {
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
@@ -152,7 +143,6 @@
         this.$store.commit('Setting/addFavorites', EvtID);
       },
     },
-    watch: {},
   };
 </script>
 
@@ -162,15 +152,10 @@
 
   .mGameInfo {
     position: relative;
-    z-index: 1;
+    width: fit-content;
+    min-width: 100%;
 
-    .collapse-container {
-      position: relative;
-      overflow: hidden;
-      width: fit-content;
-      min-width: 100%;
-      transition: height 300ms ease-out;
-      height: auto;
+    &.closed {
       &::after {
         content: '';
         display: block;
@@ -181,21 +166,6 @@
         height: 1px;
         background-color: #ccc;
       }
-
-      .collapse-target {
-        transition: 350ms ease;
-        opacity: 0;
-      }
-
-      &.on {
-        &::after {
-          content: '';
-          display: none;
-        }
-        .collapse-target {
-          opacity: 1;
-        }
-      }
     }
 
     table {
@@ -204,6 +174,7 @@
       border-spacing: 0;
       width: 100%;
       font-size: $font-size;
+      background-color: #fff;
 
       th {
         display: flex;
@@ -257,6 +228,7 @@
         border-right: 1px solid #e8e8e8;
         padding-left: 0.8rem;
         height: $row-height * 2;
+        background-color: #fff;
 
         &.height-lv1 {
           height: $row-height * 2;

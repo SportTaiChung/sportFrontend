@@ -33,6 +33,11 @@ export default async () => {
       component: () => import(/* webpackChunkName: "GameResult" */ '../views/GameResult.vue'),
     },
     {
+      path: '/Ann',
+      name: 'Ann',
+      component: () => import(/* webpackChunkName: "Ann" */ '../views/Ann.vue'),
+    },
+    {
       path: '/TestOddData',
       name: 'TestOddData',
       component: () =>
@@ -85,6 +90,7 @@ export default async () => {
       to.name === 'Login' ||
       to.name === 'HistoryRecord' ||
       to.name === 'GameResult' ||
+      to.name === 'Ann' ||
       to.name === 'TestOddData' ||
       to.name === 'TestTableData' ||
       to.name === 'TestVirtualList' ||
