@@ -11,7 +11,7 @@
       />
 
       <!-- 頁面名稱 -->
-      <h5 class="pageName"> {{ pageName }} </h5>
+      <h5 class="pageName" v-if="pageName"> {{ pageName }} </h5>
 
       <!-- gameType 切換鈕 (今日 / 滾球 / 早盤) -->
       <template v-if="page === PageEnum.game">
@@ -97,6 +97,9 @@
           }
           case PageEnum.announcement: {
             return this.$t('Ann.Title');
+          }
+          case PageEnum.liveScore: {
+            return this.$t('GamesHeader.LiveScore');
           }
           default:
             return '';

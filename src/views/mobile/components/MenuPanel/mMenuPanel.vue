@@ -18,7 +18,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_live.svg" />
             <div class="text"> {{ $t('Common.LivePlay') }} </div>
           </li>
-          <li class="feature-item" @click="jumpLink('scoreLive')">
+          <li class="feature-item" @click="goLiveScorePage()">
             <img class="icon" src="@/assets/img/mobile/icon_score.svg" />
             <div class="text"> {{ $t('GamesHeader.LiveScore') }} </div>
           </li>
@@ -129,6 +129,10 @@
       },
       closeSecondaryPanel() {
         this.isSecondaryPanelOpened = false;
+      },
+      goLiveScorePage() {
+        this.$emit('goPage', PageEnum.liveScore);
+        this.close();
       },
       goGameResultPage() {
         this.$emit('goPage', PageEnum.gameResult);

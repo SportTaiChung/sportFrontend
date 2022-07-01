@@ -70,6 +70,9 @@
         <template v-else-if="page === PageEnum.announcement">
           <mAnnouncement></mAnnouncement>
         </template>
+        <template v-else-if="page === PageEnum.liveScore">
+          <mLiveScorePage></mLiveScorePage>
+        </template>
       </div>
 
       <div class="main-footer">
@@ -174,6 +177,8 @@
   import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
   import PersonalPanel from '@/components/PersonalPanel';
   import mAnnouncement from './components/mAnnouncement';
+  import mLiveScorePage from './components/mLiveScorePage.vue';
+
   import ChatSocket from '@/components/ChatSocket';
   import { PageEnum } from './enum';
 
@@ -196,6 +201,7 @@
       ServiceChat,
       StrayCountDialog,
       PersonalPanel,
+      mLiveScorePage,
       mAnnouncement,
       ChatSocket,
     },
