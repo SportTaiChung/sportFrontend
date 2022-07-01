@@ -20,7 +20,7 @@
         />
       </div>
       <div class="body">
-        <BetViewList :isShowCardOptionBlock="false"></BetViewList>
+        <BetViewList :isControlByBetSingle="true"></BetViewList>
       </div>
     </div>
   </div>

@@ -63,6 +63,7 @@
         </div>
         <div class="inputRow" v-else>
           <input
+            ref="BetAmountInput"
             class="input"
             v-model="cartData.betAmount"
             type="number"
@@ -144,11 +145,21 @@
         type: String,
         default: '',
       },
+      // 是否來自 mGamesBetInfoSingle 控制
+      isControlByBetSingle: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
         PanelModeEnum,
       };
+    },
+    mounted() {
+      if (this.isControlByBetSingle) {
+        this.$refs.BetAmountInput.focus();
+      }
     },
     methods: {
       betAmountBlur(GameID) {
@@ -244,6 +255,15 @@
       },
       UserCredit() {
         return this.$store.state.User.UserCredit;
+      },
+      isAddNewToChart() {
+        return this.$store.state.BetCart.isAddNewToChart;
+      },
+    },
+    watch: {
+      // 有新增投注到購物車事件
+      isAddNewToChart() {
+        console.log('!!!!:', this.$refs.BetAmountInput);
       },
     },
   };
