@@ -11,6 +11,9 @@
         ></i>
         <div class="chat-history" ref="history">
           <template v-for="(it, index) in ChatList">
+            <div class="UserName" :key="'name' + index" v-if="!isSelfMessage(it.mbID)">
+              {{ it.Name }}
+            </div>
             <div class="msg-wrap" :class="isSelfMessage(it.mbID) ? 'self' : ''" :key="index">
               <div class="msg-row">
                 <div class="msg"> {{ it.Mes }} </div>
@@ -281,8 +284,8 @@
 
         i.btn-hide {
           position: absolute;
-          right: 1rem;
-          top: 1rem;
+          right: 0.35rem;
+          top: 0.5rem;
           font-size: 2rem;
           font-weight: 600;
           color: #888;
@@ -295,8 +298,8 @@
         }
         i.btn-extend {
           position: absolute;
-          right: 1rem;
-          top: 3.5rem;
+          right: 0.35rem;
+          top: 3rem;
           font-size: 2rem;
           font-weight: 600;
           color: #888;
@@ -316,11 +319,13 @@
           height: 100%;
           overflow-x: hidden;
           overflow-y: auto;
-
+          .UserName {
+            margin-bottom: 5px;
+          }
           .msg-wrap {
             display: flex;
             margin-bottom: 1rem;
-            margin-left: 1rem;
+            // margin-left: 1rem;
             .msg-row {
               display: flex;
               flex-flow: row nowrap;
@@ -349,20 +354,20 @@
                 position: relative;
                 background: #efefef;
 
-                &::after {
-                  position: absolute;
-                  content: ' ';
-                  bottom: 0;
-                  height: 0;
-                  width: 0;
-                  border: 0 solid transparent;
-                  pointer-events: none;
-                  border-right-color: #efefef;
-                  border-width: 10px;
-                  transform: translateX(-100%);
-                  left: 0;
-                  top: 20%;
-                }
+                // &::after {
+                //   position: absolute;
+                //   content: ' ';
+                //   bottom: 0;
+                //   height: 0;
+                //   width: 0;
+                //   border: 0 solid transparent;
+                //   pointer-events: none;
+                //   border-right-color: #efefef;
+                //   border-width: 10px;
+                //   transform: translateX(-100%);
+                //   left: 0;
+                //   top: 20%;
+                // }
               }
               .msgPhoto {
                 display: block;
@@ -382,7 +387,7 @@
             &.self {
               align-self: flex-end;
               flex-flow: row-reverse;
-              margin-right: 1rem;
+              margin-right: 1.5rem;
 
               .avatar {
                 display: none;
