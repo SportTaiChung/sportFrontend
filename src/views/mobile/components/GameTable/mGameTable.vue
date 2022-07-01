@@ -81,7 +81,7 @@
       mGameBetting,
     },
     mounted() {
-      this.expandAllCollapse();
+      // this.expandAllCollapse();
     },
     computed: {
       gameStore() {

@@ -175,7 +175,7 @@
           .then((res) => {
             console.log(res);
             this.rawData = res.data;
-            this.expandAllCollapse();
+            // this.expandAllCollapse();
           })
           .finally(() => {
             this.countdownSec = this.totalCountdownSec;
