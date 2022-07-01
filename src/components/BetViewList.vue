@@ -234,7 +234,12 @@
     <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
     <div
       class="cardOptionBlock"
-      v-if="isMobileMode && isShowChartList && panelMode === PanelModeEnum.result"
+      v-if="
+        isMobileMode &&
+        isShowChartList &&
+        panelMode === PanelModeEnum.result &&
+        isControlByBetSingle
+      "
     >
       <div class="buttonRow">
         <div class="clearBtn" @click="resultLeftBtnClickHandler()">
