@@ -122,6 +122,18 @@ export default {
                 }
               });
               store.state.betCartList = store.state.betCartList.slice();
+
+              // 更新主玩法data
+              rootStore.commit('Game/updateGameList', {
+                isUpdateFromOtherStore: true,
+                updateData: res.data,
+              });
+
+              // 更新更多玩法
+              rootStore.commit('MoreGame/updateMoreGameData', {
+                isUpdateFromOtherStore: true,
+                updateData: res.data,
+              });
             }
             resolve(res);
           })
