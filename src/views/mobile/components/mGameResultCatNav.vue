@@ -3,7 +3,7 @@
   <ul class="gameCatNav">
     <li class="item date-picker" @click="$emit('openDatePicker')">
       <img src="@/assets/img/mobile/btn_date.svg" class="btn-date" />
-      <span class="text">{{ date.getDate() }}</span>
+      <span class="text">{{ showGetDate }}</span>
     </li>
     <li
       v-for="(catData, index) in CatList"
@@ -24,13 +24,17 @@
     props: {
       date: {
         type: Date,
-        default: Date.now(),
       },
     },
     data() {
       return {
         selectedCatId: null,
       };
+    },
+    created() {
+      if (this.CatList.length > 0) {
+        this.selectedCatId = this.CatList[0].CatID;
+      }
     },
     computed: {
       gameStore() {
@@ -42,11 +46,9 @@
       CatMapData() {
         return this.$store.state.Game.CatMapData;
       },
-    },
-    created() {
-      if (this.CatList.length > 0) {
-        this.selectedCatId = this.CatList[0].CatID;
-      }
+      showGetDate() {
+        return this.date?.getDate();
+      },
     },
     methods: {
       getMenuIconByCatID(catId) {
