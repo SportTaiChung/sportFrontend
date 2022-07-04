@@ -215,6 +215,7 @@
         </template>
       </tbody>
     </table>
+    <img src="@/assets/img/mobile/btn_arrow_w.svg" class="arrow" />
   </div>
 </template>
 
@@ -252,9 +253,6 @@
         },
       },
     },
-    data() {
-      return {};
-    },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
@@ -263,8 +261,13 @@
         return this.hasMoreGame ? 'hasMoreGame' : '';
       },
     },
-    mounted() {},
-    watch: {},
+    watch: {
+      isExpanded(isExpanded) {
+        if (!isExpanded) {
+          this.$el.scrollTo(0, 0);
+        }
+      },
+    },
     methods: {
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';
@@ -341,8 +344,7 @@
 
   .mGameBetting {
     position: relative;
-    width: fit-content;
-    min-width: 100%;
+    overflow-x: auto;
 
     &.closed {
       &::after {
@@ -354,6 +356,16 @@
         width: 100%;
         height: 1px;
         background-color: #ccc;
+      }
+
+      overflow-x: hidden;
+      table thead {
+        tr th {
+          color: transparent !important;
+        }
+      }
+      .arrow {
+        display: block;
       }
     }
 
@@ -471,6 +483,16 @@
           border-right: none !important;
         }
       }
+    }
+
+    .arrow {
+      display: none;
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.1rem;
+      filter: invert(30%);
     }
   }
 </style>
