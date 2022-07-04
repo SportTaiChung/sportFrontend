@@ -1,5 +1,5 @@
 <template>
-  <div class="marquee" ref="container">
+  <div class="marquee" ref="container" @mouseover="speedFactor = 1" @mouseleave="speedFactor = 1">
     <div class="content" ref="content" :style="translateX">{{ text }}</div>
   </div>
 </template>
@@ -27,6 +27,7 @@
         offsetX: 0,
         isPlaying: true,
         raf: null,
+        speedFactor: 1, // 0 ~ 1 float
       };
     },
     computed: {
@@ -47,7 +48,7 @@
         if (this.isPlaying) {
           const { container, content } = this.$refs;
           this.totalX = container.clientWidth + content.clientWidth;
-          this.offsetX -= this.speed;
+          this.offsetX -= this.speed * this.speedFactor;
           if (this.offsetX < -this.totalX) {
             this.offsetX = 0;
           }
