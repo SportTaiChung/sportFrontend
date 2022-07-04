@@ -410,12 +410,11 @@
             border-color: #e8e8e8;
             border-width: 0 1px 1px 0;
             background-color: #fff;
+            text-align: center;
+            line-height: $row-height;
 
             &.interactive {
               cursor: pointer;
-              // &:hover {
-              //   background-color: #ffe1ae;
-              // }
             }
             &.isSelected {
               background-color: #ffd5d5;
@@ -435,6 +434,10 @@
               white-space: nowrap;
               text-overflow: ellipsis;
               font-weight: bold;
+            }
+
+            .Odd {
+              flex: 1;
             }
           }
         }
