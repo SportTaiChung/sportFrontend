@@ -94,7 +94,7 @@
 
       <!-- 下注面板 (單注時) -->
       <mGamesBetInfoSingle
-        v-show="betCartList.length === 1 && isShowBetInfoSingle"
+        v-show="isShowBetInfoSingleReal"
         :isShowMoreGame="isShowMoreGame"
         @onHide="isShowBetInfoSingle = false"
       ></mGamesBetInfoSingle>
@@ -154,6 +154,9 @@
       <!-- 個人設置 -->
       <PersonalPanel v-if="isOpenPersonalPanel" @closeMe="isOpenPersonalPanel = false">
       </PersonalPanel>
+
+      <!-- 購物車浮動球 -->
+      <mFloatingBetCart v-show="isShowFloatingBall" @openBetInfoPopup="openBetInfoPopup()""></mFloatingBetCart>
     </div>
     <ChatSocket></ChatSocket>
   </div>
@@ -178,6 +181,7 @@
   import PersonalPanel from '@/components/PersonalPanel';
   import mAnnouncement from './components/mAnnouncement';
   import mLiveScorePage from './components/mLiveScorePage.vue';
+  import mFloatingBetCart from './components/mFloatingBetCart.vue';
 
   import ChatSocket from '@/components/ChatSocket';
   import { PageEnum } from './enum';
@@ -202,6 +206,7 @@
       StrayCountDialog,
       PersonalPanel,
       mLiveScorePage,
+      mFloatingBetCart,
       mAnnouncement,
       ChatSocket,
     },
@@ -331,6 +336,9 @@
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;
       },
+      isShowBetInfoSingleReal() {
+        return this.betCartList.length === 1 && this.isShowBetInfoSingle;
+      },
       betCartList() {
         return this.$store.state.BetCart.betCartList;
       },
@@ -339,6 +347,14 @@
       },
       favorites() {
         return this.$store.state.Setting.UserSetting.favorites;
+      },
+      isShowFloatingBall() {
+        return (
+          this.isShowMoreGame &&
+          this.betCartList.length > 0 &&
+          !this.isShowBetInfoSingleReal &&
+          !this.isShowBetInfo
+        );
       },
     },
     methods: {
