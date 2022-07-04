@@ -26,7 +26,13 @@
                   </div>
                   <div class="msg">
                     <template v-if="msg.Content.indexOf('{{FileImage}}') >= 0">
-                      <img class="msgPhoto" :src="parseImgUrl(msg.Content)" @load="imgLoadDone()" />
+                      <el-image
+                        class="msgPhoto"
+                        :src="parseImgUrl(msg.Content)"
+                        :preview-src-list="[parseImgUrl(msg.Content)]"
+                        @load="imgLoadDone()"
+                      >
+                      </el-image>
                     </template>
                     <template v-else>
                       {{ msg.Content }}
