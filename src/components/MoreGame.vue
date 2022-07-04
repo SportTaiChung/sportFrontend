@@ -1,6 +1,13 @@
 <template>
   <div id="MoreGame" :class="isMobileClass" v-loading="loading">
     <div class="MoreGameHeader">
+      <div
+        class="btn-mobile-back"
+        v-if="isMobileMode"
+        @click="$store.commit('MoreGame/closeMoreGameList')"
+      >
+        <img src="@/assets/img/mobile/btn_arrow_w.svg" />
+      </div>
       <div class="teamName home" :title="getteamData.home">{{ getteamData.home }}</div>
       <!-- 非滾球 -->
       <template v-if="selectGameType !== 2">
@@ -823,6 +830,23 @@
         cursor: pointer;
         &:hover {
           opacity: 1;
+        }
+      }
+
+      .btn-mobile-back {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        img {
+          width: 15px;
+          height: auto;
+          transform: rotate(90deg);
+          opacity: 0.7;
+          margin-right: 1rem;
+          cursor: pointer;
+          &:active {
+            opacity: 1;
+          }
         }
       }
     }
