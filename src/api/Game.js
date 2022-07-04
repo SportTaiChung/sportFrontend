@@ -210,6 +210,16 @@ export function getBetHistory(postData = {}) {
   });
 }
 
+// 25-6 快捷訊息/罐頭訊息
+export function getDefaultMes() {
+  return request({
+    url: `/outputApi/DefaultMes`,
+    method: 'get',
+    baseURL:
+      process.env.NODE_ENV === 'development' ? '/chat' : 'https://' + window.VUE_APP_CHAT_API,
+  });
+}
+
 // 26.取得直播線路
 export function getLive() {
   return request({

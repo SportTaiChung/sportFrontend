@@ -77,19 +77,14 @@
         placeholder: '大家好~',
         isExtended: false,
         isShowQuickMsgList: false,
-        quickMsgList: [
-          '哈摟大家好~',
-          '各位觀眾，進球!!!',
-          '三分球!',
-          '左手只是輔助。 ',
-          '安安幾歲住哪~',
-          '開~通殺!!',
-        ],
       };
     },
     computed: {
       ChatList() {
         return this.$store.state.Chat.ChatList;
+      },
+      quickMsgList() {
+        return this.$store.state.Chat.defaultMSG;
       },
     },
     watch: {

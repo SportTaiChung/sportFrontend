@@ -10,6 +10,7 @@
     },
     created() {
       this.initWebsocket();
+      this.initDefaultMessage();
       window.chat = this;
     },
     computed: {
@@ -18,6 +19,9 @@
       },
     },
     methods: {
+      initDefaultMessage() {
+        this.$store.dispatch('Chat/getDefaultMes');
+      },
       initWebsocket() {
         this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
 
@@ -53,7 +57,7 @@
           } else if (eventName === 'APINowMes') {
             this.$store.commit('Chat/SetChatList', JSON.parse(data).data);
           } else if (eventName === 'APISendMes') {
-            let parseData = JSON.parse(data);
+            const parseData = JSON.parse(data);
             if (parseData?.data.length !== 0) {
               this.$store.commit('Chat/PushChatList', parseData.data[0]);
             }

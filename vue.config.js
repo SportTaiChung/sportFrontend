@@ -13,6 +13,14 @@ module.exports = {
           '^/data': '',
         },
       },
+      '/chat': {
+        target: `https://${process.env.VUE_APP_CHAT_API}/`,
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/chat': '',
+        },
+      },
     },
   },
   css: {

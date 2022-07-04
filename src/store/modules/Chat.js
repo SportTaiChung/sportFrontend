@@ -1,8 +1,11 @@
+import { getDefaultMes } from '@/api/Game';
 export default {
   namespaced: true,
   state: {
     ChatList: [],
     isChatInputFocus: false,
+    // 快捷訊息
+    defaultMSG: [],
   },
   getters: {},
   mutations: {
@@ -13,6 +16,9 @@ export default {
     setChatInputFocus(state, val) {
       state.isChatInputFocus = val;
     },
+    setDefaultMSG(state, val) {
+      state.defaultMSG = val;
+    },
     PushChatList(state, val) {
       state.ChatList.push(val);
     },
@@ -21,5 +27,19 @@ export default {
       state.ChatList = [];
     },
   },
-  actions: {},
+  actions: {
+    getDefaultMes(store, val) {
+      console.log('call');
+      return new Promise((resolve, reject) => {
+        return getDefaultMes()
+          .then((res) => {
+            if (res?.data) {
+              store.commit('setDefaultMSG', res.data);
+            }
+            resolve();
+          })
+          .catch(reject);
+      });
+    },
+  },
 };
