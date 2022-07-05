@@ -56,9 +56,24 @@
                 <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
               </template>
               <template v-else>
+                <div
+                  class="ScoreColor"
+                  v-if="isSettlement && historyItem.dataBet[0].HomeScore !== ''"
+                >
+                  [{{ historyItem.dataBet[0].HomeScore }}]
+                </div>
                 <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
                 <div class="cardContentBlockRowText HomeTeamSign">({{ $t('Common.Home') }})</div>
-                <div class="cardContentBlockRowText"> v {{ historyItem.dataBet[0].AwayTeam }}</div>
+                <div class="cardContentBlockRowText">
+                  <div class="vs"> v </div>
+                  <div
+                    class="ScoreColor"
+                    v-if="isSettlement && historyItem.dataBet[0].AwayScore !== ''"
+                  >
+                    [{{ historyItem.dataBet[0].AwayScore }}]
+                  </div>
+                  {{ historyItem.dataBet[0].AwayTeam }}
+                </div>
               </template>
             </div>
 
@@ -66,7 +81,12 @@
               <div class="cardContentBlockWithHalfRow">
                 {{ $t('Common.Bet') }}: {{ historyItem.Amount }}
               </div>
-              <div class="cardContentBlockWithHalfRow">
+
+              <div class="cardContentBlockWithHalfRow" v-if="isSettlement">
+                {{ $t('Common.Result') }}:
+                <span class="resultText">{{ historyItem.ResultAmount }}</span>
+              </div>
+              <div class="cardContentBlockWithHalfRow" v-else>
                 {{ $t('BetViewList.HighBack') }}:
                 {{
                   $lib.truncFloor(
@@ -621,6 +641,10 @@
       isMobileMode() {
         return process.env.VUE_APP_UI === 'mobile';
       },
+      // 是否在已結算注單下
+      isSettlement() {
+        return this.groupIndex === 1 && this.childIndex === 1;
+      },
       chipsData() {
         const preferChips = this.settings.preferChips;
         if (preferChips.length > 0 && preferChips.length <= 6) {
@@ -727,6 +751,7 @@
       },
       callBetHistoryAPI() {
         if (this.groupIndex === 1) {
+          this.$refs.BetViewList.scrollTop = 0;
           this.isLoading = true;
           this.$store
             .dispatch('BetCart/getBetHistory', {
