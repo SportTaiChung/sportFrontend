@@ -1,5 +1,5 @@
 <template>
-  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'">
+  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'" @scroll="scrollEvent">
     <table :class="hasMoreGameStyle">
       <thead @click="$emit('toggleCollapse')">
         <tr>
@@ -210,6 +210,9 @@
                 </td>
                 <td v-else class="moreGameBtn"></td>
               </template>
+
+              <div class="circleLeft" :class="circleClassJudge(0)"> </div>
+              <div class="circleRight" :class="circleClassJudge(1)"> </div>
             </tr>
           </template>
         </template>
@@ -253,6 +256,13 @@
         },
       },
     },
+    data() {
+      return {
+        // true  : 亮左邊的球
+        // false : 亮右邊的球
+        scrollWay: true,
+      };
+    },
     computed: {
       betCartList() {
         return this.$store.state.BetCart.betCartList;
@@ -269,6 +279,23 @@
       },
     },
     methods: {
+      scrollEvent(event) {
+        const element = event.target;
+        if (Math.floor(element.scrollWidth - element.scrollLeft) <= element.clientWidth) {
+          // 滑到最右邊
+          this.scrollWay = false;
+        } else if (element.scrollLeft === 0) {
+          // 滑到最左邊
+          this.scrollWay = true;
+        }
+      },
+      circleClassJudge(index) {
+        if (index === 0 && !this.scrollWay) {
+          return 'white';
+        } else if (index === 1 && this.scrollWay) {
+          return 'white';
+        }
+      },
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';
         if (showOdd !== '') {
@@ -345,7 +372,10 @@
   .mGameBetting {
     position: relative;
     overflow-x: auto;
-
+    &::-webkit-scrollbar {
+      /*隱藏滾輪*/
+      display: none;
+    }
     &.closed {
       &::after {
         content: '';
@@ -378,6 +408,28 @@
 
       tr {
         position: relative;
+        %circleBase {
+          position: sticky;
+          background-color: rgb(183, 183, 183);
+          width: 5px;
+          height: 5px;
+          top: 100%;
+          right: 50%;
+          border: 1px solid rgb(183, 183, 183);
+          border-radius: 50%;
+          transform: translateY(-2px);
+          &.white {
+            background-color: white;
+          }
+        }
+        .circleLeft {
+          right: 52%;
+          @extend %circleBase;
+        }
+        .circleRight {
+          right: 48%;
+          @extend %circleBase;
+        }
       }
 
       th {
