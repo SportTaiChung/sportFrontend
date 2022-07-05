@@ -186,6 +186,18 @@ export function getBetInfo(postData = {}) {
   });
 }
 
+// 22-2.获取盘口详情-主要賠率盤口/收藏夾
+export function getMainBetInfo(postData = {}) {
+  return request({
+    url: `/GameInfo/MainBetInfo`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}
+
 // 23.获取历史投注日统计数据
 export function getBetDayHistory(postData = {}) {
   return request({

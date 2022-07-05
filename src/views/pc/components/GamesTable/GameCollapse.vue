@@ -80,7 +80,7 @@
                   )
                 "
               >
-                <div class="betBlockTop">{{ OULine }} </div>
+                <div class="betBlockTop">{{ boldOULineShow(OULine) }} </div>
                 <div class="betBlockBottom">
                   {{ boldOddToMapData(teamData.Wager[0].Odds)[OULine].DrewOdds }}
                 </div>
@@ -522,6 +522,13 @@
       },
     },
     methods: {
+      boldOULineShow(OULine) {
+        if (OULine === this.$conf.BoldOtherKeyName) {
+          return this.$t('Bold.Other');
+        } else {
+          return OULine;
+        }
+      },
       teamWagerDataFilterLimit(arr) {
         return arr.filter((it, index) => index < this.ColumnLimit);
       },
