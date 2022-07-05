@@ -160,6 +160,12 @@
       isAddNewToChart() {
         this.isShowGameBet = true;
       },
+      isOpenServiceChat: {
+        handler() {
+          this.$store.commit('Game/setIsShowService', this.isOpenServiceChat);
+        },
+        immediate: true,
+      },
     },
     methods: {
       ShowGameBet(val) {

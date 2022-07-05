@@ -156,7 +156,10 @@
       </PersonalPanel>
 
       <!-- 購物車浮動球 -->
-      <mFloatingBetCart v-show="isShowFloatingBall" @openBetInfoPopup="openBetInfoPopup()""></mFloatingBetCart>
+      <mFloatingBetCart
+        v-show="isShowFloatingBall"
+        @openBetInfoPopup="openBetInfoPopup()"
+      ></mFloatingBetCart>
     </div>
     <ChatSocket></ChatSocket>
   </div>

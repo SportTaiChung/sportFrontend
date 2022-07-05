@@ -49,6 +49,8 @@ export default {
       isEnable: false,
       amount: 10,
     },
+    // 是否顯示客服
+    isShowService: false,
   },
   getters: {
     ...GameTypeListGetters,
@@ -56,6 +58,9 @@ export default {
   mutations: {
     setCatList(state, val) {
       state.CatList = val;
+    },
+    setIsShowService(state, val) {
+      state.isShowService = val;
     },
     setCatMapData(state, val) {
       state.CatMapData = val;

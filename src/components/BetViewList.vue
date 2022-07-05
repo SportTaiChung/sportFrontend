@@ -649,10 +649,18 @@
       isChatInputFocus() {
         return this.$store.state.Chat.isChatInputFocus;
       },
+      isShowService() {
+        return this.$store.state.Game.isShowService;
+      },
     },
     methods: {
       keyPress(e) {
-        if (e.key === 'Enter' && !this.isLockEnter && !this.isChatInputFocus) {
+        if (
+          e.key === 'Enter' &&
+          !this.isLockEnter &&
+          !this.isChatInputFocus &&
+          !this.isShowService
+        ) {
           this.isLockEnter = true;
           clearTimeout(this.lockEvent);
           this.lockEvent = setTimeout(() => {
