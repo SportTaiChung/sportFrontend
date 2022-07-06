@@ -13,6 +13,7 @@ import {
   sendReadMes,
   getGameResult,
   getAnnouncement,
+  getMainBetInfo,
 } from '@/api/Game';
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
@@ -49,13 +50,23 @@ export default {
       isEnable: false,
       amount: 10,
     },
+    // 是否顯示客服
+    isShowService: false,
+    // 下注資訊
+    betInfo: [],
   },
   getters: {
     ...GameTypeListGetters,
   },
   mutations: {
+    setBetInfo(state, val) {
+      state.betInfo = val;
+    },
     setCatList(state, val) {
       state.CatList = val;
+    },
+    setIsShowService(state, val) {
+      state.isShowService = val;
     },
     setCatMapData(state, val) {
       state.CatMapData = val;
@@ -619,6 +630,14 @@ export default {
     GetLiveURL(store) {
       return new Promise((resolve, reject) => {
         return getLive().then((res) => {
+          resolve(res);
+        });
+      });
+    },
+    GetMainBetInfo(store) {
+      return new Promise((resolve, reject) => {
+        return getMainBetInfo().then((res) => {
+          store.state.betInfo = res.data;
           resolve(res);
         });
       });

@@ -5,11 +5,7 @@
         <tr>
           <th>
             <span class="title">{{ source.LeagueNameStr }}</span>
-            <img
-              src="@/assets/img/mobile/btn_arrow_w.svg"
-              class="arrow"
-              :class="isExpanded ? 'isExpanded' : ''"
-            />
+            <img class="arrow" src="@/assets/img/mobile/btn_arrow_w.svg" />
           </th>
         </tr>
       </thead>
@@ -166,6 +162,10 @@
         height: 1px;
         background-color: #ccc;
       }
+      th::after,
+      th .arrow {
+        transform: rotate(0deg);
+      }
     }
 
     table {
@@ -206,6 +206,7 @@
           height: 70%;
           width: 1px;
           background-color: #888;
+          display: none; // 因新UI需求先隱藏
         }
 
         img.arrow {
@@ -215,9 +216,7 @@
           filter: invert(30%);
           transform: rotate(-90deg);
           transition: 200ms ease;
-          &.isExpanded {
-            transform: rotate(0);
-          }
+          display: none; // 因新UI需求先隱藏
         }
       }
 

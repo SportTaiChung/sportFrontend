@@ -55,7 +55,6 @@ instance.interceptors.response.use(
   (err, data) => {
     store.commit('SetLoading', false);
     console.error('axios catch err:', err);
-    message.error(err);
     return Promise.reject(err);
   }
 );

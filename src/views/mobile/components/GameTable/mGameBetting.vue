@@ -1,5 +1,10 @@
 <template>
-  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'">
+  <div
+    ref="mGameBetting"
+    class="mGameBetting"
+    :class="isExpanded ? '' : 'closed'"
+    @scroll="scrollEvent"
+  >
     <table :class="hasMoreGameStyle">
       <thead @click="$emit('toggleCollapse')">
         <tr>
@@ -210,11 +215,17 @@
                 </td>
                 <td v-else class="moreGameBtn"></td>
               </template>
+
+              <template v-if="isShowScrollBall">
+                <div class="circleLeft" :class="circleClassJudge(0)"> </div>
+                <div class="circleRight" :class="circleClassJudge(1)"> </div>
+              </template>
             </tr>
           </template>
         </template>
       </tbody>
     </table>
+    <img src="@/assets/img/mobile/btn_arrow_w.svg" class="arrow" />
   </div>
 </template>
 
@@ -253,7 +264,23 @@
       },
     },
     data() {
-      return {};
+      return {
+        // true  : 亮左邊的球
+        // false : 亮右邊的球
+        scrollWay: true,
+        isShowScrollBall: true,
+      };
+    },
+    mounted() {
+      this.$nextTick(() => {
+        // 如果沒有卷軸,則不顯示小球
+        const element = this.$refs.mGameBetting;
+        if (element.scrollWidth <= element.clientWidth) {
+          this.isShowScrollBall = false;
+        } else {
+          this.isShowScrollBall = true;
+        }
+      });
     },
     computed: {
       betCartList() {
@@ -263,9 +290,31 @@
         return this.hasMoreGame ? 'hasMoreGame' : '';
       },
     },
-    mounted() {},
-    watch: {},
+    watch: {
+      isExpanded(isExpanded) {
+        if (!isExpanded) {
+          this.$el.scrollTo(0, 0);
+        }
+      },
+    },
     methods: {
+      scrollEvent(event) {
+        const element = event.target;
+        if (Math.floor(element.scrollWidth - element.scrollLeft) <= element.clientWidth) {
+          // 滑到最右邊
+          this.scrollWay = false;
+        } else if (element.scrollLeft === 0) {
+          // 滑到最左邊
+          this.scrollWay = true;
+        }
+      },
+      circleClassJudge(index) {
+        if (index === 0 && !this.scrollWay) {
+          return 'white';
+        } else if (index === 1 && this.scrollWay) {
+          return 'white';
+        }
+      },
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
         let appendCSS = '';
         if (showOdd !== '') {
@@ -341,9 +390,11 @@
 
   .mGameBetting {
     position: relative;
-    width: fit-content;
-    min-width: 100%;
-
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+      /*隱藏滾輪*/
+      display: none;
+    }
     &.closed {
       &::after {
         content: '';
@@ -354,6 +405,16 @@
         width: 100%;
         height: 1px;
         background-color: #ccc;
+      }
+
+      overflow-x: hidden;
+      table thead {
+        tr th {
+          color: transparent !important;
+        }
+      }
+      .arrow {
+        display: block;
       }
     }
 
@@ -366,6 +427,28 @@
 
       tr {
         position: relative;
+        %circleBase {
+          position: sticky;
+          background-color: rgb(183, 183, 183);
+          width: 5px;
+          height: 5px;
+          top: 100%;
+          right: 50%;
+          border: 1px solid rgb(183, 183, 183);
+          border-radius: 50%;
+          transform: translateY(-2px);
+          &.white {
+            background-color: white;
+          }
+        }
+        .circleLeft {
+          right: 52%;
+          @extend %circleBase;
+        }
+        .circleRight {
+          right: 48%;
+          @extend %circleBase;
+        }
       }
 
       th {
@@ -398,12 +481,11 @@
             border-color: #e8e8e8;
             border-width: 0 1px 1px 0;
             background-color: #fff;
+            text-align: center;
+            line-height: $row-height;
 
             &.interactive {
               cursor: pointer;
-              // &:hover {
-              //   background-color: #ffe1ae;
-              // }
             }
             &.isSelected {
               background-color: #ffd5d5;
@@ -423,6 +505,10 @@
               white-space: nowrap;
               text-overflow: ellipsis;
               font-weight: bold;
+            }
+
+            .Odd {
+              flex: 1;
             }
           }
         }
@@ -471,6 +557,16 @@
           border-right: none !important;
         }
       }
+    }
+
+    .arrow {
+      display: none;
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.1rem;
+      filter: invert(30%);
     }
   }
 </style>

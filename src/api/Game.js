@@ -186,6 +186,18 @@ export function getBetInfo(postData = {}) {
   });
 }
 
+// 22-2.获取盘口详情-主要賠率盤口/收藏夾
+export function getMainBetInfo(postData = {}) {
+  return request({
+    url: `/GameInfo/MainBetInfo`,
+    method: 'post',
+    param: {
+      AddMemberToken: true,
+    },
+    data: postData,
+  });
+}
+
 // 23.获取历史投注日统计数据
 export function getBetDayHistory(postData = {}) {
   return request({
@@ -207,6 +219,16 @@ export function getBetHistory(postData = {}) {
       AddMemberToken: true,
     },
     data: { lang: store.state.Lang, ...postData },
+  });
+}
+
+// 25-6 快捷訊息/罐頭訊息
+export function getDefaultMes() {
+  return request({
+    url: `/outputApi/DefaultMes`,
+    method: 'get',
+    baseURL:
+      process.env.NODE_ENV === 'development' ? '/chat' : 'https://' + window.VUE_APP_CHAT_API,
   });
 }
 

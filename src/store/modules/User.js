@@ -76,7 +76,14 @@ export default {
       });
     },
     setNickName(store, postData) {
-      return setNickName(postData);
+      return new Promise((resolve, reject) => {
+        return setNickName(postData)
+          .then((res) => {
+            store.state.UserData.RealName = postData.Nickname;
+            resolve(res);
+          })
+          .catch(reject);
+      });
     },
   },
 };

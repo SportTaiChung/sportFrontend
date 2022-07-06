@@ -29,6 +29,7 @@
 <script>
   export default {
     name: 'QuickBetPanel',
+    created() {},
     computed: {
       quickBetData() {
         return this.$store.state.BetCart.quickBetData;
@@ -51,6 +52,25 @@
       },
       includePrincipal() {
         return this.$store.state.Setting.UserSetting.includePrincipal;
+      },
+      betInfo() {
+        return this.$store.state.Game.betInfo;
+      },
+      selectCatID() {
+        return this.$store.state.Game.selectCatID;
+      },
+      selectWagerTypeKey() {
+        return this.$store.state.Game.selectWagerTypeKey;
+      },
+      currentSelectBetInfo() {
+        const findData = this.betInfo.find((it) => {
+          if (it.CatID === this.selectCatID && it.WagerTypeID === this.selectWagerTypeKey) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        return findData;
       },
     },
     watch: {

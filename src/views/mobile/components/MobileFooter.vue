@@ -17,7 +17,7 @@
       </li>
       <li class="footer-item" @click="onBetViewClick">
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
-          <span class="num">{{ this.betCartStore.betCartList.length }}</span>
+          <span class="num">{{ betCartLength }}</span>
         </div>
         <span :style="hasStrayStyle"> {{ strayOdd || $t('Common.ClickBet') }}</span>
       </li>
@@ -46,8 +46,11 @@
       betCartStore() {
         return this.$store.state.BetCart;
       },
+      betCartLength() {
+        return this.betCartStore.betCartList.length;
+      },
       hasBetItem() {
-        return this.betCartStore.betCartList.length > 0;
+        return this.betCartLength > 0;
       },
       strayOdd() {
         return this.betCartStore.strayOdd;

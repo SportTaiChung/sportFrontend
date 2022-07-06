@@ -21,111 +21,118 @@
     </div>
     <div class="Record_main">
       <div class="Record_mainContainer">
-        <!-- 未結算注單 -->
-        <table v-show="active === 0" border="0" cellspacing="0" cellpadding="0">
-          <tr>
-            <th width="200">{{ $t('HistoryRecord.BetMessage') }}</th>
-            <th>{{ $t('Common.BetContent') }}</th>
-            <th width="150">{{ $t('HistoryRecord.BetAmount') }}</th>
-            <th width="150">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
-            <th width="150">{{ $t('Common.CanWin') }}</th>
-          </tr>
-          <tr class="rt_data" v-for="(item, i) in getBetHistoryData" :key="i">
-            <td class="rt_info">
-              <ul>
-                <li>
-                  <span>{{ $t('Common.DownBet') }} : </span>
-                  <span>{{ item.BetTimeStr }}</span>
-                </li>
-                <li v-if="item.BetType === 1">
-                  <span>{{ $t('Common.Game') }} : </span>
-                  <span>{{ item.dataBet[0].ScheduleTimeStr }}</span>
-                </li>
-                <li v-else>
-                  <span>{{ $t('HistoryRecord.TypeStray') }} </span>
-                  <span> {{ item.dataBet.length }}{{ $t('Common.string') }} 1 x 1 </span>
-                </li>
-                <li>
-                  <span>{{ $t('Common.BetID') }} : </span>
-                  <span>{{ item.TicketID }}</span>
-                </li>
-                <li>
-                  <span>{{ $t('Common.Odd') }} :</span>
-                  <span>{{ $t('GamesSetup.NotIncludePrincipal') }}</span>
-                </li>
-              </ul>
-            </td>
-            <td v-if="item.BetType === 1">
-              <ul>
-                <li>
-                  {{ item.catName }} - {{ item.dataBet[0].LeagueName }} -
-                  {{ item.dataBet[0].WagerGrpName }}
-                </li>
-                <li>
-                  {{ item.dataBet[0].HomeTeam }}
-                  <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
-                  {{ item.dataBet[0].AwayTeam }}
-                </li>
-                <li>
-                  {{ $t('Common.Bet') }} :
-                  <span class="betTeamColor">
-                    {{ item.dataBet[0].betname }}
-                    <span class="oddColor">
-                      {{ item.dataBet[0].CutLine }}
-                    </span>
-                  </span>
-                  @
-                  <span class="oddColor">{{ item.dataBet[0].PayoutOddsStr }}</span>
-                </li>
-              </ul>
-            </td>
-            <td class="rt_fs" v-if="item.BetType === 99">
-              <div class="rt_fs_list" v-for="(betlist, y) in item.dataBet" :key="y">
-                <div>{{ y + 1 }}</div>
+        <template v-if="active === 0">
+          <table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <th width="200">{{ $t('HistoryRecord.BetMessage') }}</th>
+              <th>{{ $t('Common.BetContent') }}</th>
+              <th width="150">{{ $t('HistoryRecord.BetAmount') }}</th>
+              <th width="150">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
+              <th width="150">{{ $t('Common.CanWin') }}</th>
+            </tr>
+            <tr v-if="getBetHistoryData.length === 0">
+              <td class="NoDataTD" colspan="5">
+                <div class="NoData">尚無資料</div>
+              </td>
+            </tr>
+            <tr class="rt_data" v-for="(item, i) in getBetHistoryData" :key="i">
+              <td class="rt_info">
                 <ul>
                   <li>
-                    {{ item.catName }} - {{ betlist.LeagueName }} -
-                    {{ betlist.WagerGrpName }}
+                    <span>{{ $t('Common.DownBet') }} : </span>
+                    <span>{{ item.BetTimeStr }}</span>
                   </li>
-                  <li
-                    >{{ betlist.HomeTeam }}
-                    <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
-                    {{ betlist.AwayTeam }}</li
-                  >
-                  <li>
-                    {{ $t('Common.Bet') }}：
-                    <span class="betTeamColor">
-                      {{ betlist.betname }}
-                      <span class="oddColor">{{ betlist.CutLine }}</span>
-                    </span>
-                    @
-                    <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
+                  <li v-if="item.BetType === 1">
+                    <span>{{ $t('Common.Game') }} : </span>
+                    <span>{{ item.dataBet[0].ScheduleTimeStr }}</span>
+                  </li>
+                  <li v-else>
+                    <span>{{ $t('HistoryRecord.TypeStray') }} </span>
+                    <span> {{ item.dataBet.length }}{{ $t('Common.string') }} 1 x 1 </span>
                   </li>
                   <li>
-                    {{ $t('GamesHeader.GameResult') }}:
-                    <span class="resultScore">{{ betlist.HomeScore }} : </span>
-                    <span class="resultScore">{{ betlist.AwayScore }}</span>
+                    <span>{{ $t('Common.BetID') }} : </span>
+                    <span>{{ item.TicketID }}</span>
                   </li>
                   <li>
-                    {{ $t('Common.GameTime') }}:
-                    <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
+                    <span>{{ $t('Common.Odd') }} :</span>
+                    <span>{{ $t('GamesSetup.NotIncludePrincipal') }}</span>
                   </li>
                 </ul>
-              </div>
-            </td>
-            <td class="rt_betval">{{ item.Amount }}</td>
-            <td class="rt_betval">{{ item.AfterAmount }}</td>
-            <td class="rt_betval">
-              {{ item.ToWin }}
-            </td>
-          </tr>
-          <tr class="rt_foot">
-            <td colspan="2">{{ $t('Common.Total') }}</td>
-            <td class="betSumTotal">{{ totalAmount }}</td>
-            <td></td>
-            <td>{{ totalWinAmount }}</td>
-          </tr>
-        </table>
+              </td>
+              <td v-if="item.BetType === 1">
+                <ul>
+                  <li>
+                    {{ item.catName }} - {{ item.dataBet[0].LeagueName }} -
+                    {{ item.dataBet[0].WagerGrpName }}
+                  </li>
+                  <li>
+                    {{ item.dataBet[0].HomeTeam }}
+                    <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
+                    {{ item.dataBet[0].AwayTeam }}
+                  </li>
+                  <li>
+                    {{ $t('Common.Bet') }} :
+                    <span class="betTeamColor">
+                      {{ item.dataBet[0].betname }}
+                      <span class="oddColor">
+                        {{ item.dataBet[0].CutLine }}
+                      </span>
+                    </span>
+                    @
+                    <span class="oddColor">{{ item.dataBet[0].PayoutOddsStr }}</span>
+                  </li>
+                </ul>
+              </td>
+              <td class="rt_fs" v-if="item.BetType === 99">
+                <div class="rt_fs_list" v-for="(betlist, y) in item.dataBet" :key="y">
+                  <div>{{ y + 1 }}</div>
+                  <ul>
+                    <li>
+                      {{ item.catName }} - {{ betlist.LeagueName }} -
+                      {{ betlist.WagerGrpName }}
+                    </li>
+                    <li
+                      >{{ betlist.HomeTeam }}
+                      <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
+                      {{ betlist.AwayTeam }}</li
+                    >
+                    <li>
+                      {{ $t('Common.Bet') }}：
+                      <span class="betTeamColor">
+                        {{ betlist.betname }}
+                        <span class="oddColor">{{ betlist.CutLine }}</span>
+                      </span>
+                      @
+                      <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
+                    </li>
+                    <li>
+                      {{ $t('GamesHeader.GameResult') }}:
+                      <span class="resultScore">{{ betlist.HomeScore }} : </span>
+                      <span class="resultScore">{{ betlist.AwayScore }}</span>
+                    </li>
+                    <li>
+                      {{ $t('Common.GameTime') }}:
+                      <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+              <td class="rt_betval">{{ item.Amount }}</td>
+              <td class="rt_betval">{{ item.AfterAmount }}</td>
+              <td class="rt_betval">
+                {{ item.ToWin }}
+              </td>
+            </tr>
+            <tr class="rt_foot">
+              <td colspan="2">{{ $t('Common.Total') }}</td>
+              <td class="betSumTotal">{{ totalAmount }}</td>
+              <td></td>
+              <td>{{ totalWinAmount }}</td>
+            </tr>
+          </table>
+        </template>
+        <!-- 未結算注單 -->
 
         <!-- 已結算注單 -->
         <table v-show="active === 1" border="0" cellspacing="0" cellpadding="0" class="weektable">
@@ -434,8 +441,8 @@
 
             Amounts += itemdata.Amount;
             AfterAmounts += itemdata.AfterAmount;
-            RetAmts += itemdata.RetAmt;
-            ResultAmounts += itemdata.ResultAmount;
+            RetAmts = this.$lib.trunc(RetAmts + itemdata.RetAmt);
+            ResultAmounts = this.$lib.trunc(ResultAmounts + itemdata.ResultAmount);
           });
           item.Amounts = Amounts;
           item.AfterAmounts = AfterAmounts;
@@ -591,6 +598,12 @@
         height: fit-content;
         .rt_info {
           color: #666;
+        }
+        .NoData {
+          margin: 20px auto;
+          text-align: center;
+          font-size: 14px;
+          width: 100%;
         }
         table {
           width: 100%;

@@ -387,6 +387,8 @@
           // 最愛遊戲
           this.callGetFavoriteGameDetail();
         }
+
+        this.$store.dispatch('Game/GetMainBetInfo');
       },
       getMenuIconByCatID(catId) {
         const icon = this.CatMapData[catId].icon;

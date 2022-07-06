@@ -2,7 +2,6 @@ module.exports = {
   // eslint錯誤,不會使得編譯失敗
   lintOnSave: false,
   devServer: {
-    host: 'localhost',
     port: 8080,
     proxy: {
       '/data': {
@@ -11,6 +10,14 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/data': '',
+        },
+      },
+      '/chat': {
+        target: `https://${process.env.VUE_APP_CHAT_API}/`,
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/chat': '',
         },
       },
     },

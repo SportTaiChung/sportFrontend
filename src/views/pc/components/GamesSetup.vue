@@ -521,10 +521,12 @@
         align-items: center;
         padding: 0 1rem;
         margin: 0 1rem;
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.7);
         border-radius: 6px;
         overflow: hidden;
+        letter-spacing: 0.03rem;
         cursor: pointer;
+        transition: 250ms ease;
 
         .icon {
           flex-shrink: 0;
@@ -535,6 +537,10 @@
           background-size: contain;
           background-position: center;
           background-repeat: no-repeat;
+        }
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.8);
         }
       }
 

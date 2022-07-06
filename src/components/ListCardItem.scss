@@ -83,6 +83,14 @@
       .cardContentBlockRowText {
         margin-right: 5px;
         text-align: left;
+        display: flex;
+        .vs {
+          margin-right: 5px;
+        }
+      }
+      .ScoreColor {
+        color: red;
+        margin-right: 3px;
       }
       .HomeTeamSign {
         color: #ff8800;
@@ -90,6 +98,9 @@
       .cardContentBlockWithHalfRow {
         width: 50%;
         text-align: left;
+      }
+      .resultText {
+        color: #3fa381;
       }
       .submitBtn {
         width: 48%;

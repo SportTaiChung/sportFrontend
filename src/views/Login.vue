@@ -137,7 +137,7 @@
       auto() {
         this.$store
           .dispatch('User/Login', {
-            mbID: 'abcd_a13',
+            mbID: 'b116',
             pw: '123456789',
             siteid: 1,
             verCode: '5688',

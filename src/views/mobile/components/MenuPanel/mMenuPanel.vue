@@ -39,7 +39,7 @@
             <div class="text"> {{ $t('GamesBetInfo.Setting') }} </div>
           </li>
           <li class="feature-item" @click="openPersonal()">
-            <!-- <img class="icon" src="@/assets/img/mobile/icon_funSet.svg" /> -->
+            <img class="icon" src="@/assets/img/mobile/icon_header_user.svg" />
             <div class="text"> {{ $t('GamesHeader.PersonalSetting') }} </div>
           </li>
         </ul>

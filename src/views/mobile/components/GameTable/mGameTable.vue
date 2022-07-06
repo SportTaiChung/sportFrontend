@@ -18,10 +18,11 @@
         </template>
       </div>
 
-      <i
-        class="el-collapse-item__arrow el-icon-arrow-right"
-        :class="activeCollapse.length > 0 ? 'is-active' : ''"
-      ></i>
+      <img
+        class="arrow"
+        :class="activeCollapse.length > 0 ? 'active' : ''"
+        src="@/assets/img/mobile/btn_arrow_w.svg"
+      />
     </div>
 
     <div style="display: flex">
@@ -166,16 +167,16 @@
     overflow-x: hidden;
     overflow-y: auto;
     .left-area {
-      width: 35%;
+      width: 40%;
       transition: width 600ms ease-out;
 
       @media screen and(max-width: 480px) {
-        width: calc(200px);
+        width: calc(160px);
       }
     }
     .right-area {
       flex: 1;
-      overflow-x: auto;
+      overflow-x: hidden;
       overflow-y: hidden;
       // box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
     }
@@ -224,6 +225,15 @@
           width: 18px;
           transform: translateY(-50%);
           filter: grayscale(1) brightness(3);
+        }
+      }
+
+      img.arrow {
+        width: 1.1rem;
+        margin-right: 6px;
+        transition: 200ms ease;
+        &.active {
+          transform: rotate(-90deg);
         }
       }
     }

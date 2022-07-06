@@ -213,5 +213,8 @@
   },
   "GameResult": {
     "SelectDate": "选择日期"
+  },
+  "Bold": {
+    "Other": "其它"
   }
 }

@@ -204,5 +204,8 @@
   },
   "GameResult": {
     "SelectDate": "select date"
+  },
+  "Bold": {
+    "Other": "other"
   }
 }

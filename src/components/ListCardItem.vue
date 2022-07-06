@@ -1,7 +1,7 @@
 <template>
   <div class="listCardItem" :class="listCardItemClassJudge">
     <div class="cardHeaderRow">
-      <div class="playMethodName"> {{ displayData.showBetTitle }}</div>
+      <div class="playMethodName"> {{ showBetTitle(displayData.showBetTitle) }}</div>
       <div class="playMethodNameSupport">
         {{ displayData.showCutLine }}
       </div>
@@ -162,6 +162,13 @@
       }
     },
     methods: {
+      showBetTitle(showBetTitle) {
+        if (showBetTitle === this.$conf.BoldOtherKeyName) {
+          return this.$t('Bold.Other');
+        } else {
+          return showBetTitle;
+        }
+      },
       betAmountBlur(GameID) {
         this.$emit('lastBlurInputEvent', {
           name: 'rowItem',
