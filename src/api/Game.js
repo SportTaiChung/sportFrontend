@@ -228,7 +228,7 @@ export function getDefaultMes() {
     url: `/outputApi/DefaultMes`,
     method: 'get',
     baseURL:
-      process.env.NODE_ENV === 'development' ? '/chat' : 'https://' + window.VUE_APP_CHAT_API,
+      process.env.NODE_ENV === 'development' ? '/chat' : 'https://' + process.env.VUE_APP_CHAT_API,
   });
 }
 
