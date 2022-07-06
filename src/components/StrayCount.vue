@@ -286,9 +286,10 @@
           });
 
           sum -= parseFloat(this.betAmount);
-          this.winAmount = sum;
+          const showWinAmount = this.$lib.trunc(sum, 1);
+          this.winAmount = showWinAmount;
 
-          this.formulaResult = `${newFormulaResult}${appendStr}-${this.betAmount}=${sum}`;
+          this.formulaResult = `${newFormulaResult}${appendStr}-${this.betAmount}=${showWinAmount}`;
         }
       },
       selectChangeHandler(changeIndex) {

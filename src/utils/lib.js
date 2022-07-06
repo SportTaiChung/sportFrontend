@@ -155,18 +155,18 @@ export function timeFormatHHmm(time) {
 }
 
 // 處理浮點數運算
-export function trunc(num, decimal = 2) {
+export function trunc(num, decimal = 4) {
   const base = 10 ** decimal;
   return Math.trunc((num * base).toFixed(decimal)) / base;
 }
 
 // 處理浮點數運算 並且floor去除小數點
-export function truncFloor(num, decimal = 2) {
+export function truncFloor(num, decimal = 4) {
   return Math.floor(trunc(num, decimal));
 }
 
 // 處理浮點數運算 並且ceil 進位小數點
-export function truncCeil(num, decimal = 2) {
+export function truncCeil(num, decimal = 4) {
   return Math.ceil(trunc(num, decimal));
 }
 

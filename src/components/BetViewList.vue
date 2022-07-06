@@ -296,7 +296,7 @@
             </div>
           </div>
           <div class="strayBlockBottom">
-            <div class="strayOdd"> @ {{ strayOdd }} </div>
+            <div class="strayOdd"> @ {{ $lib.trunc(strayOdd, 2) }} </div>
           </div>
         </div>
         <div class="betInputSymbol">:</div>
