@@ -49,7 +49,7 @@
         if (str && str.indexOf(':') !== -1) {
           return str.split(':');
         }
-        return ['-', '-'];
+        return ['', ''];
       },
       parseDate(str) {
         const d = new Date(str);
@@ -65,7 +65,7 @@
             (d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes());
           return [date, time];
         }
-        return ['-', '-'];
+        return ['', ''];
       },
     },
   };
