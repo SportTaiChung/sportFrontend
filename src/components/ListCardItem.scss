@@ -5,6 +5,7 @@
 
   .cardHeaderRow {
     display: flex;
+    flex-wrap: wrap;
     padding: 7px 10px;
     border-bottom: 1px solid #cccccc;
     position: relative;

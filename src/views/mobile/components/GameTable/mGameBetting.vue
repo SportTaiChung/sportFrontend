@@ -275,10 +275,12 @@
       this.$nextTick(() => {
         // 如果沒有卷軸,則不顯示小球
         const element = this.$refs.mGameBetting;
-        if (element.scrollWidth <= element.clientWidth) {
-          this.isShowScrollBall = false;
-        } else {
-          this.isShowScrollBall = true;
+        if (element) {
+          if (element.scrollWidth <= element.clientWidth) {
+            this.isShowScrollBall = false;
+          } else {
+            this.isShowScrollBall = true;
+          }
         }
       });
     },
