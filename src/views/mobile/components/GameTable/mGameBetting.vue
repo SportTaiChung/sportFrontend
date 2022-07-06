@@ -1,5 +1,10 @@
 <template>
-  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'" @scroll="scrollEvent">
+  <div
+    ref="mGameBetting"
+    class="mGameBetting"
+    :class="isExpanded ? '' : 'closed'"
+    @scroll="scrollEvent"
+  >
     <table :class="hasMoreGameStyle">
       <thead @click="$emit('toggleCollapse')">
         <tr>
@@ -211,8 +216,10 @@
                 <td v-else class="moreGameBtn"></td>
               </template>
 
-              <div class="circleLeft" :class="circleClassJudge(0)"> </div>
-              <div class="circleRight" :class="circleClassJudge(1)"> </div>
+              <template v-if="isShowScrollBall">
+                <div class="circleLeft" :class="circleClassJudge(0)"> </div>
+                <div class="circleRight" :class="circleClassJudge(1)"> </div>
+              </template>
             </tr>
           </template>
         </template>
@@ -261,7 +268,19 @@
         // true  : 亮左邊的球
         // false : 亮右邊的球
         scrollWay: true,
+        isShowScrollBall: true,
       };
+    },
+    mounted() {
+      this.$nextTick(() => {
+        // 如果沒有卷軸,則不顯示小球
+        const element = this.$refs.mGameBetting;
+        if (element.scrollWidth <= element.clientWidth) {
+          this.isShowScrollBall = false;
+        } else {
+          this.isShowScrollBall = true;
+        }
+      });
     },
     computed: {
       betCartList() {
