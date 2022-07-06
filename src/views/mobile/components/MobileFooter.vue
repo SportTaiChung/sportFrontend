@@ -19,7 +19,7 @@
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
           <span class="num">{{ betCartLength }}</span>
         </div>
-        <span :style="hasStrayStyle"> {{ strayOdd || $t('Common.ClickBet') }}</span>
+        <span :style="hasStrayStyle"> {{ $lib.trunc(strayOdd, 2) || $t('Common.ClickBet') }}</span>
       </li>
       <li class="footer-item" @click="onBetRecordViewClick">
         <img class="icon" src="@/assets/img/mobile/icon_footer_record.svg" alt="" />
