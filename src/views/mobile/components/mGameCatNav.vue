@@ -1,7 +1,12 @@
 <template>
   <!-- 遊戲類型 -->
   <ul class="gameCatNav">
-    <li class="item fav" :class="gameStore.selectCatID == -999 ? 'active' : ''" @click="goFav">
+    <li
+      v-if="hasFavorite"
+      class="item fav"
+      :class="gameStore.selectCatID == -999 ? 'active' : ''"
+      @click="goFav"
+    >
       <img :src="getMenuIconByCatID(-999)" class="menu-icon" @click="goFav()" />
       {{ $t('Common.Collect') }}
     </li>
