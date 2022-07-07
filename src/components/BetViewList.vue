@@ -213,7 +213,7 @@
 
       <!-- 小籌碼 -->
       <div class="betPlay_chip" v-if="!isMobileMode && panelMode === PanelModeEnum.normal">
-        <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
+        <i class="el-icon-arrow-left" @click="goPreviousChipIndex()"></i>
         <div class="chips">
           <div
             class="chip"
@@ -223,10 +223,7 @@
             :key="index"
           ></div>
         </div>
-        <i
-          class="el-icon-arrow-right"
-          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
-        ></i>
+        <i class="el-icon-arrow-right" @click="goNextChipIndex()"></i>
       </div>
 
       <div class="totalRow">
@@ -325,7 +322,7 @@
 
       <!-- 小籌碼 -->
       <div class="betPlay_chip" v-if="!isMobileMode && panelMode === PanelModeEnum.normal">
-        <i class="el-icon-arrow-left" @click="chipPageIndex > 0 && chipPageIndex--"></i>
+        <i class="el-icon-arrow-left" @click="goPreviousChipIndex()"></i>
         <div class="chips">
           <div
             class="chip"
@@ -335,10 +332,7 @@
             :key="index"
           ></div>
         </div>
-        <i
-          class="el-icon-arrow-right"
-          @click="chipPageIndex + 1 < maxChipPage && chipPageIndex++"
-        ></i>
+        <i class="el-icon-arrow-right" @click="goNextChipIndex()"></i>
       </div>
 
       <BetResultBlock
@@ -481,7 +475,7 @@
         currShowKeyboardIndex: -1,
 
         chipPageIndex: 0,
-        chipsNumPerPage: 3,
+        chipsNumPerPage: 3, // 一次選染幾個chip
 
         // 最後blur的input
         lastBlurInput: { name: 'fillEachBetAmount' },
@@ -653,13 +647,25 @@
         return this.$SportLib.chipsData;
       },
       maxChipPage() {
-        return Math.ceil(this.chipsData.length / this.chipsNumPerPage);
+        // 舊邏輯: 一次翻整頁
+        // return Math.ceil(this.chipsData.length / this.chipsNumPerPage);
+        // 新邏輯: 一次翻一個
+        if (this.chipsData.length - this.chipsNumPerPage > 0) {
+          return this.chipsData.length - this.chipsNumPerPage;
+        } else {
+          return 0;
+        }
       },
+      // 當前被渲染的籌碼
       currentChips() {
-        return this.chipsData.slice(
-          this.chipPageIndex * this.chipsNumPerPage,
-          this.chipPageIndex * this.chipsNumPerPage + 3
-        );
+        // 舊邏輯: 一次翻整頁
+        // return this.chipsData.slice(
+        //   this.chipPageIndex * this.chipsNumPerPage,
+        //   this.chipPageIndex * this.chipsNumPerPage + 3
+        // );
+
+        // 新邏輯: 一次翻一個
+        return this.chipsData.slice(this.chipPageIndex, this.chipPageIndex + this.chipsNumPerPage);
       },
       isQuickBetEnable() {
         return this.$store.state.Game.isQuickBet.isEnable;
@@ -1190,6 +1196,14 @@
           this.strayBetAmount = newNum.toString();
           this.reCalcStrayBetChart();
         }
+      },
+      goNextChipIndex() {
+        const max = this.maxChipPage;
+        this.chipPageIndex += this.chipPageIndex < max ? 1 : 0;
+      },
+      goPreviousChipIndex() {
+        const min = 0;
+        this.chipPageIndex -= this.chipPageIndex <= min ? 0 : 1;
       },
     },
   };
