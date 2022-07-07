@@ -15,7 +15,7 @@
       <!-- 公告跑馬燈 -->
       <div class="marquee-wrapper" @click="clickMarquee">
         <div class="icon"></div>
-        <Marquee :text="marqueeText" />
+        <Marquee ref="Marquee" />
       </div>
 
       <div class="options-wrapper">
@@ -176,7 +176,6 @@
           onlyShowCheck: false,
         },
         LeagueListData: [],
-        marqueeText: '',
       };
     },
     mounted() {
@@ -191,7 +190,7 @@
       // 輪詢 公告 API
       this.announcementInterval = setInterval(() => {
         this.getAnnouncement();
-      }, 10000);
+      }, 30000);
       this.getAnnouncement();
     },
     beforeDestroy() {
@@ -357,7 +356,11 @@
       getAnnouncement() {
         this.$store.dispatch('Game/GetAnnouncement').then((res) => {
           if (res.data && res.data.length) {
-            this.marqueeText = res.data.reverse()[0].content;
+            const marqueeList = res.data
+              .reverse()
+              .filter((it, index) => index < 3)
+              .map((it) => it.content);
+            this.$refs.Marquee.pushStack(marqueeList);
           }
         });
       },

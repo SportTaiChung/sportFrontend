@@ -24,7 +24,7 @@
                   <!-- 顯示雙打1 -->
                   <template v-if="teamData.HomePtAndNation.length !== 0">
                     <div
-                      class="teamRow"
+                      class="team"
                       :title="`${teamData.HomePtAndNation[0]}-${teamData.HomePtAndNation[1]} / ${teamData.HomePtAndNation[2]}-${teamData.HomePtAndNation[3]}`"
                     >
                       {{ teamData.HomePtAndNation[0] }}
@@ -37,7 +37,7 @@
                   <!-- 顯示雙打2 -->
                   <template v-if="teamData.AwayPtAndNation.length !== 0">
                     <div
-                      class="teamRow"
+                      class="team"
                       :title="`${teamData.AwayPtAndNation[0]}-${teamData.AwayPtAndNation[1]} / ${teamData.AwayPtAndNation[2]}-${teamData.AwayPtAndNation[3]}`"
                     >
                       {{ teamData.AwayPtAndNation[0] }}
