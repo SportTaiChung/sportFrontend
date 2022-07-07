@@ -46,48 +46,48 @@
         </div>
         <button class="btn-login" @click="handleLogin"> {{ $t('Login.MemberLogin') }} </button>
 
-        <div class="line-other">
+        <!-- <div class="line-other">
           <div class="line"></div>
           <div class="text">or</div>
           <div class="line"></div>
-        </div>
+        </div> -->
 
         <div class="other-items">
           <!-- <div class="item">
             <img src="@/assets/img/common/password.png" />
             先去逛逛
           </div> -->
-          <div class="item" @click="isOpenServicePanel = true">
+          <!-- <div class="item" @click="isOpenServicePanel = true">
             <img src="@/assets/img/common/service.png" />
             {{ $t('Login.CustomerService') }}
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
 
     <!-- 客服面板 -->
-    <ServicePanel
+    <!-- <ServicePanel
       :isOpen="isOpenServicePanel"
       @closeMe="isOpenServicePanel = false"
       @openServiceChat="openServiceChat"
-    ></ServicePanel>
+    ></ServicePanel> -->
 
     <!-- 客服聊天室窗 -->
-    <ServiceChat
+    <!-- <ServiceChat
       :isOpen="isOpenServiceChat"
       :serviceQuestion="serviceQuestion"
       @closeMe="isOpenServiceChat = false"
-    ></ServiceChat>
+    ></ServiceChat> -->
   </div>
 </template>
 
 <script>
-  import ServicePanel from '@/components/ServicePanel';
-  import ServiceChat from '@/components/ServiceChat';
+  // import ServicePanel from '@/components/ServicePanel';
+  // import ServiceChat from '@/components/ServiceChat';
   export default {
     components: {
-      ServicePanel,
-      ServiceChat,
+      // ServicePanel,
+      // ServiceChat,
     },
     data() {
       return {
@@ -206,8 +206,8 @@
         flex-direction: column;
         background-color: rgba(255, 255, 255, 0.3);
         width: calc(100vw - 50px);
-        min-width: 370px;
-        max-width: 480px;
+        min-width: 320px;
+        max-width: 450px;
         padding: 1.8rem;
         border-radius: 1rem;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
@@ -301,6 +301,8 @@
           &:hover {
             background-color: rgba(56, 166, 136, 0.85);
           }
+
+          margin: 20px auto 40px auto; // 2022.7.7 移除專屬客服區塊, 所以做此調整
         }
 
         div.line-other {
