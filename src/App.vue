@@ -65,7 +65,8 @@
           process.env.VUE_APP_UI === 'pc' &&
           this.$route.name !== 'HistoryRecord' &&
           this.$route.name !== 'GameResult' &&
-          this.$route.name !== 'Ann'
+          this.$route.name !== 'Ann' &&
+          this.$route.name !== 'Login'
         ) {
           return 'min-width:1400px;';
         } else {
