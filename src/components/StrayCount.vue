@@ -480,6 +480,7 @@
           &:hover {
             .formulaPromptBox {
               opacity: 1;
+              pointer-events: auto;
             }
           }
           i {
@@ -504,6 +505,8 @@
             opacity: 0;
             transition: 0.2s opacity 0.05s;
             z-index: 1;
+            pointer-events: none;
+
             &::after {
               content: '';
               width: 0;
