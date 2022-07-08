@@ -286,9 +286,10 @@
           });
 
           sum -= parseFloat(this.betAmount);
-          this.winAmount = sum;
+          const showWinAmount = this.$lib.trunc(sum, 1);
+          this.winAmount = showWinAmount;
 
-          this.formulaResult = `${newFormulaResult}${appendStr}-${this.betAmount}=${sum}`;
+          this.formulaResult = `${newFormulaResult}${appendStr}-${this.betAmount}=${showWinAmount}`;
         }
       },
       selectChangeHandler(changeIndex) {
@@ -479,6 +480,7 @@
           &:hover {
             .formulaPromptBox {
               opacity: 1;
+              pointer-events: auto;
             }
           }
           i {
@@ -503,6 +505,8 @@
             opacity: 0;
             transition: 0.2s opacity 0.05s;
             z-index: 1;
+            pointer-events: none;
+
             &::after {
               content: '';
               width: 0;

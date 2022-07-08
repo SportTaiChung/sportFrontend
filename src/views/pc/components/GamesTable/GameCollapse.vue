@@ -117,6 +117,32 @@
                       </template>
                     </div>
                     <div class="centerTeamBlock">
+                      <!-- 顯示雙打1 -->
+                      <template v-if="teamData.HomePtAndNation.length !== 0">
+                        <div
+                          class="teamRow"
+                          :title="`${teamData.HomePtAndNation[0]}-${teamData.HomePtAndNation[1]} / ${teamData.HomePtAndNation[2]}-${teamData.HomePtAndNation[3]}`"
+                        >
+                          {{ teamData.HomePtAndNation[0] }}
+                          <span class="teamPt">-{{ teamData.HomePtAndNation[1] }}</span>
+                          <span> /</span>
+                          {{ teamData.HomePtAndNation[2] }}
+                          <span class="teamPt">-{{ teamData.HomePtAndNation[3] }}</span>
+                        </div>
+                      </template>
+                      <!-- 顯示雙打2 -->
+                      <template v-if="teamData.AwayPtAndNation.length !== 0">
+                        <div
+                          class="teamRow"
+                          :title="`${teamData.AwayPtAndNation[0]}-${teamData.AwayPtAndNation[1]} / ${teamData.AwayPtAndNation[2]}-${teamData.AwayPtAndNation[3]}`"
+                        >
+                          {{ teamData.AwayPtAndNation[0] }}
+                          <span class="teamPt">-{{ teamData.AwayPtAndNation[1] }}</span>
+                          <span> /</span>
+                          {{ teamData.AwayPtAndNation[2] }}
+                          <span class="teamPt">-{{ teamData.AwayPtAndNation[3] }}</span>
+                        </div>
+                      </template>
                       <!-- 只需要顯示一個隊伍 -->
                       <template v-if="teamData.AwayTeamStr === '.'">
                         <div class="teamRow" :title="teamData.HomeTeamStr">
@@ -651,6 +677,12 @@
         if (!teamData.SetFlag) {
           HomeTeamStr = teamData.AwayTeamStr;
           AwayTeamStr = teamData.HomeTeamStr;
+        }
+        if (teamData.HomePtAndNation.length !== 0) {
+          HomeTeamStr = teamData.HomePtAndNation[0] + ' / ' + teamData.HomePtAndNation[2];
+        }
+        if (teamData.AwayPtAndNation.length !== 0) {
+          AwayTeamStr = teamData.AwayPtAndNation[0] + ' / ' + teamData.AwayPtAndNation[2];
         }
 
         const selectGameTypeID = this.$store.state.Game.selectGameType;

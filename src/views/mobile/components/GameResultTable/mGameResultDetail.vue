@@ -16,7 +16,7 @@
                 <li>{{ parseScore(teamData, title.Key)[0] }}</li>
                 <li>{{ parseScore(teamData, title.Key)[1] }}</li>
               </ul>
-              <div class="remarks" v-else>{{ teamData.Remarks || '-' }}</div>
+              <div class="remarks" v-else>{{ teamData.Remarks }}</div>
             </td>
           </tr>
         </template>
@@ -77,7 +77,7 @@
         if (str && str.indexOf(':') !== -1) {
           return str.split(':');
         }
-        return ['-', '-'];
+        return ['', ''];
       },
       parseDate(str) {
         const d = new Date(str);
@@ -93,7 +93,7 @@
             (d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes());
           return [date, time];
         }
-        return ['-', '-'];
+        return ['', ''];
       },
     },
   };

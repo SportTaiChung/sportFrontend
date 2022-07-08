@@ -1,6 +1,6 @@
 <template>
   <div class="marquee" ref="container" @mouseover="speedFactor = 1" @mouseleave="speedFactor = 1">
-    <div class="content" ref="content" :style="translateX">{{ text }}</div>
+    <div class="content" ref="content" :style="translateX">{{ playText }}</div>
   </div>
 </template>
 
@@ -8,16 +8,10 @@
   export default {
     name: 'Marquee',
     props: {
-      text: {
-        type: String,
-        default() {
-          return '';
-        },
-      },
       speed: {
         type: Number,
         default() {
-          return 0.5;
+          return 0.8;
         },
       },
     },
@@ -25,23 +19,12 @@
       return {
         totalX: 0,
         offsetX: 0,
-        isPlaying: true,
+        isPlaying: false,
         raf: null,
         speedFactor: 1, // 0 ~ 1 float
+        playText: '',
+        stackText: [],
       };
-    },
-    computed: {
-      translateX() {
-        return {
-          transform: `translateX(${this.offsetX}px)`,
-        };
-      },
-    },
-    watch: {
-      text() {
-        this.stop();
-        this.play();
-      },
     },
     mounted() {
       const updateFunc = (timestamp) => {
@@ -51,11 +34,38 @@
           this.offsetX -= this.speed * this.speedFactor;
           if (this.offsetX < -this.totalX) {
             this.offsetX = 0;
+
+            this.stackText[0].shift();
+            if (this.stackText[0].length === 0) {
+              this.stackText.shift();
+            }
+            this.updatePlayMarquee();
           }
         }
         this.raf = requestAnimationFrame(updateFunc);
       };
       requestAnimationFrame(updateFunc);
+    },
+    beforeDestroy() {
+      cancelAnimationFrame(this.raf);
+    },
+    computed: {
+      translateX() {
+        return {
+          transform: `translateX(${this.offsetX}px)`,
+        };
+      },
+    },
+    watch: {
+      stackText: {
+        handler() {
+          if (!this.isPlaying) {
+            this.updatePlayMarquee();
+          }
+        },
+        immediate: true,
+        deep: true,
+      },
     },
     methods: {
       play() {
@@ -68,9 +78,20 @@
         this.isPlaying = false;
         this.offsetX = 0;
       },
-    },
-    beforeDestroy() {
-      cancelAnimationFrame(this.raf);
+      pushStack(data) {
+        this.stackText.push(data);
+      },
+      updatePlayMarquee() {
+        if (this.stackText.length !== 0) {
+          this.stop();
+          this.play();
+          if (this.stackText[0][0].length !== 0) {
+            this.playText = this.stackText[0][0];
+          }
+        } else {
+          this.isPlaying = false;
+        }
+      },
     },
   };
 </script>

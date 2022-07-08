@@ -21,6 +21,32 @@
               <!-- 賽事 -->
               <td class="round-block" :class="hasTie ? 'height-lv2' : 'height-lv1'">
                 <div class="team-block">
+                  <!-- 顯示雙打1 -->
+                  <template v-if="teamData.HomePtAndNation.length !== 0">
+                    <div
+                      class="team"
+                      :title="`${teamData.HomePtAndNation[0]}-${teamData.HomePtAndNation[1]} / ${teamData.HomePtAndNation[2]}-${teamData.HomePtAndNation[3]}`"
+                    >
+                      {{ teamData.HomePtAndNation[0] }}
+                      <span class="teamPt">-{{ teamData.HomePtAndNation[1] }}</span>
+                      <span> /</span>
+                      {{ teamData.HomePtAndNation[2] }}
+                      <span class="teamPt">-{{ teamData.HomePtAndNation[3] }}</span>
+                    </div>
+                  </template>
+                  <!-- 顯示雙打2 -->
+                  <template v-if="teamData.AwayPtAndNation.length !== 0">
+                    <div
+                      class="team"
+                      :title="`${teamData.AwayPtAndNation[0]}-${teamData.AwayPtAndNation[1]} / ${teamData.AwayPtAndNation[2]}-${teamData.AwayPtAndNation[3]}`"
+                    >
+                      {{ teamData.AwayPtAndNation[0] }}
+                      <span class="teamPt">-{{ teamData.AwayPtAndNation[1] }}</span>
+                      <span> /</span>
+                      {{ teamData.AwayPtAndNation[2] }}
+                      <span class="teamPt">-{{ teamData.AwayPtAndNation[3] }}</span>
+                    </div>
+                  </template>
                   <!-- 只需要顯示一個隊伍 -->
                   <template v-if="teamData.AwayTeamStr === '.'">
                     <div>
@@ -95,6 +121,12 @@
                   </div>
                 </div>
               </td>
+
+              <!-- 小圓點 滾動指示 -->
+              <div class="dot-wrap" v-show="dotStatus.visible">
+                <div class="dot left" :class="dotStatus.isScrollToTheEnd ? '' : 'active'"></div>
+                <div class="dot right" :class="dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
+              </div>
             </tr>
           </template>
         </template>
@@ -126,6 +158,17 @@
           return false;
         },
       },
+
+      // 小圓點狀態
+      dotStatus: {
+        type: Object,
+        default() {
+          return {
+            visible: false,
+            isScrollToTheEnd: false,
+          };
+        },
+      },
     },
     methods: {
       starCSSJudge(EvtID) {
@@ -148,7 +191,6 @@
 
   .mGameInfo {
     position: relative;
-    width: fit-content;
     min-width: 100%;
 
     &.closed {
@@ -175,6 +217,30 @@
       width: 100%;
       font-size: $font-size;
       background-color: #fff;
+
+      tr {
+        position: relative;
+
+        // 小圓點
+        .dot-wrap {
+          position: absolute;
+          right: -80%;
+          bottom: 3px;
+          z-index: 9;
+          display: flex;
+
+          .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 5px;
+            &.active {
+              background-color: #a3d3c3;
+            }
+          }
+        }
+      }
 
       th {
         display: flex;

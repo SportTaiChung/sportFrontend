@@ -9,7 +9,7 @@
     :style="toCSSPosAndScale"
   >
     <div class="itemLength">{{ this.betCartStore.betCartList.length }}</div>
-    <div class="odds">{{ strayOdd || $t('Common.Bet') }}</div>
+    <div class="odds">{{ $lib.trunc(strayOdd, 2) || $t('Common.Bet') }}</div>
   </div>
 </template>
 

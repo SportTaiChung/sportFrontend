@@ -1,10 +1,5 @@
 <template>
-  <div
-    ref="mGameBetting"
-    class="mGameBetting"
-    :class="isExpanded ? '' : 'closed'"
-    @scroll="scrollEvent"
-  >
+  <div class="mGameBetting" :class="isExpanded ? '' : 'closed'" @scroll="scrollEvent">
     <table :class="hasMoreGameStyle">
       <thead @click="$emit('toggleCollapse')">
         <tr>
@@ -215,11 +210,6 @@
                 </td>
                 <td v-else class="moreGameBtn"></td>
               </template>
-
-              <template v-if="isShowScrollBall">
-                <div class="circleLeft" :class="circleClassJudge(0)"> </div>
-                <div class="circleRight" :class="circleClassJudge(1)"> </div>
-              </template>
             </tr>
           </template>
         </template>
@@ -265,20 +255,22 @@
     },
     data() {
       return {
-        // true  : 亮左邊的球
-        // false : 亮右邊的球
-        scrollWay: true,
-        isShowScrollBall: true,
+        dotStatus: {
+          visible: false,
+          isScrollToTheEnd: false,
+        },
       };
     },
     mounted() {
       this.$nextTick(() => {
         // 如果沒有卷軸,則不顯示小球
-        const element = this.$refs.mGameBetting;
-        if (element.scrollWidth <= element.clientWidth) {
-          this.isShowScrollBall = false;
-        } else {
-          this.isShowScrollBall = true;
+        const element = this.$el;
+        if (element) {
+          if (element.scrollWidth <= element.clientWidth) {
+            this.dotStatus.visible = false;
+          } else {
+            this.dotStatus.visible = true;
+          }
         }
       });
     },
@@ -296,23 +288,22 @@
           this.$el.scrollTo(0, 0);
         }
       },
+      dotStatus: {
+        deep: true,
+        handler(status) {
+          this.$emit('dotStatusChanged', status);
+        },
+      },
     },
     methods: {
       scrollEvent(event) {
         const element = event.target;
         if (Math.floor(element.scrollWidth - element.scrollLeft) <= element.clientWidth) {
           // 滑到最右邊
-          this.scrollWay = false;
+          this.dotStatus.isScrollToTheEnd = true;
         } else if (element.scrollLeft === 0) {
           // 滑到最左邊
-          this.scrollWay = true;
-        }
-      },
-      circleClassJudge(index) {
-        if (index === 0 && !this.scrollWay) {
-          return 'white';
-        } else if (index === 1 && this.scrollWay) {
-          return 'white';
+          this.dotStatus.isScrollToTheEnd = false;
         }
       },
       WagerRowIsSelectInCartCSS(GameID, showOdd, wagerPos) {
@@ -427,28 +418,6 @@
 
       tr {
         position: relative;
-        %circleBase {
-          position: sticky;
-          background-color: rgb(183, 183, 183);
-          width: 5px;
-          height: 5px;
-          top: 100%;
-          right: 50%;
-          border: 1px solid rgb(183, 183, 183);
-          border-radius: 50%;
-          transform: translateY(-2px);
-          &.white {
-            background-color: white;
-          }
-        }
-        .circleLeft {
-          right: 52%;
-          @extend %circleBase;
-        }
-        .circleRight {
-          right: 48%;
-          @extend %circleBase;
-        }
       }
 
       th {

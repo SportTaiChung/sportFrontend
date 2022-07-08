@@ -68,7 +68,7 @@
           :class="gameType2Page == 2 ? 'active' : ''"
           @click="gameType2Page = 2"
         >
-          <img src="@/assets/img/common/btn_LiveTV.svg" />
+          <img src="@/assets/img/common/btn_GDV_live.svg" />
         </li>
         <!-- <li
           class="item"
@@ -134,7 +134,7 @@
           :class="gameType1Page == 2 ? 'active' : ''"
           @click="gameType1Page = 2"
         >
-          <img src="@/assets/img/common/btn_LiveTV.svg" />
+          <img src="@/assets/img/common/btn_GDV_live.svg" />
         </li> -->
         <li
           class="item"
