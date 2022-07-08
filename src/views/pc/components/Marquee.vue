@@ -11,7 +11,7 @@
       speed: {
         type: Number,
         default() {
-          return 0.8;
+          return 1;
         },
       },
     },
