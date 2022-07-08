@@ -236,6 +236,7 @@
         } else {
           this.$store.dispatch('Game/GetGameDetailSmall');
         }
+        this.$store.dispatch('User/GetUserInfoCash');
       }, 10000);
 
       // 更新 MENU: 每20秒
