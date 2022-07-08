@@ -757,7 +757,9 @@
       },
       callBetHistoryAPI() {
         if (this.groupIndex === 1) {
-          this.$refs.BetViewList.scrollTop = 0;
+          if (this.$refs.BetViewList) {
+            this.$refs.BetViewList.scrollTop = 0;
+          }
           this.isLoading = true;
           this.$store
             .dispatch('BetCart/getBetHistory', {
