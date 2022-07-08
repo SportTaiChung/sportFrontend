@@ -27,7 +27,6 @@
               <th width="200">{{ $t('HistoryRecord.BetMessage') }}</th>
               <th>{{ $t('Common.BetContent') }}</th>
               <th width="150">{{ $t('HistoryRecord.BetAmount') }}</th>
-              <th width="150">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
               <th width="150">{{ $t('Common.CanWin') }}</th>
             </tr>
             <tr v-if="getBetHistoryData.length === 0">
@@ -119,7 +118,6 @@
                 </div>
               </td>
               <td class="rt_betval">{{ item.Amount }}</td>
-              <td class="rt_betval">{{ item.AfterAmount }}</td>
               <td class="rt_betval">
                 {{ item.ToWin }}
               </td>
@@ -127,7 +125,6 @@
             <tr class="rt_foot">
               <td colspan="2">{{ $t('Common.Total') }}</td>
               <td class="betSumTotal">{{ totalAmount }}</td>
-              <td></td>
               <td>{{ totalWinAmount }}</td>
             </tr>
           </table>
@@ -139,7 +136,6 @@
           <tr>
             <th>{{ $t('GameDate') }}</th>
             <th>{{ $t('HistoryRecord.BetAmount') }}</th>
-            <th>{{ $t('Common.ReturnWater') }}</th>
             <th>{{ $t('Common.Result') }}</th>
           </tr>
           <tr
@@ -149,7 +145,6 @@
           >
             <td>{{ item.accdate.substr(5) }} {{ item.weekLang }}</td>
             <td>{{ item.amount }}</td>
-            <td>{{ item.RetAmt }}</td>
             <td v-if="item.weekLang.indexOf($t('Common.Total')) > 0">{{ item.ResultAmount }}</td>
             <td v-else>
               <el-link type="primary" @click="goThisWeek(item.accdate)">{{
@@ -166,9 +161,7 @@
               <th width="185">{{ $t('HistoryRecord.BetMessage') }}</th>
               <th width="400">{{ $t('Common.BetContent') }}</th>
               <th width="100">{{ $t('HistoryRecord.BetAmount') }}</th>
-              <th width="130">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
               <th width="100">{{ $t('Common.CanWin') }}</th>
-              <th width="100">{{ $t('Common.ReturnWater') }}</th>
               <th width="100">{{ $t('Common.Result') }}</th>
             </tr>
           </table>
@@ -182,9 +175,7 @@
                   <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template>
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
-                <td width="130">{{ item.AfterAmounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
-                <td width="100">{{ item.RetAmts }}</td>
                 <td width="100">{{ item.ResultAmounts }}</td>
               </tr>
             </table>
@@ -282,14 +273,12 @@
                   </ul>
                 </td>
                 <td width="100" class="rt_betval">{{ itemdata.Amount }}</td>
-                <td width="130" class="rt_betval">{{ itemdata.AfterAmount }}</td>
                 <td width="100" class="rt_betval" v-if="itemdata.BetType === 1">
                   {{ Math.floor(itemdata.Amount * itemdata.dataBet[0].PayoutOddsStr) }}
                 </td>
                 <td width="100" class="rt_betval" v-else>
                   {{ itemdata.canwin }}
                 </td>
-                <td width="100" class="rt_betval">{{ itemdata.RetAmt }}</td>
                 <td width="100" class="rt_betval">{{ itemdata.ResultAmount }}</td>
               </tr>
             </table>
@@ -298,9 +287,7 @@
             <tr class="rt_foot">
               <td width="585">{{ $t('Common.Total') }}</td>
               <td width="100" class="betSumTotal">{{ gettotal.Amounts }}</td>
-              <td width="130">{{ gettotal.AfterAmounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
-              <td width="100">{{ gettotal.RetAmts }}</td>
               <td width="100">{{ gettotal.ResultAmounts }}</td>
             </tr>
           </table>
@@ -401,8 +388,6 @@
         dest.push(BetTypemap);
         dest.forEach((item) => {
           let Amounts = 0;
-          let AfterAmounts = 0;
-          let RetAmts = 0;
           let ResultAmounts = 0;
           let canwins = 0;
           item.data.forEach((itemdata) => {
@@ -440,13 +425,9 @@
             }
 
             Amounts += itemdata.Amount;
-            AfterAmounts += itemdata.AfterAmount;
-            RetAmts = this.$lib.trunc(RetAmts + itemdata.RetAmt);
             ResultAmounts = this.$lib.trunc(ResultAmounts + itemdata.ResultAmount);
           });
           item.Amounts = Amounts;
-          item.AfterAmounts = AfterAmounts;
-          item.RetAmts = RetAmts;
           item.ResultAmounts = ResultAmounts;
           item.canwins = canwins;
           item.active = false;
@@ -454,12 +435,10 @@
         return dest;
       },
       gettotal() {
-        const total = { Amounts: 0, AfterAmounts: 0, RetAmts: 0, ResultAmounts: 0, canwins: 0 };
+        const total = { Amounts: 0, ResultAmounts: 0, canwins: 0 };
 
         this.gettodayDetails.forEach((item) => {
           total.Amounts += item.Amounts;
-          total.AfterAmounts += item.AfterAmounts;
-          total.RetAmts += item.RetAmts;
           total.ResultAmounts += item.ResultAmounts;
           total.canwins += item.canwins;
         });
