@@ -34,9 +34,11 @@
           :source="source"
           :isExpanded="isExpanded(index)"
           :hasMoreGame="hasMoreGame"
+          :dotStatus="dotStatusArr[index]"
           @toggleCollapse="toggleCollapse(index)"
         ></mGameInfo>
       </div>
+
       <!-- 右半邊 - 下注資訊-->
       <div class="right-area">
         <div v-for="(source, index) in gameData.Items.List" :key="index">
@@ -46,6 +48,7 @@
             :isExpanded="isExpanded(index)"
             :hasMoreGame="hasMoreGame"
             @toggleCollapse="toggleCollapse(index)"
+            @dotStatusChanged="(status) => dotStatusHandler(index, status)"
           ></mGameBetting>
         </div>
       </div>
@@ -75,6 +78,7 @@
     data() {
       return {
         activeCollapse: [],
+        dotStatusArr: [],
       };
     },
     components: {
@@ -158,6 +162,9 @@
         const icon = this.CatMapData[catId].icon;
         return require('@/assets/img/common/menuIcon/' + icon);
       },
+      dotStatusHandler(index, status) {
+        this.dotStatusArr[index] = status;
+      },
     },
   };
 </script>
@@ -168,7 +175,7 @@
     overflow-y: auto;
     .left-area {
       width: 40%;
-      transition: width 600ms ease-out;
+      transition: width 500ms ease;
 
       @media screen and(max-width: 480px) {
         width: calc(160px);

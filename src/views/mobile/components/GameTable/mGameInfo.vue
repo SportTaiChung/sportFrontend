@@ -121,6 +121,12 @@
                   </div>
                 </div>
               </td>
+
+              <!-- 小圓點 滾動指示 -->
+              <div class="dot-wrap" v-show="dotStatus.visible">
+                <div class="dot left" :class="dotStatus.isScrollToTheEnd ? '' : 'active'"></div>
+                <div class="dot right" :class="dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
+              </div>
             </tr>
           </template>
         </template>
@@ -152,6 +158,17 @@
           return false;
         },
       },
+
+      // 小圓點狀態
+      dotStatus: {
+        type: Object,
+        default() {
+          return {
+            visible: false,
+            isScrollToTheEnd: false,
+          };
+        },
+      },
     },
     methods: {
       starCSSJudge(EvtID) {
@@ -174,7 +191,6 @@
 
   .mGameInfo {
     position: relative;
-    width: fit-content;
     min-width: 100%;
 
     &.closed {
@@ -201,6 +217,30 @@
       width: 100%;
       font-size: $font-size;
       background-color: #fff;
+
+      tr {
+        position: relative;
+
+        // 小圓點
+        .dot-wrap {
+          position: absolute;
+          right: -80%;
+          bottom: 3px;
+          z-index: 9;
+          display: flex;
+
+          .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 5px;
+            &.active {
+              background-color: #a3d3c3;
+            }
+          }
+        }
+      }
 
       th {
         display: flex;
