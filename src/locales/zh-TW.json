@@ -9,18 +9,18 @@
     "LiveScore": "即時比分",
     "GameResult": "賽果",
     "GameRule": "規則",
-    "BetList": "投註記錄",
-    "ContactService": "聯絡客服",
+    "BetList": "投注記錄",
+    "ContactService": "聯繫客服",
     "PersonalSetting": "個人設置",
     "Logout": "登出"
   },
   "GamesSetup": {
     "AcceptBetter": "自動接收最佳賠率",
     "LeagueSelect": "聯盟選擇",
-    "QuickBet": "快速投註",
+    "QuickBet": "快速投注",
     "PlzInputAmount": "請輸入金額",
     "QuickBetInfo": "快速投注說明",
-    "QuickBetInfo1": "1.設定投這金額",
+    "QuickBetInfo1": "1.設定投注金額",
     "QuickBetInfo2": "2.點擊投注項目",
     "QuickBetInfo3": "3.投注完成",
     "SelectAll": "全選",
@@ -136,7 +136,7 @@
     "NewestBet": "最新注單",
     "StrayCount": "過關計算器",
     "Setting": "功能設定",
-    "NormalBet": "單向投注",
+    "NormalBet": "單項投注",
     "StrayBet": "過關投注",
     "NotCountBet": "未結算注單",
     "isCountBet": "已結算注單"
@@ -203,7 +203,7 @@
     "BetMessage": "注單訊息",
     "BetAmount": "投注額",
     "BetRemainAmount": "投注後餘額",
-    "TypeStray": "类型 : 過關"
+    "TypeStray": "類型 : 過關"
   },
   "GameDate": "比賽日期",
   "Ann": {
