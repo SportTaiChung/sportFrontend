@@ -31,36 +31,38 @@
               </div>
             </template>
           </td>
-          <td class="row">
-            <div class="firstText">{{ $t('Common.SplitPen') }}</div>
+          <td>
+            <div class="row">
+              <div class="firstText">{{ $t('Common.SplitPen') }}</div>
 
-            <el-select
-              v-model="data.type"
-              class="selectType"
-              :class="`selectType${data.type}`"
-              size="mini"
-              @change="selectChangeHandler(index)"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+              <el-select
+                v-model="data.type"
+                class="selectType"
+                :class="`selectType${data.type}`"
+                size="mini"
+                @change="selectChangeHandler(index)"
               >
-              </el-option>
-            </el-select>
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
 
-            <el-input
-              class="componentHeight percentInput"
-              v-model="data.percent"
-              type="number"
-              :class="data.errorType === 2 ? 'IsError' : ''"
-              :min="0"
-              :max="100"
-              :disabled="PercentDisable(data)"
-              @input="percentInputHandler(index, 'percent')"
-            ></el-input>
-            <div class="lastText">%</div>
+              <el-input
+                class="componentHeight percentInput"
+                v-model="data.percent"
+                type="number"
+                :class="data.errorType === 2 ? 'IsError' : ''"
+                :min="0"
+                :max="100"
+                :disabled="PercentDisable(data)"
+                @input="percentInputHandler(index, 'percent')"
+              ></el-input>
+              <div class="lastText">%</div>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -381,17 +383,70 @@
   #StrayCount {
     width: 100%;
     background-color: #ccc;
-    table.sticky {
-      position: sticky;
-      display: block;
-      top: 7px;
-      z-index: 5;
-      margin: 7px;
+
+    table {
+      width: calc(100% - 16px);
+      border-collapse: collapse;
+      border-spacing: 0;
       border-radius: 6px;
-      width: auto;
+      margin: 8px;
       overflow: hidden;
       background-color: #f0f0f0;
-      box-shadow: 0 0 6px rgb(0 0 0 / 30%);
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #bbb;
+        }
+      }
+      td:first-child {
+        width: 60px;
+      }
+      td:nth-child(2) {
+        width: 109px;
+      }
+      td:nth-child(3) {
+        width: 221px;
+      }
+
+      .percentInput {
+        input {
+          width: 30px;
+        }
+      }
+      .showIndex {
+        text-align: center;
+      }
+      .oddRow {
+        position: relative;
+        .oddEmpty {
+          position: absolute;
+          color: red;
+          bottom: -1px;
+          font-size: 12px;
+        }
+      }
+
+      .row {
+        padding: 10px 10px 10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 4.615rem;
+        white-space: nowrap;
+        .firstText {
+          margin-left: 10px;
+        }
+        .lastText {
+          margin-left: 5px;
+        }
+      }
+    }
+
+    table.sticky {
+      position: sticky;
+      top: 8px;
+      z-index: 5;
+      box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
 
       thead {
         th {
@@ -427,67 +482,6 @@
       }
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      border-spacing: 0;
-      border-radius: 6px;
-      margin: 7px;
-      width: auto;
-      overflow: hidden;
-      background-color: #f0f0f0;
-      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
-
-      tbody {
-        tr {
-          border-bottom: 1px solid #bbb;
-        }
-      }
-      td:first-child {
-        width: 60px;
-      }
-      td:nth-child(2) {
-        width: 109px;
-      }
-      td:nth-child(3) {
-        width: 221px;
-      }
-
-      .percentInput {
-        input {
-          width: 30px;
-        }
-      }
-      .showIndex {
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .oddRow {
-        position: relative;
-        .oddEmpty {
-          position: absolute;
-          color: red;
-          bottom: -1px;
-          font-size: 12px;
-        }
-      }
-
-      .row {
-        padding: 10px 10px 10px 0;
-        display: flex;
-        align-items: center;
-        height: 4.615rem;
-        white-space: nowrap;
-        .firstText {
-          margin-left: 10px;
-        }
-        .lastText {
-          margin-left: 5px;
-        }
-      }
-    }
     .resultBlock {
       display: flex;
       padding: 15px 10px;
