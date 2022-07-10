@@ -101,6 +101,9 @@
           case PageEnum.liveScore: {
             return this.$t('GamesHeader.LiveScore');
           }
+          case PageEnum.strayCounter: {
+            return this.$t('GamesBetInfo.StrayCount');
+          }
           default:
             return '';
         }

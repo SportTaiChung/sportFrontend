@@ -64,48 +64,50 @@
       </tbody>
     </table>
 
-    <div class="resultBlock">
-      <div class="left">
-        <div class="titleText">{{ $t('Common.BetAmount') }}</div>
-        <el-input
-          class="resultInputBlock"
-          v-model="betAmount"
-          @input="betAmountInputHandler"
-          size="mini"
-        ></el-input>
+    <div class="footer">
+      <div class="resultBlock">
+        <div class="left">
+          <div class="titleText">{{ $t('Common.BetAmount') }}</div>
+          <el-input
+            class="resultInputBlock"
+            v-model="betAmount"
+            @input="betAmountInputHandler"
+            size="mini"
+          ></el-input>
+        </div>
+        <div class="right">
+          <div class="titleText">{{ $t('Common.CanWinMoney') }}</div>
+          <el-input
+            class="resultInputBlock resultWinInputBlock"
+            size="mini"
+            :disabled="true"
+            v-model="winAmount"
+          ></el-input>
+        </div>
       </div>
-      <div class="right">
-        <div class="titleText">{{ $t('Common.CanWinMoney') }}</div>
-        <el-input
-          class="resultInputBlock resultWinInputBlock"
-          size="mini"
-          :disabled="true"
-          v-model="winAmount"
-        ></el-input>
-      </div>
-    </div>
 
-    <div class="formulaBlock" v-if="formulaResult !== ''">
-      <div class="formulaTitle">
-        <span class="title"> {{ $t('StrayCount.CountProcess') }} </span>
-        <span class="help">
-          <i class="el-icon-question"></i>
-          <div class="formulaPromptBox">
-            {{ $t('StrayCount.StrayCountWay') }}：
-            <br />
-            {{ $t('Common.BetAmount') }} {{ $t('StrayCount.BetFormula') }}
-          </div>
-        </span>
+      <div class="formulaBlock" v-if="formulaResult !== ''">
+        <div class="formulaTitle">
+          <span class="title"> {{ $t('StrayCount.CountProcess') }} </span>
+          <span class="help">
+            <i class="el-icon-question"></i>
+            <div class="formulaPromptBox">
+              {{ $t('StrayCount.StrayCountWay') }}：
+              <br />
+              {{ $t('Common.BetAmount') }} {{ $t('StrayCount.BetFormula') }}
+            </div>
+          </span>
+        </div>
+        <div> {{ formulaResult }} </div>
       </div>
-      <div> {{ formulaResult }} </div>
-    </div>
 
-    <div class="optionBlock">
-      <div class="left">
-        <div class="optionBtn" @click="reset">{{ $t('StrayCount.ClearZero') }}</div>
-      </div>
-      <div class="right">
-        <div class="optionBtn countBtn" @click="countStart">{{ $t('StrayCount.Count') }}</div>
+      <div class="optionBlock">
+        <div class="left">
+          <div class="optionBtn" @click="reset">{{ $t('StrayCount.ClearZero') }}</div>
+        </div>
+        <div class="right">
+          <div class="optionBtn countBtn" @click="countStart">{{ $t('StrayCount.Count') }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -556,6 +558,15 @@
           }
         }
       }
+    }
+
+    .footer {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #eee;
+      box-shadow: 0 -2px 6px rgb(0 0 0 / 10%);
     }
   }
 </style>

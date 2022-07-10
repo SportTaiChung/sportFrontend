@@ -70,8 +70,15 @@
         <template v-else-if="page === PageEnum.announcement">
           <mAnnouncement></mAnnouncement>
         </template>
+
+        <!-- 即時比分頁 -->
         <template v-else-if="page === PageEnum.liveScore">
           <mLiveScorePage></mLiveScorePage>
+        </template>
+
+        <!-- 過關計算器頁 -->
+        <template v-else-if="page === PageEnum.strayCounter">
+          <mStrayCounter ref="StrayCountDialog"></mStrayCounter>
         </template>
       </div>
 
@@ -123,7 +130,6 @@
         :isOpen="isOpenMenuPanel"
         @closeMe="isOpenMenuPanel = false"
         @updateGameDetail="reCallGameDetailAPI()"
-        @openStrayCount="isShowStrayCount = true"
         @openPersonal="isOpenPersonalPanel = true"
         @goPage="(v) => (page = v)"
       ></mMenuPanel>
@@ -136,13 +142,6 @@
         @onLeaguesListChanged="reCallGameDetailAPI()"
         @hasLeagueFiltered="(val) => (hasLeagueFiltered = val)"
       ></mLeaguesPanel>
-
-      <!-- 過關計算器 -->
-      <StrayCountDialog
-        ref="StrayCountDialog"
-        v-if="isShowStrayCount"
-        @closeMe="isShowStrayCount = false"
-      ></StrayCountDialog>
 
       <!-- 客服聊天室窗 -->
       <ServiceChat
@@ -180,7 +179,8 @@
   import mLeaguesPanel from './components/mLeaguesPanel.vue';
   import MoreGame from '@/components/MoreGame.vue';
   import ServiceChat from '@/components/ServiceChat.vue';
-  import StrayCountDialog from '../pc/components/StrayCountDialog.vue';
+  import mStrayCounter from './components/mStrayCounter';
+
   import PersonalPanel from '@/components/PersonalPanel';
   import mAnnouncement from './components/mAnnouncement';
   import mLiveScorePage from './components/mLiveScorePage.vue';
@@ -206,11 +206,11 @@
       mLeaguesPanel,
       MoreGame,
       ServiceChat,
-      StrayCountDialog,
       PersonalPanel,
       mLiveScorePage,
       mFloatingBetCart,
       mAnnouncement,
+      mStrayCounter,
       ChatSocket,
     },
     created() {
@@ -306,7 +306,6 @@
         isOpenLeaguesPanel: false,
         isOpenServiceChat: false,
         isOpenPersonalPanel: false,
-        isShowStrayCount: false,
         latestSelectCatId: null,
         latestSelectWagerTypeKey: null,
         hasLeagueFiltered: false,
