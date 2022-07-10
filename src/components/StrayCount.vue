@@ -1,13 +1,15 @@
 <template>
   <div id="StrayCount">
-    <table>
+    <table class="sticky">
       <thead>
         <tr>
-          <td>{{ $t('StrayCount.StrayCount') }}</td>
-          <td>{{ $t('Common.Odd') }}</td>
-          <td>{{ $t('Common.SplitPen') }}</td>
+          <th>{{ $t('StrayCount.StrayCount') }}</th>
+          <th>{{ $t('Common.Odd') }}</th>
+          <th>{{ $t('Common.SplitPen') }}</th>
         </tr>
       </thead>
+    </table>
+    <table>
       <tbody>
         <tr v-for="(data, index) in countData" :key="index">
           <td class="showIndex">
@@ -317,6 +319,7 @@
       height: 30px;
       input {
         height: 100%;
+        line-height: 1;
       }
     }
     .percentInput {
@@ -377,19 +380,64 @@
 <style lang="scss" scoped>
   #StrayCount {
     width: 100%;
+    background-color: #ccc;
+    table.sticky {
+      position: sticky;
+      display: block;
+      top: 7px;
+      z-index: 5;
+      margin: 7px;
+      border-radius: 6px;
+      width: auto;
+      overflow: hidden;
+      background-color: #f0f0f0;
+      box-shadow: 0 0 6px rgb(0 0 0 / 30%);
+
+      thead {
+        th {
+          position: relative;
+          height: 30px;
+          text-align: center;
+          font-weight: bold;
+          font-size: 14px;
+          &:first-child {
+            width: 60px;
+            &::after {
+              display: none;
+            }
+          }
+          &:nth-child(2) {
+            width: 109px;
+          }
+          &:nth-child(3) {
+            width: 221px;
+          }
+          &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            bottom: 0;
+            width: 1px;
+            height: 70%;
+            transform: translateY(-50%);
+            background-color: #c7c7c7;
+          }
+        }
+      }
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       border-spacing: 0;
-      thead {
-        tr {
-          background-color: #d8d8d8;
-        }
-        height: 30px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 14px;
-      }
+      border-radius: 6px;
+      margin: 7px;
+      width: auto;
+      overflow: hidden;
+      background-color: #f0f0f0;
+      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
+
       tbody {
         tr {
           border-bottom: 1px solid #bbb;
@@ -427,13 +475,13 @@
       }
 
       .row {
-        padding: 10px;
+        padding: 10px 10px 10px 0;
         display: flex;
         align-items: center;
-        height: 60px;
+        height: 4.615rem;
         white-space: nowrap;
         .firstText {
-          margin-left: 15px;
+          margin-left: 10px;
         }
         .lastText {
           margin-left: 5px;

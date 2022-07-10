@@ -19,5 +19,6 @@
   #mStrayCounter {
     height: 100%;
     overflow-y: auto;
+    background-color: #ccc;
   }
 </style>
