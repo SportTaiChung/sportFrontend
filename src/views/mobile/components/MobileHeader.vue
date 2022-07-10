@@ -137,7 +137,7 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #8fd1bb;
     .left {
       display: flex;
       flex-flow: row nowrap;

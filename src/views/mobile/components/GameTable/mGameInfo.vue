@@ -124,7 +124,7 @@
 
               <!-- 小圓點 滾動指示 -->
               <div class="dot-wrap" v-show="dotStatus.visible">
-                <div class="dot left" :class="dotStatus.isScrollToTheEnd ? '' : 'active'"></div>
+                <div class="dot left" :class="!dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
                 <div class="dot right" :class="dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
               </div>
             </tr>

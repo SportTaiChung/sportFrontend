@@ -2,6 +2,9 @@
   <div id="mBetRecordView">
     <div class="header-container">
       <div class="title">{{ $t('HistoryRecord.BetHistoryRecord') }}</div>
+      <div class="btn-back" v-if="isShowGoBackBtn" @click="$refs.RecordHistory.goBackPage()">
+        <i class="el-icon-arrow-left"></i>
+      </div>
       <div class="btn-close" @click="$emit('onCloseBetRecordView')"> &times; </div>
     </div>
 
@@ -12,31 +15,38 @@
       <li :class="tabIndex === 1 ? 'active' : ''" @click="onTabClick(1)">
         <div class="text">{{ $t('Common.IsCount') }}</div>
       </li>
-      <!-- <li :class="tabIndex === 2 ? 'active' : ''" @click="onTabClick(2)">
-        <div class="text">可兌現</div>
-      </li> -->
-      <!-- <li :class="tabIndex === 3 ? 'active' : ''" @click="onTabClick(3)">
-        <div class="text">贈禮</div>
-      </li> -->
     </ul>
 
     <div class="main-container">
-      <BetViewList :groupIndex="1" :childIndex="tabIndex"></BetViewList>
+      <!-- 未結算: 直接使用 PC版 BetViewList 組件 -->
+      <div v-if="tabIndex === 0" style="padding: 10px">
+        <BetViewList :groupIndex="1" :childIndex="tabIndex"></BetViewList>
+      </div>
+
+      <!-- 已結算 -->
+      <mBetRecordHistory
+        ref="RecordHistory"
+        v-if="tabIndex === 1"
+        @showGoBackBtn="(visible) => (isShowGoBackBtn = visible)"
+      ></mBetRecordHistory>
     </div>
   </div>
 </template>
 
 <script>
   import BetViewList from '@/components/BetViewList';
+  import mBetRecordHistory from './mBetRecordHistory';
 
   export default {
     name: 'mBetRecordView',
     components: {
       BetViewList,
+      mBetRecordHistory,
     },
     data() {
       return {
         tabIndex: 0,
+        isShowGoBackBtn: false,
       };
     },
     computed: {},
@@ -71,7 +81,7 @@
       flex-shrink: 0;
       justify-content: center;
       align-items: center;
-      border-bottom: 1px solid #fff;
+      border-bottom: 1px solid #8fd1bb;
 
       .title {
         color: #fff;
@@ -84,6 +94,15 @@
         right: 1rem;
         font-size: 3rem;
         color: #fff;
+        cursor: pointer;
+      }
+
+      .btn-back {
+        position: absolute;
+        left: 1rem;
+        font-size: 2rem;
+        color: #fff;
+        cursor: pointer;
       }
     }
 
@@ -122,7 +141,7 @@
       flex: auto;
       overflow: auto;
       background-color: #d8d8d8;
-      padding: 10px;
+      // padding: 10px;
     }
   }
 </style>
