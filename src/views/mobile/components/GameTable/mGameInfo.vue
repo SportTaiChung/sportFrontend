@@ -225,9 +225,10 @@
         .dot-wrap {
           position: absolute;
           right: -80%;
-          bottom: 3px;
+          // bottom: 3px; // https://github.com/w3c/csswg-drafts/issues/1899
           z-index: 9;
           display: flex;
+          transform: translateY(-8px);
 
           .dot {
             width: 5px;
