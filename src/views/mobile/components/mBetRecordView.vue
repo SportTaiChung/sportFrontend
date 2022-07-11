@@ -2,10 +2,21 @@
   <div id="mBetRecordView">
     <div class="header-container">
       <div class="title">{{ $t('HistoryRecord.BetHistoryRecord') }}</div>
-      <div class="btn-back" v-if="isShowGoBackBtn" @click="$refs.RecordHistory.goBackPage()">
-        <i class="el-icon-arrow-left"></i>
+      <div class="left-btns">
+        <!-- 返回鈕 -->
+        <div class="btn-back" v-if="isShowGoBackBtn" @click="$refs.RecordHistory.goBackPage()">
+          <i class="el-icon-arrow-left"></i>
+        </div>
+        <!-- 刷新鈕 -->
+        <div class="btn-refresh" @click="$refs.RecordHistory.refresh()">
+          <i class="el-icon-refresh-right"></i>
+        </div>
       </div>
-      <div class="btn-close" @click="$emit('onCloseBetRecordView')"> &times; </div>
+
+      <!-- 關閉鈕 -->
+      <div class="btn-close" @click="$emit('onCloseBetRecordView')">
+        <i class="el-icon-close"></i>
+      </div>
     </div>
 
     <ul class="navList">
@@ -92,17 +103,26 @@
       .btn-close {
         position: absolute;
         right: 1rem;
-        font-size: 3rem;
-        color: #fff;
         cursor: pointer;
+        i {
+          font-size: 2rem;
+          color: #fff;
+        }
       }
 
-      .btn-back {
+      .left-btns {
         position: absolute;
         left: 1rem;
-        font-size: 2rem;
-        color: #fff;
-        cursor: pointer;
+        display: flex;
+        .btn-back,
+        .btn-refresh {
+          cursor: pointer;
+          margin-right: 1rem;
+          i {
+            font-size: 2rem;
+            color: #fff;
+          }
+        }
       }
     }
 

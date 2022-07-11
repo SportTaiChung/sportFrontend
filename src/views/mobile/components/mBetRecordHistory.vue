@@ -269,6 +269,10 @@
       goBackPage() {
         if (this.page > 0) this.page--;
       },
+      refresh() {
+        this.page = 0;
+        this.getBetHistory(false);
+      },
     },
     async created() {
       this.getBetHistory(false);
