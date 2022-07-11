@@ -2,7 +2,7 @@
   <div id="mBetRecordView">
     <div class="header-container">
       <div class="title">{{ $t('HistoryRecord.BetHistoryRecord') }}</div>
-      <div class="left-btns">
+      <div class="left-btns" v-if="tabIndex === 1">
         <!-- 返回鈕 -->
         <div class="btn-back" v-if="isShowGoBackBtn" @click="$refs.RecordHistory.goBackPage()">
           <i class="el-icon-arrow-left"></i>
