@@ -475,7 +475,7 @@
     computed: {
       OptionCancelBtnStr() {
         if (this.panelMode === this.PanelModeEnum.normal) {
-          return this.$t('Common.Cancel');
+          return this.$t('Common.AllClear');
         } else if (this.panelMode === this.PanelModeEnum.lock) {
           return this.$t('Common.AllClear');
         } else {
