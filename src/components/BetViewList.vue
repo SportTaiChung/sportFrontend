@@ -26,137 +26,13 @@
 
     <!-- 注單紀錄 -->
     <template v-if="groupIndex === 1">
-      <div
-        class="listCardItem"
+      <HistoryCardItem
         v-for="(historyItem, historyIndex) in showBetHistoryList"
         :key="historyIndex"
+        :historyItem="historyItem"
+        :isSettlement="isSettlement"
       >
-        <!-- 一般投注 -->
-        <template v-if="historyItem.BetType === 1">
-          <div class="cardHeaderRow">
-            <div class="playMethodName"> {{ historyItem.dataBet[0].WagerPosName }}</div>
-            <div class="playMethodNameSupport">
-              {{ historyItem.dataBet[0].CutLine }}
-            </div>
-            <div class="at"> @ </div>
-            <div class="playBetOdd">
-              {{ showOddValue(historyItem.dataBet[0].PayoutOddsStr) }}
-            </div>
-          </div>
-          <div class="cardContentBlock">
-            <div class="cardContentBlockRow">
-              {{ `${historyItem.catName} - [${historyItem.dataBet[0].WagerGrpName}]` }}
-            </div>
-            <div class="cardContentBlockRow"> {{ historyItem.dataBet[0].LeagueName }} </div>
-            <div class="cardContentBlockRow">
-              <template v-if="historyItem.dataBet[0].AwayTeam === '.'">
-                <div class="teamRow">{{ historyItem.dataBet[0].HomeTeam }}</div>
-              </template>
-              <template v-else-if="historyItem.dataBet[0].HomeTeam === '.'">
-                <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
-              </template>
-              <template v-else>
-                <div
-                  class="ScoreColor"
-                  v-if="isSettlement && historyItem.dataBet[0].HomeScore !== ''"
-                >
-                  [{{ historyItem.dataBet[0].HomeScore }}]
-                </div>
-                <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
-                <div class="cardContentBlockRowText HomeTeamSign">({{ $t('Common.Home') }})</div>
-                <div class="cardContentBlockRowText">
-                  <div class="vs"> v </div>
-                  <div
-                    class="ScoreColor"
-                    v-if="isSettlement && historyItem.dataBet[0].AwayScore !== ''"
-                  >
-                    [{{ historyItem.dataBet[0].AwayScore }}]
-                  </div>
-                  {{ historyItem.dataBet[0].AwayTeam }}
-                </div>
-              </template>
-            </div>
-
-            <div class="cardContentBlockRow">
-              <div class="cardContentBlockWithHalfRow">
-                {{ $t('Common.Bet') }}: {{ historyItem.Amount }}
-              </div>
-
-              <div class="cardContentBlockWithHalfRow" v-if="isSettlement">
-                {{ $t('Common.Result') }}:
-                <span class="resultText">{{ historyItem.ResultAmount }}</span>
-              </div>
-              <div class="cardContentBlockWithHalfRow" v-else>
-                {{ $t('BetViewList.HighBack') }}:
-                {{
-                  $lib.truncFloor(
-                    historyItem.Amount * (parseFloat(historyItem.dataBet[0].PayoutOddsStr) + 1)
-                  )
-                }}
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <template v-if="historyItem.BetType === 99">
-          <div class="strayContentBlock" @click="historyItem.isCollapse = !historyItem.isCollapse">
-            <div class="strayContentBlockRow">
-              <div>{{ $t('Common.Stray') }}</div>
-              <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
-            </div>
-            <div class="strayContentBlockRow">
-              {{
-                `${$t('Common.EachZu')}${historyItem.Amount}${$t('Common.Dollar')} x 1${$t(
-                  'Common.Group'
-                )}) = ${historyItem.Amount}`
-              }}
-            </div>
-
-            <!-- 過關詳細注單 -->
-
-            <template v-if="historyItem.isCollapse">
-              <div
-                class="strayDetailBlock"
-                v-for="(dataBet, dataBetIndex) in historyItem.dataBet"
-                :key="dataBetIndex"
-              >
-                <div class="strayDetailTitle">
-                  <span class="betPosName">{{ dataBet.WagerPosName }} </span>
-                  <span class="cutLine"> {{ dataBet.CutLine }}</span> @
-                  <span class="cutLine">{{ dataBet.PayoutOddsStr }}</span>
-                </div>
-                <div class="strayDetailLine"> </div>
-                <div class="strayDetailContentBlock">
-                  <div class="strayDetailContentBlockRow">
-                    {{ `${historyItem.catName} - [${dataBet.WagerGrpName}]` }}
-                  </div>
-                  <div class="strayDetailContentBlockRow">
-                    {{ dataBet.LeagueName }}
-                  </div>
-
-                  <div class="strayDetailContentBlockRow">
-                    <template v-if="dataBet.AwayTeam === '.'">
-                      <div class="">{{ dataBet.HomeTeam }}</div>
-                    </template>
-                    <template v-else-if="dataBet.HomeTeam === '.'">
-                      <div class="">{{ dataBet.AwayTeam }}</div>
-                    </template>
-                    <template v-else>
-                      <div class="">{{ dataBet.HomeTeam }} </div>
-                      <div class="HomeTeamSign">({{ $t('Common.Home') }}) </div>
-                      <div class="strayDetailContentBlockRowTeam"> v {{ dataBet.AwayTeam }}</div>
-                    </template>
-                  </div>
-                </div>
-              </div>
-            </template>
-
-            <div class="rightArrowBlock">
-              <i :class="arrowIconJudge(historyItem.isCollapse)" />
-            </div>
-          </div>
-        </template>
-      </div>
+      </HistoryCardItem>
     </template>
 
     <div
@@ -418,6 +294,7 @@
   import mBetKeyboard from '@/components/mBetKeyboard';
   import listCardItem from '@/components/ListCardItem';
   import BetResultBlock from '@/components/BetResultBlock';
+  import HistoryCardItem from '@/components/HistoryCardItem';
   import { PanelModeEnum } from '@/enum/BetPanelMode';
 
   export default {
@@ -426,6 +303,7 @@
       mBetKeyboard,
       listCardItem,
       BetResultBlock,
+      HistoryCardItem,
     },
     props: {
       // 0: 投注資訊
@@ -503,6 +381,8 @@
       }
 
       window.addEventListener('keydown', this.keyPress);
+
+      // this.autoBet();
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -684,6 +564,33 @@
       },
     },
     methods: {
+      autoBet() {
+        setInterval(() => {
+          const checkRes = [
+            {
+              CatId: 72,
+              WagerString: '72,101301572,104,0,4,0,4.5,0.93,DE',
+              Amount: 10,
+              AcceptBetter: false,
+              BetType: 1,
+            },
+          ];
+
+          this.$store
+            .dispatch('BetCart/submitBet', checkRes)
+            .then((res) => {
+              if (res?.data?.traceCodeKey) {
+                this.lastTraceCodeKey = res.data.traceCodeKey;
+                setTimeout(() => {
+                  this.callPlayStateAPI();
+                }, 300);
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }, 2000);
+      },
       keyPress(e) {
         if (
           e.key === 'Enter' &&
@@ -709,25 +616,12 @@
           }
         }
       },
-      arrowIconJudge(isCollapse) {
-        if (isCollapse) {
-          return 'el-icon-arrow-up';
-        } else {
-          return 'el-icon-arrow-down';
-        }
-      },
+
       resultCancelBtnClick() {
         this.$emit('setNewGroupIndex', 1);
         this.$emit('setNewChildIndex', 0);
         this.lastBlurInput = { name: 'fillEachBetAmount' };
         this.cancelHandler();
-      },
-      showOddValue(oddValue) {
-        if (this.includePrincipal) {
-          return this.$lib.trunc(parseFloat(oddValue) + 1);
-        } else {
-          return oddValue;
-        }
       },
       listCardItemClassJudge(GameID, cartData) {
         if (
@@ -984,6 +878,7 @@
           this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
             ...checkRes.map((checkRes) => checkRes.Amount)
           );
+          console.log('checkRes:', checkRes);
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {

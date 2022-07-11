@@ -70,7 +70,7 @@
             <td class="date"> {{ it.catName }} </td>
             <td> {{ it.Amount }} </td>
             <td class="result">
-              <el-link type="primary" @click="goFinalDetails()">
+              <el-link type="primary" @click="goFinalDetails(it)">
                 {{ it.ResultAmount }}
               </el-link>
             </td>
@@ -86,14 +86,24 @@
 
     <!-- 詳細注單內容 -->
     <div v-show="page === 2">
-      <p align="center">...</p>
+      <HistoryCardItem
+        v-for="(historyItem, historyIndex) in betHistoryList"
+        :key="historyIndex"
+        :historyItem="historyItem"
+        :isSettlement="true"
+      >
+      </HistoryCardItem>
     </div>
   </div>
 </template>
 
 <script>
+  import HistoryCardItem from '@/components/HistoryCardItem';
   export default {
     name: 'mBetRecordHistory',
+    components: {
+      HistoryCardItem,
+    },
     data() {
       return {
         /* 
@@ -106,6 +116,7 @@
         betHistoryData: [],
         weekData: [],
         todayDetails: [],
+        betHistoryList: [],
         currentDateStr: '',
       };
     },
@@ -220,6 +231,7 @@
     },
     methods: {
       getBetHistory(type = false, starttime, endtime) {
+        console.log('getBetHistory');
         this.$store.commit('SetLoading', true);
         let postData = {};
         if (type) {
@@ -263,7 +275,9 @@
         this.getBetHistory(true, time + ' 00:00:00', time + ' 23:59:59');
       },
       // 前往 詳細注單內容
-      goFinalDetails() {
+      goFinalDetails(historyItem) {
+        console.log('historyItem:', historyItem);
+        this.betHistoryList = [historyItem];
         this.page = 2;
       },
       goBackPage() {
