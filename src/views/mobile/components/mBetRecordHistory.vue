@@ -3,13 +3,13 @@
     <!-- 近2週總覽 -->
     <div v-show="page === 0">
       <table class="historyTable">
-        <tbody>
+        <thead>
           <tr>
             <th class="date"> {{ $t('GameDate') }} </th>
             <th> {{ $t('HistoryRecord.BetAmount') }} </th>
             <th class="result"> {{ $t('Common.Result') }} </th>
           </tr>
-        </tbody>
+        </thead>
       </table>
 
       <div class="date-group" v-for="(week, index) in weekDataFilter" :key="index">
@@ -39,16 +39,14 @@
               <td> {{ item.amount }} </td>
 
               <!-- 結果 -->
-              <td class="result">
-                <template v-if="item.week !== 128">
-                  <el-link type="primary" @click="goThisWeek(item.accdate)">
-                    {{ item.ResultAmount }}
-                  </el-link>
-                </template>
-                <template v-else>
-                  {{ item.ResultAmount }}
-                </template>
-              </td>
+              <template v-if="item.week !== 128">
+                <td class="result" @click="goDateDetails(item.accdate)">
+                  <el-link type="primary"> {{ item.ResultAmount }} </el-link>
+                </td>
+              </template>
+              <template v-else>
+                <td class="result"> {{ item.ResultAmount }} </td>
+              </template>
             </tr>
           </tbody>
         </table>
@@ -66,26 +64,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(it, index) in getTodayDetails[0].data" :key="index">
+          <tr v-for="(it, index) in todayDetailsReduce" :key="index">
             <td class="date"> {{ it.catName }} </td>
-            <td> {{ it.Amount }} </td>
-            <td class="result">
-              <el-link type="primary" @click="goFinalDetails(it)">
-                {{ it.ResultAmount }}
-              </el-link>
+            <td> {{ it.totalAmount }} </td>
+            <td class="result" @click="goFinalDetails(it.data)">
+              <el-link type="primary"> {{ it.totalResultAmount }} </el-link>
             </td>
           </tr>
           <tr>
             <td class="date"> {{ $t('Common.Total') }} </td>
-            <td> {{ getTotal.Amounts }} </td>
-            <td class="result"> {{ getTotal.ResultAmounts }} </td>
+            <td> {{ getTotal.totalAmount }} </td>
+            <td class="result"> {{ getTotal.totalResultAmount }} </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- 詳細注單內容 -->
-    <div v-show="page === 2">
+    <div v-show="page === 2" style="padding: 10px">
       <HistoryCardItem
         v-for="(historyItem, historyIndex) in betHistoryList"
         :key="historyIndex"
@@ -106,10 +102,10 @@
     },
     data() {
       return {
-        /* 
-        0: 近2週總覽, 
-        1: 當日詳細, 
-        2: 詳細注單內容 
+        /*
+        0: 近2週總覽,
+        1: 當日詳細,
+        2: 詳細注單內容
         */
         page: 0,
         openFlag: 0, // 0: 本週, 1: 上週
@@ -133,6 +129,7 @@
         }
         return [thisWeek, lastWeek];
       },
+
       getTodayDetails() {
         var map = {};
         var dest = [];
@@ -218,15 +215,38 @@
         });
         return dest;
       },
+      todayDetailsReduce() {
+        const dataArr = this.getTodayDetails[0].data;
+        if (dataArr) {
+          const cats = {};
+          dataArr.forEach((it) => {
+            if (!cats[it.catName]) {
+              cats[it.catName] = [];
+            } else {
+              cats[it.catName].push(it);
+            }
+          });
+          return Object.keys(cats).map((catName, i) => {
+            const data = cats[catName];
+            return {
+              catName,
+              totalAmount: data.reduce((sum, it) => (sum += it.Amount), 0),
+              totalResultAmount: data.reduce((sum, it) => (sum += it.ResultAmount), 0),
+              data,
+            };
+          });
+        }
+        return [];
+      },
       getTotal() {
-        const total = { Amounts: 0, ResultAmounts: 0, canwins: 0 };
-
-        this.getTodayDetails.forEach((item) => {
-          total.Amounts += item.Amounts;
-          total.ResultAmounts += item.ResultAmounts;
-          total.canwins += item.canwins;
-        });
-        return total;
+        return this.todayDetailsReduce.reduce(
+          (acc, item) => {
+            acc.totalAmount += item.totalAmount;
+            acc.totalResultAmount += item.totalResultAmount;
+            return acc;
+          },
+          { totalAmount: 0, totalResultAmount: 0 }
+        );
       },
     },
     methods: {
@@ -269,15 +289,15 @@
           });
       },
       // 前往 當日詳細
-      goThisWeek(time) {
+      goDateDetails(time) {
         this.page = 1;
         this.currentDateStr = time.substr(5);
         this.getBetHistory(true, time + ' 00:00:00', time + ' 23:59:59');
       },
       // 前往 詳細注單內容
-      goFinalDetails(historyItem) {
-        console.log('historyItem:', historyItem);
-        this.betHistoryList = [historyItem];
+      goFinalDetails(historyItems) {
+        console.log('historyItem:', historyItems);
+        this.betHistoryList = historyItems;
         this.page = 2;
       },
       goBackPage() {
@@ -315,6 +335,12 @@
         display: table;
         width: 100%;
         table-layout: fixed;
+      }
+
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
       }
 
       th {
