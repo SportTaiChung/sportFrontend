@@ -65,8 +65,8 @@
           <input
             ref="BetAmountInput"
             class="input"
-            v-model="cartData.betAmount"
             type="number"
+            v-model="cartData.betAmount"
             :max="cartData.BetMax"
             :min="cartData.BetMin"
             :placeholder="
@@ -74,18 +74,22 @@
                 ? cartData.BetMin + '-' + cartData.BetMax
                 : ''
             "
-            @input="inputRowItemChangeHandler(cartData)"
+            :readonly="isMobileMode"
             @click="onCardInputClick"
+            @focus="onInputFocus()"
             @blur="betAmountBlur(cartData.GameID)"
+            @input="inputRowItemChangeHandler(cartData)"
           />
           <input
             class="input"
+            type="number"
             v-model="cartData.winAmount"
             :placeholder="$t('Common.CanWinMoney')"
-            type="number"
-            @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
+            :readonly="isMobileMode"
             @click="onCardInputClick"
+            @focus="onInputFocus()"
             @blur="winAmountBlur(cartData.GameID)"
+            @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
           />
           <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')">
             {{ $t('Common.SubmitBet') }}
@@ -234,6 +238,12 @@
           return this.$lib.trunc(parseFloat(oddValue) + 1);
         } else {
           return oddValue;
+        }
+      },
+      onInputFocus() {
+        if (this.isMobileMode) {
+          // 強制不調用手機虛擬鍵盤
+          document.activeElement.blur();
         }
       },
     },

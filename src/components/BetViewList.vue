@@ -55,6 +55,8 @@
           ref="fillEachBetAmount"
           v-model="fillEachBetAmount"
           type="number"
+          :readonly="isMobileMode"
+          @focus="onInputFocus()"
           @input="fillEachBetAmountHandler"
           @click="
             isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
@@ -71,6 +73,8 @@
         <input
           v-model="fillEachWinAmount"
           type="number"
+          :readonly="isMobileMode"
+          @focus="onInputFocus()"
           @input="fillEachWinAmountHandler"
           @click="
             isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
@@ -178,6 +182,8 @@
           v-model="strayBetAmount"
           type="number"
           read="true"
+          :readonly="isMobileMode"
+          @focus="onInputFocus()"
           @input="strayBetAmountInputChangeHandler"
           @click="isShowStrayKB = !isShowStrayKB"
           @blur="strayBetBlurHandler"
@@ -1101,6 +1107,12 @@
       goPreviousChipIndex() {
         const min = 0;
         this.chipPageIndex -= this.chipPageIndex <= min ? 0 : 1;
+      },
+      onInputFocus() {
+        if (this.isMobileMode) {
+          // 強制不調用手機虛擬鍵盤
+          document.activeElement.blur();
+        }
       },
     },
   };
