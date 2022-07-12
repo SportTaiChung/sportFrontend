@@ -218,15 +218,12 @@
       todayDetailsReduce() {
         const dataArr = this.getTodayDetails[0].data;
         if (dataArr) {
-          const cats = {};
-          dataArr.forEach((it) => {
-            if (!cats[it.catName]) {
-              cats[it.catName] = [];
-            } else {
-              cats[it.catName].push(it);
-            }
-          });
-          return Object.keys(cats).map((catName, i) => {
+          const cats = dataArr.reduce((acc, it) => {
+            if (!acc[it.catName]) acc[it.catName] = [];
+            acc[it.catName].push(it);
+            return acc;
+          }, {});
+          return Object.keys(cats).map((catName) => {
             const data = cats[catName];
             return {
               catName,
