@@ -22,7 +22,7 @@
             <img class="icon" src="@/assets/img/mobile/icon_score.svg" />
             <div class="text"> {{ $t('GamesHeader.LiveScore') }} </div>
           </li>
-          <li class="feature-item" @click="$emit('openStrayCount')">
+          <li class="feature-item" @click="goStrayCounterPage()">
             <img class="icon" src="@/assets/img/mobile/icon_count.svg" />
             <div class="text"> {{ $t('GamesBetInfo.StrayCount') }} </div>
           </li>
@@ -140,6 +140,10 @@
       },
       goAnnouncementPage() {
         this.$emit('goPage', PageEnum.announcement);
+        this.close();
+      },
+      goStrayCounterPage() {
+        this.$emit('goPage', PageEnum.strayCounter);
         this.close();
       },
       jumpLink(linkKey) {

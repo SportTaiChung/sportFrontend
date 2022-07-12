@@ -124,7 +124,7 @@
 
               <!-- 小圓點 滾動指示 -->
               <div class="dot-wrap" v-show="dotStatus.visible">
-                <div class="dot left" :class="dotStatus.isScrollToTheEnd ? '' : 'active'"></div>
+                <div class="dot left" :class="!dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
                 <div class="dot right" :class="dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
               </div>
             </tr>
@@ -225,9 +225,10 @@
         .dot-wrap {
           position: absolute;
           right: -80%;
-          bottom: 3px;
+          // bottom: 3px; // https://github.com/w3c/csswg-drafts/issues/1899
           z-index: 9;
           display: flex;
+          transform: translateY(-8px);
 
           .dot {
             width: 5px;

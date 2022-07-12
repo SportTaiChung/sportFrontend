@@ -11,7 +11,7 @@
       speed: {
         type: Number,
         default() {
-          return 0.8;
+          return 1.2;
         },
       },
     },
@@ -27,22 +27,33 @@
       };
     },
     mounted() {
+      const maxFPS = 60;
+      const fpsInterval = 1000 / maxFPS;
+      let elapsed = 0;
+      let then = Date.now();
       const updateFunc = (timestamp) => {
-        if (this.isPlaying) {
-          const { container, content } = this.$refs;
-          this.totalX = container.clientWidth + content.clientWidth;
-          this.offsetX -= this.speed * this.speedFactor;
-          if (this.offsetX < -this.totalX) {
-            this.offsetX = 0;
+        this.raf = requestAnimationFrame(updateFunc);
 
-            this.stackText[0].shift();
-            if (this.stackText[0].length === 0) {
-              this.stackText.shift();
+        const now = Date.now();
+        elapsed = now - then;
+        if (elapsed > fpsInterval) {
+          then = now - (elapsed % fpsInterval);
+
+          if (this.isPlaying) {
+            const { container, content } = this.$refs;
+            this.totalX = container.clientWidth + content.clientWidth;
+            this.offsetX -= this.speed * this.speedFactor;
+            if (this.offsetX < -this.totalX) {
+              this.offsetX = 0;
+
+              this.stackText[0].shift();
+              if (this.stackText[0].length === 0) {
+                this.stackText.shift();
+              }
+              this.updatePlayMarquee();
             }
-            this.updatePlayMarquee();
           }
         }
-        this.raf = requestAnimationFrame(updateFunc);
       };
       requestAnimationFrame(updateFunc);
     },

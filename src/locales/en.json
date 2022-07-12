@@ -171,7 +171,8 @@
     "BetFormula": "X (1 point hole % number X odds) X (1 point hole % number X odds) ... -bet amount",
     "ClearZero": "clear",
     "Count": "calculate",
-    "PlzInputBetAmount": "Please enter the bet amount"
+    "PlzInputBetAmount": "Please enter the bet amount",
+    "StrayCountWay": "pass calculation method"
   },
   "StrayCountDialog": {
     "MiddleInput": "In the middle hole, you need to enter the sub-disk by yourself",

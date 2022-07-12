@@ -15,14 +15,14 @@ const defaultSettings = Object.freeze({
   // 默認金額
   defaultAmount: {
     // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
-    type: 0,
-    amount: 0,
+    type: 2,
+    amount: 100,
   },
   // 默認過關投注
   defaultStrayAmount: {
     // type: 0: 關閉 | 1: 最後投注, 2: 自訂金額
-    type: 0,
-    amount: 0,
+    type: 2,
+    amount: 100,
   },
   // 偏好籌碼 (最多6個)
   preferChips: [1, 5, 10, 500, 1000, 2000],

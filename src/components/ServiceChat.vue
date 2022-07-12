@@ -385,8 +385,8 @@
                 }
                 .msg {
                   color: #444;
-                  padding: 0.5rem 1.5rem;
-                  line-height: 26px;
+                  padding: 0.8rem;
+                  line-height: normal;
                   font-size: 16px;
                   min-height: 3rem;
                   border-radius: 7px;
@@ -394,6 +394,8 @@
                   position: relative;
                   background: #efefef;
                   align-self: flex-end;
+                  display: flex;
+                  align-items: center;
 
                   &::after {
                     position: absolute;

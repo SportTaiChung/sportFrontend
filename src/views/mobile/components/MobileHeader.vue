@@ -101,6 +101,9 @@
           case PageEnum.liveScore: {
             return this.$t('GamesHeader.LiveScore');
           }
+          case PageEnum.strayCounter: {
+            return this.$t('GamesBetInfo.StrayCount');
+          }
           default:
             return '';
         }
@@ -137,7 +140,7 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #8fd1bb;
     .left {
       display: flex;
       flex-flow: row nowrap;

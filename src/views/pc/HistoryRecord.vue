@@ -19,15 +19,15 @@
         <el-button type="primary" size="mini" @click="update">{{ $t('Common.Update') }}</el-button>
       </div>
     </div>
-    <div class="Record_main">
+    <div class="Record_main" ref="Record_main">
       <div class="Record_mainContainer">
+        <!-- 未結算注單 -->
         <template v-if="active === 0">
           <table border="0" cellspacing="0" cellpadding="0">
             <tr>
               <th width="200">{{ $t('HistoryRecord.BetMessage') }}</th>
               <th>{{ $t('Common.BetContent') }}</th>
               <th width="150">{{ $t('HistoryRecord.BetAmount') }}</th>
-              <th width="150">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
               <th width="150">{{ $t('Common.CanWin') }}</th>
             </tr>
             <tr v-if="getBetHistoryData.length === 0">
@@ -35,7 +35,7 @@
                 <div class="NoData">尚無資料</div>
               </td>
             </tr>
-            <tr class="rt_data" v-for="(item, i) in getBetHistoryData" :key="i">
+            <tr class="rt_data" v-for="(item, i) in getBetHistoryDataWithPageData" :key="i">
               <td class="rt_info">
                 <ul>
                   <li>
@@ -119,7 +119,6 @@
                 </div>
               </td>
               <td class="rt_betval">{{ item.Amount }}</td>
-              <td class="rt_betval">{{ item.AfterAmount }}</td>
               <td class="rt_betval">
                 {{ item.ToWin }}
               </td>
@@ -127,19 +126,30 @@
             <tr class="rt_foot">
               <td colspan="2">{{ $t('Common.Total') }}</td>
               <td class="betSumTotal">{{ totalAmount }}</td>
-              <td></td>
               <td>{{ totalWinAmount }}</td>
             </tr>
           </table>
+
+          <div class="footerPageBlock">
+            <el-pagination
+              class
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageData.currentPage"
+              :page-sizes="[100, 200, 300, 400]"
+              :page-size="pageData.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="getBetHistoryData.length"
+            >
+            </el-pagination>
+          </div>
         </template>
-        <!-- 未結算注單 -->
 
         <!-- 已結算注單 -->
         <table v-show="active === 1" border="0" cellspacing="0" cellpadding="0" class="weektable">
           <tr>
             <th>{{ $t('GameDate') }}</th>
             <th>{{ $t('HistoryRecord.BetAmount') }}</th>
-            <th>{{ $t('Common.ReturnWater') }}</th>
             <th>{{ $t('Common.Result') }}</th>
           </tr>
           <tr
@@ -149,7 +159,6 @@
           >
             <td>{{ item.accdate.substr(5) }} {{ item.weekLang }}</td>
             <td>{{ item.amount }}</td>
-            <td>{{ item.RetAmt }}</td>
             <td v-if="item.weekLang.indexOf($t('Common.Total')) > 0">{{ item.ResultAmount }}</td>
             <td v-else>
               <el-link type="primary" @click="goThisWeek(item.accdate)">{{
@@ -166,9 +175,7 @@
               <th width="185">{{ $t('HistoryRecord.BetMessage') }}</th>
               <th width="400">{{ $t('Common.BetContent') }}</th>
               <th width="100">{{ $t('HistoryRecord.BetAmount') }}</th>
-              <th width="130">{{ $t('HistoryRecord.BetRemainAmount') }}</th>
               <th width="100">{{ $t('Common.CanWin') }}</th>
-              <th width="100">{{ $t('Common.ReturnWater') }}</th>
               <th width="100">{{ $t('Common.Result') }}</th>
             </tr>
           </table>
@@ -182,9 +189,7 @@
                   <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template>
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
-                <td width="130">{{ item.AfterAmounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
-                <td width="100">{{ item.RetAmts }}</td>
                 <td width="100">{{ item.ResultAmounts }}</td>
               </tr>
             </table>
@@ -282,14 +287,12 @@
                   </ul>
                 </td>
                 <td width="100" class="rt_betval">{{ itemdata.Amount }}</td>
-                <td width="130" class="rt_betval">{{ itemdata.AfterAmount }}</td>
                 <td width="100" class="rt_betval" v-if="itemdata.BetType === 1">
                   {{ Math.floor(itemdata.Amount * itemdata.dataBet[0].PayoutOddsStr) }}
                 </td>
                 <td width="100" class="rt_betval" v-else>
                   {{ itemdata.canwin }}
                 </td>
-                <td width="100" class="rt_betval">{{ itemdata.RetAmt }}</td>
                 <td width="100" class="rt_betval">{{ itemdata.ResultAmount }}</td>
               </tr>
             </table>
@@ -298,9 +301,7 @@
             <tr class="rt_foot">
               <td width="585">{{ $t('Common.Total') }}</td>
               <td width="100" class="betSumTotal">{{ gettotal.Amounts }}</td>
-              <td width="130">{{ gettotal.AfterAmounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
-              <td width="100">{{ gettotal.RetAmts }}</td>
               <td width="100">{{ gettotal.ResultAmounts }}</td>
             </tr>
           </table>
@@ -319,10 +320,12 @@
         betHistoryData: [],
         weekData: [],
         todayDetails: [],
+        pageData: {
+          currentPage: 1,
+          pageSize: 100,
+        },
       };
     },
-    filters: {},
-
     computed: {
       totalAmount() {
         let total = 0;
@@ -361,6 +364,17 @@
           }
         });
         return this.betHistoryData;
+      },
+      getBetHistoryDataWithPageData() {
+        return this.getBetHistoryData.filter((it, index) => {
+          const minIndex = (this.pageData.currentPage - 1) * this.pageData.pageSize;
+          const maxIndex = this.pageData.currentPage * this.pageData.pageSize;
+          if (index >= minIndex && index <= maxIndex) {
+            return true;
+          } else {
+            return false;
+          }
+        });
       },
       gettodayDetails() {
         var map = {};
@@ -401,8 +415,6 @@
         dest.push(BetTypemap);
         dest.forEach((item) => {
           let Amounts = 0;
-          let AfterAmounts = 0;
-          let RetAmts = 0;
           let ResultAmounts = 0;
           let canwins = 0;
           item.data.forEach((itemdata) => {
@@ -440,13 +452,9 @@
             }
 
             Amounts += itemdata.Amount;
-            AfterAmounts += itemdata.AfterAmount;
-            RetAmts = this.$lib.trunc(RetAmts + itemdata.RetAmt);
             ResultAmounts = this.$lib.trunc(ResultAmounts + itemdata.ResultAmount);
           });
           item.Amounts = Amounts;
-          item.AfterAmounts = AfterAmounts;
-          item.RetAmts = RetAmts;
           item.ResultAmounts = ResultAmounts;
           item.canwins = canwins;
           item.active = false;
@@ -454,12 +462,10 @@
         return dest;
       },
       gettotal() {
-        const total = { Amounts: 0, AfterAmounts: 0, RetAmts: 0, ResultAmounts: 0, canwins: 0 };
+        const total = { Amounts: 0, ResultAmounts: 0, canwins: 0 };
 
         this.gettodayDetails.forEach((item) => {
           total.Amounts += item.Amounts;
-          total.AfterAmounts += item.AfterAmounts;
-          total.RetAmts += item.RetAmts;
           total.ResultAmounts += item.ResultAmounts;
           total.canwins += item.canwins;
         });
@@ -467,6 +473,15 @@
       },
     },
     methods: {
+      handleSizeChange(val) {
+        this.pageData.pageSize = val;
+      },
+      handleCurrentChange(val) {
+        this.pageData.currentPage = val;
+        this.$nextTick(() => {
+          this.$refs.Record_main.scrollTop = 0;
+        });
+      },
       update() {
         if (this.active === 0) {
           this.getBetHistory(false);
@@ -596,6 +611,12 @@
       overflow: auto;
       .Record_mainContainer {
         height: fit-content;
+        .footerPageBlock {
+          display: flex;
+          justify-content: center;
+          padding: 15px 0;
+          background: #e5e5e5;
+        }
         .rt_info {
           color: #666;
         }

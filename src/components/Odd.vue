@@ -107,6 +107,7 @@
     position: relative;
     color: #3fa381;
     overflow: hidden;
+    font-weight: bold;
   }
   .biggerColor {
     color: red;

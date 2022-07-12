@@ -1,13 +1,15 @@
 <template>
   <div id="StrayCount">
-    <table>
+    <table class="sticky">
       <thead>
         <tr>
-          <td>{{ $t('StrayCount.StrayCount') }}</td>
-          <td>{{ $t('Common.Odd') }}</td>
-          <td>{{ $t('Common.SplitPen') }}</td>
+          <th>{{ $t('StrayCount.StrayCount') }}</th>
+          <th>{{ $t('Common.Odd') }}</th>
+          <th>{{ $t('Common.SplitPen') }}</th>
         </tr>
       </thead>
+    </table>
+    <table>
       <tbody>
         <tr v-for="(data, index) in countData" :key="index">
           <td class="showIndex">
@@ -29,83 +31,87 @@
               </div>
             </template>
           </td>
-          <td class="row">
-            <div class="firstText">{{ $t('Common.SplitPen') }}</div>
+          <td>
+            <div class="row">
+              <div class="firstText">{{ $t('Common.SplitPen') }}</div>
 
-            <el-select
-              v-model="data.type"
-              class="selectType"
-              :class="`selectType${data.type}`"
-              size="mini"
-              @change="selectChangeHandler(index)"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+              <el-select
+                v-model="data.type"
+                class="selectType"
+                :class="`selectType${data.type}`"
+                size="mini"
+                @change="selectChangeHandler(index)"
               >
-              </el-option>
-            </el-select>
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
 
-            <el-input
-              class="componentHeight percentInput"
-              v-model="data.percent"
-              type="number"
-              :class="data.errorType === 2 ? 'IsError' : ''"
-              :min="0"
-              :max="100"
-              :disabled="PercentDisable(data)"
-              @input="percentInputHandler(index, 'percent')"
-            ></el-input>
-            <div class="lastText">%</div>
+              <el-input
+                class="componentHeight percentInput"
+                v-model="data.percent"
+                type="number"
+                :class="data.errorType === 2 ? 'IsError' : ''"
+                :min="0"
+                :max="100"
+                :disabled="PercentDisable(data)"
+                @input="percentInputHandler(index, 'percent')"
+              ></el-input>
+              <div class="lastText">%</div>
+            </div>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <div class="resultBlock">
-      <div class="left">
-        <div class="titleText">{{ $t('Common.BetAmount') }}</div>
-        <el-input
-          class="resultInputBlock"
-          v-model="betAmount"
-          @input="betAmountInputHandler"
-          size="mini"
-        ></el-input>
+    <div class="footer">
+      <div class="resultBlock">
+        <div class="left">
+          <div class="titleText">{{ $t('Common.BetAmount') }}</div>
+          <el-input
+            class="resultInputBlock"
+            v-model="betAmount"
+            @input="betAmountInputHandler"
+            size="mini"
+          ></el-input>
+        </div>
+        <div class="right">
+          <div class="titleText">{{ $t('Common.CanWinMoney') }}</div>
+          <el-input
+            class="resultInputBlock resultWinInputBlock"
+            size="mini"
+            :disabled="true"
+            v-model="winAmount"
+          ></el-input>
+        </div>
       </div>
-      <div class="right">
-        <div class="titleText">{{ $t('Common.CanWinMoney') }}</div>
-        <el-input
-          class="resultInputBlock resultWinInputBlock"
-          size="mini"
-          :disabled="true"
-          v-model="winAmount"
-        ></el-input>
-      </div>
-    </div>
 
-    <div class="formulaBlock" v-if="formulaResult !== ''">
-      <div class="formulaTitle">
-        <span class="title"> {{ $t('StrayCount.CountProcess') }} </span>
-        <span class="help">
-          <i class="el-icon-question"></i>
-          <div class="formulaPromptBox">
-            {{ $t('StrayCount.StrayCountWay') }}：
-            <br />
-            {{ $t('Common.BetAmount') }} {{ $t('StrayCount.BetFormula') }}
-          </div>
-        </span>
+      <div class="formulaBlock" v-if="formulaResult !== ''">
+        <div class="formulaTitle">
+          <span class="title"> {{ $t('StrayCount.CountProcess') }} </span>
+          <span class="help">
+            <i class="el-icon-question"></i>
+            <div class="formulaPromptBox">
+              {{ $t('StrayCount.StrayCountWay') }}：
+              <br />
+              {{ $t('Common.BetAmount') }} {{ $t('StrayCount.BetFormula') }}
+            </div>
+          </span>
+        </div>
+        <div> {{ formulaResult }} </div>
       </div>
-      <div> {{ formulaResult }} </div>
-    </div>
 
-    <div class="optionBlock">
-      <div class="left">
-        <div class="optionBtn" @click="reset">{{ $t('StrayCount.ClearZero') }}</div>
-      </div>
-      <div class="right">
-        <div class="optionBtn countBtn" @click="countStart">{{ $t('StrayCount.Count') }}</div>
+      <div class="optionBlock">
+        <div class="left">
+          <div class="optionBtn" @click="reset">{{ $t('StrayCount.ClearZero') }}</div>
+        </div>
+        <div class="right">
+          <div class="optionBtn countBtn" @click="countStart">{{ $t('StrayCount.Count') }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -315,6 +321,7 @@
       height: 30px;
       input {
         height: 100%;
+        line-height: 1;
       }
     }
     .percentInput {
@@ -375,19 +382,17 @@
 <style lang="scss" scoped>
   #StrayCount {
     width: 100%;
+    background-color: #ccc;
+
     table {
-      width: 100%;
+      width: calc(100% - 16px);
       border-collapse: collapse;
       border-spacing: 0;
-      thead {
-        tr {
-          background-color: #d8d8d8;
-        }
-        height: 30px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 14px;
-      }
+      border-radius: 6px;
+      margin: 8px;
+      overflow: hidden;
+      background-color: #f0f0f0;
+
       tbody {
         tr {
           border-bottom: 1px solid #bbb;
@@ -410,9 +415,6 @@
       }
       .showIndex {
         text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
       .oddRow {
         position: relative;
@@ -425,19 +427,61 @@
       }
 
       .row {
-        padding: 10px;
+        padding: 10px 10px 10px 0;
         display: flex;
+        justify-content: center;
         align-items: center;
-        height: 60px;
+        height: 4.615rem;
         white-space: nowrap;
         .firstText {
-          margin-left: 15px;
+          margin-left: 10px;
         }
         .lastText {
           margin-left: 5px;
         }
       }
     }
+
+    table.sticky {
+      position: sticky;
+      top: 8px;
+      z-index: 5;
+      box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+
+      thead {
+        th {
+          position: relative;
+          height: 30px;
+          text-align: center;
+          font-weight: bold;
+          font-size: 14px;
+          &:first-child {
+            width: 60px;
+            &::after {
+              display: none;
+            }
+          }
+          &:nth-child(2) {
+            width: 109px;
+          }
+          &:nth-child(3) {
+            width: 221px;
+          }
+          &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            bottom: 0;
+            width: 1px;
+            height: 70%;
+            transform: translateY(-50%);
+            background-color: #c7c7c7;
+          }
+        }
+      }
+    }
+
     .resultBlock {
       display: flex;
       padding: 15px 10px;
@@ -556,6 +600,15 @@
           }
         }
       }
+    }
+
+    .footer {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #eee;
+      box-shadow: 0 -2px 6px rgb(0 0 0 / 10%);
     }
   }
 </style>
