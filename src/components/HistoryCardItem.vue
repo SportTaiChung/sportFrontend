@@ -65,7 +65,7 @@
     </template>
 
     <template v-if="historyItem.BetType === 99">
-      <div class="strayContentBlock" @click="historyItem.isCollapse = !historyItem.isCollapse">
+      <div class="strayContentBlock" @click="strayClick">
         <div class="strayContentBlockRow">
           <div>{{ $t('Common.Stray') }}</div>
           <div class="strayTitleInfoText">{{ historyItem.dataBet.length }}串1 x 1</div>
@@ -139,6 +139,10 @@
       },
     },
     methods: {
+      strayClick() {
+        this.historyItem.isCollapse = !this.historyItem.isCollapse;
+        this.$forceUpdate();
+      },
       showOddValue(oddValue) {
         if (this.includePrincipal) {
           return this.$lib.trunc(parseFloat(oddValue) + 1);
