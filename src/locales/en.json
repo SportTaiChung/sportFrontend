@@ -121,7 +121,9 @@
     "Visible": "show",
     "Week": "Week",
     "SingleOdd": "single bet",
-    "remark": "Note"
+    "remark": "Note",
+    "BetMinTip": "The bet amount is too low, the red box is changed to the minimum amount",
+    "BetMaxTip": "The bet amount is too high, the red box is changed to the maximum amount"
   },
   "GamesBetInfo": {
     "BetInfo": "Betting Information",

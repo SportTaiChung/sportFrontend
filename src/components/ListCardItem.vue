@@ -65,6 +65,7 @@
           <input
             ref="BetAmountInput"
             class="input"
+            :class="isShowMinText || isShowMaxText ? 'redInputOutLine' : ''"
             type="number"
             v-model="cartData.betAmount"
             :max="cartData.BetMax"
@@ -99,6 +100,13 @@
 
       <div class="cardContentBlockRow limitText" v-if="panelMode === PanelModeEnum.normal">
         {{ $t('ListCardItem.BetLimit') }} : {{ cartData.BetMax }}
+      </div>
+
+      <div class="cardContentBlockRow overText" v-if="isShowMinText">
+        {{ $t('Common.BetMinTip') }}
+      </div>
+      <div class="cardContentBlockRow overText" v-if="isShowMaxText">
+        {{ $t('Common.BetMaxTip') }}
       </div>
 
       <BetResultBlock v-if="childIndex === 0" :panelMode="panelMode" :cartData="cartData">
@@ -151,6 +159,14 @@
       },
       // 是否來自 mGamesBetInfoSingle 控制
       isControlByBetSingle: {
+        type: Boolean,
+        default: false,
+      },
+      isShowMinText: {
+        type: Boolean,
+        default: false,
+      },
+      isShowMaxText: {
         type: Boolean,
         default: false,
       },

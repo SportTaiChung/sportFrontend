@@ -66,6 +66,9 @@
           padding: 5px;
           border: 1px solid transparent;
         }
+        .redInputOutLine {
+          border: 1px solid red;
+        }
       }
       .lockRowInfo {
         display: flex;
@@ -120,6 +123,9 @@
     }
     .limitText {
       color: #006a8a;
+    }
+    .overText {
+      color: red;
     }
   }
   .strayContentBlock {

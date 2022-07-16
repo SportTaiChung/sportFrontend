@@ -13,6 +13,8 @@
           :currShowKeyboardIndex="currShowKeyboardIndex"
           :key="cartIndex"
           :isControlByBetSingle="isControlByBetSingle"
+          :isShowMinText="cartData.isShowMinText"
+          :isShowMaxText="cartData.isShowMaxText"
           @cancelSingleHandler="cancelSingleHandler"
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
           @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
@@ -724,9 +726,20 @@
           const displayData = this.cartDataToDisplayData(cartData);
           if (cartData.betAmount !== null) {
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
+            cartData.isShowMinText = false;
+            cartData.isShowMaxText = false;
+            if (cartData.betAmount < cartData.BetMin) {
+              cartData.betAmount = cartData.BetMin;
+              cartData.isShowMinText = true;
+            }
+            if (cartData.betAmount > 1000) {
+              cartData.betAmount = 1000;
+              cartData.isShowMaxText = true;
+            }
             cartData.winAmount = this.$lib.truncFloor(
               cartData.betAmount * this.$lib.trunc(parseFloat(displayData.showOdd))
             );
+
             newTotalBetAmount += cartData.betAmount;
             newTotalWinAmount += cartData.winAmount;
           }

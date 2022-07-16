@@ -192,6 +192,8 @@ export default {
         winAmount: null,
         betResult: null,
         betResultCount: 0,
+        isShowMinText: false,
+        isShowMaxText: false,
       };
       console.log('newBetData!!!:', betData.SetFlag, newBetData);
       newBetData.playData = oddDataToPlayData(betData.SetFlag, newBetData.WagerTypeID, newBetData);
