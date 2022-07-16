@@ -728,11 +728,11 @@
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
             cartData.isShowMinText = false;
             cartData.isShowMaxText = false;
-            if (cartData.betAmount < cartData.BetMin) {
+            if (cartData.betAmount < cartData.BetMin && cartData.BetMin !== null) {
               cartData.betAmount = cartData.BetMin;
               cartData.isShowMinText = true;
             }
-            if (cartData.betAmount > cartData.BetMax) {
+            if (cartData.betAmount > cartData.BetMax && cartData.BetMax !== null) {
               cartData.betAmount = cartData.BetMax;
               cartData.isShowMaxText = true;
             }
