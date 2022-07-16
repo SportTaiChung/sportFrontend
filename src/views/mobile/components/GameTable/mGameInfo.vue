@@ -224,7 +224,7 @@
         // 小圓點
         .dot-wrap {
           position: absolute;
-          right: -80%;
+          right: calc(-80% + 36px);
           // bottom: 3px; // https://github.com/w3c/csswg-drafts/issues/1899
           z-index: 9;
           display: flex;
