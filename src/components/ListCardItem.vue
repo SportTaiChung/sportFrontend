@@ -92,7 +92,11 @@
             @blur="winAmountBlur(cartData.GameID)"
             @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
           />
-          <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')">
+          <div
+            class="submitBtn"
+            v-if="isMobileMode && isControlByBetSingle"
+            @click="$emit('MobileListItemSubmitBet')"
+          >
             {{ $t('Common.SubmitBet') }}
           </div>
         </div>
