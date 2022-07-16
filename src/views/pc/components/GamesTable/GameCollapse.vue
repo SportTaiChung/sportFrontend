@@ -626,11 +626,13 @@
       },
       checkQuickBet(event) {
         if (this.isQuickBetEnable) {
-          const clickTarget = event.target.getBoundingClientRect();
-          this.$store.commit('BetCart/showQuickBetData', {
-            isShow: true,
-            x: clickTarget.left,
-            y: clickTarget.top,
+          this.$nextTick(() => {
+            const clickTarget = event.target.getBoundingClientRect();
+            this.$store.commit('BetCart/showQuickBetData', {
+              isShow: true,
+              x: clickTarget.left,
+              y: clickTarget.top,
+            });
           });
         }
       },

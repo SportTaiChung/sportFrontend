@@ -22,6 +22,8 @@ export default {
     strayOdd: null,
     panelMode: PanelModeEnum.normal,
     quickBetData,
+    // 投注Message,主要是給QuickBetPanel使用
+    lastFirstBetMessage: '',
   },
   getters: {
     showBetCartList(state) {
@@ -32,6 +34,9 @@ export default {
     },
   },
   mutations: {
+    setLastFirstBetMessage(state, val) {
+      state.lastFirstBetMessage = val;
+    },
     showQuickBetData(state, { isShow, x, y }) {
       state.quickBetData.isShow = isShow;
       state.quickBetData.x = x;
@@ -232,8 +237,11 @@ export default {
                   store.dispatch('playState', { traceCodeKey });
                 }, 600);
               }
-              store.dispatch('User/GetUserInfoCash');
+              rootStore.dispatch('User/GetUserInfoCash');
               store.commit('updateBetCartListBetResult', res.data);
+              if (res.data.length !== 0) {
+                store.commit('setLastFirstBetMessage', res.data[0]?.Message);
+              }
             }
             resolve(res);
           })
