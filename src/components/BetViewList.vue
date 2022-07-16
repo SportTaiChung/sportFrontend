@@ -732,8 +732,8 @@
               cartData.betAmount = cartData.BetMin;
               cartData.isShowMinText = true;
             }
-            if (cartData.betAmount > 1000) {
-              cartData.betAmount = 1000;
+            if (cartData.betAmount > cartData.BetMax) {
+              cartData.betAmount = cartData.BetMax;
               cartData.isShowMaxText = true;
             }
             cartData.winAmount = this.$lib.truncFloor(
@@ -1344,11 +1344,11 @@
 
           .chip {
             cursor: pointer;
-            flex: 0 0 57px;
+            flex: 0 0 50px;
             background-repeat: no-repeat;
             background-size: auto 100%;
-            width: 57px;
-            height: 37px;
+            width: 50px;
+            height: 50px;
             transition: transform ease 0.1s;
 
             &:hover {

@@ -584,39 +584,39 @@ export function getColorByCatId(catID) {
 
 export const chipsData = [
   {
-    value: 1,
+    value: 100,
     img: 'icon_chip_01.png',
   },
   {
-    value: 5,
+    value: 500,
     img: 'icon_chip_02.png',
   },
   {
-    value: 10,
+    value: 1000,
     img: 'icon_chip_03.png',
   },
   {
-    value: 100,
+    value: 2000,
     img: 'icon_chip_04.png',
   },
   {
-    value: 500,
+    value: 5000,
     img: 'icon_chip_05.png',
   },
   {
-    value: 1000,
+    value: 10000,
     img: 'icon_chip_06.png',
   },
   {
-    value: 2000,
+    value: 20000,
     img: 'icon_chip_07.png',
   },
   {
-    value: 5000,
+    value: 50000,
     img: 'icon_chip_08.png',
   },
   {
-    value: 10000,
+    value: 100000,
     img: 'icon_chip_09.png',
   },
 ];

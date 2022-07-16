@@ -426,6 +426,10 @@
             &.active {
               opacity: 1;
             }
+            img {
+              width: 60px;
+              height: 60px;
+            }
           }
         }
 
