@@ -117,7 +117,6 @@
           });
       },
       saveLeaguesSetting() {
-        console.log('saveLeaguesSetting');
         this.$store.commit(
           'Game/setSelectLeagueIDs',
           this.selectedLeagues.map((it) => it.LeagueID)

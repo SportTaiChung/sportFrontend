@@ -35,7 +35,6 @@
         PanelModeEnum,
       };
     },
-    created() {},
   };
 </script>
 

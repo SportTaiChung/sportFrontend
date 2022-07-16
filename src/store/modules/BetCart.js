@@ -230,6 +230,7 @@ export default {
                   store.dispatch('playState', { traceCodeKey });
                 }, 600);
               }
+              store.dispatch('User/GetUserInfoCash');
               store.commit('updateBetCartListBetResult', res.data);
             }
             resolve(res);
