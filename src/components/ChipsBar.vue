@@ -1,27 +1,44 @@
+<!-- 籌碼 bar 組件 -->
 <template>
-  <!-- 小籌碼 -->
   <div class="chipsBar">
     <i class="el-icon-arrow-left" @click="goPreviousChipIndex()"></i>
-    <div class="chips">
-      <div
+    <ul class="chips">
+      <li
         class="chip"
         v-for="(chip, index) in currentChips"
         :style="getChipImage(index)"
-        @click="onChipClick(index)"
+        @click="onChipClick(chip.value)"
         :key="index"
-      ></div>
-    </div>
+      ></li>
+    </ul>
     <i class="el-icon-arrow-right" @click="goNextChipIndex()"></i>
+
+    <!-- the max chip -->
+    <div class="chip max-chip" v-if="isShowMaxChip" @click="onChipClick(theMaxChipValue)">
+      {{ theMaxChipValue }}
+    </div>
   </div>
 </template>
 
 <script>
   export default {
     name: 'chipsBar',
+    props: {
+      // 是否顯示最大的籌碼
+      isShowMaxChip: {
+        type: Boolean,
+        default: false,
+      },
+      // 最大籌碼面額
+      theMaxChipValue: {
+        type: Number,
+        default: 0,
+      },
+    },
     data() {
       return {
+        // 當前頁 index
         chipPageIndex: 0,
-        chipsNumPerPage: 3, // 一次選染幾個chip
       };
     },
     computed: {
@@ -35,12 +52,16 @@
         }
         return this.$SportLib.chipsData;
       },
-      maxChipPage() {
+      // 一次選染幾個chip
+      chipsShowPerPage() {
+        return this.isShowMaxChip ? 3 : 4;
+      },
+      maxPages() {
         // 舊邏輯: 一次翻整頁
-        // return Math.ceil(this.chipsData.length / this.chipsNumPerPage);
+        // return Math.ceil(this.chipsData.length / this.chipsShowPerPage);
         // 新邏輯: 一次翻一個
-        if (this.chipsData.length - this.chipsNumPerPage > 0) {
-          return this.chipsData.length - this.chipsNumPerPage;
+        if (this.chipsData.length - this.chipsShowPerPage > 0) {
+          return this.chipsData.length - this.chipsShowPerPage;
         } else {
           return 0;
         }
@@ -49,23 +70,20 @@
       currentChips() {
         // 舊邏輯: 一次翻整頁
         // return this.chipsData.slice(
-        //   this.chipPageIndex * this.chipsNumPerPage,
-        //   this.chipPageIndex * this.chipsNumPerPage + 3
+        //   this.chipPageIndex * this.chipsShowPerPage,
+        //   this.chipPageIndex * this.chipsShowPerPage + 3
         // );
 
         // 新邏輯: 一次翻一個
-        return this.chipsData.slice(this.chipPageIndex, this.chipPageIndex + this.chipsNumPerPage);
+        return this.chipsData.slice(this.chipPageIndex, this.chipPageIndex + this.chipsShowPerPage);
       },
     },
     methods: {
-      onChipClick(index) {
-        const chip = this.currentChips[index];
-        if (!chip) return;
-        const value = chip.value > 0 ? chip.value : null;
-        this.$emit('onChipClick', value);
+      onChipClick(value) {
+        if (value) this.$emit('onChipClick', value);
       },
       goNextChipIndex() {
-        const max = this.maxChipPage;
+        const max = this.maxPages;
         this.chipPageIndex += this.chipPageIndex < max ? 1 : 0;
       },
       goPreviousChipIndex() {
@@ -121,22 +139,34 @@
       align-items: center;
       justify-content: space-evenly;
       overflow: hidden;
+    }
 
-      .chip {
-        cursor: pointer;
-        flex: 0 0 50px;
-        background-repeat: no-repeat;
-        background-size: auto 100%;
-        width: 50px;
-        height: 50px;
-        transition: transform ease 0.1s;
+    .chip {
+      cursor: pointer;
+      flex: 0 0 50px;
+      background-repeat: no-repeat;
+      background-size: auto 100%;
+      width: 50px;
+      height: 50px;
+      transition: transform ease 0.1s;
 
-        &:hover {
-          transform: translateY(-4px);
-        }
-        &:active {
-          transform: translateY(-4px) scale(1.05);
-        }
+      &:hover {
+        transform: translateY(-4px);
+      }
+      &:active {
+        transform: translateY(-4px) scale(1.05);
+      }
+
+      &.max-chip {
+        background-image: url('~@/assets/img/pc/chips/icon_chip_10.png');
+        margin: 0 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        line-height: normal;
+        font-size: 1.12rem;
+        font-weight: bold;
       }
     }
   }

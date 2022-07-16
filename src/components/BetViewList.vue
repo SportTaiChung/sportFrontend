@@ -96,6 +96,8 @@
       <!-- 小籌碼 -->
       <ChipsBar
         v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="false"
+        :theMaxChipValue="1000"
         @onChipClick="onChipClick"
       ></ChipsBar>
 
@@ -208,6 +210,8 @@
       <!-- 小籌碼 -->
       <ChipsBar
         v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="false"
+        :theMaxChipValue="1000"
         @onChipClick="onChipClick"
       ></ChipsBar>
 
