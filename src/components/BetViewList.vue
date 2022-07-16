@@ -39,7 +39,7 @@
 
     <div
       class="cardOptionBlock"
-      v-if="isMobileMode && isControlByBetSingle && panelMode !== PanelModeEnum.result"
+      v-if="isMobileMode && isControlByBetSingle && panelMode == PanelModeEnum.lock"
     >
       <div class="buttonRow">
         <div class="submitBtn" style="text-align: center" @click="submitHandler">
