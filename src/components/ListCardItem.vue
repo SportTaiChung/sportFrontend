@@ -293,12 +293,6 @@
         return this.$store.state.BetCart.isAddNewToChart;
       },
     },
-    watch: {
-      // 有新增投注到購物車事件
-      isAddNewToChart() {
-        console.log('!!!!:', this.$refs.BetAmountInput);
-      },
-    },
   };
 </script>
 

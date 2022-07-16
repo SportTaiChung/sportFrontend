@@ -185,6 +185,7 @@
           type="number"
           read="true"
           :readonly="isMobileMode"
+          :class="isShowMinText || isShowMaxText ? 'redErrorInput' : ''"
           @focus="onInputFocus()"
           @input="strayBetAmountInputChangeHandler"
           @click="isShowStrayKB = !isShowStrayKB"
@@ -204,6 +205,15 @@
         @Assign="keyBoardAssignEvent"
       ></mBetKeyboard>
 
+      <div class="strayLimitTipBlock">
+        <!-- 串關限紅提示 -->
+        <div class="limitTip" v-if="isShowMinText">
+          {{ $t('Common.BetMinTip') }}
+        </div>
+        <div class="limitTip" v-if="isShowMaxText">
+          {{ $t('Common.BetMaxTip') }}
+        </div>
+      </div>
       <!-- 小籌碼 -->
       <div class="betPlay_chip" v-if="!isMobileMode && panelMode === PanelModeEnum.normal">
         <i class="el-icon-arrow-left" @click="goPreviousChipIndex()"></i>
@@ -370,6 +380,9 @@
 
         isLockEnter: false,
         lockEvent: null,
+
+        isShowMinText: false,
+        isShowMaxText: false,
       };
     },
     mounted() {
@@ -717,6 +730,21 @@
         }
         if (this.strayBetAmount > this.UserCredit) {
           this.strayBetAmount = this.UserCredit;
+        }
+
+        if (this.showBetCartList.length !== 0) {
+          const BetMin = this.showBetCartList[0].BetMin;
+          const BetMax = this.showBetCartList[0].BetMax;
+          this.isShowMinText = false;
+          this.isShowMaxText = false;
+          if (this.strayBetAmount < BetMin && BetMin !== null) {
+            this.strayBetAmount = BetMin;
+            this.isShowMinText = true;
+          }
+          if (this.strayBetAmount > BetMax && BetMax !== null) {
+            this.strayBetAmount = BetMax;
+            this.isShowMaxText = true;
+          }
         }
       },
       reCalcBetChart() {
@@ -1232,6 +1260,9 @@
           border: 0px;
           padding: 0 5px;
         }
+        .redErrorInput {
+          border: 1px solid red !important;
+        }
         .betReadInput {
           width: 75%;
           height: 30px;
@@ -1307,6 +1338,12 @@
           margin-bottom: 5px;
         }
         .strayRowContent {
+        }
+      }
+      .strayLimitTipBlock {
+        margin: 7px 0;
+        .limitTip {
+          color: red;
         }
       }
       .betPlay_chip {
