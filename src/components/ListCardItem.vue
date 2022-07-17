@@ -77,7 +77,7 @@
             "
             :readonly="isMobileMode"
             @click="onCardInputClick"
-            @focus="onInputFocus()"
+            @focus="onInputFocus('betAmount')"
             @blur="betAmountBlur(cartData.GameID)"
             @input="inputRowItemChangeHandler(cartData)"
           />
@@ -88,7 +88,7 @@
             :placeholder="$t('Common.CanWinMoney')"
             :readonly="isMobileMode"
             @click="onCardInputClick"
-            @focus="onInputFocus()"
+            @focus="onInputFocus('winAmount')"
             @blur="winAmountBlur(cartData.GameID)"
             @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
           />
@@ -260,7 +260,12 @@
           return oddValue;
         }
       },
-      onInputFocus() {
+      onInputFocus(typeFrom) {
+        this.$emit('inputFocusEvent', {
+          from: typeFrom,
+          BetMax: this.showBetCartList[this.cartIndex].BetMax,
+        });
+
         if (this.isMobileMode) {
           // 強制不調用手機虛擬鍵盤
           document.activeElement.blur();

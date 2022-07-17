@@ -18,7 +18,8 @@
           @cancelSingleHandler="cancelSingleHandler"
           @inputRowItemChangeHandler="inputRowItemChangeHandler"
           @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
-          @lastBlurInputEvent="lastBlurInputEvent"
+          @inputFocusEvent="inputFocusEvent"
+          @lastBlurInputEvent="listCardItemLastBlurInputEvent"
           @Add="keyBoardAddEvent"
           @Assign="keyBoardAssignEvent"
           @MobileListItemSubmitBet="submitHandler"
@@ -96,8 +97,8 @@
       <!-- 小籌碼 -->
       <ChipsBar
         v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="false"
-        :theMaxChipValue="1000"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @onChipClick="onChipClick"
       ></ChipsBar>
 
@@ -210,8 +211,8 @@
       <!-- 小籌碼 -->
       <ChipsBar
         v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="false"
-        :theMaxChipValue="1000"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @onChipClick="onChipClick"
       ></ChipsBar>
 
@@ -366,8 +367,14 @@
         isLockEnter: false,
         lockEvent: null,
 
+        // 限紅提示
         isShowMinText: false,
         isShowMaxText: false,
+
+        // 最大籌碼按鈕
+        isShowMaxChip: false,
+        // 最大籌碼數字
+        theMaxChipValue: 1000,
       };
     },
     mounted() {
@@ -438,6 +445,7 @@
               this.lastBlurInput = { name: 'fillEachBetAmount' };
             } else {
               this.lastBlurInput = { name: 'strayBetAmount' };
+              this.isShowMaxChip = false;
             }
           }
         },
@@ -957,7 +965,15 @@
         this.lastBlurInput = { name: 'strayBetAmount' };
         this.reCalcStrayBetChart();
       },
-      lastBlurInputEvent(lastBlurInputData) {
+      inputFocusEvent({ from, BetMax }) {
+        if (from === 'betAmount') {
+          this.isShowMaxChip = true;
+          this.theMaxChipValue = BetMax;
+        } else {
+          this.isShowMaxChip = false;
+        }
+      },
+      listCardItemLastBlurInputEvent(lastBlurInputData) {
         this.lastBlurInput = lastBlurInputData;
       },
       onChipClick(value) {

@@ -165,7 +165,7 @@
         align-items: center;
         color: #fff;
         line-height: normal;
-        font-size: 1.12rem;
+        font-size: 1rem;
         font-weight: bold;
       }
     }
