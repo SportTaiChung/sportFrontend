@@ -15,7 +15,7 @@
 
     <!-- the max chip -->
     <div class="chip max-chip" v-if="isShowMaxChip" @click="onChipClick(theMaxChipValue)">
-      {{ theMaxChipValue }}
+      {{ $lib.trunc(theMaxChipValue / 1000) + 'K' }}
     </div>
   </div>
 </template>
@@ -165,7 +165,7 @@
         align-items: center;
         color: #fff;
         line-height: normal;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: bold;
       }
     }
