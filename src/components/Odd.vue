@@ -17,28 +17,41 @@
     },
     data() {
       return {
-        timeEvent: null,
+        AnimateEvent: null,
+        ColorEvent: null,
         // 0 無狀態
         // 1 變大
         // 2 變小
-        colorState: 0,
-        // 變色維持時間
-        COLOR_MAINTAIN_TIME: 3000,
-        OddList: {},
+        AnimateState: 0,
+        // 0 無狀態
+        // 1 變大
+        // 2 變小
+        ColorState: 0,
+        // 動畫變色維持時間
+        ANIMATE_MAINTAIN_TIME: 5000,
+        // 文字變色維持時間
+        COLOR_MAINTAIN_TIME: 8000,
       };
     },
     beforeDestroy() {
-      clearTimeout(this.timeEvent);
+      clearTimeout(this.AnimateEvent);
+      clearTimeout(this.ColorEvent);
     },
     computed: {
       OddCssJudge() {
-        if (this.colorState === 1) {
-          return 'biggerColor ani-value-up';
-        } else if (this.colorState === 2) {
-          return 'smallerColor ani-value-down';
-        } else {
-          return '';
+        let resStr = '';
+        if (this.ColorState === 1) {
+          resStr += 'biggerColor';
+        } else if (this.ColorState === 2) {
+          resStr += 'smallerColor';
         }
+
+        if (this.AnimateState === 1) {
+          resStr += ' ani-value-up';
+        } else if (this.AnimateState === 2) {
+          resStr += ' ani-value-down';
+        }
+        return resStr;
       },
       includePrincipal() {
         return this.$store.state.Setting.UserSetting.includePrincipal;
@@ -86,16 +99,21 @@
         floatNewValue = parseFloat(floatNewValue);
         floatOldValue = parseFloat(floatOldValue);
         if (floatNewValue > floatOldValue) {
-          this.colorState = 1;
+          this.ColorState = 1;
+          this.AnimateState = 1;
         } else if (floatNewValue < floatOldValue) {
-          this.colorState = 2;
+          this.ColorState = 2;
+          this.AnimateState = 2;
         }
         this.regEvent();
       },
       regEvent() {
-        clearTimeout(this.timeEvent);
-        this.timeEvent = setTimeout(() => {
-          this.colorState = 0;
+        clearTimeout(this.AnimateEvent);
+        this.AnimateEvent = setTimeout(() => {
+          this.AnimateState = 0;
+        }, this.ANIMATE_MAINTAIN_TIME);
+        this.ColorEvent = setTimeout(() => {
+          this.ColorState = 0;
         }, this.COLOR_MAINTAIN_TIME);
       },
     },
