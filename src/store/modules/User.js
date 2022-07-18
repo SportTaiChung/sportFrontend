@@ -13,10 +13,16 @@ export default {
     SetMBID(state, val) {
       state.MBID = val;
       localStorage.setItem('MBID', val);
+      if (val === '') {
+        localStorage.removeItem('MBID');
+      }
     },
     SetToken(state, val) {
       state.Token = val;
       localStorage.setItem('Token', val);
+      if (val === '') {
+        localStorage.removeItem('Token');
+      }
     },
     SetUserData(state, val) {
       state.UserData = val;
@@ -41,6 +47,7 @@ export default {
       // 登出handler
       store.commit('BetCart/clearCart', null, { root: true });
       store.commit('SetToken', '');
+      store.commit('SetMBID', '');
       window.router.replace({ name: 'Login' });
     },
     Logout(store) {
