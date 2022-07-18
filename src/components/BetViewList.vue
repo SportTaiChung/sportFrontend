@@ -811,8 +811,11 @@
           const WagerGrpID = cartData.WagerGrpID;
           const WagerPos = cartData.wagerPos;
           const HdpPos = cartData.HdpPos;
-          const CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
+          let CutLine = cartData.playData.playMethodData.betCutLineDealFunc(cartData);
           const OddValue = parseFloat(this.$SportLib.cartDataToDisplayData(cartData).showOdd);
+          if (CutLine === '') {
+            CutLine = 0;
+          }
           const WagerString = `${CatId},${GameID},${WagerTypeID},${WagerGrpID},${WagerPos},${HdpPos},${CutLine},${OddValue},DE`;
           // if (cartData.BetMax === null && cartData.BetMin === null && !this.isQuickBetEnable) {
           //   errorMessage = this.$t('BetViewList.NotGetBetInfo');
