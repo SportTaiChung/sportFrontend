@@ -1,5 +1,5 @@
 <template>
-  <div id="BetViewList" ref="BetViewList" v-loading="isLoading">
+  <div id="BetViewList" ref="BetViewList" v-loading="isLoading" v-show="!isQuickBetEnable">
     <!-- 購物車 -->
     <template v-if="groupIndex === 0">
       <template v-if="isShowChartList || isShowCharStrayList">

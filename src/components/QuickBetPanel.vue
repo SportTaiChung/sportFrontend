@@ -27,6 +27,10 @@
           {{ lastFirstBetMessage }}
         </div>
       </div>
+      <div class="optionRow">
+        <div v-if="showMinLimit" class="limitTipText"> {{ $t('Common.BetMinTip') }}</div>
+        <div v-if="showMaxLimit" class="limitTipText"> {{ $t('Common.BetMaxTip') }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +38,26 @@
 <script>
   export default {
     name: 'QuickBetPanel',
-    created() {},
+    data() {
+      return {
+        showMinLimit: false,
+        showMaxLimit: false,
+      };
+    },
+    created() {
+      console.log('test:', this.currentSelectBetInfo.BetMin, this.currentSelectBetInfo.BetMax);
+      if (this.currentSelectBetInfo) {
+        const betAmount = this.cartData.betAmount;
+        if (betAmount < this.currentSelectBetInfo.BetMin) {
+          this.showMinLimit = true;
+          this.cartData.betAmount = this.currentSelectBetInfo.BetMin;
+        }
+        if (betAmount > this.currentSelectBetInfo.BetMax) {
+          this.showMaxLimit = true;
+          this.cartData.betAmount = this.currentSelectBetInfo.BetMax;
+        }
+      }
+    },
     computed: {
       quickBetData() {
         return this.$store.state.BetCart.quickBetData;
@@ -68,8 +91,11 @@
         return this.$store.state.Game.selectWagerTypeKey;
       },
       currentSelectBetInfo() {
+        if (this.cartData === null) {
+          return undefined;
+        }
         const findData = this.betInfo.find((it) => {
-          if (it.CatID === this.selectCatID && it.WagerTypeID === this.selectWagerTypeKey) {
+          if (it.CatID === this.selectCatID && it.WagerTypeID === this.cartData.WagerTypeID) {
             return true;
           } else {
             return false;
@@ -125,6 +151,8 @@
       },
       betBtnClickHandler() {
         this.$store.commit('BetCart/setIsSubmitHandler');
+        this.showMinLimit = false;
+        this.showMaxLimit = false;
       },
     },
   };
@@ -196,6 +224,12 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        .limitTipText {
+          color: red;
+          font-size: 14px;
+          margin-top: 12px;
+          margin-bottom: 5px;
+        }
         .betAmount {
           display: flex;
           .betAmountColor {
