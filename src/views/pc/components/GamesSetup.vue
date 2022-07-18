@@ -265,6 +265,14 @@
       },
     },
     methods: {
+      updateSelectAllData() {
+        const selectItemLength = this.LeagueListData.filter((it) => it.isSelect === false).length;
+        if (selectItemLength === 0) {
+          this.dialogData.selectAll = true;
+        } else {
+          this.dialogData.selectAll = false;
+        }
+      },
       clickMarquee() {
         const Ann = this.$router.resolve({
           path: 'Ann',
@@ -289,11 +297,6 @@
           this.initTimeAPI();
         }
       },
-      initTimeAPI() {
-        this.$store.dispatch('getSystemTime').then((res) => {
-          this.currentTime = new Date(res.data.replace(/-/g, '/')).getTime();
-        });
-      },
       clearLeagueList() {
         this.isShowLeagueSelectDialog = false;
         this.dialogData = {
@@ -301,6 +304,11 @@
           onlyShowCheck: false,
         };
         this.LeagueListData = [];
+      },
+      initTimeAPI() {
+        this.$store.dispatch('getSystemTime').then((res) => {
+          this.currentTime = new Date(res.data.replace(/-/g, '/')).getTime();
+        });
       },
       changeTheme(value) {
         this.$store.commit('SetThemeInfo', value);
@@ -325,17 +333,23 @@
         this.$store
           .dispatch('Game/GetGameResultLeagues')
           .then((res) => {
-            this.LeagueListData = res.data.map((it) => {
-              const findIndex = this.$store.state.Game.selectLeagueIDs.findIndex(
-                (id) => id === it.LeagueID
-              );
-              let isSelect = false;
-              if (findIndex > -1) {
-                isSelect = true;
-              }
-              return { ...it, isSelect };
-            });
-
+            if (this.$store.state.Game.selectLeagueIDs.length === 0) {
+              this.LeagueListData = res.data.map((it) => {
+                return { ...it, isSelect: true };
+              });
+            } else {
+              this.LeagueListData = res.data.map((it) => {
+                const findIndex = this.$store.state.Game.selectLeagueIDs.findIndex(
+                  (id) => id === it.LeagueID
+                );
+                let isSelect = false;
+                if (findIndex > -1) {
+                  isSelect = true;
+                }
+                return { ...it, isSelect };
+              });
+            }
+            this.updateSelectAllData();
             this.isShowLeagueSelectDialog = true;
           })
           .finally(() => {
@@ -346,6 +360,9 @@
         this.LeagueListData.forEach((it) => (it.isSelect = newVal));
       },
       leagueChooseSelectHandler() {
+        if (this.LeagueListData.filter((it) => it.isSelect).length === 0) {
+          return;
+        }
         this.$store.commit(
           'Game/setSelectLeagueIDs',
           this.LeagueListData.filter((it) => it.isSelect).map((it) => it.LeagueID)

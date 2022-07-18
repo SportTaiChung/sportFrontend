@@ -23,7 +23,7 @@
         // 2 變小
         colorState: 0,
         // 變色維持時間
-        COLOR_MAINTAIN_TIME: 5000,
+        COLOR_MAINTAIN_TIME: 3000,
         OddList: {},
       };
     },

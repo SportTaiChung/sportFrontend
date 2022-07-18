@@ -20,7 +20,12 @@
           <div> {{ $t('Common.Money') }}: </div>
           <div class="betAmountColor"> {{ cartData.betAmount }}</div>
         </div>
-        <div class="betBtn" @click="betBtnClickHandler()"> {{ $t('Common.Bet') }}</div>
+        <div class="betBtn" @click="betBtnClickHandler()" v-if="lastFirstBetMessage === ''">
+          {{ $t('Common.Bet') }}</div
+        >
+        <div class="betBtn InfoBtn" @click="closeSelf" v-else>
+          {{ lastFirstBetMessage }}
+        </div>
       </div>
     </div>
   </div>
@@ -72,6 +77,9 @@
         });
         return findData;
       },
+      lastFirstBetMessage() {
+        return this.$store.state.BetCart.lastFirstBetMessage;
+      },
     },
     watch: {
       cartData: {
@@ -93,6 +101,7 @@
         this.closeSelf();
       },
       closeSelf() {
+        this.$store.commit('BetCart/setLastFirstBetMessage', '');
         this.$store.commit('BetCart/clearCart');
         this.$store.commit('BetCart/showQuickBetData', {
           isShow: false,
@@ -116,9 +125,6 @@
       },
       betBtnClickHandler() {
         this.$store.commit('BetCart/setIsSubmitHandler');
-        setTimeout(() => {
-          this.closeSelf();
-        }, 1000);
       },
     },
   };
@@ -208,6 +214,13 @@
           cursor: pointer;
           &:hover {
             background-color: #f9e875f2;
+          }
+        }
+        .InfoBtn {
+          color: white;
+          background-color: #3fa381;
+          &:hover {
+            background-color: #3fa381;
           }
         }
       }

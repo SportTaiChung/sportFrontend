@@ -66,6 +66,9 @@
           padding: 5px;
           border: 1px solid transparent;
         }
+        .redInputOutLine {
+          border: 1px solid red !important;
+        }
       }
       .lockRowInfo {
         display: flex;
@@ -76,8 +79,6 @@
           display: flex;
           .infoItemTitle {
             margin-right: 5px;
-          }
-          .infoItemVal {
           }
         }
       }
@@ -120,6 +121,9 @@
     }
     .limitText {
       color: #006a8a;
+    }
+    .overText {
+      color: red;
     }
   }
   .strayContentBlock {

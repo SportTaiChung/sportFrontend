@@ -112,8 +112,6 @@ export function timeFormatWithOutMMss(time) {
   if (time === null) {
     return;
   }
-  time = CheckTimeFormatData(time);
-
   const date = new Date(time);
   const M = (date.getMonth() + 1).toString().padStart(2, '0') + '-';
   const D = date.getDate().toString().padStart(2, '0');

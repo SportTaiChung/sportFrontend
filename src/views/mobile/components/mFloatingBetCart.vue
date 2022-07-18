@@ -97,8 +97,8 @@
   #mFloatingBetCart {
     position: fixed;
     z-index: 6;
-    width: 70px !important;
-    height: 70px !important;
+    width: 55px !important;
+    height: 55px !important;
     border-radius: 50%;
     background-color: #ffcc00;
     cursor: pointer;

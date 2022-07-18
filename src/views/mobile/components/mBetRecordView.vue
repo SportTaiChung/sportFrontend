@@ -30,7 +30,7 @@
 
     <div class="main-container">
       <!-- 未結算: 直接使用 PC版 BetViewList 組件 -->
-      <div v-if="tabIndex === 0" style="padding: 10px">
+      <div v-if="tabIndex === 0" style="padding: 10px; height: 100%">
         <BetViewList :groupIndex="1" :childIndex="tabIndex"></BetViewList>
       </div>
 

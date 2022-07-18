@@ -10,11 +10,21 @@
       <div class="main-container">
         <div class="opts-wrapper">
           <label>
-            <input type="checkbox" v-model="options.selectAll" />
+            <input
+              type="checkbox"
+              :checked="!hasLeagueFiltered"
+              @click="
+                (e) => {
+                  LeagueListData = LeagueListData.map((it) => {
+                    return { ...it, isSelect: hasLeagueFiltered };
+                  });
+                }
+              "
+            />
             {{ $t('GamesSetup.SelectAll') }}
           </label>
           <label>
-            <input type="checkbox" v-model="options.onlyShowCheck" />
+            <input type="checkbox" v-model="options.showSelectedOnly" />
             {{ $t('GamesSetup.SelectCheck') }}
           </label>
         </div>
@@ -25,11 +35,16 @@
             :key="leagueData.LeagueID"
           >
             <label>
-              <input type="checkbox" v-model="leagueData.isSelect" @change="onLeagueChanged" />
+              <input type="checkbox" v-model="leagueData.isSelect" />
               {{ leagueData.LeagueName }}
             </label>
           </li>
         </ul>
+      </div>
+
+      <div class="footer-container">
+        <div class="btn-cancel" @click="close()"> {{ $t('GamesSetup.Cancel') }} </div>
+        <div class="btn-submit" @click="saveLeaguesSetting()"> {{ $t('GamesSetup.Submit') }} </div>
       </div>
     </div>
   </div>
@@ -48,47 +63,34 @@
       return {
         LeagueListData: [],
         options: {
-          selectAll: true,
-          onlyShowCheck: false,
+          showSelectedOnly: false,
         },
       };
     },
     watch: {
-      selectedLeagues() {
-        // this.saveLeaguesSetting();
-      },
       isOpen(newVal) {
         if (newVal) {
           this.getGameResultLeagues();
         }
       },
-      'options.selectAll': {
-        handler(isChecked) {
-          this.LeagueListData.forEach((it) => (it.isSelect = isChecked));
-          this.saveLeaguesSetting();
-        },
-        immediate: true,
-      },
-      hasLeagueFiltered(val) {
-        this.$emit('hasLeagueFiltered', val);
-      },
+      hasLeagueFiltered() {},
     },
     computed: {
       selectedLeagues() {
         return this.LeagueListData.filter((it) => it.isSelect);
       },
       leagueListDataFiltered() {
-        if (this.options.onlyShowCheck) {
+        if (this.options.showSelectedOnly) {
           return this.selectedLeagues;
         } else {
           return this.LeagueListData;
         }
       },
       hasLeagueFiltered() {
-        return (
-          this.selectedLeagues.length > 0 &&
-          this.selectedLeagues.length < this.LeagueListData.length
-        );
+        return this.selectedLeagues.length !== this.LeagueListData.length;
+      },
+      gameStore() {
+        return this.$store.state.Game;
       },
     },
     methods: {
@@ -101,38 +103,37 @@
         this.$store
           .dispatch('Game/GetGameResultLeagues')
           .then((res) => {
-            this.LeagueListData = res.data.map((it) => {
-              const findIndex = this.$store.state.Game.selectLeagueIDs.findIndex(
-                (id) => id === it.LeagueID
-              );
-              let isSelect = false;
-              if (findIndex > -1) {
-                isSelect = true;
-              }
-              return { ...it, isSelect };
-            });
+            const localIDs = this.gameStore.selectLeagueIDs;
+            if (localIDs.length) {
+              this.LeagueListData = res.data.map((it) => ({
+                ...it,
+                isSelect: localIDs.includes(it.LeagueID),
+              }));
+            } else {
+              this.LeagueListData = res.data.map((it) => ({ ...it, isSelect: true }));
+            }
           })
           .finally(() => {
             this.$store.commit('SetLoading', false);
           });
       },
       saveLeaguesSetting() {
-        console.log('saveLeaguesSetting');
+        if (this.selectedLeagues.length === 0) {
+          return;
+        }
         this.$store.commit(
           'Game/setSelectLeagueIDs',
           this.selectedLeagues.map((it) => it.LeagueID)
         );
         this.$emit('onLeaguesListChanged');
+        this.$emit('hasLeagueFiltered', this.hasLeagueFiltered);
+        this.close();
       },
       clearLeagueList() {
         this.options = {
-          selectAll: false,
-          onlyShowCheck: false,
+          showSelectedOnly: false,
         };
         this.LeagueListData = [];
-      },
-      onLeagueChanged() {
-        this.saveLeaguesSetting();
       },
     },
   };
@@ -213,8 +214,11 @@
         overflow: auto;
         padding: 0.714rem 1rem;
         font-size: 1.2rem;
+        display: flex;
+        flex-flow: column nowrap;
 
         .opts-wrapper {
+          flex-shrink: 0;
           display: flex;
           flex-flow: row nowrap;
           justify-content: flex-start;
@@ -228,13 +232,15 @@
         }
 
         ul.leagueList {
+          flex-grow: 1;
           display: flex;
           flex-flow: column;
+          overflow-y: auto;
 
           li {
             border-bottom: 1px solid #ccc;
-            padding: 0.8rem 1rem;
-            font-size: 1.3rem;
+            padding: 0.75rem 1rem;
+            font-size: 1.2rem;
           }
         }
 
@@ -249,6 +255,36 @@
             height: 1.5rem;
             margin: 0 8px 0 0;
           }
+        }
+      }
+
+      .footer-container {
+        display: flex;
+        flex-shrink: 0;
+        padding: 0.5rem;
+        .btn-cancel,
+        .btn-submit {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 1.2rem;
+          text-align: center;
+          min-height: 2.75rem;
+          margin-right: 15px;
+          padding: 0.5rem 1rem;
+          border-radius: 3px;
+          background-color: #929292;
+          &:active {
+            filter: brightness(0.8);
+          }
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+        .btn-submit {
+          background-color: #3a86de;
         }
       }
     }

@@ -29,7 +29,6 @@ export default {
   },
   actions: {
     getDefaultMes(store, val) {
-      console.log('call');
       return new Promise((resolve, reject) => {
         return getDefaultMes()
           .then((res) => {

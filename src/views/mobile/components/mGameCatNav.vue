@@ -11,7 +11,7 @@
       {{ $t('Common.Collect') }}
     </li>
     <li
-      v-for="(catData, index) in gameStore.MenuList"
+      v-for="(catData, index) in dynamicMenuList"
       :key="index"
       class="item"
       :class="gameStore.selectCatID == catData.catid ? 'active' : ''"
@@ -27,7 +27,10 @@
   export default {
     name: 'mGameCatNav',
     data() {
-      return {};
+      return {
+        cloneNum: 3,
+        isOverflow: false,
+      };
     },
     computed: {
       gameStore() {
@@ -38,6 +41,24 @@
       },
       hasFavorite() {
         return this.$store.state.Setting.UserSetting.favorites.length > 0;
+      },
+      MenuList() {
+        return this.gameStore.MenuList;
+      },
+      dynamicMenuList() {
+        let list = this.gameStore.MenuList;
+        if (this.isOverflow) {
+          const clone = [...list];
+          for (let i = 0; i < this.cloneNum; i++) {
+            list = [...list, ...clone];
+          }
+        }
+        return list;
+      },
+      orgChildrenWidth() {
+        const children = Array.from(this.$el.children);
+        children.length = this.MenuList.length;
+        return children.reduce((acc, it) => (acc += it.clientWidth), 0);
       },
     },
     methods: {
@@ -55,6 +76,40 @@
           selectWagerTypeKey: null,
         });
         this.$emit('callGetFavoriteGameDetail');
+      },
+      detectIsOverflow() {
+        this.isOverflow = this.orgChildrenWidth > this.$el.clientWidth;
+      },
+      onScroll() {
+        if (this.isOverflow) {
+          const { clientWidth, scrollWidth, scrollLeft } = this.$el;
+          const orgScrollWidth = scrollWidth / (this.cloneNum + 1);
+          const orgOverflow = orgScrollWidth - clientWidth;
+          if (scrollLeft === 0) {
+            this.$el.scrollLeft = orgScrollWidth;
+          } else if (scrollLeft >= scrollWidth - clientWidth) {
+            this.$el.scrollLeft = orgOverflow;
+          }
+        }
+      },
+    },
+    mounted() {
+      this.$el.addEventListener('scroll', this.onScroll);
+      window.addEventListener('resize', this.detectIsOverflow);
+      // init
+      this.detectIsOverflow();
+      this.onScroll();
+    },
+    beforeDestroy() {
+      this.$el.removeEventListener('scroll', this.onScroll);
+      window.removeEventListener('resize', this.detectIsOverflow);
+    },
+    watch: {
+      MenuList() {
+        // 當彩種更新時 重設overflow狀態 並更新視圖狀態
+        this.isOverflow = false;
+        this.detectIsOverflow();
+        this.onScroll();
       },
     },
   };

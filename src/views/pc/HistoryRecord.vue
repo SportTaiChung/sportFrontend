@@ -183,10 +183,11 @@
           <div v-for="(item, i) in gettodayDetails" :key="i">
             <table border="0" cellspacing="0" cellpadding="0" class="collapsetable">
               <tr>
-                <td width="585" @click="upactive(item.CatID)">
+                <td width="585" @click="upactive(item.catName)">
                   <i :class="item.active ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
-                  <template v-if="i === 0"> {{ $t('Common.NormalBet') }} </template>
-                  <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template>
+                  <!-- <template v-if="i === 0"> {{ $t('Common.NormalBet') }} </template>
+                  <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template> -->
+                  {{ item.catName }}
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
@@ -377,42 +378,27 @@
         });
       },
       gettodayDetails() {
-        var map = {};
-        var dest = [];
-        var destTypemap = [];
-        // 分组 过关和单注
-        for (var i = 0; i < this.todayDetails.length; i++) {
-          var ai = this.todayDetails[i];
-          if (ai.BetType === 99) {
-            destTypemap.push(ai);
-          }
-        }
-        var BetTypemap = {
-          CatID: -99,
-          catName: this.$t('Common.Stray'),
-          data: destTypemap,
-        };
-        // 分组  各球类
-        for (let i = 0; i < this.todayDetails.length; i++) {
-          const ai = this.todayDetails[i];
-          if (!map[ai.CatID]) {
+        const catMap = {};
+        const dest = [];
+
+        this.todayDetails.forEach((it) => {
+          if (!catMap[it.catName]) {
             dest.push({
-              CatID: ai.CatID,
-              catName: ai.catName,
-              data: [ai],
+              catName: it.catName,
+              data: [it],
             });
-            map[ai.CatID] = ai;
+            catMap[it.catName] = it;
           } else {
-            for (var j = 0; j < dest.length; j++) {
-              var dj = dest[j];
-              if (dj.CatID === ai.CatID && ai.BetType === 1) {
-                dj.data.push(ai);
+            for (let j = 0; j < dest.length; j++) {
+              const dj = dest[j];
+              if (dj.catName === it.catName) {
+                dj.data.push(it);
                 break;
               }
             }
           }
-        }
-        dest.push(BetTypemap);
+        });
+
         dest.forEach((item) => {
           let Amounts = 0;
           let ResultAmounts = 0;
@@ -489,9 +475,9 @@
           this.getBetHistory(false);
         }
       },
-      upactive(id) {
+      upactive(catName) {
         this.gettodayDetails.forEach((item) => {
-          if (item.CatID === id) {
+          if (item.catName === catName) {
             item.active = !item.active;
           }
         });

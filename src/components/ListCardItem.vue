@@ -65,6 +65,7 @@
           <input
             ref="BetAmountInput"
             class="input"
+            :class="isShowMinText || isShowMaxText ? 'redInputOutLine' : ''"
             type="number"
             v-model="cartData.betAmount"
             :max="cartData.BetMax"
@@ -76,7 +77,7 @@
             "
             :readonly="isMobileMode"
             @click="onCardInputClick"
-            @focus="onInputFocus()"
+            @focus="onInputFocus('betAmount')"
             @blur="betAmountBlur(cartData.GameID)"
             @input="inputRowItemChangeHandler(cartData)"
           />
@@ -87,11 +88,15 @@
             :placeholder="$t('Common.CanWinMoney')"
             :readonly="isMobileMode"
             @click="onCardInputClick"
-            @focus="onInputFocus()"
+            @focus="onInputFocus('winAmount')"
             @blur="winAmountBlur(cartData.GameID)"
             @input="inputRowItemWinAmountChangeHandler(cartData, cartIndex)"
           />
-          <div class="submitBtn" v-if="isMobileMode" @click="$emit('MobileListItemSubmitBet')">
+          <div
+            class="submitBtn"
+            v-if="isMobileMode && isControlByBetSingle"
+            @click="$emit('MobileListItemSubmitBet')"
+          >
             {{ $t('Common.SubmitBet') }}
           </div>
         </div>
@@ -99,6 +104,13 @@
 
       <div class="cardContentBlockRow limitText" v-if="panelMode === PanelModeEnum.normal">
         {{ $t('ListCardItem.BetLimit') }} : {{ cartData.BetMax }}
+      </div>
+
+      <div class="cardContentBlockRow overText" v-if="isShowMinText">
+        {{ $t('Common.BetMinTip') }}
+      </div>
+      <div class="cardContentBlockRow overText" v-if="isShowMaxText">
+        {{ $t('Common.BetMaxTip') }}
       </div>
 
       <BetResultBlock v-if="childIndex === 0" :panelMode="panelMode" :cartData="cartData">
@@ -151,6 +163,14 @@
       },
       // 是否來自 mGamesBetInfoSingle 控制
       isControlByBetSingle: {
+        type: Boolean,
+        default: false,
+      },
+      isShowMinText: {
+        type: Boolean,
+        default: false,
+      },
+      isShowMaxText: {
         type: Boolean,
         default: false,
       },
@@ -240,7 +260,12 @@
           return oddValue;
         }
       },
-      onInputFocus() {
+      onInputFocus(typeFrom) {
+        this.$emit('inputFocusEvent', {
+          from: typeFrom,
+          BetMax: this.showBetCartList[this.cartIndex].BetMax,
+        });
+
         if (this.isMobileMode) {
           // 強制不調用手機虛擬鍵盤
           document.activeElement.blur();
@@ -275,12 +300,6 @@
       },
       isAddNewToChart() {
         return this.$store.state.BetCart.isAddNewToChart;
-      },
-    },
-    watch: {
-      // 有新增投注到購物車事件
-      isAddNewToChart() {
-        console.log('!!!!:', this.$refs.BetAmountInput);
       },
     },
   };
