@@ -634,9 +634,9 @@ export default {
         });
       });
     },
-    GetMainBetInfo(store) {
+    GetMainBetInfo(store, postData) {
       return new Promise((resolve, reject) => {
-        return getMainBetInfo().then((res) => {
+        return getMainBetInfo(postData).then((res) => {
           store.state.betInfo = res.data;
           resolve(res);
         });

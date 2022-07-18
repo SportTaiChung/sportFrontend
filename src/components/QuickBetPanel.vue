@@ -45,7 +45,6 @@
       };
     },
     created() {
-      console.log('test:', this.currentSelectBetInfo.BetMin, this.currentSelectBetInfo.BetMax);
       if (this.currentSelectBetInfo) {
         const betAmount = this.cartData.betAmount;
         if (betAmount < this.currentSelectBetInfo.BetMin) {
