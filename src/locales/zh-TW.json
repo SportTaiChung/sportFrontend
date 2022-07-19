@@ -3,7 +3,8 @@
     "Account": "帳號",
     "Password": "密碼",
     "CustomerService": "專屬客服",
-    "MemberLogin": "會員登入"
+    "MemberLogin": "會員登入",
+    "SwitchToPCVersion": "切換至電腦版"
   },
   "GamesHeader": {
     "LiveScore": "即時比分",

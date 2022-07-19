@@ -62,6 +62,11 @@
             {{ $t('Login.CustomerService') }}
           </div> -->
         </div>
+
+        <div class="btn-switch-to-pc" v-if="isMobileMode" @click="goToDesktopVersion()">
+          <img src="@/assets/img/common/display-solid.svg" />
+          <span> {{ $t('Login.SwitchToPCVersion') }} </span>
+        </div>
       </div>
     </div>
 
@@ -111,6 +116,9 @@
           };
         },
       },
+      isMobileMode() {
+        return process.env.VUE_APP_UI === 'mobile';
+      },
     },
     created() {
       window.auto = this.auto;
@@ -133,6 +141,9 @@
       openServiceChat(issue) {
         this.serviceQuestion = issue;
         this.isOpenServiceChat = true;
+      },
+      goToDesktopVersion() {
+        window.location.href = 'https://dw1.queen168.net';
       },
       auto() {
         this.$store
@@ -208,7 +219,7 @@
         width: calc(100vw - 50px);
         min-width: 320px;
         max-width: 450px;
-        padding: 1.8rem;
+        padding: 1.5rem;
         border-radius: 1rem;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 
@@ -350,6 +361,27 @@
               img {
                 opacity: 1;
               }
+            }
+          }
+        }
+
+        .btn-switch-to-pc {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          img {
+            width: 1.6rem;
+            height: auto;
+          }
+          span {
+            color: #eee;
+            font-size: 1rem;
+            line-height: 1;
+            align-self: flex-end;
+            margin: 0 0.5rem;
+            &:active {
+              color: #fff;
             }
           }
         }

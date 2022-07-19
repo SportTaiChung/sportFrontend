@@ -3,7 +3,8 @@
     "Account": "帐号",
     "Password": "密码",
     "CustomerService": "专属客服",
-    "MemberLogin": "会员登入"
+    "MemberLogin": "会员登入",
+    "SwitchToPCVersion": "切换至电脑版"
   },
   "GamesHeader": {
     "LiveScore": "即时比分",

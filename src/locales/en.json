@@ -2,7 +2,8 @@
   "Login": {
     "Password": "Password",
     "CustomerService": "Exclusive customer service",
-    "MemberLogin": "Member login"
+    "MemberLogin": "Member login",
+    "SwitchToPCVersion": "Switch to PC version"
   },
   "GamesHeader": {
     "LiveScore": "live score",
