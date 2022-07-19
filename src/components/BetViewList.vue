@@ -201,10 +201,10 @@
 
       <div class="strayLimitTipBlock">
         <!-- 串關限紅提示 -->
-        <div class="limitTip" v-if="isShowMinText">
+        <div class="limitTip" v-if="isShowMinText && childIndex === 1">
           {{ $t('Common.BetMinTip') }}
         </div>
-        <div class="limitTip" v-if="isShowMaxText">
+        <div class="limitTip" v-if="isShowMaxText && childIndex === 1">
           {{ $t('Common.BetMaxTip') }}
         </div>
       </div>
@@ -448,6 +448,7 @@
               this.isShowMaxChip = false;
             }
           }
+          this.clearMinMaxTextState();
         },
       },
       showBetCartList: {
@@ -547,6 +548,10 @@
       },
     },
     methods: {
+      clearMinMaxTextState() {
+        this.isShowMinText = false;
+        this.isShowMaxText = false;
+      },
       autoBet() {
         setInterval(() => {
           const checkRes = [
@@ -692,23 +697,20 @@
         if (this.strayBetAmount > this.UserCredit) {
           this.strayBetAmount = this.UserCredit;
         }
-
-        if (this.showBetCartList.length !== 0) {
-          const BetMin = this.showBetCartList[0].BetMin;
-          const BetMax = this.showBetCartList[0].BetMax;
-          this.isShowMinText = false;
-          this.isShowMaxText = false;
-          if (this.strayBetAmount < BetMin && BetMin !== null) {
-            this.strayBetAmount = BetMin;
-            this.isShowMinText = true;
-          }
-          if (this.strayBetAmount > BetMax && BetMax !== null) {
-            this.strayBetAmount = BetMax;
-            this.isShowMaxText = true;
-          }
-        }
       },
-      reCalcBetChart() {
+      minMaxJudge(cartData) {
+        this.clearMinMaxTextState();
+        if (cartData.betAmount < cartData.BetMin && cartData.BetMin !== null) {
+          cartData.betAmount = cartData.BetMin;
+          cartData.isShowMinText = true;
+        }
+        if (cartData.betAmount > cartData.BetMax && cartData.BetMax !== null) {
+          cartData.betAmount = cartData.BetMax;
+          cartData.isShowMaxText = true;
+        }
+        return cartData.betAmount;
+      },
+      reCalcBetChart(isMinMaxJudge = false) {
         let newTotalBetAmount = 0;
         let newTotalWinAmount = 0;
         this.showBetCartList.forEach((cartData) => {
@@ -717,13 +719,8 @@
             cartData.betAmount = this.$lib.truncFloor(cartData.betAmount);
             cartData.isShowMinText = false;
             cartData.isShowMaxText = false;
-            if (cartData.betAmount < cartData.BetMin && cartData.BetMin !== null) {
-              cartData.betAmount = cartData.BetMin;
-              cartData.isShowMinText = true;
-            }
-            if (cartData.betAmount > cartData.BetMax && cartData.BetMax !== null) {
-              cartData.betAmount = cartData.BetMax;
-              cartData.isShowMaxText = true;
+            if (isMinMaxJudge) {
+              cartData.betAmount = this.minMaxJudge(cartData);
             }
             cartData.winAmount = this.$lib.truncFloor(
               cartData.betAmount * this.$lib.trunc(parseFloat(displayData.showOdd))
@@ -889,7 +886,6 @@
           this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
             ...checkRes.map((checkRes) => checkRes.Amount)
           );
-          console.log('checkRes:', checkRes);
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -959,13 +955,29 @@
       },
       fillEachBetAmountBlurHandler() {
         this.lastBlurInput = { name: 'fillEachBetAmount' };
+        this.reCalcBetChart(true);
       },
       fillEachWinAmountBlurHandler() {
         this.lastBlurInput = { name: 'fillEachWinAmount' };
-        this.reCalcBetChart();
+        this.reCalcBetChart(true);
       },
       strayBetBlurHandler() {
         this.lastBlurInput = { name: 'strayBetAmount' };
+        this.clearMinMaxTextState();
+        if (this.showBetCartList.length !== 0 && this.strayBetAmount !== null) {
+          const BetMin = this.showBetCartList[0].BetMin;
+          const BetMax = this.showBetCartList[0].BetMax;
+
+          if (this.strayBetAmount < BetMin && BetMin !== null) {
+            this.strayBetAmount = BetMin;
+            this.isShowMinText = true;
+          }
+          if (this.strayBetAmount > BetMax && BetMax !== null) {
+            this.strayBetAmount = BetMax;
+            this.isShowMaxText = true;
+          }
+        }
+
         this.reCalcStrayBetChart();
       },
       inputFocusEvent({ from, BetMax }) {
@@ -978,15 +990,19 @@
       },
       listCardItemLastBlurInputEvent(lastBlurInputData) {
         this.lastBlurInput = lastBlurInputData;
+        this.reCalcBetChart(true);
       },
       onChipClick(value) {
         this.processLastBlurInput(value);
+        this.reCalcBetChart(true);
       },
       keyBoardAddEvent(addNum) {
         this.processLastBlurInput(addNum);
+        this.reCalcBetChart(true);
       },
       keyBoardAssignEvent(newNum) {
         this.processLastBlurInput(newNum, true);
+        this.reCalcBetChart(true);
       },
       processLastBlurInput(value, isAssignMode = false) {
         if (this.lastBlurInput.name === 'rowItem') {

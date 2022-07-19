@@ -65,7 +65,7 @@
           <input
             ref="BetAmountInput"
             class="input"
-            :class="isShowMinText || isShowMaxText ? 'redInputOutLine' : ''"
+            :class="(isShowMinText || isShowMaxText) && childIndex === 0 ? 'redInputOutLine' : ''"
             type="number"
             v-model="cartData.betAmount"
             :max="cartData.BetMax"
@@ -106,10 +106,10 @@
         {{ $t('ListCardItem.BetLimit') }} : {{ cartData.BetMax }}
       </div>
 
-      <div class="cardContentBlockRow overText" v-if="isShowMinText">
+      <div class="cardContentBlockRow overText" v-if="isShowMinText && childIndex === 0">
         {{ $t('Common.BetMinTip') }}
       </div>
-      <div class="cardContentBlockRow overText" v-if="isShowMaxText">
+      <div class="cardContentBlockRow overText" v-if="isShowMaxText && childIndex === 0">
         {{ $t('Common.BetMaxTip') }}
       </div>
 
