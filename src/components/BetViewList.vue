@@ -552,6 +552,14 @@
         this.isShowMinText = false;
         this.isShowMaxText = false;
       },
+      clearAllMinMaxLimitState() {
+        // 清除所有限紅提示
+        this.clearMinMaxTextState();
+        this.showBetCartList.forEach((cartData) => {
+          cartData.isShowMinText = false;
+          cartData.isShowMaxText = false;
+        });
+      },
       autoBet() {
         setInterval(() => {
           const checkRes = [
@@ -877,6 +885,8 @@
           return;
         }
 
+        this.clearAllMinMaxLimitState();
+
         if (
           this.panelMode === this.PanelModeEnum.lock ||
           this.settings.showBetConfirm === false ||
@@ -911,6 +921,7 @@
         if (checkRes === null) {
           return;
         }
+        this.clearAllMinMaxLimitState();
         if (this.panelMode === this.PanelModeEnum.lock || this.settings.showBetConfirm === false) {
           this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
 
