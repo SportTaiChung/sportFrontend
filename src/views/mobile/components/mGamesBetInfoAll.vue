@@ -19,7 +19,7 @@
           @click.stop="onMaskClick"
         />
       </div>
-      <div class="body">
+      <div class="body" ref="body">
         <BetViewList :groupIndex="0" :childIndex="tabIndex"></BetViewList>
       </div>
     </div>
@@ -38,6 +38,9 @@
         tabIndex: 0, // 0: 單項投注 1: 過關投注
       };
     },
+    mounted() {
+      this.scrollToBottom();
+    },
     computed: {
       userCredit() {
         return this.$lib.thousandSpr(this.$store.state.User.UserCredit);
@@ -50,6 +53,10 @@
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.$emit('onCloseBetInfo');
+      },
+      scrollToBottom() {
+        const view = this.$refs.body;
+        view.scrollTo({ top: view.scrollHeight });
       },
     },
     watch: {
