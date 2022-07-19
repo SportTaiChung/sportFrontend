@@ -7,7 +7,7 @@
       >
       <!-- 最大上限籌碼 -->
       <li class="btn-quick-add max" v-if="isShowMaxChip" @click="Add(theMaxChipValue)">
-        {{ theMaxChipValue }}
+        {{ $lib.trunc(theMaxChipValue / 1000) + 'K' }}
       </li>
     </ul>
     <!-- 數字鍵盤 -->
