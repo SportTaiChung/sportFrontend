@@ -5,8 +5,10 @@
       <li class="btn-quick-add" v-for="(chip, i) in preferChips" :key="i" @click="Add(chip)"
         >+{{ chip }}</li
       >
-
-      <!-- <li class="max-num-tip">999999</li> -->
+      <!-- 最大上限籌碼 -->
+      <li class="btn-quick-add max" v-if="isShowMaxChip" @click="Add(theMaxChipValue)">
+        {{ theMaxChipValue }}
+      </li>
     </ul>
     <!-- 數字鍵盤 -->
     <div class="num-input-pad">
@@ -28,6 +30,18 @@
 <script>
   export default {
     name: 'mBetKeyboard',
+    props: {
+      // 是否顯示最大的籌碼
+      isShowMaxChip: {
+        type: Boolean,
+        default: false,
+      },
+      // 最大籌碼面額
+      theMaxChipValue: {
+        type: Number,
+        default: 0,
+      },
+    },
     computed: {
       preferChips() {
         return this.$store.state.Setting.UserSetting.preferChips;
@@ -47,28 +61,39 @@
 <style lang="scss" scoped>
   #mBetKeyboard {
     ul.quick-add {
+      display: flex;
+      position: relative;
       width: 100%;
-      display: table;
-      table-layout: fixed;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
       border: 1px solid #bbb;
       border-radius: 5px;
+
       li.btn-quick-add {
-        display: table-cell;
+        flex: 1 0 25%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         height: 44px;
+        padding: 0 1rem;
         text-align: center;
-        vertical-align: middle;
         color: #666;
         font-size: 1.5rem;
         font-weight: bold;
         line-height: 1;
-        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
         background-color: #fff;
-        &:last-child {
+        &:first-child {
           border: none;
         }
         &:active {
           background-color: #ddd;
+        }
+
+        &.max {
+          color: #2682d5;
+          position: sticky;
+          right: 0;
         }
       }
     }

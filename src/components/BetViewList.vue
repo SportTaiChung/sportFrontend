@@ -90,6 +90,8 @@
       <!-- 小鍵盤 -->
       <mBetKeyboard
         v-if="isMobileMode && isShowBetKB && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @Add="keyBoardAddEvent"
         @Assign="keyBoardAssignEvent"
       ></mBetKeyboard>
@@ -195,6 +197,8 @@
       <!-- 小鍵盤 -->
       <mBetKeyboard
         v-if="isMobileMode && isShowStrayKB && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @Add="keyBoardAddEvent"
         @Assign="keyBoardAssignEvent"
       ></mBetKeyboard>
