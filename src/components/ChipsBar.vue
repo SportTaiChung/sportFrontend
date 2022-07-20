@@ -15,7 +15,7 @@
 
     <!-- the max chip -->
     <div class="chip max-chip" v-if="isShowMaxChip" @click="onChipClick(theMaxChipValue)">
-      {{ theMaxChipValue }}
+      {{ $lib.trunc(theMaxChipValue / 1000) + 'K' }}
     </div>
   </div>
 </template>
@@ -112,7 +112,7 @@
     flex-direction: row;
     align-items: center;
     border-bottom: 1px solid #888;
-    padding-bottom: 5px;
+    padding: 3px 0;
     overflow: hidden;
 
     i {
@@ -134,7 +134,8 @@
       flex: 1;
       flex-grow: 1;
       flex-shrink: 1;
-      height: 60px;
+      min-height: 60px;
+      padding: 8px 0;
       display: flex;
       align-items: center;
       justify-content: space-evenly;
@@ -142,20 +143,14 @@
     }
 
     .chip {
+      position: relative;
       cursor: pointer;
       flex: 0 0 50px;
       background-repeat: no-repeat;
       background-size: auto 100%;
       width: 50px;
       height: 50px;
-      transition: transform ease 0.1s;
-
-      &:hover {
-        transform: translateY(-4px);
-      }
-      &:active {
-        transform: translateY(-4px) scale(1.05);
-      }
+      transition: all 100ms ease;
 
       &.max-chip {
         background-image: url('~@/assets/img/pc/chips/icon_chip_10.png');
@@ -165,8 +160,49 @@
         align-items: center;
         color: #fff;
         line-height: normal;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: bold;
+        text-shadow: 0 0 6px #000;
+      }
+
+      &::after {
+        position: absolute;
+        left: -1px;
+        top: -1px;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
+        border-radius: 50%;
+        content: ' ';
+        box-shadow: 2px 0 2px 1px #fff1c4, 8px 0 3px -10px #fffdf4,
+          inset -4px 0 7px rgb(255, 207, 74);
+        transition: all 0.5s;
+        opacity: 0;
+      }
+
+      &:hover {
+        transform: translateY(-3px) scale(1.08);
+        &::after {
+          animation: spinAround 1s linear infinite;
+          opacity: 1;
+        }
+      }
+      &:active {
+        transform: translateY(-3px) scale(1);
+      }
+      &.active {
+        &::after {
+          animation: spinAround 2s linear infinite;
+          opacity: 1;
+        }
+      }
+    }
+
+    @keyframes spinAround {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
       }
     }
   }

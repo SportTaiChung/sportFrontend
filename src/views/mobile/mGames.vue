@@ -109,7 +109,7 @@
       <!-- 下注面板 (多注時) -->
       <mGamesBetInfoAll
         ref="betInfoAll"
-        v-show="isShowBetInfo && betCartList.length !== 1"
+        v-if="isShowBetInfo && betCartList.length !== 1"
         @onCloseBetInfo="isShowBetInfo = false"
       ></mGamesBetInfoAll>
 

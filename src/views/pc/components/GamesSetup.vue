@@ -280,7 +280,7 @@
         this.$lib.WindowOpen(Ann.href);
       },
       quickBetAmountChangeHandler() {
-        this.quickBetAmount = parseFloat(this.quickBetAmount.replace(/[^\d]/g, ''));
+        this.quickBetAmount = parseFloat(this.quickBetAmount.toString().replace(/[^\d]/g, ''));
         if (isNaN(this.quickBetAmount)) {
           this.quickBetAmount = 0;
         }

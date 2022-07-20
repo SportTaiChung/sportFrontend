@@ -291,12 +291,17 @@
       gameTypeClickHandler(gameType) {
         this.$store.commit('Game/setGameType', gameType);
         const menuData = this.gameStore.FullMenuList.find((menu) => menu.GameType === gameType);
-        let catid = 1;
+        let catID = 1;
+        let WagerTypeKey = 1;
         if (menuData.LeftMenu.item.length !== 0) {
-          catid = menuData.LeftMenu.item[0].catid;
+          catID = menuData.LeftMenu.item[0].catid;
+          if (menuData.LeftMenu.item[0].Items.length !== 0) {
+            WagerTypeKey = menuData.LeftMenu.item[0].Items[0].WagerTypeKey;
+          }
         }
         // GameType切換的時候, WagerTypeKey 不用送出
-        this.callGetGameDetail(catid, null);
+        this.callGetGameDetail(catID, null);
+        this.callMainBetInfo(WagerTypeKey);
         this.$store.dispatch('Game/GetMenuGameCatList', true);
         this.$store.commit('MoreGame/closeMoreGameList');
       },
@@ -387,8 +392,7 @@
           // 最愛遊戲
           this.callGetFavoriteGameDetail();
         }
-
-        this.$store.dispatch('Game/GetMainBetInfo');
+        this.callMainBetInfo(WagerTypeKey);
       },
       getMenuIconByCatID(catId) {
         const icon = this.CatMapData[catId].icon;
@@ -397,6 +401,18 @@
       PopperGameTypeItemClick(key) {
         this.gameTypeClickHandler(key);
         this.isShowNavMenuGameType = false;
+      },
+      callMainBetInfo(WagerTypeKeys) {
+        let postWagerTypeKey = WagerTypeKeys;
+        if (WagerTypeKeys === null) {
+          postWagerTypeKey = 1;
+        }
+
+        this.$store.dispatch('Game/GetMainBetInfo', {
+          CatIDs: this.selectCatID.toString(),
+          GameTypes: this.gameTypeID.toString(),
+          WagerTypeKeys: postWagerTypeKey.toString(),
+        });
       },
     },
   };
