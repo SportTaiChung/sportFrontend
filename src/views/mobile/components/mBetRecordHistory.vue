@@ -40,12 +40,20 @@
 
               <!-- 結果 -->
               <template v-if="item.week !== 128">
-                <td class="result" @click="goDateDetails(item.accdate)">
-                  <el-link type="primary"> {{ item.ResultAmount }} </el-link>
+                <td
+                  class="result"
+                  style="text-decoration: underline"
+                  @click="goDateDetails(item.accdate)"
+                >
+                  <el-link type="primary" :class="sumBlueClassColorJudge(item.ResultAmount)">
+                    {{ item.ResultAmount }}
+                  </el-link>
                 </td>
               </template>
               <template v-else>
-                <td class="result"> {{ item.ResultAmount }} </td>
+                <td class="result" :class="sumClassColorJudge(item.ResultAmount)">
+                  {{ item.ResultAmount }}
+                </td>
               </template>
             </tr>
           </tbody>
@@ -67,14 +75,18 @@
           <tr v-for="(it, index) in todayDetailsReduce" :key="index">
             <td class="date"> {{ it.catName }} </td>
             <td> {{ it.totalAmount }} </td>
-            <td class="result" @click="goFinalDetails(it.data)">
-              <el-link type="primary"> {{ it.totalResultAmount }} </el-link>
+            <td class="result" style="text-decoration: underline" @click="goFinalDetails(it.data)">
+              <el-link type="primary" :class="sumBlueClassColorJudge(it.totalResultAmount)">
+                {{ it.totalResultAmount }}
+              </el-link>
             </td>
           </tr>
           <tr>
             <td class="date"> {{ $t('Common.Total') }} </td>
             <td> {{ getTotal.totalAmount }} </td>
-            <td class="result"> {{ getTotal.totalResultAmount }} </td>
+            <td class="result" :class="sumClassColorJudge(getTotal.totalResultAmount)">
+              {{ getTotal.totalResultAmount }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -247,6 +259,24 @@
       },
     },
     methods: {
+      sumClassColorJudge(num) {
+        if (parseInt(num) < 0) {
+          return 'ScoreColor';
+        } else if (parseInt(num) === 0) {
+          return 'blackColor';
+        } else {
+          return 'resultScore';
+        }
+      },
+      sumBlueClassColorJudge(num) {
+        if (parseInt(num) < 0) {
+          return 'ScoreColor';
+        } else if (parseInt(num) === 0) {
+          return 'linkColor';
+        } else {
+          return 'resultScore';
+        }
+      },
       getBetHistory(type = false, starttime, endtime) {
         console.log('getBetHistory');
         this.$store.commit('SetLoading', true);
@@ -318,6 +348,19 @@
 </script>
 
 <style lang="scss" scoped>
+  .blackColor {
+    color: #1a2b3c !important;
+  }
+  .ScoreColor {
+    color: red !important;
+    margin-right: 1px;
+  }
+  .linkColor {
+    color: #409eff !important;
+  }
+  .resultScore {
+    color: #0a9c00 !important;
+  }
   #mBetRecordHistory {
     height: 100%;
     overflow-y: auto;

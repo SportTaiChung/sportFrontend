@@ -169,6 +169,7 @@
                 type="primary"
                 @click="goThisWeek(item.accdate)"
                 :class="sumBlueClassColorJudge(item.ResultAmount)"
+                style="text-decoration: underline"
               >
                 {{ item.ResultAmount }}
               </el-link>
