@@ -34,23 +34,23 @@
           :source="source"
           :isExpanded="isExpanded(index)"
           :hasMoreGame="hasMoreGame"
-          :dotStatus="dotStatusArr[index]"
+          :dotStatus="dotStatusHandlerAll()"
           @toggleCollapse="toggleCollapse(index)"
         ></mGameInfo>
       </div>
 
       <!-- 右半邊 - 下注資訊-->
-      <div class="right-area">
-        <div v-for="(source, index) in gameData.Items.List" :key="index">
-          <mGameBetting
-            :source="source"
-            :bestHead="gameData.Items.BestHead"
-            :isExpanded="isExpanded(index)"
-            :hasMoreGame="hasMoreGame"
-            @toggleCollapse="toggleCollapse(index)"
-            @dotStatusChanged="(status) => dotStatusHandler(index, status)"
-          ></mGameBetting>
-        </div>
+      <div class="right-area" ref="scrollEl" @scroll="scrollEvent">
+        <mGameBetting
+          v-for="(source, index) in gameData.Items.List"
+          :key="index"
+          :source="source"
+          :bestHead="gameData.Items.BestHead"
+          :isExpanded="isExpanded(index)"
+          :hasMoreGame="hasMoreGame"
+          @toggleCollapse="toggleCollapse(index)"
+          @dotStatusChanged="(status) => dotStatusHandler(index, status)"
+        ></mGameBetting>
       </div>
     </div>
   </div>
@@ -79,6 +79,10 @@
       return {
         activeCollapse: [],
         dotStatusArr: [],
+        dotStatus: {
+          visible: false,
+          isScrollToTheEnd: false,
+        },
       };
     },
     components: {
@@ -144,6 +148,7 @@
         } else {
           this.activeCollapse.push(index);
         }
+        this.updateDotVisible();
       },
       toggleAllCollapse() {
         this.activeCollapse = this.activeCollapse.length > 0 ? [] : this.expandAllCollapse();
@@ -165,6 +170,38 @@
       dotStatusHandler(index, status) {
         this.dotStatusArr[index] = status;
       },
+      dotStatusHandlerAll() {
+        return this.dotStatus;
+      },
+      scrollEvent(event) {
+        const element = event.target;
+        if (Math.floor(element.scrollWidth - element.scrollLeft) <= element.clientWidth) {
+          // 滑到最右邊
+          this.dotStatus.isScrollToTheEnd = true;
+        } else if (element.scrollLeft === 0) {
+          // 滑到最左邊
+          this.dotStatus.isScrollToTheEnd = false;
+        }
+      },
+      updateDotVisible() {
+        this.$nextTick(() => {
+          // 如果沒有卷軸,則不顯示小球
+          const element = this.$refs.scrollEl;
+          if (element) {
+            console.log(element.scrollWidth, element.clientWidth);
+            if (element.scrollWidth <= element.clientWidth) {
+              this.dotStatus.visible = false;
+            } else {
+              this.dotStatus.visible = true;
+            }
+          }
+        });
+      },
+    },
+    watch: {
+      activeCollapse() {
+        this.updateDotVisible();
+      },
     },
   };
 </script>
@@ -182,8 +219,9 @@
       }
     }
     .right-area {
+      position: relative;
       flex: 1;
-      overflow-x: hidden;
+      overflow-x: auto;
       overflow-y: hidden;
       // box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
     }
