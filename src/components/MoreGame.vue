@@ -504,10 +504,17 @@
             Odds.forEach((OddData) => {
               const oddWagerTypeID = OddData.WagerTypeID;
               RenderHead.every((renderHeadData) => {
-                const isFind = renderHeadData.WagerTypeIDs.find((ID) => ID === oddWagerTypeID);
-                if (isFind && OddData.Status !== -1) {
-                  renderHeadData.Odds.push(OddData);
-                  return false;
+                if (renderHeadData.HdpPos === 128) {
+                  const isFind = renderHeadData.WagerTypeIDs.find((ID) => ID === oddWagerTypeID);
+                  if (isFind && OddData.Status !== -1) {
+                    renderHeadData.Odds.push(OddData);
+                    return false;
+                  }
+                } else {
+                  if (OddData.HdpPos === renderHeadData.HdpPos) {
+                    renderHeadData.Odds.push(OddData);
+                    return false;
+                  }
                 }
                 return true;
               });
