@@ -131,8 +131,8 @@
     "Yes": "是",
     "No": "否",
     "remark": "備註",
-    "BetMinTip": "投注金額過低，紅框更改為最低金額",
-    "BetMaxTip": "投注金額過高，紅框更改為最高金額"
+    "BetMinTip": "投注金額過低，自動為您更改為最低金額",
+    "BetMaxTip": "投注金額過高，自動為您更改為最高金額"
   },
   "GamesBetInfo": {
     "BetInfo": "投注資訊",
