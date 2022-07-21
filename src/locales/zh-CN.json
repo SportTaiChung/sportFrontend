@@ -221,5 +221,12 @@
   },
   "Bold": {
     "Other": "其它"
+  },
+  "QuickBet": {
+    "open": "您已开启",
+    "fastBet": "快速投注",
+    "mode": "模式",
+    "setAmount": "设置投注金额后",
+    "ClickOdd": "点击赔率即刻进行投注"
   }
 }

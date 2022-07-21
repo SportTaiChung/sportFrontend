@@ -211,5 +211,12 @@
   },
   "Bold": {
     "Other": "other"
+  },
+  "QuickBet": {
+    "open": "you are turned on",
+    "fastBet": "Quick Bet",
+    "mode": "model",
+    "setAmount": "After setting the bet amount",
+    "ClickOdd": "Click on the odds to place a bet now"
   }
 }

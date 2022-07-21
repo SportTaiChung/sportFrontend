@@ -1,299 +1,312 @@
 <template>
-  <div id="BetViewList" ref="BetViewList" v-loading="isLoading" v-show="!isQuickBetEnable">
-    <!-- 購物車 -->
-    <template v-if="groupIndex === 0">
-      <template v-if="isShowChartList || isShowCharStrayList">
-        <!-- item -->
-        <listCardItem
-          v-for="(cartData, cartIndex) in showBetCartList"
-          :cartData="cartData"
-          :childIndex="childIndex"
-          :cartIndex="cartIndex"
-          :listCardItemClassJudge="listCardItemClassJudge(cartData.GameID, cartData)"
-          :currShowKeyboardIndex="currShowKeyboardIndex"
-          :key="cartIndex"
-          :isControlByBetSingle="isControlByBetSingle"
-          :isShowMinText="cartData.isShowMinText"
-          :isShowMaxText="cartData.isShowMaxText"
-          @cancelSingleHandler="cancelSingleHandler"
-          @inputRowItemChangeHandler="inputRowItemChangeHandler"
-          @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
-          @inputFocusEvent="inputFocusEvent"
-          @lastBlurInputEvent="listCardItemLastBlurInputEvent"
-          @Add="keyBoardAddEvent"
-          @Assign="keyBoardAssignEvent"
-          @MobileListItemSubmitBet="submitHandler"
-        ></listCardItem>
+  <div id="BetViewList" ref="BetViewList" v-loading="isLoading">
+    <template v-if="!isQuickBetEnable">
+      <!-- 購物車 -->
+      <template v-if="groupIndex === 0">
+        <template v-if="isShowChartList || isShowCharStrayList">
+          <!-- item -->
+          <listCardItem
+            v-for="(cartData, cartIndex) in showBetCartList"
+            :cartData="cartData"
+            :childIndex="childIndex"
+            :cartIndex="cartIndex"
+            :listCardItemClassJudge="listCardItemClassJudge(cartData.GameID, cartData)"
+            :currShowKeyboardIndex="currShowKeyboardIndex"
+            :key="cartIndex"
+            :isControlByBetSingle="isControlByBetSingle"
+            :isShowMinText="cartData.isShowMinText"
+            :isShowMaxText="cartData.isShowMaxText"
+            @cancelSingleHandler="cancelSingleHandler"
+            @inputRowItemChangeHandler="inputRowItemChangeHandler"
+            @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
+            @inputFocusEvent="inputFocusEvent"
+            @lastBlurInputEvent="listCardItemLastBlurInputEvent"
+            @Add="keyBoardAddEvent"
+            @Assign="keyBoardAssignEvent"
+            @MobileListItemSubmitBet="submitHandler"
+          ></listCardItem>
+        </template>
       </template>
-    </template>
 
-    <!-- 注單紀錄 -->
-    <template v-if="groupIndex === 1">
-      <HistoryCardItem
-        v-for="(historyItem, historyIndex) in showBetHistoryList"
-        :key="historyIndex"
-        :historyItem="historyItem"
-        :isSettlement="isSettlement"
-      >
-      </HistoryCardItem>
-    </template>
-
-    <div
-      class="cardOptionBlock"
-      v-if="isMobileMode && isControlByBetSingle && panelMode == PanelModeEnum.lock"
-    >
-      <div class="buttonRow">
-        <div class="submitBtn" style="text-align: center" @click="submitHandler">
-          {{ $t('Common.SubmitBet') }}
-        </div>
-      </div>
-    </div>
-
-    <!-- 單向投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowChartList && !isControlByBetSingle">
-      <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> {{ $t('Common.SingleOdd') }} </div>
-        <div class="betInputSymbol">:</div>
-        <input
-          ref="fillEachBetAmount"
-          v-model="fillEachBetAmount"
-          type="number"
-          :readonly="isMobileMode"
-          @focus="onInputFocus()"
-          @input="fillEachBetAmountHandler"
-          @click="
-            isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
-            lastClickInput = 1;
-          "
-          @blur="fillEachBetAmountBlurHandler"
-        />
-        <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
-      </div>
-
-      <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
-        <div class="betInputSymbol">:</div>
-        <input
-          v-model="fillEachWinAmount"
-          type="number"
-          :readonly="isMobileMode"
-          @focus="onInputFocus()"
-          @input="fillEachWinAmountHandler"
-          @click="
-            isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
-            lastClickInput = 2;
-          "
-        />
-        <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
-      </div>
-
-      <!-- 小鍵盤 -->
-      <mBetKeyboard
-        v-if="isMobileMode && isShowBetKB && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="isShowMaxChip"
-        :theMaxChipValue="theMaxChipValue"
-        @Add="keyBoardAddEvent"
-        @Assign="keyBoardAssignEvent"
-      ></mBetKeyboard>
-
-      <!-- 小籌碼 -->
-      <ChipsBar
-        v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="isShowMaxChip"
-        :theMaxChipValue="theMaxChipValue"
-        @onChipClick="onChipClick"
-      ></ChipsBar>
-
-      <div class="totalRow">
-        <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ totalBetAmount }}</div>
-        <div class="halfItem">
-          {{ $t('Common.CanWinMoney') }} :
-          <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
-            {{ totalWinAmount }}
-          </span>
-        </div>
-      </div>
-      <div class="buttonRow">
-        <div class="clearBtn" @click="resultLeftBtnClickHandler()">
-          {{ OptionCancelBtnStr }}
-        </div>
-        <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
-          {{ $t('Common.SubmitBet') }}
-        </div>
-        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
-          {{ $t('Common.Close') }}
-        </div>
-      </div>
-    </div>
-
-    <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
-    <div
-      class="cardOptionBlock"
-      v-if="
-        isMobileMode &&
-        isShowChartList &&
-        panelMode === PanelModeEnum.result &&
-        isControlByBetSingle
-      "
-    >
-      <div class="buttonRow">
-        <div class="clearBtn" @click="resultLeftBtnClickHandler()">
-          {{ OptionCancelBtnStr }}
-        </div>
-        <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
-          {{ $t('Common.SubmitBet') }}
-        </div>
-        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
-          {{ $t('Common.Close') }}
-        </div>
-      </div>
-    </div>
-
-    <!-- 串關投注下方面板 -->
-    <div class="cardOptionBlock" v-if="isShowCharStrayList && !isControlByBetSingle">
-      <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
-        <div class="topTextRow"> ※ {{ $t('BetViewList.HasSameGame') }} </div>
-        <div class="bottomTextRow">
-          <div>{{ $t('BetViewList.HaveChoose') }}</div>
-          <div class="goldTip">{{ EvtIdRepeatList.length }}</div>
-          <div>{{ $t('BetViewList.CantStray') }}</div>
-        </div>
-      </div>
-      <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="strayBlock">
-          <div class="strayBlockTop">
-            <div class="strayTopLeft">
-              {{ `${showBetCartList.length}${$t('Common.string')}1` }}
-            </div>
-            <div class="strayTopRight">
-              <div class="num">1 </div>
-              <div class="x"> x</div>
-            </div>
-          </div>
-          <div class="strayBlockBottom">
-            <div class="strayOdd"> @ {{ $lib.trunc(strayOdd, 2) }} </div>
-          </div>
-        </div>
-        <div class="betInputSymbol">:</div>
-        <input
-          ref="strayBetAmount"
-          v-model="strayBetAmount"
-          type="number"
-          read="true"
-          :readonly="isMobileMode"
-          :class="isShowMinText || isShowMaxText ? 'redErrorInput' : ''"
-          @focus="onInputFocus()"
-          @input="strayBetAmountInputChangeHandler"
-          @click="isShowStrayKB = !isShowStrayKB"
-          @blur="strayBetBlurHandler"
-        />
-      </div>
-      <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
-        <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
-        <div class="betInputSymbol">:</div>
-        <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
-      </div>
-
-      <!-- 小鍵盤 -->
-      <mBetKeyboard
-        v-if="isMobileMode && isShowStrayKB && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="isShowMaxChip"
-        :theMaxChipValue="theMaxChipValue"
-        @Add="keyBoardAddEvent"
-        @Assign="keyBoardAssignEvent"
-      ></mBetKeyboard>
-
-      <div class="strayLimitTipBlock">
-        <!-- 串關限紅提示 -->
-        <div class="limitTip" v-if="isShowMinText && childIndex === 1">
-          {{ $t('Common.BetMinTip') }}
-        </div>
-        <div class="limitTip" v-if="isShowMaxText && childIndex === 1">
-          {{ $t('Common.BetMaxTip') }}
-        </div>
-      </div>
-      <!-- 小籌碼 -->
-      <ChipsBar
-        v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
-        :isShowMaxChip="isShowMaxChip"
-        :theMaxChipValue="theMaxChipValue"
-        @onChipClick="onChipClick"
-      ></ChipsBar>
-
-      <BetResultBlock
-        style="margin-bottom: 7px; margin-left: 10px"
-        v-if="panelMode === PanelModeEnum.result"
-        :panelMode="panelMode"
-        :cartData="showBetCartList[0]"
-      >
-      </BetResultBlock>
+      <!-- 注單紀錄 -->
+      <template v-if="groupIndex === 1">
+        <HistoryCardItem
+          v-for="(historyItem, historyIndex) in showBetHistoryList"
+          :key="historyIndex"
+          :historyItem="historyItem"
+          :isSettlement="isSettlement"
+        >
+        </HistoryCardItem>
+      </template>
 
       <div
-        class="strayRow"
-        v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
+        class="cardOptionBlock"
+        v-if="isMobileMode && isControlByBetSingle && panelMode == PanelModeEnum.lock"
       >
-        <div class="strayRowTitle"> {{ $t('BetViewList.StaryOnly1') }} </div>
-        <div class="strayRowContent">
-          {{
-            `${showBetCartList.length}${$t('Common.string')}1 X 1 (${$t(
-              'Common.EachZu'
-            )}${strayBetAmount}${$t('Common.Dollar')} X 1 ${$t(
-              'Common.Group'
-            )}) = ${strayBetAmount}`
-          }}
+        <div class="buttonRow">
+          <div class="submitBtn" style="text-align: center" @click="submitHandler">
+            {{ $t('Common.SubmitBet') }}
+          </div>
         </div>
       </div>
 
-      <div class="totalRow">
-        <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ strayBetAmount }}</div>
-        <div class="halfItem">
-          {{ $t('Common.CanWinMoney') }} :
-          <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
-            {{ $lib.truncFloor(strayBetAmount * strayOdd) }}
-          </span>
+      <!-- 單向投注下方面板 -->
+      <div class="cardOptionBlock" v-if="isShowChartList && !isControlByBetSingle">
+        <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
+          <div class="betInputTitle"> {{ $t('Common.SingleOdd') }} </div>
+          <div class="betInputSymbol">:</div>
+          <input
+            ref="fillEachBetAmount"
+            v-model="fillEachBetAmount"
+            type="number"
+            :readonly="isMobileMode"
+            @focus="onInputFocus()"
+            @input="fillEachBetAmountHandler"
+            @click="
+              isShowBetKB = lastClickInput !== 1 || !isShowBetKB;
+              lastClickInput = 1;
+            "
+            @blur="fillEachBetAmountBlurHandler"
+          />
+          <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
+        </div>
+
+        <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
+          <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
+          <div class="betInputSymbol">:</div>
+          <input
+            v-model="fillEachWinAmount"
+            type="number"
+            :readonly="isMobileMode"
+            @focus="onInputFocus()"
+            @input="fillEachWinAmountHandler"
+            @click="
+              isShowBetKB = lastClickInput !== 2 || !isShowBetKB;
+              lastClickInput = 2;
+            "
+          />
+          <div class="betInputRowAbsoluteBlock">x {{ showBetCartList.length }}</div>
+        </div>
+
+        <!-- 小鍵盤 -->
+        <mBetKeyboard
+          v-if="isMobileMode && isShowBetKB && panelMode === PanelModeEnum.normal"
+          :isShowMaxChip="isShowMaxChip"
+          :theMaxChipValue="theMaxChipValue"
+          @Add="keyBoardAddEvent"
+          @Assign="keyBoardAssignEvent"
+        ></mBetKeyboard>
+
+        <!-- 小籌碼 -->
+        <ChipsBar
+          v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
+          :isShowMaxChip="isShowMaxChip"
+          :theMaxChipValue="theMaxChipValue"
+          @onChipClick="onChipClick"
+        ></ChipsBar>
+
+        <div class="totalRow">
+          <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ totalBetAmount }}</div>
+          <div class="halfItem">
+            {{ $t('Common.CanWinMoney') }} :
+            <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
+              {{ totalWinAmount }}
+            </span>
+          </div>
+        </div>
+        <div class="buttonRow">
+          <div class="clearBtn" @click="resultLeftBtnClickHandler()">
+            {{ OptionCancelBtnStr }}
+          </div>
+          <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
+            {{ $t('Common.SubmitBet') }}
+          </div>
+          <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+            {{ $t('Common.Close') }}
+          </div>
         </div>
       </div>
-      <div class="buttonRow">
-        <div class="clearBtn" @click="resultLeftBtnClickHandler">
-          {{ OptionCancelBtnStr }}
+
+      <!-- 手機 mGamesBetInfoSingle 才有的保留下注功能 -->
+      <div
+        class="cardOptionBlock"
+        v-if="
+          isMobileMode &&
+          isShowChartList &&
+          panelMode === PanelModeEnum.result &&
+          isControlByBetSingle
+        "
+      >
+        <div class="buttonRow">
+          <div class="clearBtn" @click="resultLeftBtnClickHandler()">
+            {{ OptionCancelBtnStr }}
+          </div>
+          <div class="submitBtn" v-if="panelMode !== PanelModeEnum.result" @click="submitHandler">
+            {{ $t('Common.SubmitBet') }}
+          </div>
+          <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+            {{ $t('Common.Close') }}
+          </div>
         </div>
-        <div
-          class="submitBtn"
-          v-if="panelMode !== PanelModeEnum.result"
-          @click="straySubmitHandler"
+      </div>
+
+      <!-- 串關投注下方面板 -->
+      <div class="cardOptionBlock" v-if="isShowCharStrayList && !isControlByBetSingle">
+        <div class="StrayTipBlock" v-if="EvtIdRepeatList.length !== 0">
+          <div class="topTextRow"> ※ {{ $t('BetViewList.HasSameGame') }} </div>
+          <div class="bottomTextRow">
+            <div>{{ $t('BetViewList.HaveChoose') }}</div>
+            <div class="goldTip">{{ EvtIdRepeatList.length }}</div>
+            <div>{{ $t('BetViewList.CantStray') }}</div>
+          </div>
+        </div>
+        <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
+          <div class="strayBlock">
+            <div class="strayBlockTop">
+              <div class="strayTopLeft">
+                {{ `${showBetCartList.length}${$t('Common.string')}1` }}
+              </div>
+              <div class="strayTopRight">
+                <div class="num">1 </div>
+                <div class="x"> x</div>
+              </div>
+            </div>
+            <div class="strayBlockBottom">
+              <div class="strayOdd"> @ {{ $lib.trunc(strayOdd, 2) }} </div>
+            </div>
+          </div>
+          <div class="betInputSymbol">:</div>
+          <input
+            ref="strayBetAmount"
+            v-model="strayBetAmount"
+            type="number"
+            read="true"
+            :readonly="isMobileMode"
+            :class="isShowMinText || isShowMaxText ? 'redErrorInput' : ''"
+            @focus="onInputFocus()"
+            @input="strayBetAmountInputChangeHandler"
+            @click="isShowStrayKB = !isShowStrayKB"
+            @blur="strayBetBlurHandler"
+          />
+        </div>
+        <div class="betInputRow" v-if="panelMode === PanelModeEnum.normal">
+          <div class="betInputTitle"> {{ $t('Common.CanWinMoney') }} </div>
+          <div class="betInputSymbol">:</div>
+          <div class="betReadInput">{{ $lib.truncFloor(strayBetAmount * strayOdd) }}</div>
+        </div>
+
+        <!-- 小鍵盤 -->
+        <mBetKeyboard
+          v-if="isMobileMode && isShowStrayKB && panelMode === PanelModeEnum.normal"
+          :isShowMaxChip="isShowMaxChip"
+          :theMaxChipValue="theMaxChipValue"
+          @Add="keyBoardAddEvent"
+          @Assign="keyBoardAssignEvent"
+        ></mBetKeyboard>
+
+        <div class="strayLimitTipBlock">
+          <!-- 串關限紅提示 -->
+          <div class="limitTip" v-if="isShowMinText && childIndex === 1">
+            {{ $t('Common.BetMinTip') }}
+          </div>
+          <div class="limitTip" v-if="isShowMaxText && childIndex === 1">
+            {{ $t('Common.BetMaxTip') }}
+          </div>
+        </div>
+        <!-- 小籌碼 -->
+        <ChipsBar
+          v-if="!isMobileMode && panelMode === PanelModeEnum.normal"
+          :isShowMaxChip="isShowMaxChip"
+          :theMaxChipValue="theMaxChipValue"
+          @onChipClick="onChipClick"
+        ></ChipsBar>
+
+        <BetResultBlock
+          style="margin-bottom: 7px; margin-left: 10px"
+          v-if="panelMode === PanelModeEnum.result"
+          :panelMode="panelMode"
+          :cartData="showBetCartList[0]"
         >
-          {{ $t('Common.SubmitBet') }}
+        </BetResultBlock>
+
+        <div
+          class="strayRow"
+          v-if="panelMode === PanelModeEnum.lock || panelMode === PanelModeEnum.result"
+        >
+          <div class="strayRowTitle"> {{ $t('BetViewList.StaryOnly1') }} </div>
+          <div class="strayRowContent">
+            {{
+              `${showBetCartList.length}${$t('Common.string')}1 X 1 (${$t(
+                'Common.EachZu'
+              )}${strayBetAmount}${$t('Common.Dollar')} X 1 ${$t(
+                'Common.Group'
+              )}) = ${strayBetAmount}`
+            }}
+          </div>
         </div>
-        <div class="closeBtn" v-else @click="resultCancelBtnClick()">
-          {{ $t('Common.Close') }}
+
+        <div class="totalRow">
+          <div class="halfItem">{{ $t('BetViewList.TotalBet') }} : {{ strayBetAmount }}</div>
+          <div class="halfItem">
+            {{ $t('Common.CanWinMoney') }} :
+            <span :style="isWinAmountChangeColor ? 'color:blue;' : ''">
+              {{ $lib.truncFloor(strayBetAmount * strayOdd) }}
+            </span>
+          </div>
+        </div>
+        <div class="buttonRow">
+          <div class="clearBtn" @click="resultLeftBtnClickHandler">
+            {{ OptionCancelBtnStr }}
+          </div>
+          <div
+            class="submitBtn"
+            v-if="panelMode !== PanelModeEnum.result"
+            @click="straySubmitHandler"
+          >
+            {{ $t('Common.SubmitBet') }}
+          </div>
+          <div class="closeBtn" v-else @click="resultCancelBtnClick()">
+            {{ $t('Common.Close') }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="noData" v-if="groupIndex === 0 && showBetCartList.length === 0">
-      <div class="noDataItem">
-        <div class="noDataItemImgContainer">
-          <img src="@/assets/img/pc/icon_onInfo.svg" alt="" />
+      <div class="noData" v-if="groupIndex === 0 && showBetCartList.length === 0">
+        <div class="noDataItem">
+          <div class="noDataItemImgContainer">
+            <img src="@/assets/img/pc/icon_onInfo.svg" alt="" />
+          </div>
+          <div> {{ $t('BetViewList.ClickToAdd') }} </div>
         </div>
-        <div> {{ $t('BetViewList.ClickToAdd') }} </div>
       </div>
-    </div>
 
-    <div
-      class="noData"
-      v-if="groupIndex === 1 && showBetHistoryList.length === 0 && isLoading === false"
-    >
-      <div class="noDataItem">
-        <div class="noDataItemImgContainer">
-          <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
+      <div
+        class="noData"
+        v-if="groupIndex === 1 && showBetHistoryList.length === 0 && isLoading === false"
+      >
+        <div class="noDataItem">
+          <div class="noDataItemImgContainer">
+            <img src="@/assets/img/pc/icon_noReceipt.svg" alt="" />
+          </div>
+          <div>{{ $t('BetViewList.NoBet') }}</div>
         </div>
-        <div>{{ $t('BetViewList.NoBet') }}</div>
       </div>
-    </div>
 
-    <div class="noData" v-if="isShowStrayCantPlayTip">
-      <div class="noDataItem">
-        <div class="noDataItemImgContainer"> {{ $t('BetViewList.StayNeed2Game') }} </div>
+      <div class="noData" v-if="isShowStrayCantPlayTip">
+        <div class="noDataItem">
+          <div class="noDataItemImgContainer"> {{ $t('BetViewList.StayNeed2Game') }} </div>
+        </div>
+      </div>
+    </template>
+
+    <div class="centerTipBlock" v-else>
+      <div class="centerTip">
+        <div class="tipItem">
+          {{ $t('QuickBet.open') }}<span style="color: red">{{ $t('QuickBet.fastBet') }}</span
+          >{{ $t('QuickBet.mode') }}
+        </div>
+        <div class="tipItem"> {{ $t('QuickBet.setAmount') }} </div>
+        <div class="tipItem"> {{ $t('QuickBet.ClickOdd') }} </div>
       </div>
     </div>
   </div>
@@ -424,9 +437,9 @@
           }
 
           if (this.groupIndex === 0 && !this.isMobileMode) {
-            if (this.childIndex === 0) {
+            if (this.childIndex === 0 && this.$refs.fillEachBetAmount) {
               this.$refs.fillEachBetAmount.focus();
-            } else if (this.childIndex === 1) {
+            } else if (this.childIndex === 1 && this.$refs.strayBetAmount) {
               this.$refs.strayBetAmount.focus();
             }
           }
@@ -1344,6 +1357,20 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+      }
+    }
+
+    .centerTipBlock {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .centerTip {
+        .tipItem {
+          margin-bottom: 10px;
+          font-size: 16px;
+        }
       }
     }
   }

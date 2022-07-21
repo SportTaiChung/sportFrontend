@@ -430,7 +430,9 @@
           this.isShowBetInfoSingle = true;
         } else {
           this.isShowBetInfo = true;
-          this.$refs.betInfoAll.tabIndex = 1;
+          if (this.$refs.betInfoAll) {
+            this.$refs.betInfoAll.tabIndex = 1;
+          }
         }
       },
       openBetRecordView() {
