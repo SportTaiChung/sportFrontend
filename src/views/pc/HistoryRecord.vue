@@ -159,11 +159,19 @@
           >
             <td>{{ item.accdate.substr(5) }} {{ item.weekLang }}</td>
             <td>{{ item.amount }}</td>
-            <td v-if="item.weekLang.indexOf($t('Common.Total')) > 0">{{ item.ResultAmount }}</td>
+            <td
+              v-if="item.weekLang.indexOf($t('Common.Total')) > 0"
+              :class="sumClassColorJudge(item.ResultAmount)"
+              >{{ item.ResultAmount }}
+            </td>
             <td v-else>
-              <el-link type="primary" @click="goThisWeek(item.accdate)">{{
-                item.ResultAmount
-              }}</el-link>
+              <el-link
+                type="primary"
+                @click="goThisWeek(item.accdate)"
+                :class="sumBlueClassColorJudge(item.ResultAmount)"
+              >
+                {{ item.ResultAmount }}
+              </el-link>
             </td>
           </tr>
         </table>
@@ -191,7 +199,12 @@
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
                 <td width="100">{{ item.canwins }}</td>
-                <td width="100">{{ item.ResultAmounts }}</td>
+                <td
+                  width="100"
+                  :class="parseInt(item.ResultAmounts) < 0 ? 'ScoreColor' : 'resultScore'"
+                >
+                  {{ item.ResultAmounts }}
+                </td>
               </tr>
             </table>
 
@@ -238,8 +251,10 @@
                         {{ betlist.WagerGrpName }}
                       </li>
                       <li>
+                        <span class="ScoreColor">[{{ betlist.HomeScore }}] </span>
                         {{ betlist.HomeTeam }}
                         <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
+                        <span class="ScoreColor">[{{ betlist.AwayScore }}] </span>
                         {{ betlist.AwayTeam }}
                       </li>
                       <li>
@@ -271,7 +286,9 @@
                       {{ itemdata.dataBet[0].WagerGrpName }}
                     </li>
                     <li>
+                      <span class="ScoreColor">[{{ itemdata.dataBet[0].HomeScore }}] </span>
                       {{ itemdata.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                      <span class="ScoreColor">[{{ itemdata.dataBet[0].AwayScore }}]</span>
                       {{ itemdata.dataBet[0].AwayTeam }}
                     </li>
                     <li>
@@ -294,7 +311,12 @@
                 <td width="100" class="rt_betval" v-else>
                   {{ itemdata.canwin }}
                 </td>
-                <td width="100" class="rt_betval">{{ itemdata.ResultAmount }}</td>
+                <td
+                  width="100"
+                  class="rt_betval"
+                  :class="parseInt(itemdata.ResultAmount) < 0 ? 'ScoreColor' : 'resultScore'"
+                  >{{ itemdata.ResultAmount }}</td
+                >
               </tr>
             </table>
           </div>
@@ -303,7 +325,9 @@
               <td width="585">{{ $t('Common.Total') }}</td>
               <td width="100" class="betSumTotal">{{ gettotal.Amounts }}</td>
               <td width="100">{{ gettotal.canwins }}</td>
-              <td width="100">{{ gettotal.ResultAmounts }}</td>
+              <td width="100" :class="this.sumClassColorJudge(gettotal.ResultAmounts)">
+                {{ gettotal.ResultAmounts }}
+              </td>
             </tr>
           </table>
         </div>
@@ -459,6 +483,24 @@
       },
     },
     methods: {
+      sumClassColorJudge(num) {
+        if (parseInt(num) < 0) {
+          return 'ScoreColor';
+        } else if (parseInt(num) === 0) {
+          return 'whiteColor';
+        } else {
+          return 'resultScore';
+        }
+      },
+      sumBlueClassColorJudge(num) {
+        if (parseInt(num) < 0) {
+          return 'ScoreColor';
+        } else if (parseInt(num) === 0) {
+          return 'linkColor';
+        } else {
+          return 'resultScore';
+        }
+      },
       handleSizeChange(val) {
         this.pageData.pageSize = val;
       },
@@ -537,6 +579,16 @@
   @import '../../assets/sass/global.scss';
   #HistoryRecord {
     height: 100%;
+    .whiteColor {
+      color: white !important;
+    }
+    .ScoreColor {
+      color: red !important;
+      margin-right: 1px;
+    }
+    .linkColor {
+      color: #409eff !important;
+    }
     .betTeamColor {
       color: #0077ff;
     }
@@ -547,7 +599,7 @@
       color: #ffe900 !important;
     }
     .resultScore {
-      color: #0a9c00;
+      color: #0a9c00 !important;
     }
     .startGameTime {
       color: #666;
