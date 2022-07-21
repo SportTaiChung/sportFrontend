@@ -48,6 +48,9 @@ export default {
       store.commit('BetCart/clearCart', null, { root: true });
       store.commit('SetToken', '');
       store.commit('SetMBID', '');
+      store.commit('MoreGame/setIsShowMoreGame', null, { root: true });
+
+      window.chat.reset();
       window.router.replace({ name: 'Login' });
     },
     Logout(store) {

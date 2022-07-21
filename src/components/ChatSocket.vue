@@ -6,10 +6,12 @@
   export default {
     name: 'ChatSocket',
     data() {
-      return {};
+      return {
+        isInit: false,
+        initEvtID: '',
+      };
     },
     created() {
-      this.initWebsocket();
       this.initDefaultMessage();
       window.chat = this;
     },
@@ -19,10 +21,20 @@
       },
     },
     methods: {
+      reset() {
+        this.isInit = false;
+        this.initEvtID = '';
+        this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
+      },
       initDefaultMessage() {
         this.$store.dispatch('Chat/getDefaultMes');
       },
-      initWebsocket() {
+      initWebsocket(initEvtID, isReconnect = false) {
+        this.initEvtID = initEvtID;
+        if (this.isInit && !isReconnect) {
+          return;
+        }
+        this.isInit = true;
         this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
 
         this.webSocketObj = new WebSocket(
@@ -75,7 +87,7 @@
       ReconnectSocket() {
         if (this.reconnectTime <= 5) {
           setTimeout(() => {
-            this.initWebsocket();
+            this.initWebsocket(true);
             this.reconnectTime++;
           }, 2000);
         }
@@ -84,6 +96,7 @@
         const postData = {
           mbID: this.User.MBID,
           token: this.User.Token,
+          EvtID: this.initEvtID,
         };
         this.webSocketObj.send(`@APILoginMB[${JSON.stringify(postData)}`);
       },
