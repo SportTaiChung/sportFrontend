@@ -181,7 +181,7 @@
       };
     },
     mounted() {
-      if (this.isControlByBetSingle) {
+      if (this.isControlByBetSingle || this.$refs.BetAmountInput) {
         this.$refs.BetAmountInput.focus();
       }
     },

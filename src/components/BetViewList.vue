@@ -738,6 +738,7 @@
       reCalcBetChart(isMinMaxJudge = false) {
         let newTotalBetAmount = 0;
         let newTotalWinAmount = 0;
+        let isTriggerLimit = false;
         this.showBetCartList.forEach((cartData) => {
           const displayData = this.cartDataToDisplayData(cartData);
           if (cartData.betAmount !== null) {
@@ -746,6 +747,9 @@
             cartData.isShowMaxText = false;
             if (isMinMaxJudge) {
               cartData.betAmount = this.minMaxJudge(cartData);
+              if (cartData.isShowMinText || cartData.isShowMaxText) {
+                isTriggerLimit = true;
+              }
             }
             cartData.winAmount = this.$lib.truncFloor(
               cartData.betAmount * this.$lib.trunc(parseFloat(displayData.showOdd))
@@ -758,6 +762,8 @@
 
         this.totalBetAmount = newTotalBetAmount;
         this.totalWinAmount = newTotalWinAmount;
+
+        return isTriggerLimit;
       },
       reCalcStrayBetChart() {
         let strayOdd = null;
@@ -897,6 +903,10 @@
         }
       },
       submitHandler(isShowMessage = false) {
+        const isTriggerLimit = this.reCalcBetChart(true);
+        if (isTriggerLimit) {
+          return;
+        }
         const checkRes = this.checkBetPlayData(1, null);
         if (checkRes === null) {
           return;
@@ -1029,11 +1039,9 @@
       },
       keyBoardAddEvent(addNum) {
         this.processLastBlurInput(addNum);
-        this.reCalcBetChart(true);
       },
       keyBoardAssignEvent(newNum) {
         this.processLastBlurInput(newNum, true);
-        this.reCalcBetChart(true);
       },
       processLastBlurInput(value, isAssignMode = false) {
         if (this.lastBlurInput.name === 'rowItem') {
