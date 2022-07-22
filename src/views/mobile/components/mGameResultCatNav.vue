@@ -6,7 +6,7 @@
       <span class="text">{{ showGetDate }}</span>
     </li>
     <li
-      v-for="(catData, index) in CatList"
+      v-for="(catData, index) in dynamicCatList"
       :key="index"
       class="item"
       :class="selectedCatId == catData.CatID ? 'active' : ''"
@@ -29,6 +29,8 @@
     data() {
       return {
         selectedCatId: null,
+        cloneNum: 3,
+        isOverflow: false,
       };
     },
     created() {
@@ -49,16 +51,63 @@
       showGetDate() {
         return this.date?.getDate();
       },
+      dynamicCatList() {
+        let list = this.CatList;
+        if (this.isOverflow) {
+          const clone = [...list];
+          for (let i = 0; i < this.cloneNum; i++) {
+            list = [...list, ...clone];
+          }
+        }
+        return list;
+      },
+      orgChildrenWidth() {
+        const children = Array.from(this.$el.children);
+        children.length = this.CatList.length;
+        return children.reduce((acc, it) => (acc += it.clientWidth), 0);
+      },
     },
     methods: {
       getMenuIconByCatID(catId) {
         const icon = this.CatMapData[catId].icon;
         return require('@/assets/img/common/menuIcon/' + icon);
       },
+      detectIsOverflow() {
+        this.isOverflow = this.orgChildrenWidth > this.$el.clientWidth;
+      },
+      onScroll() {
+        if (this.isOverflow) {
+          const { clientWidth, scrollWidth, scrollLeft } = this.$el;
+          const orgScrollWidth = scrollWidth / (this.cloneNum + 1);
+          const orgOverflow = orgScrollWidth - clientWidth;
+          if (scrollLeft === 0) {
+            this.$el.scrollLeft = orgScrollWidth;
+          } else if (scrollLeft >= scrollWidth - clientWidth) {
+            this.$el.scrollLeft = orgOverflow;
+          }
+        }
+      },
+    },
+    mounted() {
+      this.$el.addEventListener('scroll', this.onScroll);
+      window.addEventListener('resize', this.detectIsOverflow);
+      // init
+      this.detectIsOverflow();
+      this.onScroll();
+    },
+    beforeDestroy() {
+      this.$el.removeEventListener('scroll', this.onScroll);
+      window.removeEventListener('resize', this.detectIsOverflow);
     },
     watch: {
       selectedCatId(newValue) {
         this.$emit('changeGameResultCatId', newValue);
+      },
+      CatList() {
+        // 當彩種更新時 重設overflow狀態 並更新視圖狀態
+        this.isOverflow = false;
+        this.detectIsOverflow();
+        this.onScroll();
       },
     },
   };

@@ -180,7 +180,6 @@
         this.$store
           .dispatch('Game/GetGameResult', postData)
           .then((res) => {
-            console.log(res);
             this.rawData = res.data;
             // this.expandAllCollapse();
           })
@@ -236,7 +235,6 @@
           // 如果沒有卷軸,則不顯示小球
           const element = this.$refs.scrollEl;
           if (element) {
-            console.log(element.scrollWidth, element.clientWidth);
             if (element.scrollWidth <= element.clientWidth) {
               this.dotStatus.visible = false;
             } else {
