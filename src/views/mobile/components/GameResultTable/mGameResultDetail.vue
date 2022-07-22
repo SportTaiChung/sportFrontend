@@ -105,21 +105,29 @@
 
   .mGameResultDetail {
     position: relative;
-    overflow-x: auto;
-
+    // overflow-x: auto;
+    &::-webkit-scrollbar {
+      /*隱藏滾輪*/
+      display: none;
+    }
     &.closed {
+      width: 100%;
+      position: sticky;
+      left: 0;
+      overflow-x: hidden;
+
       &::after {
         content: '';
         display: block;
         position: absolute;
         left: 0;
-        bottom: 0;
+        bottom: 1px;
         width: 100%;
         height: 1px;
         background-color: #ccc;
+        z-index: 1;
       }
 
-      overflow-x: hidden;
       table thead {
         tr th {
           color: transparent !important;

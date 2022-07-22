@@ -26,6 +26,11 @@
                 </div>
               </div>
             </td>
+            <!-- 小圓點 滾動指示 -->
+            <div class="dot-wrap" v-show="dotStatus.visible">
+              <div class="dot left" :class="!dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
+              <div class="dot right" :class="dotStatus.isScrollToTheEnd ? 'active' : ''"></div>
+            </div>
           </tr>
         </template>
       </tbody>
@@ -48,6 +53,17 @@
         type: Boolean,
         default() {
           return false;
+        },
+      },
+
+      // 小圓點狀態
+      dotStatus: {
+        type: Object,
+        default() {
+          return {
+            visible: false,
+            isScrollToTheEnd: false,
+          };
         },
       },
     },
@@ -87,7 +103,7 @@
         display: block;
         position: absolute;
         left: 0;
-        bottom: 0;
+        bottom: 1px;
         width: 100%;
         height: 1px;
         background-color: #ccc;
@@ -105,6 +121,31 @@
       width: 100%;
       font-size: $font-size;
       background-color: #fff;
+
+      tr {
+        position: relative;
+
+        // 小圓點
+        .dot-wrap {
+          position: absolute;
+          right: calc(-80% + 36px);
+          // bottom: 3px; // https://github.com/w3c/csswg-drafts/issues/1899
+          z-index: 9;
+          display: flex;
+          transform: translateY(-8px);
+
+          .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 5px;
+            &.active {
+              background-color: #a3d3c3;
+            }
+          }
+        }
+      }
 
       th {
         display: flex;
