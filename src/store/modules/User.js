@@ -50,7 +50,9 @@ export default {
       store.commit('SetMBID', '');
       store.commit('MoreGame/setIsShowMoreGame', null, { root: true });
 
-      window.chat.reset();
+      if (window.chat) {
+        window.chat.reset();
+      }
       window.router.replace({ name: 'Login' });
     },
     Logout(store) {
