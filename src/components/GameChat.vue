@@ -79,6 +79,9 @@
         isShowQuickMsgList: false,
       };
     },
+    created() {
+      console.log('gameChat created');
+    },
     computed: {
       ChatList() {
         return this.$store.state.Chat.ChatList;

@@ -1017,6 +1017,9 @@
         }
       },
       listCardItemLastBlurInputEvent(lastBlurInputData) {
+        if (this.lastBlurInput.from === lastBlurInputData.from) {
+          this.isShowBetKB = !this.isShowBetKB;
+        }
         this.lastBlurInput = lastBlurInputData;
         this.reCalcBetChart(true);
       },

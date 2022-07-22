@@ -339,10 +339,6 @@
       };
     },
     created() {
-      if (this.selectGameType === 2) {
-        window.chat.initWebsocket(this.teamData.EvtID);
-      }
-
       // 定時更新遊戲賠率
       this.intervalEvent = setInterval(() => {
         this.$store.dispatch('MoreGame/GetMoreGameDetailSmall', this.teamData.EvtID);
@@ -579,6 +575,14 @@
       selectItemKey() {
         this.collapseItemNames.length = 0;
         this.collapseItemNames = [];
+      },
+      'teamData.EvtID': {
+        handler() {
+          if (this.selectGameType === 2) {
+            window.chat.initWebsocket(this.teamData.EvtID);
+          }
+        },
+        immediate: true,
       },
     },
     methods: {
