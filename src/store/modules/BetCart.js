@@ -8,6 +8,10 @@ const quickBetData = {
   x: 0,
   y: 0,
 };
+const lastFirstBetMessage = {
+  message: '',
+  end: false,
+};
 export default {
   namespaced: true,
   state: {
@@ -23,7 +27,7 @@ export default {
     panelMode: PanelModeEnum.normal,
     quickBetData,
     // 投注Message,主要是給QuickBetPanel使用
-    lastFirstBetMessage: '',
+    lastFirstBetMessage,
   },
   getters: {
     showBetCartList(state) {
@@ -56,6 +60,9 @@ export default {
     },
     pushCart(state, cartData) {
       state.betCartList.push(cartData);
+    },
+    clearLastFirstBetMessage(state) {
+      state.lastFirstBetMessage = lastFirstBetMessage;
     },
     clearCart(state) {
       state.betCartList.length = 0;
@@ -231,8 +238,9 @@ export default {
         return playState(traceCodeKey)
           .then((res) => {
             if (res?.data) {
+              const isFind201 = res.data.find((it) => it.code === 201);
               // 如果有找到201 就重新打一次playState
-              if (res.data.find((it) => it.code === 201)) {
+              if (isFind201) {
                 setTimeout(() => {
                   store.dispatch('playState', { traceCodeKey });
                 }, 600);
@@ -240,7 +248,17 @@ export default {
               rootStore.dispatch('User/GetUserInfoCash');
               store.commit('updateBetCartListBetResult', res.data);
               if (res.data.length !== 0) {
-                store.commit('setLastFirstBetMessage', res.data[0]?.Message);
+                if (isFind201) {
+                  store.commit('setLastFirstBetMessage', {
+                    message: res.data[0]?.Message,
+                    end: true,
+                  });
+                } else {
+                  store.commit('setLastFirstBetMessage', {
+                    message: '',
+                    end: false,
+                  });
+                }
               }
             }
             resolve(res);

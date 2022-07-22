@@ -1,6 +1,6 @@
 <template>
   <div id="QuickBetPanel" @click.stop="onMaskClick">
-    <div class="QuickBetPopup" :style="quickBetPopupStyle">
+    <div class="QuickBetPopup" :style="quickBetPopupStyle" v-if="displayData !== null">
       <div class="playMethodName"> {{ displayData.showBetTitle }}</div>
       <div class="QuickBetCutLineRow">
         <div class="playMethodNameSupport">
@@ -56,6 +56,11 @@
           this.cartData.betAmount = this.currentSelectBetInfo.BetMax;
         }
       }
+
+      if (this.lastFirstBetMessageEnd) {
+        this.$MSG.warn('交易繁忙,請稍後再試');
+        this.closeSelf();
+      }
     },
     computed: {
       quickBetData() {
@@ -75,6 +80,9 @@
         }
       },
       displayData() {
+        if (this.cartData === null) {
+          return null;
+        }
         return this.cartDataToDisplayData(this.cartData);
       },
       includePrincipal() {
@@ -103,7 +111,10 @@
         return findData;
       },
       lastFirstBetMessage() {
-        return this.$store.state.BetCart.lastFirstBetMessage;
+        return this.$store.state.BetCart.lastFirstBetMessage.message;
+      },
+      lastFirstBetMessageEnd() {
+        return this.$store.state.BetCart.lastFirstBetMessage.end;
       },
     },
     watch: {
@@ -126,7 +137,6 @@
         this.closeSelf();
       },
       closeSelf() {
-        this.$store.commit('BetCart/setLastFirstBetMessage', '');
         this.$store.commit('BetCart/clearCart');
         this.$store.commit('BetCart/showQuickBetData', {
           isShow: false,
