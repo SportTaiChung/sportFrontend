@@ -22,11 +22,12 @@
           :key="index"
           :source="source"
           :isExpanded="isExpanded(index)"
+          :dotStatus="dotStatusHandlerAll()"
           @toggleCollapse="toggleCollapse(index)"
         ></mGameResultInfo>
       </div>
       <!-- 右半邊 - 詳細資料 -->
-      <div class="right-area">
+      <div class="right-area" ref="scrollEl" @scroll="scrollEvent">
         <mGameResultDetail
           v-for="(source, index) in leagueList"
           :key="index"
@@ -101,6 +102,10 @@
         }),
         selectedDateIndex: 0,
         isShowDatePicker: false,
+        dotStatus: {
+          visible: false,
+          isScrollToTheEnd: false,
+        },
       };
     },
     computed: {
@@ -149,6 +154,7 @@
         } else {
           this.activeCollapse.push(index);
         }
+        this.updateDotVisible();
       },
       toggleAllCollapse() {
         this.activeCollapse = this.activeCollapse.length > 0 ? [] : this.expandAllCollapse();
@@ -174,7 +180,6 @@
         this.$store
           .dispatch('Game/GetGameResult', postData)
           .then((res) => {
-            console.log(res);
             this.rawData = res.data;
             // this.expandAllCollapse();
           })
@@ -212,15 +217,45 @@
         if (e.target !== e.currentTarget) return;
         this.isShowDatePicker = false;
       },
+      dotStatusHandlerAll() {
+        return this.dotStatus;
+      },
+      scrollEvent(event) {
+        const element = event.target;
+        if (Math.floor(element.scrollWidth - element.scrollLeft) <= element.clientWidth) {
+          // 滑到最右邊
+          this.dotStatus.isScrollToTheEnd = true;
+        } else if (element.scrollLeft === 0) {
+          // 滑到最左邊
+          this.dotStatus.isScrollToTheEnd = false;
+        }
+      },
+      updateDotVisible() {
+        this.$nextTick(() => {
+          // 如果沒有卷軸,則不顯示小球
+          const element = this.$refs.scrollEl;
+          if (element) {
+            if (element.scrollWidth <= element.clientWidth) {
+              this.dotStatus.visible = false;
+            } else {
+              this.dotStatus.visible = true;
+            }
+          }
+        });
+      },
     },
     watch: {
       selectedCatId(newValue, oldValue) {
         this.getGameResult();
+        this.activeCollapse = [];
       },
       selectedDateIndex() {
         this.getGameResult();
         this.isShowDatePicker = false;
         this.$emit('date', this.selectedDate);
+      },
+      activeCollapse() {
+        this.updateDotVisible();
       },
     },
   };
@@ -239,8 +274,9 @@
       }
     }
     .right-area {
+      position: relative;
       flex: 1;
-      overflow-x: hidden;
+      overflow-x: auto;
       overflow-y: hidden;
       // box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.1);
     }

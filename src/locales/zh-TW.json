@@ -3,7 +3,8 @@
     "Account": "帳號",
     "Password": "密碼",
     "CustomerService": "專屬客服",
-    "MemberLogin": "會員登入"
+    "MemberLogin": "會員登入",
+    "SwitchToPCVersion": "切換至電腦版"
   },
   "GamesHeader": {
     "LiveScore": "即時比分",
@@ -130,8 +131,8 @@
     "Yes": "是",
     "No": "否",
     "remark": "備註",
-    "BetMinTip": "投注金額過低，紅框更改為最低金額",
-    "BetMaxTip": "投注金額過高，紅框更改為最高金額"
+    "BetMinTip": "投注金額過低，自動為您更改為最低金額",
+    "BetMaxTip": "投注金額過高，自動為您更改為最高金額"
   },
   "GamesBetInfo": {
     "BetInfo": "投注資訊",
@@ -220,5 +221,12 @@
   },
   "Bold": {
     "Other": "其它"
+  },
+  "QuickBet": {
+    "open": "您已開啟",
+    "fastBet": "快速投注",
+    "mode": "模式",
+    "setAmount": "設置投注金額後",
+    "ClickOdd": "點擊賠率即刻進行投注"
   }
 }

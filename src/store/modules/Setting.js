@@ -1,5 +1,6 @@
 // import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
 import rootStore from '@/store';
+import * as SportLib from '@/utils/SportLib';
 
 const defaultSettings = Object.freeze({
   // 收藏夾
@@ -25,7 +26,7 @@ const defaultSettings = Object.freeze({
     amount: 100,
   },
   // 偏好籌碼 (最多6個)
-  preferChips: [1, 5, 10, 500, 1000, 2000],
+  preferChips: SportLib.chipsData.slice(0, 6).map((chip) => chip.value),
 });
 
 export default {
@@ -50,11 +51,24 @@ export default {
     init(state, val) {
       const UserSetting = JSON.parse(localStorage.getItem('UserSetting'));
       const MBID = localStorage.getItem('MBID');
-      if (UserSetting !== null && UserSetting[MBID] !== undefined) {
+      const oldUser = UserSetting?.[MBID];
+      if (oldUser) {
         // 舊會員
         // 先拷貝預設值, 再覆寫, 避免日後新增欄位後, localStorage 讀不到的問題
         const cloneDefault = Object.assign({}, defaultSettings);
-        state.UserSetting = Object.assign(cloneDefault, UserSetting[MBID]);
+        const finalSetting = Object.assign(cloneDefault, oldUser);
+
+        // 修正偏好籌碼, 避免從 localStorage 讀到非預設值內的設定
+        const allowed = SportLib.chipsData.map((chip) => chip.value);
+        finalSetting.preferChips = finalSetting.preferChips.filter((v) => allowed.includes(v));
+
+        // 如果沒有偏好籌碼, 則直接套用預設值籌碼
+        if (finalSetting.preferChips.length < 1) {
+          Object.assign(finalSetting.preferChips, defaultSettings.preferChips);
+        }
+
+        // 保存到 state
+        state.UserSetting = Object.assign(cloneDefault, finalSetting);
       } else {
         // 新會員
         state.UserSetting = Object.assign({}, defaultSettings);

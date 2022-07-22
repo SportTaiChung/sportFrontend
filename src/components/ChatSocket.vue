@@ -6,12 +6,19 @@
   export default {
     name: 'ChatSocket',
     data() {
-      return {};
+      return {
+        isInit: false,
+        initEvtID: '',
+        isReconnectLock: null,
+        timeOutEvent: null,
+      };
     },
     created() {
-      this.initWebsocket();
       this.initDefaultMessage();
       window.chat = this;
+    },
+    destroyed() {
+      clearTimeout(this.timeOutEvent);
     },
     computed: {
       User() {
@@ -19,10 +26,23 @@
       },
     },
     methods: {
+      reset() {
+        this.isInit = false;
+        this.initEvtID = '';
+        this.lockReconnect();
+        this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
+      },
       initDefaultMessage() {
         this.$store.dispatch('Chat/getDefaultMes');
       },
-      initWebsocket() {
+      initWebsocket(initEvtID, isReconnect = false) {
+        this.initEvtID = initEvtID;
+        if (this.isInit && !isReconnect) {
+          this.changeRoom(initEvtID);
+          return;
+        }
+        this.lockReconnect();
+        this.isInit = true;
         this.webSocketObj && this.webSocketObj.close && this.webSocketObj.close();
 
         this.webSocketObj = new WebSocket(
@@ -62,6 +82,10 @@
               this.$store.commit('Chat/PushChatList', parseData.data[0]);
             }
           }
+
+          // else if (eventName === 'APIsayHi') {
+          //   this.webSocketObj.send('@APIsayHi[]');
+          // }
         }
       },
       onError() {
@@ -69,26 +93,45 @@
         this.ReconnectSocket();
       },
       onClose() {
+        if (this.isReconnectLock) {
+          return;
+        }
         console.warn('socket onClose!');
         this.ReconnectSocket();
       },
       ReconnectSocket() {
         if (this.reconnectTime <= 5) {
-          setTimeout(() => {
-            this.initWebsocket();
-            this.reconnectTime++;
-          }, 2000);
+          console.log('ReconnectSocket', this.reconnectTime);
+          this.initWebsocket(this.initEvtID, true);
+          this.reconnectTime++;
         }
       },
       APILoginMB() {
         const postData = {
           mbID: this.User.MBID,
           token: this.User.Token,
+          EvtID: this.initEvtID,
         };
         this.webSocketObj.send(`@APILoginMB[${JSON.stringify(postData)}`);
       },
+      changeRoom(initEvtID) {
+        this.webSocketObj.send(`@APILoginMBEvtIDChangeRoom[${initEvtID}`);
+      },
       SendMessage(message) {
-        this.webSocketObj.send(message);
+        console.log('this.webSocketObj:', this.webSocketObj, this.webSocketObj?.readyState);
+        if (this.webSocketObj.readyState !== 1) {
+          this.initWebsocket(this.initEvtID, true);
+          setTimeout(this.initWebsocket, 1000);
+        } else {
+          this.webSocketObj.send(message);
+        }
+      },
+      lockReconnect() {
+        this.isReconnectLock = true;
+        clearTimeout(this.timeOutEvent);
+        this.timeOutEvent = setTimeout(() => {
+          this.isReconnectLock = false;
+        }, 2000);
       },
     },
   };

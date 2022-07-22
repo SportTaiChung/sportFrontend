@@ -589,11 +589,11 @@ export default {
             GameType,
             WagerTypeKey,
           }).then((res) => {
-            const EvtStatusList = res.data.List.map((it) => it.EvtStatus);
-            console.log('DetailSmall 內所有資料的EvtStatus:', EvtStatusList);
-            console.log(
-              `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
-            );
+            // const EvtStatusList = res.data.List.map((it) => it.EvtStatus);
+            // console.log('DetailSmall 內所有資料的EvtStatus:', EvtStatusList);
+            // console.log(
+            //   `EvtStatus 為 -1 的資料 有 ${EvtStatusList.filter((it) => it === -1).length} 筆`
+            // );
             store.commit('updateGameList', {
               isUpdateFromOtherStore: false,
               updateData: res.data.List,

@@ -267,25 +267,23 @@
       // 強制禁用 ios 兩指縮放 (新)
       document.documentElement.addEventListener(
         'gesturestart',
-        function (event) {
-          event.preventDefault();
-        },
+        (event) => event.preventDefault(),
         false
       );
 
-      // 強制禁用 ios 點兩下縮放
-      var lastTouchEnd = 0;
-      document.documentElement.addEventListener(
-        'touchend',
-        function (event) {
-          var now = Date.now();
-          if (now - lastTouchEnd <= 300 && event.cancelable) {
-            event.preventDefault();
-          }
-          lastTouchEnd = now;
-        },
-        false
-      );
+      // 強制禁用 ios 點兩下縮放 (使用手機下注鍵盤時, 有delay問題, 先註解掉)
+      // var lastTouchEnd = 0;
+      // document.documentElement.addEventListener(
+      //   'touchend',
+      //   function (event) {
+      //     var now = Date.now();
+      //     if (now - lastTouchEnd <= 300 && event.cancelable) {
+      //       event.preventDefault();
+      //     }
+      //     lastTouchEnd = now;
+      //   },
+      //   false
+      // );
     },
     beforeDestroy() {
       clearInterval(this.intervalEvent);
@@ -432,7 +430,9 @@
           this.isShowBetInfoSingle = true;
         } else {
           this.isShowBetInfo = true;
-          this.$refs.betInfoAll.tabIndex = 1;
+          if (this.$refs.betInfoAll) {
+            this.$refs.betInfoAll.tabIndex = 1;
+          }
         }
       },
       openBetRecordView() {
