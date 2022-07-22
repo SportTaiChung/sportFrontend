@@ -11,11 +11,11 @@
         ></i>
         <div class="chat-history" ref="history">
           <template v-for="(it, index) in ChatList">
-            <div class="UserName" :key="'name' + index" v-if="!isSelfMessage(it.mbID)">
-              {{ it.Name }}
-            </div>
             <div class="msg-wrap" :class="isSelfMessage(it.mbID) ? 'self' : ''" :key="index">
               <div class="msg-row">
+                <div class="UserName" :key="'name' + index" v-if="!isSelfMessage(it.mbID)">
+                  {{ it.Name }}
+                </div>
                 <div class="msg"> {{ it.Mes }} </div>
               </div>
               <div class="time">
@@ -312,22 +312,21 @@
         }
 
         .chat-history {
-          padding: 10px;
           height: 100%;
           overflow-x: hidden;
           overflow-y: auto;
+          padding: 10px;
+          padding-right: 25px;
           .UserName {
             margin-bottom: 5px;
+            font-size: 1.25rem;
+            color: #444;
           }
           .msg-wrap {
             display: flex;
             margin-bottom: 1rem;
-            margin-right: 1rem;
-            // margin-left: 1rem;
             .msg-row {
-              display: flex;
-              flex-flow: row nowrap;
-
+              max-width: 100%;
               .avatar {
                 flex-shrink: 0;
                 width: 45px;
@@ -343,14 +342,16 @@
               }
               .msg {
                 color: #444;
-                padding: 10px 18px;
+                padding: 6px 12px;
                 line-height: normal;
-                font-size: 16px;
+                font-size: 1.2rem;
                 min-height: 2rem;
+                max-width: 100%;
                 border-radius: 7px;
                 display: inline-block;
                 position: relative;
                 background: #efefef;
+                word-break: break-all;
 
                 // &::after {
                 //   position: absolute;
@@ -376,7 +377,7 @@
             .time {
               margin: 0 8px;
               color: #6c757d;
-              font-size: 1.23rem;
+              font-size: 1rem;
               text-align: center;
               display: flex;
               align-items: flex-end;
@@ -385,7 +386,6 @@
             &.self {
               align-self: flex-end;
               flex-flow: row-reverse;
-              margin-right: 1.5rem;
 
               .avatar {
                 display: none;
