@@ -477,30 +477,36 @@ export function cartDataToDisplayData(cartData) {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);
   }
 
+  let showGameTypeLabel = '';
   let wagerGrpLabel = '';
-  let wagerBoldLabel = '';
-  // 波膽處理
-  if (cartData.WagerTypeID === 112) {
-    wagerBoldLabel = `- ${i18n.t('Common.Bold')}`;
+  if (cartData?.ItemName) {
+    wagerGrpLabel = `- [${cartData.ItemName}]`;
+  } else {
+    let wagerBoldLabel = '';
+    // 波膽處理
+    if (cartData.WagerTypeID === 112) {
+      wagerBoldLabel = `- ${i18n.t('Common.Bold')}`;
+    } else if (
+      cartData.WagerGrpID === 0 ||
+      cartData.WagerGrpID === 10 ||
+      cartData.WagerGrpID === 20
+    ) {
+      wagerGrpLabel = `- [${i18n.t('Common.FullGame')}${wagerBoldLabel}]`;
+    } else if (
+      cartData.WagerGrpID === 1 ||
+      cartData.WagerGrpID === 11 ||
+      cartData.WagerGrpID === 21
+    ) {
+      wagerGrpLabel = `- [${i18n.t('Common.HalfGame')}${wagerBoldLabel}]`;
+    }
   }
-
-  if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
-    wagerGrpLabel = `- [${i18n.t('Common.FullGame')}${wagerBoldLabel}]`;
-  } else if (
-    cartData.WagerGrpID === 1 ||
-    cartData.WagerGrpID === 11 ||
-    cartData.WagerGrpID === 21
-  ) {
-    wagerGrpLabel = `- [${i18n.t('Common.HalfGame')}${wagerBoldLabel}]`;
-  }
-  const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
+  showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 
   return {
     showBetTitle,
     showCutLine,
     showOdd,
     showGameTypeLabel,
-    wagerGrpLabel,
   };
 }
 

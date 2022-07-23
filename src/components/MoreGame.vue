@@ -271,7 +271,7 @@
                             oddIndex +
                             betIndex
                           "
-                          @click="goBet(betData, oddData, leagueData, $event)"
+                          @click="goBet(gameData, betData, oddData, leagueData, $event)"
                         >
                           <div class="betBlockTop">
                             {{ betData.showMethod }}
@@ -646,7 +646,7 @@
           this.collapseItemNames = this.FinalGameList.map((it) => it.ItemName);
         }
       },
-      goBet(betData, oddData, leagueData, event) {
+      goBet(gameData, betData, oddData, leagueData, event) {
         this.$emit('AddToCart');
         const selectGameTypeID = this.$store.state.Game.selectGameType;
         const GameTypeLabel = this.$store.state.Game.GameTypeList.find(
@@ -669,6 +669,7 @@
           EvtID: this.teamData.EvtID,
           EvtStatus: this.teamData.EvtStatus,
           SetFlag: this.teamData.SetFlag,
+          ItemName: gameData.ItemName,
           ...oddData,
         };
         this.$store.dispatch('BetCart/addToCart', betInfoData);
