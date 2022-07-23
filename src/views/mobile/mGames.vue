@@ -122,7 +122,7 @@
       <!-- 玩法選擇彈窗 -->
       <mWagerTypePopup
         v-if="isShowWagerTypePopup"
-        @closeWagerTypePopup="isShowWagerTypePopup = false"
+        @closeWagerTypePopup="closeWagerTypePopup"
       ></mWagerTypePopup>
 
       <!-- 功能選單 -->
@@ -359,6 +359,10 @@
       },
     },
     methods: {
+      closeWagerTypePopup() {
+        this.isShowWagerTypePopup = false;
+        this.callMainBetInfo(this.gameStore.selectCatID, this.gameStore.selectWagerTypeKey);
+      },
       menuItemClickHandler(catData, WagerTypeKey) {
         // 清除聯盟篩選
         this.clearLeagueList();
@@ -376,6 +380,21 @@
         this.latestSelectWagerTypeKey = WagerTypeKey;
         // 獲取遊戲detail
         this.callGetGameDetail(clickCatID, WagerTypeKey);
+
+        this.callMainBetInfo(catData.catid, WagerTypeKey);
+      },
+      callMainBetInfo(catid, WagerTypeKeys) {
+        let postWagerTypeKey = WagerTypeKeys;
+        if (WagerTypeKeys === null) {
+          postWagerTypeKey = 1;
+        }
+
+        console.log(catid, this.gameTypeID);
+        this.$store.dispatch('Game/GetMainBetInfo', {
+          CatIDs: catid.toString(),
+          GameTypes: this.gameTypeID.toString(),
+          WagerTypeKeys: postWagerTypeKey.toString(),
+        });
       },
       callGetGameDetail(CatID, WagerTypeKey = null, updateBehind = false) {
         if (!updateBehind) {

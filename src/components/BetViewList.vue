@@ -16,6 +16,8 @@
             :isControlByBetSingle="isControlByBetSingle"
             :isShowMinText="cartData.isShowMinText"
             :isShowMaxText="cartData.isShowMaxText"
+            :isShowMaxChip="isShowMaxChip"
+            :theMaxChipValue="theMaxChipValue"
             @cancelSingleHandler="cancelSingleHandler"
             @inputRowItemChangeHandler="inputRowItemChangeHandler"
             @onCartListItemKeyboardShow="onCartListItemKeyboardShow"

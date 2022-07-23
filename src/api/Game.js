@@ -146,7 +146,7 @@ export function getGameDetailSmall(postData = {}) {
     param: {
       AddMemberToken: true,
     },
-    data: { lang: store.state.Lang, ...postData },
+    data: postData,
   });
 }
 

@@ -119,6 +119,8 @@
       <!-- 小鍵盤 -->
       <mBetKeyboard
         v-if="isMobileMode && isShowKeyboard && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @Add="(data) => $emit('Add', data)"
         @Assign="(data) => $emit('Assign', data)"
       ></mBetKeyboard>
@@ -141,6 +143,16 @@
       BetResultBlock,
     },
     props: {
+      // 是否顯示最大的籌碼
+      isShowMaxChip: {
+        type: Boolean,
+        default: false,
+      },
+      // 最大籌碼面額
+      theMaxChipValue: {
+        type: Number,
+        default: 0,
+      },
       cartData: {
         type: Object,
         default: null,
@@ -181,8 +193,11 @@
       };
     },
     mounted() {
-      if (this.isControlByBetSingle || this.$refs.BetAmountInput) {
-        this.$refs.BetAmountInput.focus();
+      // 手機預設要focus
+      if (this.isMobileMode && (this.isControlByBetSingle || this.$refs.BetAmountInput)) {
+        this.$nextTick(() => {
+          this.onInputFocus('betAmount');
+        });
       }
     },
     methods: {
@@ -261,9 +276,19 @@
         }
       },
       onInputFocus(typeFrom) {
+        const findBetInfoData = this.betInfo.find((it) => {
+          return (
+            it.CatID === this.showBetCartList[this.cartIndex].CatID &&
+            it.WagerTypeID === this.showBetCartList[this.cartIndex].WagerTypeID
+          );
+        });
+        let emitBetMax = 0;
+        if (findBetInfoData) {
+          emitBetMax = findBetInfoData.BetMax;
+        }
         this.$emit('inputFocusEvent', {
           from: typeFrom,
-          BetMax: this.showBetCartList[this.cartIndex].BetMax,
+          BetMax: emitBetMax,
         });
 
         if (this.isMobileMode) {
@@ -300,6 +325,9 @@
       },
       isAddNewToChart() {
         return this.$store.state.BetCart.isAddNewToChart;
+      },
+      betInfo() {
+        return this.$store.state.Game.betInfo;
       },
     },
   };
