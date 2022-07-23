@@ -124,7 +124,9 @@
     "SingleOdd": "single bet",
     "remark": "Note",
     "BetMinTip": "The bet amount is too low, the red box is changed to the minimum amount",
-    "BetMaxTip": "The bet amount is too high, the red box is changed to the maximum amount"
+    "BetMaxTip": "The bet amount is too high, the red box is changed to the maximum amount",
+    "BetWait": "Frequent operations, please try again later",
+    "PlzWait": "Hold on..."
   },
   "GamesBetInfo": {
     "BetInfo": "Betting Information",

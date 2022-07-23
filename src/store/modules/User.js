@@ -46,6 +46,7 @@ export default {
     LogoutClearHandler(store) {
       // 登出handler
       store.commit('BetCart/clearCart', null, { root: true });
+      store.commit('BetCart/clearLastFirstBetData', null, { root: true });
       store.commit('SetToken', '');
       store.commit('SetMBID', '');
       store.commit('MoreGame/setIsShowMoreGame', null, { root: true });

@@ -8,9 +8,14 @@ const quickBetData = {
   x: 0,
   y: 0,
 };
-const lastFirstBetMessage = {
+const lastFirstBetData = {
   message: '',
-  end: false,
+  // 會有三種狀態
+  // init : 未下注狀態
+  // done : 可以開啟quickBet
+  // lock : 無法開啟quickBet
+  // wait : 下注中
+  state: 'init',
 };
 export default {
   namespaced: true,
@@ -27,7 +32,7 @@ export default {
     panelMode: PanelModeEnum.normal,
     quickBetData,
     // 投注Message,主要是給QuickBetPanel使用
-    lastFirstBetMessage,
+    lastFirstBetData: Object.assign({}, lastFirstBetData),
   },
   getters: {
     showBetCartList(state) {
@@ -38,8 +43,14 @@ export default {
     },
   },
   mutations: {
-    setLastFirstBetMessage(state, val) {
-      state.lastFirstBetMessage = val;
+    setLastFirstBetDataMessage(state, val) {
+      state.lastFirstBetData.message = val;
+    },
+    setLastFirstBetDataState(state, val) {
+      state.lastFirstBetData.state = val;
+    },
+    clearLastFirstBetData(state) {
+      state.lastFirstBetData = Object.assign({}, lastFirstBetData);
     },
     showQuickBetData(state, { isShow, x, y }) {
       state.quickBetData.isShow = isShow;
@@ -60,9 +71,6 @@ export default {
     },
     pushCart(state, cartData) {
       state.betCartList.push(cartData);
-    },
-    clearLastFirstBetMessage(state) {
-      state.lastFirstBetMessage = lastFirstBetMessage;
     },
     clearCart(state) {
       state.betCartList.length = 0;
@@ -248,22 +256,19 @@ export default {
               rootStore.dispatch('User/GetUserInfoCash');
               store.commit('updateBetCartListBetResult', res.data);
               if (res.data.length !== 0) {
-                if (isFind201) {
-                  store.commit('setLastFirstBetMessage', {
-                    message: res.data[0]?.Message,
-                    end: true,
-                  });
-                } else {
-                  store.commit('setLastFirstBetMessage', {
-                    message: '',
-                    end: false,
-                  });
+                store.commit('setLastFirstBetDataMessage', res.data[0]?.Message);
+                if (!isFind201) {
+                  store.commit('setLastFirstBetDataState', 'done');
                 }
               }
+            } else {
+              store.commit('setLastFirstBetDataState', 'done');
             }
             resolve(res);
           })
-          .catch(reject);
+          .catch(() => {
+            store.commit('setLastFirstBetDataState', 'done');
+          });
       });
     },
     getBetHistory(store, postData) {

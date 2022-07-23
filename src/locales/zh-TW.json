@@ -132,7 +132,9 @@
     "No": "否",
     "remark": "備註",
     "BetMinTip": "投注金額過低，自動為您更改為最低金額",
-    "BetMaxTip": "投注金額過高，自動為您更改為最高金額"
+    "BetMaxTip": "投注金額過高，自動為您更改為最高金額",
+    "BetWait": "操作頻繁 , 請稍後再試",
+    "PlzWait": "稍等..."
   },
   "GamesBetInfo": {
     "BetInfo": "投注資訊",
