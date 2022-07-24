@@ -409,7 +409,7 @@
         }
 
         this.$store.dispatch('Game/GetMainBetInfo', {
-          CatIDs: this.selectCatID.toString(),
+          CatIDs: this.selectCatID,
           GameTypes: this.gameTypeID.toString(),
           WagerTypeKeys: postWagerTypeKey.toString(),
         });

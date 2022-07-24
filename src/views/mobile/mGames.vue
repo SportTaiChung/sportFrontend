@@ -393,7 +393,7 @@
 
         console.log(catid, this.gameTypeID);
         this.$store.dispatch('Game/GetMainBetInfo', {
-          CatIDs: catid.toString(),
+          CatIDs: catid,
           GameTypes: this.gameTypeID.toString(),
           WagerTypeKeys: postWagerTypeKey.toString(),
         });

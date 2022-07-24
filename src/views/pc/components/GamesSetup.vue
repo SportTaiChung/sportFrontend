@@ -23,8 +23,8 @@
           {{ $t('GamesSetup.AcceptBetter') }}
           <el-checkbox v-model="isAcceptBetter" @change="checkboxChangeHandler"></el-checkbox
         ></span>
-        <el-divider direction="vertical"></el-divider>
-        <span class="selectLeague" @click="showLeagueSelectDialog">
+        <el-divider direction="vertical" v-if="!isFavoritePage"></el-divider>
+        <span class="selectLeague" @click="showLeagueSelectDialog" v-if="!isFavoritePage">
           {{ $t('GamesSetup.LeagueSelect') }}
         </span>
         <el-divider direction="vertical"></el-divider>
@@ -44,8 +44,8 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-divider direction="vertical"></el-divider>
-        <el-dropdown @command="handleSort" trigger="click" class="dropDown">
+        <el-divider direction="vertical" v-if="!isFavoritePage"></el-divider>
+        <el-dropdown @command="handleSort" trigger="click" class="dropDown" v-if="!isFavoritePage">
           <span class="el-dropdown-link">
             {{ sortList.find((it) => it.value === sortValue).label }}
             <i class="el-icon-arrow-down el-icon--right"></i>
@@ -229,6 +229,9 @@
       },
       UserCredit() {
         return this.$store.state.User.UserCredit;
+      },
+      isFavoritePage() {
+        return this.$store.state.Game.selectCatID === this.$conf.favoriteCatID;
       },
     },
     watch: {

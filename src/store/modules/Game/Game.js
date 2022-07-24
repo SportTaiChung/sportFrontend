@@ -37,7 +37,7 @@ export default {
     GameList: [],
     // 當前選擇的遊戲分類 (ex.早盤、今日)
     selectGameType: null,
-    // 當前選擇的球種 如果是-999 代表是收藏玩法
+    // 當前選擇的球種
     selectCatID: null,
     // 當前選擇的WagerType
     selectWagerTypeKey: null,
@@ -636,7 +636,12 @@ export default {
     },
     GetMainBetInfo(store, postData) {
       return new Promise((resolve, reject) => {
-        return getMainBetInfo(postData).then((res) => {
+        const newPostData = Object.assign({}, postData);
+        if (postData.CatIDs === favoriteCatID) {
+          newPostData.EvtIDs = rootStore.state.Setting.UserSetting.favorites.join(',');
+          delete newPostData.CatIDs;
+        }
+        return getMainBetInfo(newPostData).then((res) => {
           store.state.betInfo = res.data;
           resolve(res);
         });
