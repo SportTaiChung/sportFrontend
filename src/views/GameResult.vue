@@ -53,15 +53,35 @@
       <!-- 球種列表 -->
       <div class="gameTypeList">
         <div class="header">{{ $t('Common.GameList') }}</div>
-        <ul class="list">
+        <ul class="cat-list">
           <li
+            class="cat-item"
             v-for="(cat, i) in CatList"
             :key="i"
-            :class="selectedCatId === cat.CatID ? 'active' : ''"
+            :set="(isActive = selectedCatId === cat.CatID)"
             @click="selectedCatId = cat.CatID"
           >
-            <img class="menu-icon" :src="getMenuIconByCatID(cat.CatID)" />
-            {{ cat.Name }}
+            <div class="cat-name" :class="isActive ? 'active' : ''">
+              <img class="cat-icon" :src="getMenuIconByCatID(cat.CatID)" />
+              {{ cat.Name }}
+              <i
+                :class="`el-icon-arrow-${isActive ? 'down' : 'right'}`"
+                v-if="cat.EvtItem.length"
+              ></i>
+            </div>
+            <ul class="cat-child" v-if="cat.EvtItem.length && isActive">
+              <li
+                v-for="(item, j) in cat.EvtItem"
+                :key="j"
+                :class="selectedChildItemKey === item.ItemKey ? 'active' : ''"
+                @click="
+                  selectedChildItemKey = item.ItemKey;
+                  getGameResult();
+                "
+              >
+                {{ item.Name }}
+              </li>
+            </ul>
           </li>
         </ul>
       </div>
@@ -80,7 +100,7 @@
                       :class="expandedLeagues.length > 0 ? 'active' : ''"
                     ></i>
                   </td>
-                  <td>{{ $t('Common.Game2') }}</td>
+                  <td v-if="!isOneRowMode">{{ $t('Common.Game2') }}</td>
                   <td v-for="(str, i) in titles" :key="i">{{ str.Value }}</td>
                 </tr>
               </tbody>
@@ -106,7 +126,12 @@
 
               <!-- Table Templates -->
               <div v-for="(teamData, j) in league.List" :key="j">
-                <Universal :titles="titles" :teamData="teamData" v-if="isExpanded" />
+                <Universal
+                  :titles="titles"
+                  :teamData="teamData"
+                  :isOneRowMode="isOneRowMode"
+                  v-if="isExpanded"
+                />
               </div>
             </div>
           </div>
@@ -154,6 +179,7 @@
         timerIndex: 0,
         countdownSec: null,
         expandedLeagues: [],
+        selectedChildItemKey: null,
       };
     },
     computed: {
@@ -165,10 +191,34 @@
       CatMapData() {
         return this.$store.state.Game.CatMapData;
       },
+      selectedCatInfo() {
+        return this.CatMapData[this.selectedCatId];
+      },
+      // 當前球種子項目Array
+      childItems() {
+        if (this.selectedCatInfo?.EvtItem) {
+          return this.selectedCatInfo.EvtItem;
+        }
+        return [];
+      },
+      selectedChildItem() {
+        return this.childItems.find((it) => it.ItemKey === this.selectedChildItemKey);
+      },
+      isOneRowMode() {
+        return this.childItems.length > 0;
+      },
       titles() {
         return this.rawData?.BestHead || [];
       },
       leagueList() {
+        if (this.childItems.length > 0 && this.selectedChildItem) {
+          const league = {
+            CatID: this.selectedCatId,
+            LeagueName: this.selectedChildItem.Name,
+            List: [this.rawData?.List[0]],
+          };
+          return [league];
+        }
         return this.rawData?.List || [];
       },
       selectedDate() {
@@ -228,6 +278,12 @@
           CatID: this.selectedCatId,
           ScheduleTime: this.selectedDateYYYYMMDD,
         };
+        if (this.childItems.length) {
+          if (!this.selectedChildItemKey) {
+            this.selectedChildItemKey = this.childItems[0].ItemKey;
+          }
+          postData.ItemKey = this.selectedChildItemKey;
+        }
         this.countdownSec = null;
         this.$store.commit('SetLoading', true);
         this.$store
@@ -262,8 +318,8 @@
       dateToYYYYMMDD(date) {
         const yyyy = date.getFullYear();
         let mm = date.getMonth() + 1;
-        mm = mm < 10 ? '0' + mm : mm;
         let dd = date.getDate();
+        mm = mm < 10 ? '0' + mm : mm;
         dd = dd < 10 ? '0' + dd : dd;
         return `${yyyy}-${mm}-${dd}`;
       },
@@ -273,7 +329,6 @@
       goPreviousDay() {
         this.selectedDateIndex < dateRange - 1 && this.selectedDateIndex++;
       },
-
       toggleLeague(index) {
         if (this.expandedLeagues.includes(index)) {
           this.expandedLeagues = this.expandedLeagues.filter((it) => it !== index);
@@ -297,6 +352,7 @@
     },
     watch: {
       selectedCatId() {
+        this.selectedChildItemKey = null;
         this.getGameResult();
       },
       selectedDateIndex() {
@@ -317,7 +373,18 @@
     flex-flow: column nowrap;
     height: 100%;
     min-width: 980px;
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+    }
 
+    ::-webkit-scrollbar:vertical {
+      width: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.15);
+    }
     .main-title {
       flex-shrink: 0;
       display: flex;
@@ -521,39 +588,63 @@
           text-align: center;
         }
 
-        ul.list {
+        ul.cat-list {
           flex: 1;
           overflow-x: hidden;
           overflow-y: auto;
           background-color: #d5d5d5;
           border-right: 1px solid #bbb;
-          li {
-            position: relative;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            background-color: #d5d5d5;
+          li.cat-item {
             border-bottom: 1px solid #b3b3b3;
-            padding-left: 45px;
-            cursor: pointer;
-            &:hover {
-              background-color: #f0f0f0;
+            .cat-name {
+              position: relative;
+              height: 35px;
+              display: flex;
+              align-items: center;
+              background-color: #d5d5d5;
+              padding-left: 45px;
+              cursor: pointer;
+              img.cat-icon {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: calc(100% - 45px);
+                margin: auto;
+                width: auto;
+                height: 100%;
+                max-height: 18px;
+              }
+              i {
+                color: #555;
+                margin-left: auto;
+                margin-right: 1rem;
+              }
+              &:hover,
+              &.active {
+                background-color: #f0f0f0;
+              }
             }
-
-            &.active {
-              background-color: #f0f0f0;
-            }
-
-            img.menu-icon {
-              position: absolute;
-              top: 0;
-              bottom: 0;
-              left: 0;
-              right: calc(100% - 45px);
-              margin: auto;
-              width: auto;
-              height: 100%;
-              max-height: 18px;
+            ul.cat-child {
+              margin: 5px;
+              border-radius: 2px;
+              overflow: hidden;
+              li {
+                color: #333;
+                height: 35px;
+                padding: 9px;
+                text-align: center;
+                background-color: rgba(255, 255, 255, 0.5);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+                cursor: pointer;
+                &:last-child {
+                  border: 0;
+                }
+                &:hover,
+                &.active {
+                  background-color: rgba(255, 255, 255, 0.9);
+                }
+              }
             }
           }
         }

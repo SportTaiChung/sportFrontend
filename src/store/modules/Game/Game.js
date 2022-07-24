@@ -414,7 +414,7 @@ export default {
       });
     },
     // 15.賽事結果
-    GetGameResult(store, { CatID, ScheduleTime, LeagueID, EvtID }) {
+    GetGameResult(store, { CatID, ScheduleTime, LeagueID, EvtID, ItemKey }) {
       return new Promise((resolve, reject) => {
         let postData = {};
         if (EvtID) {
@@ -424,6 +424,7 @@ export default {
             CatID,
             LeagueID,
             ScheduleTime,
+            ItemKey,
           };
         }
         return getGameResult(postData)
