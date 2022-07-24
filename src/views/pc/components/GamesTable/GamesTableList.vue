@@ -28,7 +28,7 @@
       >
       </GameTableHeader>
 
-      <div class="ScrollViewContainer">
+      <div class="ScrollViewContainer" ref="ScrollViewContainer">
         <div class="gameContainer" v-for="(GameData, GameIndex) in GameList" :key="GameIndex">
           <GameTableHeader
             v-if="isFavoriteMode && GameData.Items.List.length !== 0"
@@ -99,6 +99,9 @@
       selectCatID() {
         return this.gameStore.selectCatID;
       },
+      selectWagerTypeKey() {
+        return this.gameStore.selectWagerTypeKey;
+      },
       selectGameType() {
         return this.gameStore.selectGameType;
       },
@@ -121,9 +124,14 @@
     watch: {
       selectCatID() {
         this.activeCollapse.length = 0;
+        this.scrollToTop();
       },
       selectGameType() {
         this.activeCollapse.length = 0;
+        this.scrollToTop();
+      },
+      selectWagerTypeKey() {
+        this.scrollToTop();
       },
       ScreenWidth() {
         this.updateColumnLimit();
@@ -133,6 +141,11 @@
       },
     },
     methods: {
+      scrollToTop() {
+        if (this.$refs.ScrollViewContainer) {
+          this.$refs.ScrollViewContainer.scrollTop = 0;
+        }
+      },
       updateColumnLimit() {
         // 開啟快速投注時,寬度小於某個值,只能顯示三個玩法
         if (this.ScreenWidth < 1600 && this.isShowMoreGame) {
