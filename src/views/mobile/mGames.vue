@@ -323,7 +323,9 @@
         return this.gameStore.GameList;
       },
       CatList() {
-        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
+        return this.$store.state.Game.CatList.filter(
+          (cat) => cat.CatID !== this.$conf.favoriteCatID
+        );
       },
       gameStore() {
         return this.$store.state.Game;
@@ -332,7 +334,7 @@
         return this.$store.state.Game.selectGameType;
       },
       isFavoriteMode() {
-        return this.gameStore.selectCatID === -999;
+        return this.gameStore.selectCatID === this.$conf.favoriteCatID;
       },
       isShowMoreGame() {
         return this.$store.state.MoreGame.isShowMoreGame;

@@ -103,7 +103,7 @@
         return this.gameStore.selectGameType;
       },
       isFavoriteMode() {
-        return this.selectCatID === -999;
+        return this.selectCatID === this.$conf.favoriteCatID;
       },
       GameList() {
         return this.gameStore.GameList;

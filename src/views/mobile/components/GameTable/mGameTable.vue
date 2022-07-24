@@ -118,7 +118,7 @@
         return null;
       },
       isFavoriteMode() {
-        return this.gameStore.selectCatID === -999;
+        return this.gameStore.selectCatID === this.$conf.favoriteCatID;
       },
       gameNameWithWagerType() {
         const gameName = this.gameData.CatName;

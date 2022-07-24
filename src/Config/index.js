@@ -8,3 +8,6 @@ export const NotCheckWagerGrpIDs = [128];
 
 // 波膽 的 '其他' 玩法key name
 export const BoldOtherKeyName = 'other';
+
+// 收藏的CatID
+export const favoriteCatID = -999;

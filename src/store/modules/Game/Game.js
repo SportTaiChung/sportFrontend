@@ -18,7 +18,7 @@ import {
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
 import { getMenuIconByCatID, getBoardImageByCatId, getColorByCatId } from '@/utils/SportLib';
-import { NotCheckWagerGrpIDs } from '@/Config/index.js';
+import { NotCheckWagerGrpIDs, favoriteCatID } from '@/Config/index.js';
 
 export default {
   namespaced: true,
@@ -324,9 +324,9 @@ export default {
         return getCatList()
           .then((res) => {
             res.push({
-              CatID: '-999',
+              CatID: favoriteCatID,
               GameScoreRefresh: false,
-              GroupCatIDs: [-999],
+              GroupCatIDs: [favoriteCatID],
               Name: '收藏',
             });
 

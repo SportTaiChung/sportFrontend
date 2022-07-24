@@ -105,7 +105,7 @@
             @click.stop="menuItemClickHandler(menuData, null, i)"
           >
             <img
-              :src="getMenuIconByCatID(menuData.isFavorite ? -999 : menuData.catid)"
+              :src="getMenuIconByCatID(menuData.isFavorite ? $conf.favoriteCatID : menuData.catid)"
               class="menu-icon"
               @mouseenter="isShowNavMenuGameType = false"
             />
@@ -192,7 +192,7 @@
         return this.$store.state.Game.isCallGameDetailAPI;
       },
       isFavoriteMode() {
-        return this.selectCatID === -999;
+        return this.selectCatID === this.$conf.favoriteCatID;
       },
       selectWagerTypeKey() {
         return this.$store.state.Game.selectWagerTypeKey;
@@ -384,7 +384,7 @@
           this.menuActiveString = '0';
           this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
             selectGameType: this.gameTypeID,
-            selectCatID: -999,
+            selectCatID: this.$conf.favoriteCatID,
             selectWagerTypeKey: null,
           });
           this.hideMenuChildren();

@@ -1,4 +1,5 @@
 import i18n from '@/locales';
+import { favoriteCatID } from '@/Config/index.js';
 
 /**
  * 所有玩法數據的資料
@@ -529,7 +530,7 @@ export function getMenuIconByCatID(catID) {
     85: 'icon_sportMenu_pcgame.svg', // 電競
     101: 'icon_sportMenu_baseball.svg', // 棒球
     102: 'icon_sportMenu_basketball.svg', // 籃球
-    '-999': 'icon_sportMenu_star.svg', // 收藏
+    [favoriteCatID]: 'icon_sportMenu_star.svg', // 收藏
     default: 'icon_sportMenu_soccer.svg',
   });
 
@@ -555,7 +556,7 @@ export function getBoardImageByCatId(catID) {
     85: 'pcgame.jpg',
     101: 'baseball.jpg',
     102: 'basketball.jpg',
-    '-999': null,
+    [favoriteCatID]: null,
     default: 'soccer.jpg',
   });
 
@@ -581,7 +582,7 @@ export function getColorByCatId(catID) {
     85: '#7894dc',
     101: '#caba62',
     102: '#ae6a3d',
-    '-999': '#ffffff',
+    [favoriteCatID]: '#ffffff',
     default: '#ffffff',
   });
 
