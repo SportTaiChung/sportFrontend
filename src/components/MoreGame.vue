@@ -173,7 +173,7 @@
           @click="$emit('openBetRecordView')"
         />
       </div>
-      <div class="MoreGameList">
+      <div class="MoreGameList" :class="MoreGameListClassJudge">
         <template v-for="(gameData, gameIndex) in FinalGameList">
           <div class="MoreGameListOutRow" :key="gameIndex">
             <div class="MoreGameListRowTitle" @click="titleClickHandler(gameData.ItemName)">
@@ -356,6 +356,13 @@
       clearInterval(this.intervalEvent2);
     },
     computed: {
+      MoreGameListClassJudge() {
+        if (this.selectGameType === 2) {
+          return 'MoreGameListWithLive';
+        } else {
+          return '';
+        }
+      },
       isQuickBetEnable() {
         return this.$store.state.Game.isQuickBet.isEnable;
       },
@@ -1028,6 +1035,9 @@
             }
           }
         }
+      }
+      .MoreGameListWithLive {
+        height: calc(100% - $MoreGameFilterBlockHeight - 60px);
       }
     }
     .MoreGameBlockWithOutGameInfo {
