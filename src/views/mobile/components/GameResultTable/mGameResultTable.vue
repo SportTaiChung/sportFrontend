@@ -8,6 +8,7 @@
       </div>
 
       <img
+        v-if="false"
         class="arrow"
         :class="activeCollapse.length > 0 ? 'active' : ''"
         src="@/assets/img/mobile/btn_arrow_w.svg"
