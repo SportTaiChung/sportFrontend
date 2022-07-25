@@ -86,6 +86,7 @@
         <!-- FOOTER -->
         <MobileFooter
           :hasLeagueFiltered="hasLeagueFiltered"
+          :page="page"
           @openBetInfoPopup="openBetInfoPopup()"
           @openBetRecordView="openBetRecordView()"
           @openMenuPanel="openMenuPanel()"

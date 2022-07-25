@@ -15,7 +15,7 @@
         />
         <span>{{ $t('Common.OtherLeague') }}</span>
       </li>
-      <li class="footer-item" @click="onBetViewClick">
+      <li class="footer-item" @click="onBetViewClick" v-show="page !== PageEnum.gameResult">
         <div class="icon circle-bets" :class="hasBetItem ? 'hasBetItem' : ''">
           <span class="num">{{ betCartLength }}</span>
         </div>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+  import { PageEnum } from '../enum';
+
   export default {
     name: 'mobileFooter',
     props: {
@@ -41,6 +43,15 @@
         type: Boolean,
         default: false,
       },
+      page: {
+        type: Number,
+        default: PageEnum.game,
+      },
+    },
+    data() {
+      return {
+        PageEnum,
+      };
     },
     computed: {
       betCartStore() {
