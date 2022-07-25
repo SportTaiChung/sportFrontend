@@ -317,6 +317,24 @@ export default {
         });
       }
     },
+    updateMoreCount(state, { updateData }) {
+      if (state.GameList.length !== 0) {
+        updateData.forEach((updateData) => {
+          state.GameList.every((GameData) => {
+            return GameData.Items.List.every((LeagueData) => {
+              return LeagueData.Team.every((teamData) => {
+                if (teamData.EvtID === updateData.EvtID) {
+                  teamData.MoreCount = updateData.Count;
+                  return false;
+                } else {
+                  return true;
+                }
+              });
+            });
+          });
+        });
+      }
+    },
   },
   actions: {
     GetCatList(store) {
@@ -604,6 +622,12 @@ export default {
               store.commit('updateTeamData', {
                 isUpdateFromOtherStore: false,
                 updateData: res.data.GameScoreHead,
+              });
+            }
+
+            if (res.data.MoreCoutToEvtID.length !== 0) {
+              store.commit('updateMoreCount', {
+                updateData: res.data.MoreCoutToEvtID,
               });
             }
           });
