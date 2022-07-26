@@ -11,7 +11,7 @@
 
     <template v-if="!isCollapse">
       <!-- 波膽 -->
-      <template v-if="selectCatID === 1 && selectWagerTypeKey === 2">
+      <template v-if="selectCatID === 1 && selectWagerTypeKey === 3">
         <div
           class="boldTablePanel"
           v-for="(teamData, teamIndex) in source.Team"
