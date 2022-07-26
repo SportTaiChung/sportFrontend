@@ -224,6 +224,8 @@
               return '';
             }
           }
+        } else {
+          return '';
         }
       },
       showBetTitle(showBetTitle) {

@@ -921,10 +921,12 @@
           this.settings.showBetConfirm === false ||
           this.isQuickBetEnable
         ) {
-          // 多個投注時取最大的
-          this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
-            ...checkRes.map((checkRes) => checkRes.Amount)
-          );
+          if (this.$store.state.Setting.UserSetting.defaultAmount.type === 1) {
+            // 多個投注時取最大的
+            this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
+              ...checkRes.map((checkRes) => checkRes.Amount)
+            );
+          }
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -955,7 +957,9 @@
         }
         this.clearAllMinMaxLimitState();
         if (this.panelMode === this.PanelModeEnum.lock || this.settings.showBetConfirm === false) {
-          this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+          if (this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 1) {
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+          }
 
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
