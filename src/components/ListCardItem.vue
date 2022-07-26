@@ -36,11 +36,19 @@
           <div class="teamRow">{{ cartData.AwayTeamStr }}</div>
         </template>
         <template v-else>
+          <div class="ScoreColor" v-if="liveScore('home') !== ''">[{{ liveScore('home') }}]</div>
           <div class="cardContentBlockRowText">{{ cartData.HomeTeamStr }}</div>
           <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">
             ({{ $t('Common.Home') }})
           </div>
-          <div class="cardContentBlockRowText"> v {{ cartData.AwayTeamStr }}</div>
+          <div class="cardContentBlockRowText">
+            v
+            <div class="ScoreColor" style="margin-left: 3px" v-if="liveScore('away') !== ''">
+              [{{ liveScore('away') }}]
+            </div>
+            {{ cartData.AwayTeamStr }}
+          </div>
+
           <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">
             ({{ $t('Common.Home') }})
           </div>
@@ -201,6 +209,23 @@
       }
     },
     methods: {
+      liveScore(type) {
+        if (this.selectGameType === 2 && this.cartData.CatID === 1) {
+          if (type === 'home') {
+            if (this.cartData?.HomeScore !== undefined) {
+              return this.cartData.HomeScore;
+            } else {
+              return '';
+            }
+          } else {
+            if (this.cartData?.AwayScore !== undefined) {
+              return this.cartData.AwayScore;
+            } else {
+              return '';
+            }
+          }
+        }
+      },
       showBetTitle(showBetTitle) {
         if (showBetTitle === this.$conf.BoldOtherKeyName) {
           return this.$t('Bold.Other');
@@ -298,6 +323,9 @@
       },
     },
     computed: {
+      selectGameType() {
+        return this.$store.state.Game.selectGameType;
+      },
       displayData() {
         return this.cartDataToDisplayData(this.cartData);
       },

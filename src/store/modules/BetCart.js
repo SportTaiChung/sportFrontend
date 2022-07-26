@@ -134,6 +134,12 @@ export default {
                     OverOdds: apiData.OverOdds,
                     UnderOdds: apiData.UnderOdds,
                   };
+                  if (apiData?.HomeScore !== undefined) {
+                    store.state.betCartList[updateCartIndex].HomeScore = apiData.HomeScore;
+                  }
+                  if (apiData?.AwayScore !== undefined) {
+                    store.state.betCartList[updateCartIndex].AwayScore = apiData.AwayScore;
+                  }
                   store.state.betCartList[updateCartIndex].playData = oddDataToPlayData(
                     store.state.betCartList[updateCartIndex].SetFlag,
                     store.state.betCartList[updateCartIndex].WagerTypeID,
