@@ -107,11 +107,6 @@
                       <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
                     </li>
                     <li>
-                      {{ $t('GamesHeader.GameResult') }}:
-                      <span class="resultScore">{{ betlist.HomeScore }} : </span>
-                      <span class="resultScore">{{ betlist.AwayScore }}</span>
-                    </li>
-                    <li>
                       {{ $t('Common.GameTime') }}:
                       <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
                     </li>
