@@ -36,11 +36,19 @@
           <div class="teamRow">{{ cartData.AwayTeamStr }}</div>
         </template>
         <template v-else>
+          <div class="ScoreColor" v-if="liveScore('home') !== ''">[{{ liveScore('home') }}]</div>
           <div class="cardContentBlockRowText">{{ cartData.HomeTeamStr }}</div>
           <div class="cardContentBlockRowText HomeTeamSign" v-if="cartData.SetFlag">
             ({{ $t('Common.Home') }})
           </div>
-          <div class="cardContentBlockRowText"> v {{ cartData.AwayTeamStr }}</div>
+          <div class="cardContentBlockRowText">
+            v
+            <div class="ScoreColor" style="margin-left: 3px" v-if="liveScore('away') !== ''">
+              [{{ liveScore('away') }}]
+            </div>
+            {{ cartData.AwayTeamStr }}
+          </div>
+
           <div class="cardContentBlockRowText HomeTeamSign" v-if="!cartData.SetFlag">
             ({{ $t('Common.Home') }})
           </div>
@@ -119,6 +127,8 @@
       <!-- 小鍵盤 -->
       <mBetKeyboard
         v-if="isMobileMode && isShowKeyboard && panelMode === PanelModeEnum.normal"
+        :isShowMaxChip="isShowMaxChip"
+        :theMaxChipValue="theMaxChipValue"
         @Add="(data) => $emit('Add', data)"
         @Assign="(data) => $emit('Assign', data)"
       ></mBetKeyboard>
@@ -141,6 +151,16 @@
       BetResultBlock,
     },
     props: {
+      // 是否顯示最大的籌碼
+      isShowMaxChip: {
+        type: Boolean,
+        default: false,
+      },
+      // 最大籌碼面額
+      theMaxChipValue: {
+        type: Number,
+        default: 0,
+      },
       cartData: {
         type: Object,
         default: null,
@@ -181,11 +201,33 @@
       };
     },
     mounted() {
-      if (this.isControlByBetSingle || this.$refs.BetAmountInput) {
-        this.$refs.BetAmountInput.focus();
+      // 手機預設要focus
+      if (this.isMobileMode && (this.isControlByBetSingle || this.$refs.BetAmountInput)) {
+        this.$nextTick(() => {
+          this.onInputFocus('betAmount');
+        });
       }
     },
     methods: {
+      liveScore(type) {
+        if (this.selectGameType === 2 && this.cartData.CatID === 1) {
+          if (type === 'home') {
+            if (this.cartData?.HomeScore !== undefined) {
+              return this.cartData.HomeScore;
+            } else {
+              return '';
+            }
+          } else {
+            if (this.cartData?.AwayScore !== undefined) {
+              return this.cartData.AwayScore;
+            } else {
+              return '';
+            }
+          }
+        } else {
+          return '';
+        }
+      },
       showBetTitle(showBetTitle) {
         if (showBetTitle === this.$conf.BoldOtherKeyName) {
           return this.$t('Bold.Other');
@@ -261,9 +303,19 @@
         }
       },
       onInputFocus(typeFrom) {
+        const findBetInfoData = this.betInfo.find((it) => {
+          return (
+            it.CatID === this.showBetCartList[this.cartIndex].CatID &&
+            it.WagerTypeID === this.showBetCartList[this.cartIndex].WagerTypeID
+          );
+        });
+        let emitBetMax = 0;
+        if (findBetInfoData) {
+          emitBetMax = findBetInfoData.BetMax;
+        }
         this.$emit('inputFocusEvent', {
           from: typeFrom,
-          BetMax: this.showBetCartList[this.cartIndex].BetMax,
+          BetMax: emitBetMax,
         });
 
         if (this.isMobileMode) {
@@ -273,6 +325,9 @@
       },
     },
     computed: {
+      selectGameType() {
+        return this.$store.state.Game.selectGameType;
+      },
       displayData() {
         return this.cartDataToDisplayData(this.cartData);
       },
@@ -300,6 +355,9 @@
       },
       isAddNewToChart() {
         return this.$store.state.BetCart.isAddNewToChart;
+      },
+      betInfo() {
+        return this.$store.state.Game.betInfo;
       },
     },
   };

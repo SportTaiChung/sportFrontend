@@ -11,7 +11,7 @@
 
     <template v-if="!isCollapse">
       <!-- 波膽 -->
-      <template v-if="selectCatID === 1 && selectWagerTypeKey === 2">
+      <template v-if="selectCatID === 1 && selectWagerTypeKey === 3">
         <div
           class="boldTablePanel"
           v-for="(teamData, teamIndex) in source.Team"
@@ -111,7 +111,7 @@
                         </div>
                       </template>
                       <template v-else>
-                        <div class="timeRow" v-if="rowIndex === 0">
+                        <div class="timeRow light" v-if="rowIndex === 0">
                           {{ teamData.TimeAct }}
                         </div>
                       </template>
@@ -766,7 +766,11 @@
   @mixin rowBorderBottom() {
     border-bottom: 1px solid #f3f3f3;
   }
+
   .GameCollapse {
+    .light {
+      color: #ff8500 !important;
+    }
     &:last-child {
       margin-bottom: 0px;
     }
@@ -942,12 +946,6 @@
             justify-content: center;
             gap: 1rem;
             padding: 5px;
-            .homeScore,
-            .awayScore {
-              &.light {
-                color: #ff8500;
-              }
-            }
           }
           .rightFavoriteBlock {
             width: 30px;

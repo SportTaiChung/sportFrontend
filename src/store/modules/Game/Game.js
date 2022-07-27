@@ -18,7 +18,7 @@ import {
 import * as GameTypeListGetters from './getters/GameTypeList';
 import rootStore from '@/store';
 import { getMenuIconByCatID, getBoardImageByCatId, getColorByCatId } from '@/utils/SportLib';
-import { NotCheckWagerGrpIDs } from '@/Config/index.js';
+import { NotCheckWagerGrpIDs, favoriteCatID } from '@/Config/index.js';
 
 export default {
   namespaced: true,
@@ -37,7 +37,7 @@ export default {
     GameList: [],
     // 當前選擇的遊戲分類 (ex.早盤、今日)
     selectGameType: null,
-    // 當前選擇的球種 如果是-999 代表是收藏玩法
+    // 當前選擇的球種
     selectCatID: null,
     // 當前選擇的WagerType
     selectWagerTypeKey: null,
@@ -317,6 +317,24 @@ export default {
         });
       }
     },
+    updateMoreCount(state, { updateData }) {
+      if (state.GameList.length !== 0) {
+        updateData.forEach((updateData) => {
+          state.GameList.every((GameData) => {
+            return GameData.Items.List.every((LeagueData) => {
+              return LeagueData.Team.every((teamData) => {
+                if (teamData.EvtID === updateData.EvtID) {
+                  teamData.MoreCount = updateData.Count;
+                  return false;
+                } else {
+                  return true;
+                }
+              });
+            });
+          });
+        });
+      }
+    },
   },
   actions: {
     GetCatList(store) {
@@ -324,9 +342,9 @@ export default {
         return getCatList()
           .then((res) => {
             res.push({
-              CatID: '-999',
+              CatID: favoriteCatID,
               GameScoreRefresh: false,
-              GroupCatIDs: [-999],
+              GroupCatIDs: [favoriteCatID],
               Name: '收藏',
             });
 
@@ -414,7 +432,7 @@ export default {
       });
     },
     // 15.賽事結果
-    GetGameResult(store, { CatID, ScheduleTime, LeagueID, EvtID }) {
+    GetGameResult(store, { CatID, ScheduleTime, LeagueID, EvtID, ItemKey }) {
       return new Promise((resolve, reject) => {
         let postData = {};
         if (EvtID) {
@@ -424,6 +442,7 @@ export default {
             CatID,
             LeagueID,
             ScheduleTime,
+            ItemKey,
           };
         }
         return getGameResult(postData)
@@ -605,6 +624,12 @@ export default {
                 updateData: res.data.GameScoreHead,
               });
             }
+
+            if (res.data.MoreCoutToEvtID.length !== 0) {
+              store.commit('updateMoreCount', {
+                updateData: res.data.MoreCoutToEvtID,
+              });
+            }
           });
         } else {
           resolve();
@@ -636,7 +661,12 @@ export default {
     },
     GetMainBetInfo(store, postData) {
       return new Promise((resolve, reject) => {
-        return getMainBetInfo(postData).then((res) => {
+        const newPostData = Object.assign({}, postData);
+        if (postData.CatIDs === favoriteCatID) {
+          newPostData.EvtIDs = rootStore.state.Setting.UserSetting.favorites.join(',');
+          delete newPostData.CatIDs;
+        }
+        return getMainBetInfo(newPostData).then((res) => {
           store.state.betInfo = res.data;
           resolve(res);
         });

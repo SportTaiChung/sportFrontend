@@ -2,42 +2,65 @@
   <div class="mGameResultTable">
     <!-- 標題 Bar -->
     <div class="titleBar" :style="headerColor" @click="onToggleAllCollapseClick">
-      <div class="name-wrap">
+      <div
+        class="name-wrap"
+        :class="selectedChildItem ? 'bordered' : ''"
+        @click="openSubItemList()"
+      >
         <img class="icon" v-if="selectedCatId" :src="getMenuIconByCatID(selectedCatId)" />
-        <span class="catName">{{ catName }}</span>
+        <span class="catName">{{ catNameWithSubItemName }}</span>
       </div>
 
       <img
+        v-if="false"
         class="arrow"
         :class="activeCollapse.length > 0 ? 'active' : ''"
         src="@/assets/img/mobile/btn_arrow_w.svg"
       />
     </div>
 
-    <div style="display: flex">
-      <!-- 左半邊 - 隊伍資訊 -->
-      <div class="left-area">
-        <mGameResultInfo
-          v-for="(source, index) in leagueList"
-          :key="index"
-          :source="source"
-          :isExpanded="isExpanded(index)"
-          :dotStatus="dotStatusHandlerAll()"
-          @toggleCollapse="toggleCollapse(index)"
-        ></mGameResultInfo>
+    <template v-if="isOneRowMode">
+      <div v-for="(league, i) in leagueList" :key="i" class="subItem-table-container">
+        <div v-for="(data, j) in league.List" :key="j">
+          <table class="subItem-table">
+            <tr>
+              <th v-for="(title, k) in titles" :key="k">
+                {{ title.Value }}
+              </th>
+            </tr>
+            <tr>
+              <td v-for="(title, l) in titles" :key="l"> {{ data[title.Key] }}</td>
+            </tr>
+          </table>
+        </div>
       </div>
-      <!-- 右半邊 - 詳細資料 -->
-      <div class="right-area" ref="scrollEl" @scroll="scrollEvent">
-        <mGameResultDetail
-          v-for="(source, index) in leagueList"
-          :key="index"
-          :source="source"
-          :titles="titles"
-          :isExpanded="isExpanded(index)"
-          @toggleCollapse="toggleCollapse(index)"
-        ></mGameResultDetail>
+    </template>
+    <template v-else>
+      <div style="display: flex">
+        <!-- 左半邊 - 隊伍資訊 -->
+        <div class="left-area">
+          <mGameResultInfo
+            v-for="(source, index) in leagueList"
+            :key="index"
+            :source="source"
+            :isExpanded="isExpanded(index)"
+            :dotStatus="dotStatusHandlerAll()"
+            @toggleCollapse="toggleCollapse(index)"
+          ></mGameResultInfo>
+        </div>
+        <!-- 右半邊 - 詳細資料 -->
+        <div class="right-area" ref="scrollEl" @scroll="scrollEvent">
+          <mGameResultDetail
+            v-for="(source, index) in leagueList"
+            :key="index"
+            :source="source"
+            :titles="titles"
+            :isExpanded="isExpanded(index)"
+            @toggleCollapse="toggleCollapse(index)"
+          ></mGameResultDetail>
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- 日期選擇 popup -->
     <div class="date-popup" v-show="isShowDatePicker" @click.stop="onMaskClick">
@@ -59,6 +82,33 @@
               >{{ dateToString(date) }}
             </li>
           </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 子附錄選擇 popup -->
+    <div class="subItem-popup" @click.stop="onMaskClick" v-if="isShowSubItemListPopup">
+      <div class="popup">
+        <!-- <div class="header">
+          <div class="title"> {{ $t('Common.ChoosePlay') }} </div>
+        </div> -->
+
+        <!-- <div class="line"></div> -->
+
+        <div class="body">
+          <div
+            v-for="(item, index) in childItems"
+            :key="index"
+            class="btn-gameType"
+            :class="selectedChildItemKey === item.ItemKey ? 'active' : ''"
+            @click="
+              selectedChildItemKey = item.ItemKey;
+              isShowSubItemListPopup = false;
+              getGameResult();
+            "
+          >
+            {{ item.Name }}
+          </div>
         </div>
       </div>
     </div>
@@ -106,6 +156,8 @@
           visible: false,
           isScrollToTheEnd: false,
         },
+        isShowSubItemListPopup: false,
+        selectedChildItemKey: null,
       };
     },
     computed: {
@@ -113,15 +165,38 @@
         return this.$store.state.Game;
       },
       CatList() {
-        return this.$store.state.Game.CatList.filter((cat) => cat.CatID !== '-999');
+        return this.$store.state.Game.CatList.filter(
+          (cat) => cat.CatID !== this.$conf.favoriteCatID
+        );
       },
       CatMapData() {
         return this.$store.state.Game.CatMapData;
+      },
+      selectedCatInfo() {
+        return this.CatMapData[this.selectedCatId];
+      },
+      // 當前球種子項目Array
+      childItems() {
+        if (this.selectedCatInfo?.EvtItem) {
+          return this.selectedCatInfo.EvtItem;
+        }
+        return [];
+      },
+      selectedChildItem() {
+        return this.childItems.find((it) => it.ItemKey === this.selectedChildItemKey);
       },
       titles() {
         return this.rawData?.BestHead || [];
       },
       leagueList() {
+        if (this.childItems.length > 0 && this.selectedChildItem) {
+          const league = {
+            CatID: this.selectedCatId,
+            LeagueName: this.selectedChildItem.Name,
+            List: [this.rawData?.List?.[0] || []],
+          };
+          return [league];
+        }
         return this.rawData?.List || [];
       },
       selectedDate() {
@@ -138,6 +213,14 @@
       },
       catName() {
         return this.CatMapData[this.selectedCatId]?.Name;
+      },
+      isOneRowMode() {
+        return this.childItems.length > 0;
+      },
+      catNameWithSubItemName() {
+        const catName = this.catName;
+        const subItemName = this.selectedChildItem?.Name;
+        return catName + (subItemName ? ' - ' + subItemName : '');
       },
     },
     methods: {
@@ -175,6 +258,12 @@
           CatID: this.selectedCatId,
           ScheduleTime: this.selectedDateYYYYMMDD,
         };
+        if (this.childItems.length) {
+          if (!this.selectedChildItemKey) {
+            this.selectedChildItemKey = this.childItems[0].ItemKey;
+          }
+          postData.ItemKey = this.selectedChildItemKey;
+        }
         this.countdownSec = null;
         this.$store.commit('SetLoading', true);
         this.$store
@@ -216,6 +305,7 @@
       onMaskClick(e) {
         if (e.target !== e.currentTarget) return;
         this.isShowDatePicker = false;
+        this.isShowSubItemListPopup = false;
       },
       dotStatusHandlerAll() {
         return this.dotStatus;
@@ -243,9 +333,15 @@
           }
         });
       },
+      openSubItemList() {
+        if (this.selectedChildItem) {
+          this.isShowSubItemListPopup = true;
+        }
+      },
     },
     watch: {
-      selectedCatId(newValue, oldValue) {
+      selectedCatId() {
+        this.selectedChildItemKey = null;
         this.getGameResult();
         this.activeCollapse = [];
       },
@@ -297,15 +393,31 @@
       left: 0;
 
       .name-wrap {
+        position: relative;
         display: flex;
         align-items: center;
         position: relative;
         align-self: stretch;
-        padding: 4px 37px;
-        margin: 0 5px;
+        padding: 3px 35px;
+        margin: 0;
         min-height: 26px;
         line-height: normal;
-        pointer-events: none;
+
+        &.bordered {
+          border: 1px solid #fff;
+          border-radius: 45px;
+          background-color: rgba(255, 255, 255, 0.15);
+          padding-right: 30px;
+          &::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            width: 1rem;
+            height: 1rem;
+            background: url('~@/assets/img/mobile/btn_arrow_w.svg') center no-repeat;
+            background-size: 100%;
+          }
+        }
 
         .catName {
           font-size: 1.125rem;
@@ -313,7 +425,7 @@
 
         img.icon {
           position: absolute;
-          left: 5px;
+          left: 10px;
           top: 50%;
           height: 18px;
           width: 18px;
@@ -328,6 +440,40 @@
         transition: 200ms ease;
         &.active {
           transform: rotate(-90deg);
+        }
+      }
+    }
+
+    .subItem-table-container {
+      overflow: auto;
+      margin: 0 auto 5px auto;
+      & ~ .subItem-table-container {
+        border-bottom: 2px solid #ddd;
+      }
+      table.subItem-table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+        tr {
+          th {
+            min-width: 4rem;
+            height: 3rem;
+            color: #444;
+            font-weight: 600;
+            white-space: nowrap;
+            word-break: keep-all;
+            padding: 0.5rem 10px;
+            border: 1px solid #ddd;
+            background-color: #e8e8e8;
+          }
+          td {
+            min-width: 4rem;
+            height: 3rem;
+            text-align: center;
+            word-break: keep-all;
+            padding: 0.5rem 10px;
+            border: 1px solid #ddd;
+          }
         }
       }
     }
@@ -392,6 +538,73 @@
             &:hover {
               background-color: #f0f0f0;
             }
+
+            &.active,
+            &:active {
+              color: #fff;
+              background-color: #5198e8;
+              border-color: #5198e8;
+            }
+          }
+        }
+      }
+    }
+
+    .subItem-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+
+      .popup {
+        width: calc(100vw - 50px);
+        max-width: 560px;
+        max-height: 80%;
+        border: 3px solid #c4ccd7;
+        border-radius: 10px;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        .header {
+          .title {
+            color: #000;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 1.5rem;
+          }
+        }
+        .line {
+          height: 1px;
+          background: #ccc;
+          margin: 0 1.5rem;
+        }
+        .body {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          max-height: 70%;
+          padding: 1.5rem;
+          overflow: auto;
+
+          .btn-gameType {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 0.65rem 3rem;
+            min-height: 3.5rem;
+            font-size: 1.3rem;
+            color: #000;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 9px;
+            cursor: pointer;
 
             &.active,
             &:active {

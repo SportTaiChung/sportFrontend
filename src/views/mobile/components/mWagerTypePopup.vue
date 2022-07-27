@@ -15,7 +15,12 @@
           :class="gameStore.selectWagerTypeKey === item.WagerTypeKey ? 'active' : ''"
           @click="onWagerTypeClick(item)"
         >
-          {{ item.WagerTypeName }}
+          <span class="wager-name">
+            {{ item.WagerTypeName }}
+          </span>
+          <span class="wager-num">
+            {{ item.count }}
+          </span>
         </div>
       </div>
     </div>
@@ -136,6 +141,17 @@
             color: #fff;
             background-color: #5198e8;
             border-color: #5198e8;
+          }
+
+          .wager-name {
+            line-height: 1;
+          }
+          .wager-num {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            line-height: 1;
           }
         }
       }

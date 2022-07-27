@@ -8,7 +8,7 @@
         {{ CatName }}
       </td>
       <!-- 波膽 -->
-      <template v-if="selectCatID === 1 && selectWagerTypeKey === 2"> </template>
+      <template v-if="selectCatID === 1 && selectWagerTypeKey === 3"> </template>
       <!-- 其他 -->
       <template v-else>
         <td v-for="(it, key) in BestHeadWithFilterLimit" :key="key" class="GameTableHeaderOtherTD">

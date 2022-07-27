@@ -1,30 +1,50 @@
 <template>
-  <table class="table-summary">
-    <tr>
-      <!-- 時間 -->
-      <td>
-        <div class="time">
-          <div class="cell">{{ parseDate(teamData.ScheduleTimeStr)[0] }}</div>
-          <div class="cell">{{ parseDate(teamData.ScheduleTimeStr)[1] }}</div>
-        </div>
-      </td>
-      <!-- 隊伍 -->
-      <td>
-        <div class="team">
-          <div class="cell">{{ teamData.HomeTeam }}</div>
-          <div class="cell">{{ teamData.AwayTeam }}</div>
-        </div>
-      </td>
-      <!-- 分數 -->
-      <td v-for="(title, index) in titles" :key="index">
-        <div class="score" v-if="title.Key !== 'Remarks'">
-          <div class="cell">{{ parseScore(title.Key)[0] }}</div>
-          <div class="cell">{{ parseScore(title.Key)[1] }}</div>
-        </div>
+  <table class="table-summary" :class="isOneRowMode ? 'isOneRowMode' : ''">
+    <!-- 沒有主客隊的排版, 例如: 彩球 -->
+    <template v-if="isOneRowMode">
+      <tr>
+        <td>
+          <div class="time"> </div>
+        </td>
+        <!-- 項目 -->
+        <td v-for="(title, index) in titles" :key="index">
+          <div class="score" v-if="title.Key !== 'Remarks'">
+            <div class="cell">{{ teamData[title.Key] }}</div>
+          </div>
 
-        <div class="cell" v-else>{{ teamData.Remarks }}</div>
-      </td>
-    </tr>
+          <div class="cell" v-else>{{ teamData.Remarks }}</div>
+        </td>
+      </tr>
+    </template>
+
+    <!-- 正常有主客隊的排版 -->
+    <template v-else>
+      <tr>
+        <!-- 時間 -->
+        <td>
+          <div class="time">
+            <div class="cell">{{ parseDate(teamData.ScheduleTimeStr)[0] }}</div>
+            <div class="cell">{{ parseDate(teamData.ScheduleTimeStr)[1] }}</div>
+          </div>
+        </td>
+        <!-- 隊伍 -->
+        <td>
+          <div class="team">
+            <div class="cell">{{ teamData.HomeTeam }}</div>
+            <div class="cell">{{ teamData.AwayTeam }}</div>
+          </div>
+        </td>
+        <!-- 分數 -->
+        <td v-for="(title, index) in titles" :key="index">
+          <div class="score" v-if="title.Key !== 'Remarks'">
+            <div class="cell">{{ parseScore(title.Key)[0] }}</div>
+            <div class="cell">{{ parseScore(title.Key)[1] }}</div>
+          </div>
+
+          <div class="cell" v-else>{{ teamData.Remarks }}</div>
+        </td>
+      </tr>
+    </template>
   </table>
 </template>
 
@@ -40,6 +60,12 @@
         type: Object,
         default() {
           return {};
+        },
+      },
+      isOneRowMode: {
+        type: Boolean,
+        default() {
+          return false;
         },
       },
     },
@@ -104,11 +130,13 @@
     }
 
     td {
+      height: 55px;
       text-align: center;
       border-left: 1px solid #f3f3f3;
       border-bottom: 1px solid #eee;
-      line-height: 18px;
-      padding: 3px 0;
+      line-height: 1rem;
+      overflow: hidden;
+      word-break: break-word;
       .time {
         color: #888;
       }
@@ -124,6 +152,16 @@
         .light {
           color: #ff8800;
         }
+      }
+    }
+
+    &.isOneRowMode {
+      td:nth-child(1) {
+      }
+      td:nth-child(2) {
+        border-left: 0;
+      }
+      td:nth-child(3) {
       }
     }
   }

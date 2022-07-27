@@ -4,10 +4,10 @@
     <li
       v-if="hasFavorite"
       class="item fav"
-      :class="gameStore.selectCatID == -999 ? 'active' : ''"
+      :class="gameStore.selectCatID == favoriteCatID ? 'active' : ''"
       @click="goFav"
     >
-      <img :src="getMenuIconByCatID(-999)" class="menu-icon" @click="goFav()" />
+      <img :src="getMenuIconByCatID(favoriteCatID)" class="menu-icon" @click="goFav()" />
       {{ $t('Common.Collect') }}
     </li>
     <li
@@ -33,6 +33,9 @@
       };
     },
     computed: {
+      favoriteCatID() {
+        return this.$conf.favoriteCatID;
+      },
       gameStore() {
         return this.$store.state.Game;
       },
@@ -72,7 +75,7 @@
       goFav() {
         this.$store.commit('Game/setCatIDAndGameTypeAndWagerType', {
           selectGameType: this.$store.state.Game.selectGameType,
-          selectCatID: -999,
+          selectCatID: this.favoriteCatID,
           selectWagerTypeKey: null,
         });
         this.$emit('callGetFavoriteGameDetail');

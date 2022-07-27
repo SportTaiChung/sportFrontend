@@ -1,6 +1,6 @@
 <template>
   <div id="BetViewList" ref="BetViewList" v-loading="isLoading">
-    <template v-if="!isQuickBetEnable">
+    <template v-if="!isQuickBetEnable || groupIndex === 1">
       <!-- 購物車 -->
       <template v-if="groupIndex === 0">
         <template v-if="isShowChartList || isShowCharStrayList">
@@ -16,6 +16,8 @@
             :isControlByBetSingle="isControlByBetSingle"
             :isShowMinText="cartData.isShowMinText"
             :isShowMaxText="cartData.isShowMaxText"
+            :isShowMaxChip="isShowMaxChip"
+            :theMaxChipValue="theMaxChipValue"
             @cancelSingleHandler="cancelSingleHandler"
             @inputRowItemChangeHandler="inputRowItemChangeHandler"
             @onCartListItemKeyboardShow="onCartListItemKeyboardShow"
@@ -498,7 +500,8 @@
         this.clearMemberData();
       },
       isSubmitHandler() {
-        this.submitHandler(true);
+        // 來自快速下注的事件
+        this.submitHandler(false);
       },
     },
     computed: {
@@ -659,7 +662,6 @@
         this.EvtIdRepeatList.length = 0;
         this.EvtIdRepeatList = [];
         this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.normal);
-        this.lastTraceCodeKey = null;
       },
       callBetHistoryAPI() {
         if (this.groupIndex === 1) {
@@ -902,7 +904,7 @@
           return list;
         }
       },
-      submitHandler(isShowMessage = false) {
+      submitHandler(isShowLoading = true) {
         const isTriggerLimit = this.reCalcBetChart(true);
         if (isTriggerLimit) {
           return;
@@ -919,10 +921,12 @@
           this.settings.showBetConfirm === false ||
           this.isQuickBetEnable
         ) {
-          // 多個投注時取最大的
-          this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
-            ...checkRes.map((checkRes) => checkRes.Amount)
-          );
+          if (this.$store.state.Setting.UserSetting.defaultAmount.type === 1) {
+            // 多個投注時取最大的
+            this.$store.state.Setting.UserSetting.defaultAmount.amount = Math.max(
+              ...checkRes.map((checkRes) => checkRes.Amount)
+            );
+          }
           this.$store
             .dispatch('BetCart/submitBet', checkRes)
             .then((res) => {
@@ -939,6 +943,9 @@
               this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.normal);
               this.$store.commit('SetLoading', false);
             });
+          if (!isShowLoading) {
+            this.$store.commit('SetLoading', false);
+          }
         } else {
           this.$store.commit('BetCart/setPanelMode', this.PanelModeEnum.lock);
         }
@@ -950,7 +957,9 @@
         }
         this.clearAllMinMaxLimitState();
         if (this.panelMode === this.PanelModeEnum.lock || this.settings.showBetConfirm === false) {
-          this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+          if (this.$store.state.Setting.UserSetting.defaultStrayAmount.type === 1) {
+            this.$store.state.Setting.UserSetting.defaultStrayAmount.amount = this.strayBetAmount;
+          }
 
           this.$store
             .dispatch('BetCart/submitBet', checkRes)

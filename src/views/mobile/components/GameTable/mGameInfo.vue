@@ -27,11 +27,19 @@
                       class="team"
                       :title="`${teamData.HomePtAndNation[0]}-${teamData.HomePtAndNation[1]} / ${teamData.HomePtAndNation[2]}-${teamData.HomePtAndNation[3]}`"
                     >
-                      {{ teamData.HomePtAndNation[0] }}
-                      <span class="teamPt">-{{ teamData.HomePtAndNation[1] }}</span>
-                      <span> /</span>
-                      {{ teamData.HomePtAndNation[2] }}
-                      <span class="teamPt">-{{ teamData.HomePtAndNation[3] }}</span>
+                      <div class="teamName">
+                        {{ teamData.HomePtAndNation[0] }}
+                        <span class="teamPt">-{{ teamData.HomePtAndNation[1] }}</span>
+                        <span> /</span>
+                        {{ teamData.HomePtAndNation[2] }}
+                        <span class="teamPt">-{{ teamData.HomePtAndNation[3] }}</span>
+                      </div>
+                      <div
+                        v-if="isLive"
+                        :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
+                      >
+                        {{ teamData.HomeScore }}
+                      </div>
                     </div>
                   </template>
                   <!-- 顯示雙打2 -->
@@ -40,17 +48,25 @@
                       class="team"
                       :title="`${teamData.AwayPtAndNation[0]}-${teamData.AwayPtAndNation[1]} / ${teamData.AwayPtAndNation[2]}-${teamData.AwayPtAndNation[3]}`"
                     >
-                      {{ teamData.AwayPtAndNation[0] }}
-                      <span class="teamPt">-{{ teamData.AwayPtAndNation[1] }}</span>
-                      <span> /</span>
-                      {{ teamData.AwayPtAndNation[2] }}
-                      <span class="teamPt">-{{ teamData.AwayPtAndNation[3] }}</span>
+                      <div class="teamName">
+                        {{ teamData.AwayPtAndNation[0] }}
+                        <span class="teamPt">-{{ teamData.AwayPtAndNation[1] }}</span>
+                        <span> /</span>
+                        {{ teamData.AwayPtAndNation[2] }}
+                        <span class="teamPt">-{{ teamData.AwayPtAndNation[3] }}</span>
+                      </div>
+                      <div
+                        v-if="isLive"
+                        :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
+                      >
+                        {{ teamData.AwayScore }}
+                      </div>
                     </div>
                   </template>
                   <!-- 只需要顯示一個隊伍 -->
-                  <template v-if="teamData.AwayTeamStr === '.'">
-                    <div>
-                      <div class="team"
+                  <template v-else-if="teamData.AwayTeamStr === '.'">
+                    <div class="team">
+                      <div class="teamName"
                         >{{ teamData.HomeTeamStr }}
 
                         <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
@@ -70,31 +86,63 @@
                   <template v-else>
                     <!-- 判斷主客場對調 -->
                     <template v-if="!teamData.SetFlag">
-                      <div class="team"
-                        >{{ teamData.AwayTeamStr }}
-                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                          -{{ teamData.AwayPtNameStr }}</span
+                      <div class="team">
+                        <div class="teamName">
+                          {{ teamData.AwayTeamStr }}
+                          <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                            -{{ teamData.AwayPtNameStr }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="isLive"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
                         >
+                          {{ teamData.AwayScore }}
+                        </div>
                       </div>
-                      <div class="team"
-                        >{{ teamData.HomeTeamStr }}
-                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                          -{{ teamData.HomePtNameStr }}</span
+                      <div class="team">
+                        <div class="teamName">
+                          {{ teamData.HomeTeamStr }}
+                          <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                            -{{ teamData.HomePtNameStr }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="isLive"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
                         >
+                          {{ teamData.HomeScore }}
+                        </div>
                       </div>
                     </template>
                     <template v-else>
-                      <div class="team"
-                        >{{ teamData.HomeTeamStr }}
-                        <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
-                          -{{ teamData.HomePtNameStr }}</span
+                      <div class="team">
+                        <div class="teamName">
+                          {{ teamData.HomeTeamStr }}
+                          <span class="teamPt" v-if="teamData.HomePtNameStr !== ''">
+                            -{{ teamData.HomePtNameStr }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="isLive"
+                          :class="teamData.HomeScore > teamData.AwayScore ? 'light' : ''"
                         >
+                          {{ teamData.HomeScore }}
+                        </div>
                       </div>
-                      <div class="team"
-                        >{{ teamData.AwayTeamStr }}
-                        <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
-                          -{{ teamData.AwayPtNameStr }}</span
+                      <div class="team">
+                        <div class="teamName">
+                          {{ teamData.AwayTeamStr }}
+                          <span class="teamPt" v-if="teamData.AwayPtNameStr !== ''">
+                            -{{ teamData.AwayPtNameStr }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="isLive"
+                          :class="teamData.AwayScore > teamData.HomeScore ? 'light' : ''"
                         >
+                          {{ teamData.AwayScore }}
+                        </div>
                       </div>
                     </template>
                   </template>
@@ -107,10 +155,17 @@
                   <!-- 時間 & 收藏按鈕 -->
                   <div class="info-timeStarRow" v-if="rowIndex === 0">
                     <!-- 時間 -->
-                    <div class="time">
-                      {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
-                      {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
-                    </div>
+                    <template v-if="rowIndex === 0 && selectGameType !== 2">
+                      <div class="time">
+                        {{ $lib.timeFormatMMDD(teamData.ScheduleTimeStr) }}
+                        {{ $lib.timeFormatHHmm(teamData.ScheduleTimeStr) }}
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="time light" v-if="rowIndex === 0">
+                        {{ teamData.TimeAct }}
+                      </div>
+                    </template>
                     <!-- 收藏 -->
                     <div
                       class="star"
@@ -170,6 +225,14 @@
         },
       },
     },
+    computed: {
+      selectGameType() {
+        return this.$store.state.Game.selectGameType;
+      },
+      isLive() {
+        return this.selectGameType === 2;
+      },
+    },
     methods: {
       starCSSJudge(EvtID) {
         if (this.$store.state.Setting.UserSetting.favorites.indexOf(EvtID) > -1) {
@@ -192,6 +255,10 @@
   .mGameInfo {
     position: relative;
     min-width: 100%;
+
+    .light {
+      color: #ff8500 !important;
+    }
 
     &.closed {
       &::after {
@@ -312,9 +379,14 @@
           .team {
             color: #000;
             font-size: $font-size;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            display: flex;
+            justify-content: space-between;
+            margin-right: 2px;
+            .teamName {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
           }
           .teamPt {
             color: gray;

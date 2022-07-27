@@ -20,9 +20,12 @@
           <div> {{ $t('Common.Money') }}: </div>
           <div class="betAmountColor"> {{ cartData.betAmount }}</div>
         </div>
-        <div class="betBtn" @click="betBtnClickHandler()" v-if="lastFirstBetMessage === ''">
-          {{ $t('Common.Bet') }}</div
-        >
+        <div class="betBtn" @click="betBtnClickHandler()" v-if="lastFirstBetState === 'init'">
+          {{ $t('Common.Bet') }}
+        </div>
+        <div class="betBtn InfoBtn" v-else-if="lastFirstBetState === 'wait'">
+          {{ $t('Common.PlzWait') }}
+        </div>
         <div class="betBtn InfoBtn" @click="closeSelf" v-else>
           {{ lastFirstBetMessage }}
         </div>
@@ -57,9 +60,13 @@
         }
       }
 
-      if (this.lastFirstBetMessageEnd) {
-        this.$MSG.warn('交易繁忙,請稍後再試');
+      if (this.lastFirstBetState === 'lock') {
+        this.$MSG.warn(this.$t('Common.BetWait'));
         this.closeSelf();
+      }
+
+      if (this.lastFirstBetState === 'done') {
+        this.$store.commit('BetCart/clearLastFirstBetData');
       }
     },
     computed: {
@@ -111,10 +118,10 @@
         return findData;
       },
       lastFirstBetMessage() {
-        return this.$store.state.BetCart.lastFirstBetMessage.message;
+        return this.$store.state.BetCart.lastFirstBetData.message;
       },
-      lastFirstBetMessageEnd() {
-        return this.$store.state.BetCart.lastFirstBetMessage.end;
+      lastFirstBetState() {
+        return this.$store.state.BetCart.lastFirstBetData.state;
       },
     },
     watch: {
@@ -137,6 +144,10 @@
         this.closeSelf();
       },
       closeSelf() {
+        // 如果state是wait 才能給lock
+        if (this.lastFirstBetState === 'wait') {
+          this.$store.commit('BetCart/setLastFirstBetDataState', 'lock');
+        }
         this.$store.commit('BetCart/clearCart');
         this.$store.commit('BetCart/showQuickBetData', {
           isShow: false,
@@ -159,6 +170,7 @@
         }
       },
       betBtnClickHandler() {
+        this.$store.commit('BetCart/setLastFirstBetDataState', 'wait');
         this.$store.commit('BetCart/setIsSubmitHandler');
         this.showMinLimit = false;
         this.showMaxLimit = false;
@@ -250,7 +262,7 @@
           background-color: #ffdf1b;
           color: black;
           width: 100px;
-          height: 35px;
+          padding: 0 7px;
           line-height: 35px;
           font-weight: bold;
           text-align: center;

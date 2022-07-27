@@ -23,7 +23,7 @@
         <el-menu-item index="3" @click="jumpLink('rule')">
           {{ $t('GamesHeader.GameRule') }}
         </el-menu-item>
-        <el-menu-item index="4" @click="OpenPopupCenter">
+        <el-menu-item index="4" @click="OpenHistoryRecordWindow">
           {{ $t('GamesHeader.BetList') }}
         </el-menu-item>
       </el-menu>
@@ -101,17 +101,17 @@
       callUserInfoAbout() {
         this.$store.dispatch('User/UserInfoAbout');
       },
-      OpenPopupCenter() {
+      OpenHistoryRecordWindow() {
         const historyRecord = this.$router.resolve({
           path: 'HistoryRecord',
         });
-        this.$lib.WindowOpen(historyRecord.href);
+        this.$lib.WindowOpen(historyRecord.href, 'HistoryRecord');
       },
       OpenGameResultWindow() {
         const historyRecord = this.$router.resolve({
           path: 'GameResult',
         });
-        this.$lib.WindowOpen(historyRecord.href);
+        this.$lib.WindowOpen(historyRecord.href, 'GameResult');
       },
       handleSelect() {
         this.activeIndex = '1';

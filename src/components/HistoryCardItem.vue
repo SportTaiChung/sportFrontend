@@ -4,7 +4,10 @@
     <template v-if="historyItem.BetType === 1">
       <div class="cardHeaderRow">
         <div class="playMethodName"> {{ historyItem.dataBet[0].WagerPosName }}</div>
-        <div class="playMethodNameSupport">
+        <div
+          class="playMethodNameSupport"
+          v-if="$conf.settlementSpecial.indexOf(historyItem.CatID) === -1"
+        >
           {{ historyItem.dataBet[0].CutLine }}
         </div>
         <div class="at"> @ </div>
@@ -17,31 +20,56 @@
           {{ `${historyItem.catName} - [${historyItem.dataBet[0].WagerGrpName}]` }}
         </div>
         <div class="cardContentBlockRow"> {{ historyItem.dataBet[0].LeagueName }} </div>
-        <div class="cardContentBlockRow">
-          <template v-if="historyItem.dataBet[0].AwayTeam === '.'">
-            <div class="teamRow">{{ historyItem.dataBet[0].HomeTeam }}</div>
-          </template>
-          <template v-else-if="historyItem.dataBet[0].HomeTeam === '.'">
-            <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
-          </template>
-          <template v-else>
-            <div class="ScoreColor" v-if="isSettlement && historyItem.dataBet[0].HomeScore !== ''">
-              [{{ historyItem.dataBet[0].HomeScore }}]
-            </div>
+        <template v-if="$conf.settlementSpecial.indexOf(historyItem.CatID) === -1">
+          <div class="cardContentBlockRow">
+            <template v-if="historyItem.dataBet[0].AwayTeam === '.'">
+              <div class="teamRow">{{ historyItem.dataBet[0].HomeTeam }}</div>
+            </template>
+            <template v-else-if="historyItem.dataBet[0].HomeTeam === '.'">
+              <div class="teamRow">{{ historyItem.dataBet[0].AwayTeam }}</div>
+            </template>
+            <template v-else>
+              <div
+                class="ScoreColor"
+                v-if="isSettlement && historyItem.dataBet[0].HomeScore !== ''"
+              >
+                [{{ historyItem.dataBet[0].HomeScore }}]
+              </div>
+              <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
+              <div class="cardContentBlockRowText HomeTeamSign">({{ $t('Common.Home') }})</div>
+              <div class="cardContentBlockRowText">
+                <div class="vs"> v </div>
+                <div
+                  class="ScoreColor"
+                  v-if="isSettlement && historyItem.dataBet[0].AwayScore !== ''"
+                >
+                  [{{ historyItem.dataBet[0].AwayScore }}]
+                </div>
+                {{ historyItem.dataBet[0].AwayTeam }}
+              </div>
+            </template>
+          </div>
+        </template>
+        <template v-else>
+          <div class="cardContentBlockRow">
             <div class="cardContentBlockRowText">{{ historyItem.dataBet[0].HomeTeam }}</div>
             <div class="cardContentBlockRowText HomeTeamSign">({{ $t('Common.Home') }})</div>
             <div class="cardContentBlockRowText">
               <div class="vs"> v </div>
-              <div
-                class="ScoreColor"
-                v-if="isSettlement && historyItem.dataBet[0].AwayScore !== ''"
-              >
-                [{{ historyItem.dataBet[0].AwayScore }}]
-              </div>
+
               {{ historyItem.dataBet[0].AwayTeam }}
             </div>
-          </template>
-        </div>
+          </div>
+          <div class="cardContentBlockRow">
+            <div
+              class="cardContentBlockRowText"
+              v-if="isSettlement && historyItem.dataBet[0].HomeScore !== ''"
+            >
+              <div style="margin-right: 5px">{{ $t('GamesHeader.GameResult') }}:</div>
+              <div class="ScoreColor"> [{{ historyItem.dataBet[0].HomeScore }}] </div>
+            </div>
+          </div>
+        </template>
 
         <div class="cardContentBlockRow">
           <div class="cardContentBlockWithHalfRow">

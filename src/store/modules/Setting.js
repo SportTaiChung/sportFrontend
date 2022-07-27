@@ -1,6 +1,7 @@
 // import { login, logout, getUserInfoAbout, getUserInfoCash } from '@/api/User';
 import rootStore from '@/store';
 import * as SportLib from '@/utils/SportLib';
+import { Message } from 'element-ui';
 
 const defaultSettings = Object.freeze({
   // 收藏夾
@@ -91,8 +92,16 @@ export default {
       const findIndex = state.UserSetting.favorites.findIndex((it, index) => it === val);
       if (findIndex > -1) {
         state.UserSetting.favorites.splice(findIndex, 1);
+        Message({
+          message: '取消收藏!',
+          type: 'warning',
+        });
       } else {
         state.UserSetting.favorites.push(val);
+        Message({
+          message: '收藏成功!',
+          type: 'success',
+        });
       }
       rootStore.commit('Setting/writeSettingToLocalStorage', state.UserSetting);
     },

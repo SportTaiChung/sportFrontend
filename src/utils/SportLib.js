@@ -1,4 +1,5 @@
 import i18n from '@/locales';
+import { favoriteCatID } from '@/Config/index.js';
 
 /**
  * 所有玩法數據的資料
@@ -477,30 +478,36 @@ export function cartDataToDisplayData(cartData) {
     console.error('playData.playMethodData.name error:', playData.playMethodData.name);
   }
 
+  let showGameTypeLabel = '';
   let wagerGrpLabel = '';
-  let wagerBoldLabel = '';
-  // 波膽處理
-  if (cartData.WagerTypeID === 112) {
-    wagerBoldLabel = `- ${i18n.t('Common.Bold')}`;
+  if (cartData?.ItemName) {
+    wagerGrpLabel = `- [${cartData.ItemName}]`;
+  } else {
+    let wagerBoldLabel = '';
+    // 波膽處理
+    if (cartData.WagerTypeID === 112) {
+      wagerBoldLabel = `- ${i18n.t('Common.Bold')}`;
+    } else if (
+      cartData.WagerGrpID === 0 ||
+      cartData.WagerGrpID === 10 ||
+      cartData.WagerGrpID === 20
+    ) {
+      wagerGrpLabel = `- [${i18n.t('Common.FullGame')}${wagerBoldLabel}]`;
+    } else if (
+      cartData.WagerGrpID === 1 ||
+      cartData.WagerGrpID === 11 ||
+      cartData.WagerGrpID === 21
+    ) {
+      wagerGrpLabel = `- [${i18n.t('Common.HalfGame')}${wagerBoldLabel}]`;
+    }
   }
-
-  if (cartData.WagerGrpID === 0 || cartData.WagerGrpID === 10 || cartData.WagerGrpID === 20) {
-    wagerGrpLabel = `- [${i18n.t('Common.FullGame')}${wagerBoldLabel}]`;
-  } else if (
-    cartData.WagerGrpID === 1 ||
-    cartData.WagerGrpID === 11 ||
-    cartData.WagerGrpID === 21
-  ) {
-    wagerGrpLabel = `- [${i18n.t('Common.HalfGame')}${wagerBoldLabel}]`;
-  }
-  const showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
+  showGameTypeLabel = `${cartData.CatNameStr} ${wagerGrpLabel}`;
 
   return {
     showBetTitle,
     showCutLine,
     showOdd,
     showGameTypeLabel,
-    wagerGrpLabel,
   };
 }
 
@@ -523,7 +530,7 @@ export function getMenuIconByCatID(catID) {
     85: 'icon_sportMenu_pcgame.svg', // 電競
     101: 'icon_sportMenu_baseball.svg', // 棒球
     102: 'icon_sportMenu_basketball.svg', // 籃球
-    '-999': 'icon_sportMenu_star.svg', // 收藏
+    [favoriteCatID]: 'icon_sportMenu_star.svg', // 收藏
     default: 'icon_sportMenu_soccer.svg',
   });
 
@@ -549,7 +556,7 @@ export function getBoardImageByCatId(catID) {
     85: 'pcgame.jpg',
     101: 'baseball.jpg',
     102: 'basketball.jpg',
-    '-999': null,
+    [favoriteCatID]: null,
     default: 'soccer.jpg',
   });
 
@@ -575,7 +582,7 @@ export function getColorByCatId(catID) {
     85: '#7894dc',
     101: '#caba62',
     102: '#ae6a3d',
-    '-999': '#ffffff',
+    [favoriteCatID]: '#ffffff',
     default: '#ffffff',
   });
 

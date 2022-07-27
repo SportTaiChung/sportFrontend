@@ -169,17 +169,17 @@ export function truncCeil(num, decimal = 4) {
 }
 
 // 打開popup
-export function WindowOpen(href) {
+export function WindowOpen(href, openName = 'default') {
   const width = document.documentElement.clientWidth;
   const height = document.documentElement.clientHeight;
   // const popupwidth = width * 0.6;
-  const popupwidth = 1200;
+  const popupwidth = 1350;
   const popupheight = height * 0.6;
   const top = (height - popupheight + 20) / 2;
   const left = (width - popupwidth) / 2;
   return window.open(
     href,
-    '111',
+    openName,
     'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
       popupwidth +
       ', height=' +

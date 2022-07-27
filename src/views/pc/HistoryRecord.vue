@@ -107,11 +107,6 @@
                       <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
                     </li>
                     <li>
-                      {{ $t('GamesHeader.GameResult') }}:
-                      <span class="resultScore">{{ betlist.HomeScore }} : </span>
-                      <span class="resultScore">{{ betlist.AwayScore }}</span>
-                    </li>
-                    <li>
                       {{ $t('Common.GameTime') }}:
                       <span class="startGameTime">{{ betlist.ScheduleTimeStr }} </span>
                     </li>
@@ -194,8 +189,6 @@
               <tr>
                 <td width="585" @click="upactive(item.catName)">
                   <i :class="item.active ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
-                  <!-- <template v-if="i === 0"> {{ $t('Common.NormalBet') }} </template>
-                  <template v-if="i === 1"> {{ $t('GamesBetInfo.StrayBet') }} </template> -->
                   {{ item.catName }}
                 </td>
                 <td width="100">{{ item.Amounts }}</td>
@@ -247,62 +240,117 @@
                   <div class="rt_fs_list" v-for="(betlist, y) in itemdata.dataBet" :key="y">
                     <div>{{ y + 1 }}</div>
                     <ul>
-                      <li>
-                        {{ itemdata.catName }} - {{ betlist.LeagueName }} -
-                        {{ betlist.WagerGrpName }}
-                      </li>
-                      <li>
-                        <span class="ScoreColor">[{{ betlist.HomeScore }}] </span>
-                        {{ betlist.HomeTeam }}
-                        <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
-                        <span class="ScoreColor">[{{ betlist.AwayScore }}] </span>
-                        {{ betlist.AwayTeam }}
-                      </li>
-                      <li>
-                        {{ $t('Common.Bet') }}：
-                        <span class="betTeamColor">
-                          {{ betlist.betname }}
-                          <span class="oddColor">{{ betlist.CutLine }} </span>
-                        </span>
-                        @
-                        <span class="oddColor"> {{ betlist.PayoutOddsStr }}</span>
-                      </li>
-                      <li>
-                        {{ $t('GamesHeader.GameResult') }}:
-                        <span class="resultScore">{{ betlist.HomeScore }} : </span>
-                        <span class="resultScore">{{ betlist.AwayScore }}</span>
-                      </li>
-                      <li>
-                        {{ $t('Common.GameTime') }}:
-                        <span class="startGameTime">{{ betlist.ScheduleTimeStr }} : </span>
-                      </li>
+                      <template v-if="$conf.settlementSpecial.indexOf(itemdata.CatID) === -1">
+                        <li>
+                          {{ itemdata.catName }} - {{ betlist.LeagueName }} -
+                          {{ betlist.WagerGrpName }}
+                        </li>
+                        <li>
+                          <span class="ScoreColor">[{{ betlist.HomeScore }}] </span>
+                          {{ betlist.HomeTeam }}
+                          <span class="HomeTeamSign">({{ $t('Common.Home') }})</span> VS
+                          <span class="ScoreColor">[{{ betlist.AwayScore }}] </span>
+                          {{ betlist.AwayTeam }}
+                        </li>
+                        <li>
+                          {{ $t('Common.Bet') }}：
+                          <span class="betTeamColor">
+                            {{ betlist.betname }}
+                            <span class="oddColor">{{ betlist.CutLine }} </span>
+                          </span>
+                          @
+                          <span class="oddColor"> {{ betlist.PayoutOddsStr }}</span>
+                        </li>
+                        <li>
+                          {{ $t('GamesHeader.GameResult') }}:
+                          <span class="resultScore">{{ betlist.HomeScore }} : </span>
+                          <span class="resultScore">{{ betlist.AwayScore }}</span>
+                        </li>
+                        <li>
+                          {{ $t('Common.GameTime') }}:
+                          <span class="startGameTime">{{ betlist.ScheduleTimeStr }} : </span>
+                        </li>
+                      </template>
+
+                      <template v-else>
+                        <li>
+                          {{ itemdata.catName }} - {{ betlist.LeagueName }} -
+                          {{ betlist.WagerGrpName }}
+                        </li>
+                        <li>
+                          {{ betlist.HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+
+                          {{ betlist.AwayTeam }}
+                        </li>
+                        <li>
+                          {{ $t('Common.Bet') }} :
+                          <span class="betTeamColor">
+                            {{ betlist.betname }}
+                          </span>
+                          @
+                          <span class="oddColor">{{ betlist.PayoutOddsStr }}</span>
+                        </li>
+                        <li>
+                          {{ $t('GamesHeader.GameResult') }} :
+                          <span class="oddColor">
+                            {{ betlist.HomeScore }}
+                          </span>
+                        </li>
+                      </template>
                     </ul>
                   </div>
                 </td>
                 <!-- 一般投注 -->
                 <td width="400" v-else>
                   <ul>
-                    <li>
-                      {{ itemdata.catName }} - {{ itemdata.dataBet[0].LeagueName }} -
-                      {{ itemdata.dataBet[0].WagerGrpName }}
-                    </li>
-                    <li>
-                      <span class="ScoreColor">[{{ itemdata.dataBet[0].HomeScore }}] </span>
-                      {{ itemdata.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
-                      <span class="ScoreColor">[{{ itemdata.dataBet[0].AwayScore }}]</span>
-                      {{ itemdata.dataBet[0].AwayTeam }}
-                    </li>
-                    <li>
-                      {{ $t('Common.Bet') }} :
-                      <span class="betTeamColor">
-                        {{ itemdata.dataBet[0].betname }}
-                        <span class="oddColor">
-                          {{ itemdata.dataBet[0].CutLine }}
+                    <template v-if="$conf.settlementSpecial.indexOf(itemdata.CatID) === -1">
+                      <li>
+                        {{ itemdata.catName }} - {{ itemdata.dataBet[0].LeagueName }} -
+                        {{ itemdata.dataBet[0].WagerGrpName }}
+                      </li>
+                      <li>
+                        <span class="ScoreColor">[{{ itemdata.dataBet[0].HomeScore }}] </span>
+                        {{ itemdata.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+                        <span class="ScoreColor">[{{ itemdata.dataBet[0].AwayScore }}]</span>
+                        {{ itemdata.dataBet[0].AwayTeam }}
+                      </li>
+                      <li>
+                        {{ $t('Common.Bet') }} :
+                        <span class="betTeamColor">
+                          {{ itemdata.dataBet[0].betname }}
+                          <span class="oddColor">
+                            {{ itemdata.dataBet[0].CutLine }}
+                          </span>
                         </span>
-                      </span>
-                      @
-                      <span class="oddColor">{{ itemdata.dataBet[0].PayoutOddsStr }}</span>
-                    </li>
+                        @
+                        <span class="oddColor">{{ itemdata.dataBet[0].PayoutOddsStr }}</span>
+                      </li>
+                    </template>
+                    <template v-else>
+                      <li>
+                        {{ itemdata.catName }} - {{ itemdata.dataBet[0].LeagueName }} -
+                        {{ itemdata.dataBet[0].WagerGrpName }}
+                      </li>
+                      <li>
+                        {{ itemdata.dataBet[0].HomeTeam }} <span class="HomeTeamSign">(主)</span> VS
+
+                        {{ itemdata.dataBet[0].AwayTeam }}
+                      </li>
+                      <li>
+                        {{ $t('Common.Bet') }} :
+                        <span class="betTeamColor">
+                          {{ itemdata.dataBet[0].betname }}
+                        </span>
+                        @
+                        <span class="oddColor">{{ itemdata.dataBet[0].PayoutOddsStr }}</span>
+                      </li>
+                      <li>
+                        {{ $t('GamesHeader.GameResult') }} :
+                        <span class="oddColor">
+                          {{ itemdata.dataBet[0].HomeScore }}
+                        </span>
+                      </li>
+                    </template>
                   </ul>
                 </td>
                 <td width="100" class="rt_betval">{{ itemdata.Amount }}</td>
