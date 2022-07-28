@@ -62,6 +62,11 @@
       </div>
     </template>
 
+    <div v-show="leagueList.length === 0 && !$store.state.isLoading" class="noResult">
+      <img src="@/assets/img/common/btn_GDV_scoreBoard.svg" alt="" />
+      {{ $t('Common.NoGameResult') }}
+    </div>
+
     <!-- 日期選擇 popup -->
     <div class="date-popup" v-show="isShowDatePicker" @click.stop="onMaskClick">
       <div class="popup">
@@ -190,12 +195,16 @@
       },
       leagueList() {
         if (this.childItems.length > 0 && this.selectedChildItem) {
-          const league = {
-            CatID: this.selectedCatId,
-            LeagueName: this.selectedChildItem.Name,
-            List: [this.rawData?.List?.[0] || []],
-          };
-          return [league];
+          if (this.rawData?.List?.length === 0) {
+            return [];
+          } else {
+            const league = {
+              CatID: this.selectedCatId,
+              LeagueName: this.selectedChildItem.Name,
+              List: this.rawData?.List,
+            };
+            return [league];
+          }
         }
         return this.rawData?.List || [];
       },
@@ -361,6 +370,7 @@
   .mGameResultTable {
     overflow-x: hidden;
     overflow-y: auto;
+    flex: 1;
     .left-area {
       width: 40%;
       transition: width 600ms ease-out;
@@ -475,6 +485,21 @@
             border: 1px solid #ddd;
           }
         }
+      }
+    }
+
+    .noResult {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+
+      img {
+        width: 90px;
+        opacity: 0.7;
       }
     }
 

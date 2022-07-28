@@ -50,7 +50,7 @@
 
 <script>
   export default {
-    name: 'Soccer',
+    name: 'GameResultTable',
     props: {
       titles: {
         type: Array,

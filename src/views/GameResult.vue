@@ -212,12 +212,16 @@
       },
       leagueList() {
         if (this.childItems.length > 0 && this.selectedChildItem) {
-          const league = {
-            CatID: this.selectedCatId,
-            LeagueName: this.selectedChildItem.Name,
-            List: [this.rawData?.List[0]],
-          };
-          return [league];
+          if (this.rawData?.List.length === 0) {
+            return [];
+          } else {
+            const league = {
+              CatID: this.selectedCatId,
+              LeagueName: this.selectedChildItem.Name,
+              List: this.rawData?.List,
+            };
+            return [league];
+          }
         }
         return this.rawData?.List || [];
       },
